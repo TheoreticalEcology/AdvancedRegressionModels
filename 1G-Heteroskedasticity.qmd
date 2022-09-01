@@ -1,0 +1,320 @@
+# Heteroskedasticity
+
+```{=html}
+<!-- Put this here (right after the first markdown headline) and only here for each document! -->
+<script src="./scripts/multipleChoice.js"></script>
+```
+
+In the last chapter, we have discussed how to set up a basic lm, including the selection of predictors according to the purpose of the modelling (prediction, causal analysis). Remember in particular that for a causal analysis, which I consider the standard case in the scineces, first, think about the problem and your question an decide on a base structure. Ideally, you do this by:
+
+* Writing down your scientific questions (e.g. Ozone ~ Wind)
+* Then add confounders / mediators if needed.
+* Remember to make a difference between variables controlled for confounding, and other confounders (which are typically not controlled for confounding). We may have to use some model selection, but in fact with a good analysis plan this is rarely necessary for a causal analysis.
+
+After having arrived at such a base structure, we will have to check if the model is appropriate for the analysis. Yesterday, we already discussed about residual checks and we discussed that the 4 standard residual plots check for 4 different problems.
+
+* Residuals vs Fitted = Functional relationship.
+* Normal Q-Q = Normality of residuals.
+* Scale - Location = Variance homogeneity.
+* Residuals vs Leverage = Should we worry about certain outliers?
+
+Here an example for a linear regression of Ozone against Wind:
+
+```{r chunk_chapter4_chunk2, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Temp , data = airquality)
+plot(Ozone ~ Temp, data = airquality)
+abline(fit)
+
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+The usual strategy now is to
+
+1. First get the functional relationship right, so that the model correctly describe the mean
+2. Then adjust the model assumptions regardigng distribution, variance and outliers.
+
+We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models). 
+
+## Adjusting the Functional Form
+
+In the residual ~ fitted plot above, we can clearly see a pattern, which means that our model has a systematic misfit. Note that in a multiple regression, you should also check res ~ predictor for all predictors, because patterns of misfit often show up more clearly when plotted against the single predictors. 
+
+What should we do if we see a pattern? Here a few strategies that you might want to consider:
+
+### Changing the regression formular
+
+The easiest strategy is to add complexity to the polynomial, e.g. quadratic terms, interactions etc.
+
+```{r chunk_chapter4_chunk3, echo=TRUE, eval=TRUE}
+library(effects)
+
+fit = lm(Ozone ~ Wind * Temp + I(Wind^2) + I(Temp^2), data = airquality)
+
+plot(allEffects(fit, partial.residuals = T), selection = 1)
+plot(allEffects(fit, partial.residuals = T), selection = 2)
+plot(allEffects(fit, partial.residuals = T), selection = 3)
+```
+
+and see if the residuals are getting better. To avoid doing this totally randomly, it may be useful to plot residuals against individual predictors by hand!
+
+
+### Generalized additive models (GAMs)
+
+Another options are GAMs = Generalized Additive Models. The idea is to fit a smooth function to data, to automatically find the "right" functional form. The smoothness of the function is automatically optimized.
+
+```{r chunk_chapter4_chunk4, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+library(mgcv)
+
+fit = gam(Ozone ~ s(Wind) + s(Temp) + s(Solar.R) , data = airquality)
+summary(fit)
+
+# allEffects doesn't work here.
+plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.8, cex = 0.7,
+     col = c("black", rep("red", length(fit$residuals))))
+AIC(fit)
+```
+
+Comparison to normal `lm()`{.R}:
+
+```{r chunk_chapter4_chunk5, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind + Temp + Solar.R , data = airquality)
+AIC(fit)
+```
+
+Spline interaction is called a **tensor spline**:
+
+```{r chunk_chapter4_chunk6, echo=TRUE, eval=TRUE}
+fit = gam(Ozone ~ te(Wind, Temp) + s(Solar.R) , data = airquality)
+summary(fit)
+
+plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.9, cex = 0.4)
+AIC(fit)
+```
+
+GAMs are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone ~ Wind, account for the other variables, a good strategy might be:
+
+```{r chunk_chapter4_chunk7, echo=TRUE, eval=TRUE}
+fit = gam(Ozone ~ Wind + s(Temp) + s(Solar.R) , data = airquality)
+summary(fit)
+```
+
+In this way, you still get a nicely interpretable linear effect for Wind, but you don't have to worry about the functional form of the other predictors.
+
+
+### Exercise functional form
+
+
+```{=html}
+  <hr/>
+  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
+```
+
+Assume our base model is
+
+```{r, echo=TRUE, eval=TRUE}
+fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
+```
+
+and we are mainly interested in the effect of wind (Temp - Solar.R are added as confounders). 
+
+Adjust the functional form until the mean is fitted well!
+
+```{=html}
+  <details>
+    <summary>
+      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
+    </summary>
+    <p>
+```
+
+
+```{=html}
+    </p>
+  </details>
+  <br/><hr/>
+```
+
+
+## Modelling Variance Terms
+
+After we have fixed the functional form, we want to look at the distribution of the residuals. We said yesterday that you can try to get them more normal by applying an appropriate transformation, e.g. the logarithm or square root. Without transformation, we often find that data shows heteroskedasticity, i.e. the residual variance changes with some predictor or the mean estimate (see also Scale - Location plot). Maybe your experimental data looks like this:
+
+```{r chunk_chapter4_chunk8, echo=TRUE, eval=TRUE}
+set.seed(125)
+
+data = data.frame(treatment = factor(rep(c("A", "B", "C"), each = 15)))
+data$observation = c(7, 2 ,4)[as.numeric(data$treatment)] +
+  rnorm( length(data$treatment), sd = as.numeric(data$treatment)^2 )
+boxplot(observation ~ treatment, data = data)
+```
+
+Especially p-values and confidence intervals of `lm()`{.R} and ANOVA can react quite strongly to such differences in residual variation. So, running a standard `lm()`{.R} / ANOVA on this data is not a good idea - in this case, we see that all regression effects are not significant, as is the ANOVA, suggesting that there is no difference between groups.
+
+```{r chunk_chapter4_chunk9, echo=TRUE, eval=TRUE}
+fit = lm(observation ~ treatment, data = data)
+summary(fit)
+summary(aov(fit))
+```
+
+So, what can we do?
+
+### Transformation
+
+One option is to search for a transformation of the response that improves the problem  - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.
+
+### Model the variance
+
+The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. The basic option in R is `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In this function, you can specify a dependency of the residual variance on a predictor or the response. See options via `?varFunc`{.R}. In our case, we will use the varIdent option, which allows to specify a different variance per treatment.
+
+```{r chunk_chapter4_chunk10, echo=TRUE, eval=TRUE}
+library(nlme)
+
+fit = gls(observation ~ treatment, data = data, weights = varIdent(form = ~ 1 | treatment))
+summary(fit)
+```
+
+If you check the ANOVA, also the ANOVA is significant!
+
+```{r chunk_chapter4_chunk11, echo=TRUE, eval=TRUE}
+anova(fit)
+```
+
+The second option for modeling variances is to use the `glmmTMB`.{R} package, which we will use quite frequently this week. Here, you can specify an extra regression formula for the dispersion (= residual variance). If we fit this:
+
+```{r chunk_chapter4_chunk12, echo=TRUE, eval=TRUE}
+library(glmmTMB)
+
+fit = glmmTMB(observation ~ treatment, data = data, dispformula = ~ treatment)
+```
+
+We get 2 regression tables as outputs - one for the effects, and one for the dispersion (= residual variance). We see, as expected, that the dispersion is higher in groups B and C compared to A. An advantage over gls is that we get confidence intervals and p-values for these differences on top!
+
+```{r chunk_chapter4_chunk13, echo=TRUE, eval=TRUE}
+summary(fit)
+```
+
+### Exercise variance modelling
+
+Take this plot of Ozone ~ Solar.R using the airquality data. Clearly there is heteroskedasticity in the relationship:
+
+```{r chunk_chapter4_chunk14, echo=TRUE, eval=TRUE}
+plot(Ozone ~ Solar.R, data = airquality)
+```
+
+We can also see this when we fit the regression model:
+
+```{r chunk_chapter4_chunk15, echo=TRUE, eval=TRUE}
+m1 = lm(Ozone ~ Solar.R, data = airquality)
+par(mfrow = c(2, 2))
+plot(m1)
+```
+
+```{=html}
+  <hr/>
+  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
+```
+
+We could of course consider other predictors, but let's say we want to fit this model specifically
+
+1. Try to get the variance stable with a transformation.
+2. Use the `gls`{.R} function (package `nlme`{.R}) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses`.{R} and decide how to model this.
+3. Use `glmmTMB`.{R} to model heteroskedasticity.
+
+```{=html}
+  <details>
+    <summary>
+      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
+    </summary>
+    <p>
+```
+
+```{r chunk_chapter4_task_1, message=FALSE, warning=FALSE}
+
+```
+
+```{=html}
+    </p>
+  </details>
+  <br/><hr/>
+```
+
+
+## Non-normality and Outliers
+
+What can we do if, after accounting for the functional relationship, response transformation and variance modelling, residual diagnostic 2 shows non-normality, in particular strong outliers? Here simulated example data with strong outliers / deviations from normality:
+
+```{r chunk_chapter4_chunk16, echo=TRUE, eval=TRUE}
+set.seed(123)
+
+n = 100
+concentration = runif(n, -1, 1)
+growth = 2 * concentration + rnorm(n, sd = 0.5) +
+  rbinom(n, 1, 0.05) * rnorm(n, mean = 6*concentration, sd = 6)
+plot(growth ~ concentration)
+```
+
+Fitting the model, we see that the distribution is to wide:
+
+```{r chunk_chapter4_chunk17, echo=TRUE, eval=TRUE}
+fit = lm(growth ~ concentration)
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+What can we do to deal with such distributional problems and outliers?
+
+* **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
+* **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other. -> We will do this on Wednesday.
+* **Robust regressions**.
+* **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
+
+
+***Change distribution***
+
+If we want to change the distribution, we have to go to a GLM, see Wednesday.
+
+***Robust regression***
+
+Robust methods generally refer to methods that are robust to violation of assumptions, e.g. outliers. More specifically, standard robust regressions typically downweight datap oints that have a too high influence on the fit. See <a href="https://cran.r-project.org/web/views/Robust.html" target="_blank" rel="noopener">https://cran.r-project.org/web/views/Robust.html</a> for a list of robust packages in R.
+
+```{r chunk_chapter4_chunk18, echo=TRUE, eval=TRUE}
+# This is the classic method.
+library(MASS)
+
+fit = rlm(growth ~ concentration) 
+summary(fit)
+# No p-values and not sure if we can trust the confidence intervals.
+# Would need to boostrap by hand!
+
+# This is another option that gives us p-values directly.
+library(robustbase)
+
+fit = lmrob(growth ~ concentration) 
+summary(fit)
+```
+
+***Quantile regression***
+
+Quantile regressions don't fit a line with an error spreading around it, but try to fit a quantile (e.g. the 0.5 quantile, the median) regardless of the distribution. Thus, they work even if the usual assumptions don't hold.
+
+```{r chunk_chapter4_chunk19, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+library(qgam)
+
+dat = data.frame(growth = growth, concentration = concentration)
+
+fit = qgam(growth ~ concentration, data = dat, qu = 0.5) 
+summary(fit)
+```
+
+***Summary***
+
+Actions on **real outliers**:
+
+* Robust regression.
+* Remove
+
+Actions on **different distributions**:
+
+* Transform.
+* Change distribution or quantile regression.

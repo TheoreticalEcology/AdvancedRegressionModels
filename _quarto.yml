@@ -1,0 +1,32 @@
+project:
+  type: book
+
+book:
+  title: "Advanced Regression Models with R"
+  author: "Florian Hartig"
+  date: "Sept 2020"
+  chapters:
+    - index.qmd
+    - 1A-GettingStarted.qmd
+    - 1B-LinearRegression.qmd
+    - 1C-ModelChoice.qmd
+    - 1D-ANOVA.qmd
+    - 1E-MissingData.qmd
+    - 1F-GLMs.qmd
+    - 1G-Heteroskedasticity.qmd
+    - 1H-RandomEffects.qmd
+    - 1I-CorrelationStructures.qmd
+    - 1J-Nonparametrics.qmd
+    - 1K-Summary.qmd
+    - 1Z-Appendix.qmd
+    
+bibliography: literature.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+editor: visual
+

@@ -1,0 +1,32 @@
+# Getting Started
+
+```{=html}
+<!-- Put this here (right after the first markdown headline) and only here for each document! -->
+<script src="./scripts/multipleChoice.js"></script>
+```
+
+## Your R System
+
+In this course, we work with the combination of R + RStudio.
+
+-   R is the calculation engine that performs the computations.
+-   RStudio is the editor that helps you sending inputs to R and collect outputs.
+
+Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good introductory video.
+
+## Packages that you will need
+
+In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first run
+
+```{r, eval=FALSE}
+install.packages("devtools")
+```
+
+Then install the EcoData package via
+
+```{r chunk_chapter2_2, eval=FALSE}
+devtools::install_github(repo = "TheoreticalEcology/EcoData",
+                         dependencies = T, build_vignettes = T)
+```
+
+For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set `dependencies = F, build_vignettes = F`.
