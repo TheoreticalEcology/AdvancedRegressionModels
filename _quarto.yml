@@ -22,11 +22,12 @@ book:
     
 bibliography: literature.bib
 
+execute:
+  cache: true
+
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
 
 editor: visual
 

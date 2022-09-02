@@ -1,145 +1,124 @@
-# Model Choice and Causal Inference
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 
+# Model Choice and Causal Inference
 
 ```{=html}
 <!-- Put this here (right after the first markdown headline) and only here for each document! -->
 <script src="./scripts/multipleChoice.js"></script>
 ```
+Armed with the tools of a multiple regression, we suddenly face a problem: when specifying the functional form
 
-What we saw so far is that there is a large number of models we could fit. But how do we decide which is the "right" one? A basic requirement is that the residuals should more or less fit. It is seldom sensible to use a model that does not fit to the data. Beyond that, however, there is a range of options which is sensible, depending on the purpose of the model.
+y \~ f(x1, x2, ..),
 
-In stats, we distinguish at least 2 basic purposes:
+which describes how mean prediction changes as a function of the predictors, we have a large number of functions that we could fit. We could drop or include variables, quadratic effects, interactions. Even with only a few predictor variables, there are 100s of options. So, how should we decide which is the "right" one?
 
-* **Prediction**: If our purpose is to build a predictive model, we are searching for the model that makes the smallest possible error on a new data sample.
-* **(Causal) inference**: When we are speaking about inference, that means we are interested in the estimated effects and we would like them to be identical to the "true" causal effects.
+::: callout-note
+Note that in this chapter, we are not talking about how to select or choose the distributional assumptions. We will cover this later. For the moment, let's assume that the distribution assumptions are satisfied, and we are only interested in how to choose f(x1, x2, ..).
+:::
 
-There is a further subdivision with regards to prior knowledge:
+The answer to this question is, unfortunately, that it depends on the purpose of your study. In statistics, we distinguish at least 2 basic purposes:
 
-* In an **exploratory analysis**, we have only a vague idea what we are looking for. We might just be scanning the data set for possible (causal) relationships.
-* In a **confirmatory analysis**, we have a clear target for the analysis, and ideally a plan for which model we want to fit, *prior* to seeing the data.
+-   **Prediction**: If our purpose is to build a predictive model, we are searching for the model that makes the smallest possible error on a new data sample.
+-   **(Causal) inference**: When we are speaking about inference, that means we are interested in the estimated effects and we would like them to be identical to the "true" causal effects.
+
+For the inference, there is a further subdivision with regards to prior knowledge:
+
+-   In an **exploratory analysis**, we have only a vague idea what we are looking for. We might just be scanning the data set for possible (causal) relationships.
+-   In a **confirmatory analysis**, we have a clear target for the analysis, and ideally a plan for which model we want to fit, *prior* to seeing the data.
 
 Depending on the analysis goal, different methods are appropriate, and we will talk about those in this chapter. The most common goal for scientific papers is a confirmatory causal analysis (even though the actual practice does not always follow this).
 
 Even within each of these objectives, there are a number of additional criteria that may influence which method and model one will choose for the analysis. For example,
 
-* Either for predictions or for estimators, do I care more about a small **error**, or about **bias**? (Error = typical (mean) difference between estimator and truth; Bias = systematic difference between estimator and truth)
-* Do I want confidence intervals to be correct (coverage), and calibrated p-values?
+-   Either for predictions or for estimators, do I care more about a small **error** (mean difference between estimator and truth in repeated experiments), or about **bias** (systematic difference between estimator and truth)?
 
-* Do we have **experimental data**, where all predictors are known, measured, and randomized / orthogonal, or do we have **observational data**, where we do not have controlled predictors, and collinearity / confounding is the norm.
+-   Do I want confidence intervals to be correct (coverage), and calibrated p-values?
+
+-   Do we have **experimental data**, where all predictors are known, measured, and randomized / orthogonal, or do we have **observational data**, where we do not have controlled predictors, and collinearity / confounding is the norm.
 
 All of these play into the choice of model and model selection method. Some methods, for example, produce smaller errors on the estimators, but a larger bias. In this chapter, I will provide you with a rough overview about the methods. We will talk about them in more detail in the next days.
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Discussion</span></strong><br/>
-```
-
+:::{.callout-caution icon=false}
+## Excercise
 Discuss with your partners: How do you typically choose which regression formula to fit?
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-
-
-## Model selection methods and the Bias-Variance Trade-off
-
-One fundamental idea about modelling choice is the **bias-variance trade-off**, which applies regardless of whether we are interested in causal effects (next section) or predictions. The idea is the following:
-
-* The more variables / complexity we include in the model, the better it can (in principle) adjust to the true relationship, thus reducing model error from bias.
-* The more variables / complexity we include in the model, the larger our error (variance) on the fitted coefficients, thus increasing model error from variance. This means, the model adopts to the given data but no longer to the underlying relationship.
-
-If we sum both terms up, we see that at the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
-
-```{r chunk_chapter3_71, echo=FALSE, out.width="150%", out.height="150%"}
-knitr::include_graphics(c("images/BiasBarianceTradeOff.jpg"))
-```
-
-We will do some practical simulations on this on Wednesday, for the moment let's just accept this idea as a fact.
-
+:::
 
 ## Causal Inference
 
-Apart from the bias-variance trade-off, a crucial consideration is if we are just interested in predictions, or in causal effects. If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict. This is reviewed in the excellent paper by Lederer et al., which is available <a href="https://www.atsjournals.org/doi/full/10.1513/AnnalsATS.201808-564PS" target="_blank" rel="noopener">here</a>.
+The most fundamental distinction in strategies for model choice is if we want to estimate effects, or if we want to predict. If we want to estimate effects, we nearly always want to estimate causal effects.
 
-The basic idea is the following:
+Let me first define what we mean by "a causal effect": if we have a system with a number of variables, the causal effect of A on B is the change in B that would happen if we changed A, but kept all other aspects of this system constant. In causal lingo, people speak about "estimating the effect of an intervention on A", but you might also just imagine that what we would like to generate is what we see in a controlled experiment.
 
-Let's first define what we mean by "causality": Assume we look at the effect of a target variable (something that could be manipulated = **predictor**) on another variable (the outcome = **response**) in the presence of other (non-target) variables. The goal of a causal analysis is to control for these other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial).
+Which us to an important point: people that run controlled experiments always estimate causal effects, unless something went wrong with the control. Actually, it is the entire point of an experiment to isolate causal effects, by varying only one (or a small number of factors), keeping the others constant.
 
-You probably have learned in your intro stats class that, to do so, we have to control for **confounders.** I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. For example, C) in the figure below  shows a **collider**, i.e. a variable that is influenced by predictor and response. Although it correlates with predictor and response, correcting for it (or including it) in a multiple regression will create a collider bias on the causal link we are interested in (Corollary: Including all variables is not always a good thing).
+The problem with causality arises in observational data. Assume we look at the effect of a target variable (something that could be manipulated = **predictor**) on another variable (the outcome = **response**) in the presence of other (non-target) variables. The goal of a causal analysis is to control for these other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict.
+
+You probably have learned in your intro stats class that, to do so, we have to control for **confounders.** I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. For example, C) in the figure below shows a **collider**, i.e. a variable that is influenced by predictor and response. Although it correlates with predictor and response, correcting for it (or including it) in a multiple regression will create a collider bias on the causal link we are interested in (Corollary: Including all variables is not always a good thing).
 
 ```{r chunk_chapter3_72, echo=FALSE, out.width="150%", out.height="150%"}
 knitr::include_graphics(c("images/CausalStructures.jpg"))
 ```
 
+::: callout-tip
+The best practicaly guidance paper I know on estimating causal effects is Lederer et al., 2018, "Control of Confounding and Reporting of Results in Causal Inference Studies. Guidance for Authors from Editors of Respiratory, Sleep, and Critical Care Journals" which is available <a href="https://www.atsjournals.org/doi/full/10.1513/AnnalsATS.201808-564PS" target="_blank" rel="noopener">here</a>.
+:::
+
 The bottom line of this discussions (and the essence of Pearl 2000, 2009) is that to establish causality for a specific link, we have to close the so-called back-door paths for this link. So, the strategy for fitting a causal effect is:
 
-* Start by writing down the hypothesis / structure that you want to estimate causally (for example, in A, B "Plant diversity" -> Ecosystem productivity).
+-   Start by writing down the hypothesis / structure that you want to estimate causally (for example, in A, B "Plant diversity" -\> Ecosystem productivity).
 
 Then, include / exclude other variables with the goal of:
 
-* Controlling for confounders (back-doors, blue paths in the figure).
-* Not controlling for colliders, (something similar, called "M-Bias",) and other similar relationships (red paths).
-* It depends on the question whether we should control for **mediators** (yellow paths).
+-   Controlling for confounders (back-doors, blue paths in the figure).
+-   Not controlling for colliders, (something similar, called "M-Bias",) and other similar relationships (red paths).
+-   It depends on the question whether we should control for **mediators** (yellow paths).
 
-Note: These other variables (if included) are just there to correct our estimates (-> called **nuisance parameters**), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy).
+Note: These other variables (if included) are just there to correct our estimates (-\> called **nuisance parameters**), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy).
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Case study 1</span></strong><br/>
-```
+
+:::{.callout-caution icon=false}
+## Case study 1
 
 Take the example of the past exercise (airquality) and assume, the goal is to understand the causal effect of Temperature on Ozone (primary hypothesis). Draw a causal diagram to decide which variables to take into the regression (i.e. noting which are confounders, mediators or colliders), and fit the model.
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+-   Solar.R could affect both Temp, Ozone -\> Coufounder, include
+-   Wind could affect Temp, Ozone -\> Coufounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it's a mediator
+-   I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it it will nearly act as a collider, because it can snitch away some of the effects of the other variables.
+:::
 
 
-```{=html}
-    </p>
-  </details>
-  <br/>
-```
 
-* Solar.R could affect both Temp, Ozone -> Coufounder, include
-* Wind could affect Temp, Ozone -> Coufounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it's a mediator
-* I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it it will nearly act as a collider, because it can snitch away some of the effects of the other variables. 
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Case study 2</span></strong><br/>
-```
+:::{.callout-caution icon=false}
+## Excercise
 
 Perform a causal, a predictive and an exploratory analysis of the Swiss fertility data set called "swiss", available in the standard R data sets. Target for the causal analysis is to estimate the causal (separate direct and indirect effects) of education on fertility, i.e. `lm(Fertility ~ Education, data = swiss)`{.R}.
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::
 
-* Agriculture, Catholic could be seen as confounders or mediators, depending on whether you think Education affects the number of people being in Agriculture or Catholic, or vice versa
-* Infant mortality could be a mediator or a collider, depeding on whether you think fertility -> infant mortality or infant mortality -> fertility. I would tend to see it as a mediator.
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
-For all mediators: remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included. 
+-   Agriculture, Catholic could be seen as confounders or mediators, depending on whether you think Education affects the number of people being in Agriculture or Catholic, or vice versa
+-   Infant mortality could be a mediator or a collider, depeding on whether you think fertility -\> infant mortality or infant mortality -\> fertility. I would tend to see it as a mediator.
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+For all mediators: remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included.
+
+:::
+
+
+
 
 
 Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
-
 
 ```{r}
 library(ggdag)
@@ -160,7 +139,6 @@ ggdag_paths(dag)
 #ggdag_adjustment_set(dag)
 #ggdag_dseparated(dag, controlling_for = c("cover", "hetero"))
 ```
-
 
 ```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(piecewiseSEM)
@@ -198,16 +176,29 @@ library(lavaanPlot)
 lavaanPlot(model = fit)
 ```
 
+## Model selection methods and the Bias-Variance Trade-off
+
+One fundamental idea about modelling choice is the **bias-variance trade-off**, which applies regardless of whether we are interested in causal effects (next section) or predictions. The idea is the following:
+
+-   The more variables / complexity we include in the model, the better it can (in principle) adjust to the true relationship, thus reducing model error from bias.
+-   The more variables / complexity we include in the model, the larger our error (variance) on the fitted coefficients, thus increasing model error from variance. This means, the model adopts to the given data but no longer to the underlying relationship.
+
+If we sum both terms up, we see that at the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
+
+```{r chunk_chapter3_71, echo=FALSE, out.width="150%", out.height="150%"}
+knitr::include_graphics(c("images/BiasBarianceTradeOff.jpg"))
+```
+
+We will do some practical simulations on this on Wednesday, for the moment let's just accept this idea as a fact.
+
 ## Model Selection Methods
 
 Regardless of whether we do a causal, exploratory or a predictive analysis, we sometimes may still want to get some aid in deciding on the model structure. Specifically:
 
-* For a predictive analysis, even if we know the true causal structure, it may be better to fit a simpler model to reduce the bias-variance trade-off.
-* For a causal analysis, we may not be sure about certain relationships, and we may want to test if a particular hypothesis is better supported by the data than another, or we may be data-limited as well, which means we have to reduce complexity.
+-   For a predictive analysis, even if we know the true causal structure, it may be better to fit a simpler model to reduce the bias-variance trade-off.
+-   For a causal analysis, we may not be sure about certain relationships, and we may want to test if a particular hypothesis is better supported by the data than another, or we may be data-limited as well, which means we have to reduce complexity.
 
 In these situations, model selection methods may help. The key for using them is to understand that neither of them can do magic. If you have a limited data set and a massive number of predictors, they will not magically produce the correct model. However, they can be useful in certain situations. Let's introduce them first. I discuss possible problems in the next chapter.
-
-
 
 ***Likelihood-ratio tests***
 
@@ -228,9 +219,7 @@ m2 = lm(Ozone ~ Wind + Temp, data = airquality)
 anova(m1, m2)
 ```
 
-
-
-***AIC model selection ***
+***AIC model selection***
 
 Another method for model selection, and probably the most widely used, also because it does not require that models are nested, is the AIC = **Akaike Information Criterion**.
 
@@ -252,34 +241,18 @@ AIC(m2)
 
 **Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just the note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
+:::{.callout-caution icon=false}
+## Excercise
 Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or the other?
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
-```{r chunk_chapter3_task_33, message=FALSE, warning=FALSE}
-
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::
 
 
-
-***Shrinkage estimation ***
+***Shrinkage estimation***
 
 A third option option for model selection are shrinkage estimators. These include the LASSO and ridge.
 
@@ -299,12 +272,11 @@ plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
               lambda = seq(0, 200, 0.1) ) )
 ```
 
-
 ### P-hacking {#pHacking}
 
 The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercises is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
 
-Measurements of plant performance. Target was to find out if Gen1 has an effect on Performance. Various other variables are measured
+We have (simulated) measurements of plant performance. The goal of the analysis was to find out if Gen1 has an effect on Performance. Various other variables are measured. As you can see, the way I simulated the data, none of the variables has an effect on the response, so this is pure noise
 
 ```{r chunk_chapter3_chunk78, echo=TRUE, eval=TRUE}
 set.seed(1)
@@ -316,36 +288,21 @@ summary(dat)
 summary(lm(Performance ~ ., data = dat))
 ```
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
+:::{.callout-caution icon=false}
+## Excercise
 Task for you: P-hack the analysis, i.e. make an effect appear, by trying around (systematically, e.g. with selecting with data, model selection, or by hand to find a model combination that has an effect). The group who finds the model with the highest significance for Gen1 wins!
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Example</span></strong>
-    </summary>
-    <p>
-```
-
-```{r chunk_chapter3_task_34, message=FALSE, warning=FALSE}
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Possible solution
 summary(lm(Performance ~ Gen1 * Humidity, data = dat[20:30,]))
-```
+:::
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+Here some more inspiration on p-hacking: 
 
-Here some inspiration:
-
-1. Hack Your Way To Scientific Glory:  <a href="https://projects.fivethirtyeight.com/p-hacking/" target="_blank" rel="noopener">https://projects.fivethirtyeight.com/p-hacking/</a>
-2. False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant:  <a href="https://journals.sagepub.com/doi/full/10.1177/0956797611417632" target="_blank" rel="noopener">https://journals.sagepub.com/doi/full/10.1177/0956797611417632</a>
-3. Sixty seconds on ... P-hacking:  <a href="https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039" target="_blank" rel="noopener">https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039</a>
+1.  Hack Your Way To Scientific Glory: <a href="https://projects.fivethirtyeight.com/p-hacking/" target="_blank" rel="noopener">https://projects.fivethirtyeight.com/p-hacking/</a>
+2.  False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant: <a href="https://journals.sagepub.com/doi/full/10.1177/0956797611417632" target="_blank" rel="noopener">https://journals.sagepub.com/doi/full/10.1177/0956797611417632</a>
+3.  Sixty seconds on ... P-hacking: <a href="https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039" target="_blank" rel="noopener">https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039</a>
 
 John Oliver about p-hacking:
 
@@ -359,13 +316,12 @@ cat(
 )
 ```
 
-
 ### Problems of Stepwise Model Selection
 
-LRT or AIC model selections are often used stepwise or global, i.e. we run either a chain of model selections (AIC or LRT), adding or removing complexity, or we run immediately all possible models and compare their AIC.  Options in R for automatic model selection using AIC are the
+LRT or AIC model selections are often used stepwise or global, i.e. we run either a chain of model selections (AIC or LRT), adding or removing complexity, or we run immediately all possible models and compare their AIC. Options in R for automatic model selection using AIC are the
 
-* `StepAIC function`{.R}
-* `MuMIn`.{R} package
+-   `StepAIC function`{.R}
+-   `MuMIn`.{R} package
 
 Here is an example for either of those:
 
@@ -429,8 +385,7 @@ length(selection$coefficients)
 length(summary(selection)[[4]][,4][summary(selection)[[4]][,4] <= 0.05])
 ```
 
-Voila, 15 out of 28 (before 100) predictors significant.
-Looks like we could have good fun to discuss / publish these results!
+Voila, 15 out of 28 (before 100) predictors significant. Looks like we could have good fun to discuss / publish these results!
 
 Conclusion: Stepwise selection + regression table is **hidden multiple testing** and has inflated Type I error rates! This is well-known in the stats literature. You *CAN* do hypothesis tests after model selection, but those require corrections and are not particularly popular, because they are even less significant than the full regression.
 
@@ -440,12 +395,10 @@ That being said, those methods work excellent to generate *predictive* models!
 
 ### Exercise: Global Plant Trait Analysis #3
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+:::{.callout-caution icon=false}
+## Excercise
 
-Revisit exercises \@ref(plantTrait1) / \@ref(plantTrait2) (using the dataset plantHeight), and discuss / analyze:
+Revisit exercises our previous analyses of the dataset plantHeight, and discuss / analyze:
 
 Which would be the appropriate model, if we want to get a predictive model for plant height, based on all the variables in the data set? Note: some text-based variables may need to be included, so probably it's the easiest if you start with a large model that you specify by hand. You can also include interactions. The syntax:
 
@@ -453,18 +406,12 @@ Which would be the appropriate model, if we want to get a predictive model for p
 fit <- lm((x1 + x2 + x3)^2)
 ```
 
-includes all possible 2nd-order interactions between the variables in your model. You can extend this to x^3, x^4 but I would not recommend it, your model will get too large. 
+includes all possible 2nd-order interactions between the variables in your model. You can extend this to x\^3, x\^4 but I would not recommend it, your model will get too large.
 
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-
-Possible solution: 
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
 ```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE}
 library(EcoData)
@@ -474,55 +421,37 @@ selectedModel = stepAIC(fullModel)
 summary(selectedModel)
 ```
 
-R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlation in the data, or if you use variables that are (indirectly) identical to your response. 
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlation in the data, or if you use variables that are (indirectly) identical to your response.
+:::
 
 
 
-### Case study: Life satisfaction
+:::{.callout-caution icon=false}
+## Case study: Life satisfaction
 
-The following data set contains information about life satisfaction (lebensz_org) in Germany, based on the socio-economic panel. 
+The following data set contains information about life satisfaction (lebensz_org) in Germany, based on the socio-economic panel.
 
-```{r chunk_chapter4_chunk1, echo=TRUE, eval=FALSE}
+```{r chunk_chapter4_chunk1, echo=TRUE, eval=T}
 library(EcoData)
 ?soep
 ```
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+Perform a causal analysis of the effect of income on life satisfaction, considering possible confounding / mediation / colliders.
+:::
 
-Perform a causal analysis of the effect of income on life satisfaction, considering possible confounding / mediation / colliders. 
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+-   Nearly all other variables are confounders, gesund_org could als be a collider
+-   Might consider splitting data into single households, families, as effects could be very different. Alternatively, could add interactions with single, families and / or time to see if effects of income are different
 
-* Nearly all other variables are confounders, gesund_org could als be a collider
-* Might consider splitting data into single households, families, as effects could be very different. Alternatively, could add interactions with single, families and / or time to see if effects of income are different
-
-A possible simple model is
+A possible model is
 
 ```{r chunk_chapter4_task_0, message=FALSE, warning=FALSE}
-fit <- lm(lebensz_org ~ sqrt(einkommenj1) + syear + sex + alter + anz_pers + bildung + erwerb + gesund_org, data = soep)
+fit <- lm(lebensz_org ~ sqrt(einkommenj1) + syear + sex + alter + anz_pers + 
+            bildung + erwerb + gesund_org, data = soep)
 summary(fit)
 ```
 
-Note that you shouldn't interpret the other variables (Table II fallacy) in a causal analysis, because the other variables aren't analyzed / corrected for confounding. 
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-
+Note that you shouldn't interpret the other variables (Table II fallacy) in a causal analysis, unless the other variables are analyzed / corrected for confounders / colliders.
+:::

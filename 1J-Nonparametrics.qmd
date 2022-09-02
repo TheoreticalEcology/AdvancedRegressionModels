@@ -86,6 +86,16 @@ plot(out)
 boot.ci(out)
 ```
 
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>

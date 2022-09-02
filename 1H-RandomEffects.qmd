@@ -48,7 +48,7 @@ Nomenclature:
 
 Because grouping naturally occurs in any type of experimental data (batches, blocks, etc.), mixed effect models are the de-facto default for most experimental data! Mind, that grouping even occurs for example, when 2 different persons gather information.
 
-### Fitting Random Effects Models
+## The random intercept model
 
 To speak about random effects, we will use an example data set containing exam scores of 4,059 students from 65 schools in Inner London. This data set is located in the R package `mlmRev`.{R}.
 
@@ -65,8 +65,6 @@ library(effects)
 mod0 = lm(normexam ~ standLRT + sex , data = Exam)
 plot(allEffects(mod0))
 ```
-
-***Random intercept model***
 
 A random intercept model assumes that each school gets their own intercept. It's pretty much identical to the fixed effect model `lm(normexam ~ standLRT + sex + school)`{.R}, except that instead of giving each school a separate independent intercept, we assume that the school effects come from a common normal distribution. 
 
@@ -91,7 +89,7 @@ with(Exam, {
 ```
 
 
-***Random slope model***
+## The random slope model
 
 A random slope model assumes that each school also gets their own slope for a given parameter (per default we will always estimate slope and intercept, but you could overwrite this, not recommended!). Let's do this for standLRT (you could of course do both as well). 
 
@@ -117,6 +115,48 @@ with(Exam, {
 })
 ```
 
+:::{.callout-caution icon=false}
+## Excercise: a mixed model for plantHeight
+
+Take plantHeight model that we worked with already: 
+
+```{r, eval=FALSE}
+library(EcoData)
+
+oldModel <- lm(loght ~ temp, data = plantHeight)
+summary(oldModel)
+```
+
+We have one observation per species. Consider that the relationship height ~ temp may be different for each family. Some families may have larger plants in general (random intercept), but it may also be that the temperature relationship changes per family (random slope). Run these two models for our problem. 
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+```{r, eval = F}
+# Random intercept model
+
+library(lme4)
+library(lmerTest)
+randomInterceptModel <- lmer(loght ~ temp + (1|Family), data = plantHeight)
+summary(randomInterceptModel)
+
+# Random slope model
+
+randomSlopeModel <- lmer(loght ~ temp + (temp | Family), data = plantHeight)
+summary(randomSlopeModel)
+
+# scaling helps the optimizer
+plantHeight$sTemp = scale(plantHeight$temp)
+
+randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
+summary(randomSlopeModel)
+```
+:::
+
+
+## General random effect syntax
+
 ***Syntax cheat sheet:***
 
 * Random intercept: `(1 | group).
@@ -129,70 +169,11 @@ with(Exam, {
 `(1 | group1) + (1 | group2)`{.R}. 
 
 
-### Task: a mixed model for plantHeight
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
-Take our old plantHeight dataset that we worked with already a lot. Consider that the relationship height ~ temp may be different for each family. Some families may have larger plants in general (random intercept), but it may also be that the temperature relationship changes per family. Thus, you could include family as random intercept + slope in this relationship. Specify the model and run it!
-
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-
-```{r, eval = F}
-oldModel <- lm(loght ~ temp, data = plantHeight)
-summary(oldModel)
-
-# Stragegy: if you have a grouping factor, add a random intercept
-# check additionally for random slope
-
-randomInterceptModel <- lmer(loght ~ temp + (1|Family), data = plantHeight)
-summary(randomInterceptModel)
-
-# if I count sd = 1 paramter more
-# if I count the REs, 69 parameters more
-# solution: depends on the sd estimate -> wide sd, loose nearly 69df, narrow sd = loose nothing except the sd estimate -> flexibility of an random effect model is adoptiv (not fixed)
-
-fixedInterceptModel <- lm(loght ~ temp + Family, data = plantHeight)
-summary(fixedInterceptModel)
-
-# loose 69 degrees of freedom -> this model has 69 parameters more to fit than the model loght ~ temp, loose a lot of power
-
-randomSlopeModel <- lmer(loght ~ temp + (temp | Family), data = plantHeight)
-summary(randomSlopeModel)
-
-# scaling helps the optimizer
-plantHeight$sTemp = scale(plantHeight$temp)
-
-randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
-summary(randomSlopeModel)
-
-# fixed effect model has no significance any more 
-fixedSlopeInterceptModel <- lm(loght ~ temp * Family, data = plantHeight)
-summary(fixedSlopeInterceptModel)
-summary(aov(fixedSlopeInterceptModel))
-```
-
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-
-
-### Problems With Mixed Models
+## Problems With Mixed Models
 
 Specifying mixed models is quite simple, however, there is a large list of (partly quite complicate) issues in their practical application. Here, a (incomplete) list: 
 
-***Interpretation of random effects***
+### Interpretation of random effects
 
 What do the random effects mean? The classical interpretation of the rando intercept is that they are a group-structured error, i.e. they are like residuals, but for an entire group. 
 
@@ -220,7 +201,7 @@ mortality ~ density + (density | species)
 
 In such a model, we have the mean density effect across all species, and rare species with few data will be constrained by this effect, while common species with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. 
 
-***Degrees of freedom for a random effect***
+### Degrees of freedom for a random effect
 
 The second problem is: How many parameters does a random effect model have? To know how many parameters the model hss is crucial for calculating p-values, AIC and all that. We can estimate roughly how many parameters we should have by looking at the fixed effect version of the models: 
 
@@ -246,11 +227,39 @@ m2 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam, REML = F)
 summary(m2)
 ```
 
-***Predictions***
+
+:::{.callout-caution icon=false}
+## Excercise: mixed vs. fixed effect models
+For the plantHeigt mixed models in the previous exercise, compare the p-values of the slope for temp to the fixed-effect equivalent (adding family as main effect / interaction). What do you find? 
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+```{r, eval = F}
+fixedInterceptModel <- lm(loght ~ temp + Family, data = plantHeight)
+summary(fixedInterceptModel)
+
+fixedSlopeInterceptModel <- lm(loght ~ temp * Family, data = plantHeight)
+summary(fixedSlopeInterceptModel)
+```
+
+So, for the model with a different intercept per Family, the p-value decreases, and for intercept + interaction, it even becomes n.s. (although it should be noted that we get a different p-values for each species here). 
+
+The reason for the generally lower p-values (= higher power) of the mixed model is the lower flexibility of the mixed model: 
+
+For the fixed effect models, we loose 69 respectively 2x69 df if we add family as a predictor. For the mixed model, it depends on the variance estimate: wide sd of the RE, loose nearly 69df, narrow sd = loose nothing except the sd estimate -> flexibility of an random effect model is adaptive (not fixed). 
+
+Follow-up: have a look at the variance estimates of the mixed models: do you think RE estimates are effectively "free"?
+:::
+
+
+
+### Predictions
 
 When we predict, we can predict conditional on the fitted REs, or we can use the grand mean. In some packages, the predict function can be adjusted. In lme4, this is via the option re.form, which is available in the predict and simulate function. 
 
-***Model selection with mixed models***
+### Model selection with mixed models
 
 For model selection, the degrees of freedom problem means that normal model selection techniques such as AIC or naive LRTs don't work on the random effect structure, because they don't count the correct degrees of freedom.
 
@@ -274,7 +283,7 @@ If you absolutely want to do model selection on the RE structure
 * lmerTest::ranova performs an ANOVA with estimated df, adding entire RE groups
 * if you want to do details model selections on the RE structure, you should implement a simulated LRT based on a parametric bootstrap. See day 5, on the parametric bootstrap.
 
-***Variance partitioning / ANOVA***
+### Variance partitioning / ANOVA
 
 Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpreatio above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn`.{R} package. With this, we can run 
 
@@ -292,8 +301,8 @@ Interpretation
 ## Case studies
 
 
-### Case Study 1: College Student Performance Over Time
-
+:::{.callout-caution icon=false}
+## Case Study 1: College Student Performance Over Time
 
 ***Background and data structure***
 
@@ -306,10 +315,7 @@ str(gpa)
 
 In this data set, there are GPA measures on 6 consecutive **occasions**, with a **job** status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: The **sex** (1 = male, 2 = female) and the high school **gpa**. There is also a dichotomous student-level outcome variable, which indicates whether a student has been **admitted** to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each **student** and each **year** of observation have an id.
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+***Task ***
 
 Analyze if GPA improves over time (**occasion**)! Here a few hints to look at:
 
@@ -318,13 +324,11 @@ Analyze if GPA improves over time (**occasion**)! Here a few hints to look at:
 * For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
 * After having specified the mixed model, have a look at residuals. You can model dispersion problems in mixed models with glmmTMB, same syntax for REs as lme4
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
 
 ```{r chunk_chapter4_task_2, eval = F}
 library(lme4)
@@ -364,20 +368,12 @@ simulateResiduals(fit, plot = T)
 
 # still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model
 ```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::
 
 
-### Case Study 2 - Honeybee Data
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+:::{.callout-caution icon=false}
+## Case Study 2 - Honeybee Data
 
 We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. 
 
@@ -386,14 +382,10 @@ library(EcoData)
 str(bees)
 ```
 Perform the data analysis, according to the hypothesis discussed in the course. 
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
 ```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 # adding BeesN as a possible confounder
@@ -408,10 +400,5 @@ plot(fit,
      resid(., scaled=TRUE) ~ fitted(.) | Hive, 
      abline = 0)
 ```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::
 

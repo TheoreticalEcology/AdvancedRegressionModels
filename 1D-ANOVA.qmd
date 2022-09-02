@@ -1,1 +1,174 @@
 # ANOVA
+
+ANOVA stands for ANalysis Of VAriance. ANOVA is not a statistical model, but a hypothesis test that can be performed on any regression model. 
+
+
+## ANOVA for categorical predictors
+
+To 
+
+```{r chunk_chapter3_chunk27, echo=TRUE, eval=TRUE}
+boxplot(weight ~ group, data = PlantGrowth)
+```
+
+
+***A basic lm()***
+
+Let's fit an `lm()`{.R} now with the categorical explanatory variable group. They syntax is the same as before:
+
+```{r}
+fit = lm(weight ~ group, data = PlantGrowth)
+summary(fit)
+```
+
+
+
+Second, there is a another test that is commonly performed in this case, the **ANOVA**. We can run this via
+
+```{r chunk_chapter3_chunk33, echo=TRUE, eval=TRUE}
+anov = aov(fit)
+summary(anov)
+```
+
+And the result is
+
+```{r chunk_chapter3_chunk34, echo=FALSE, eval=TRUE}
+summary(anov)
+```
+
+To interpret this, recall that in a nutshell, the ANOVA starts with a base model (in this case intercept only) and adds the variable group. It then measures:
+
+-   How much the model improves in terms of ${R}^{2}$ (this is in the column Sum Sq).
+-   If this increase of model fit is significant.
+
+In this case, we can conclude that the variable group (3 levels) significantly improves model fit, i.e. the group seems to have an overall effect, even though the individual contrasts in the original model where not significant.
+
+***Post-Hoc Tests***
+
+Third, if there is no clear reference level, and the ANOVA confirms that the factor has an effect, we may want to compute p-values for all possible combinations of factor levels. This is done via the so-called post-hoc tests:
+
+```{r chunk_chapter3_chunk35, echo=TRUE, eval=FALSE}
+TukeyHSD(anov)
+```
+
+The result is:
+
+```{r chunk_chapter3_chunk36, echo=FALSE, eval=TRUE}
+TukeyHSD(anov)
+```
+
+This highlights, as before, a significant difference between trt1 and trt2. It is common to visualize the results of the post-hoc tests with the so-called **Compact Letter Display** (cld). This doesn't work with the base `TukeyHSD`{.R} function, so we will use the `multcomp`.{R} pacakge:
+
+```{r chunk_chapter3_chunk37, echo=TRUE, eval=TRUE, fig.show='hide', message=FALSE, warning=FALSE}
+library(multcomp)
+
+fit = lm(weight ~ group, data = PlantGrowth)
+tuk = glht(fit, linfct = mcp(group = "Tukey"))
+summary(tuk)          # Standard display.
+tuk.cld = cld(tuk)    # Letter-based display.
+plot(tuk.cld)
+```
+
+The cld gives a new letter for each group of factor levels that are statistically undistinguishable. You can see the output via `tuk.cld`{.R}, here I only show the plot:
+
+```{r chunk_chapter3_chunk38, echo=FALSE, eval=TRUE}
+plot(tuk.cld)
+```
+
+
+## Contrasts
+
+
+***Advanced topic: Changing the contrasts***
+
+Before, I said that there is a long and short answer to the interpretation of the regression coefficients. Now here is the long answer: If you have a categorical predictor with \> 2 levels, there are several ways to set up the model to fit those levels. Maybe the easiest idea would be to fit a mean per level. You can actually tell R to do this via
+
+```{r chunk_chapter3_chunk39, echo=TRUE, eval=TRUE}
+fit = lm(weight ~ 0 + group, data = PlantGrowth)
+```
+
+If we look at the output, we see that now we simply get the mean of each group (level):
+
+```{r chunk_chapter3_chunk40, echo=FALSE, eval=TRUE}
+summary(fit)
+```
+
+Why does R not do that by default? Because now, we see the comparison of each group against zero in the p-values. In some cases, this can be interesting, but in most cases where we have a control and treatment and are interested in the difference between treatment and control, this is not informative. Therefore, R uses the so-called treatment contrasts, which is what we had before.
+
+There are actually a number of further options for specifying contrasts. You can tell R by hand how the levels should be compared or use some of the pre-defined contrasts. Here is an example:
+
+```{r chunk_chapter3_chunk41, echo=TRUE, eval=TRUE}
+PlantGrowth$group3 = PlantGrowth$group
+contrasts(PlantGrowth$group3) = contr.helmert
+fit = lm(weight ~ group3, data = PlantGrowth)
+summary(fit)
+```
+
+What we are using here is **Helmert contrasts**, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see here:\
+<a href="https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x" target="_blank" rel="noopener">https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x</a>.
+
+
+
+
+## ANOVA for Multiple Regression
+
+Another option to see which variable is more important is variance partitioning, aka ANOVA.
+
+In an ANOVA, we add variable by variable to the model, and see how much the fit to the data (expressed by residual sum of squares) improves. We can do this via
+
+```{r chunk_chapter3_chunk63, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind + Temp, data = airquality)
+summary(aov(fit))
+```
+
+So, why has Wind the larger effect, again? Didn't we just say that Temp has a larger effect? Is there something wrong with our ANOVA?
+
+The problem with the `aov`{.R} function is that it performs a so-called type I ANOVA. The type I ANOVA adds variables in the order in which they are in the model formula. If I specify another formula, the result is different:
+
+```{r chunk_chapter3_chunk64, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Temp + Wind, data = airquality)
+summary(aov(fit))
+```
+
+The difference is due to the collinearity of the variables. Because Temp and Wind are collinear, the variable that is added first to the model will absorb variation from the other, and thus seems to explain more of the response.
+
+There are other types of ANOVA that avoid this problem. The so-called type II ANOVA shows for each variable only the part that is uniquely attributable to the respective variable
+
+```{r chunk_chapter3_chunk65, echo=TRUE, eval=TRUE}
+car::Anova(fit, type = "II")
+```
+
+There is also type III, which is as type II, but avoids a similar problem for interactions (see next subchapter). This is probably the most conservative setting:
+
+```{r chunk_chapter3_chunk66, echo=TRUE, eval=TRUE}
+car::Anova(fit, type = "III")
+```
+
+Here is an overview of the situation for 2 predictors A and B and their interaction. The upper left figure corresponds to the case where we have no collinearity between either of those variables. The figure on the top right (and similarly types I - III) are the three possible types of ANOVA for variables with collinearity. The "overlap" between the circles depicts the shared part, i.e. the variability that can be expressed by either variable (due to collinearity). Note that the shares in Type II, III do not add up to 1, as there is a kind of "dark variation" that we cannot securely add to either variable.
+
+```{r chunk_chapter3_67, echo=FALSE, out.width="150%", out.height="150%"}
+knitr::include_graphics(c("images/ANOVA.jpg"))
+```
+
+```{=html}
+  <hr/>
+  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
+```
+Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see next section).
+
+```{=html}
+  <details>
+    <summary>
+      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
+    </summary>
+    <p>
+```
+```{r chunk_chapter3_task_28, message=FALSE, warning=FALSE}
+
+```
+
+```{=html}
+    </p>
+  </details>
+  <br/><hr/>
+```

@@ -1,41 +1,25 @@
 # Understanding Linear Regression
 
+## The airquality data
+
 ```{=html}
 <!-- Put this here (right after the first markdown headline) and only here for each document! -->
 <script src="./scripts/multipleChoice.js"></script>
 ```
-This chapter is a reminder about the basic regression model functions in R.
 
-Here a warm-up exercise: Fit the regression:
-
-```{r chunk_chapter3_chunk0, eval=FALSE}
-summary(lm(Ozone ~ Wind, data = airquality))
-```
-
-And answer / discuss with your partner the following questions: What is the effect of Wind on Ozone? How important is Wind to explain Ozone? Next, run the following regressions:
-
-```{r chunk_chapter3_chunk1, eval=FALSE}
-summary(lm(Ozone ~ Wind + Temp, data = airquality))
-summary(lm(Ozone ~ Wind * Temp, data = airquality))
-```
-
-Why does the effect of Wind on Ozone change so much as we change the formula? What is the "true" or correct estimate of the effect of Wind on Ozone? At the end of this chapter, you should be able to answer all these questions!
-
-## Simple Linear Regression
-
-OK, after our warm-up, let's start with the basics. We will again used the data set airquality, which is built-in in R. If you don't know the data set, have a look at the description via
+Let's start with the basics. For this chapter, we will rely a lot on the airquality data, which is built-in in R. If you don't know the data set, have a look at the description via
 
 ```{r chunk_chapter3_chunk2, echo=TRUE, eval=FALSE}
 ?airquality
 ```
 
-and at the variables via
+and at the structure of the data via
 
 ```{r chunk_chapter3_chunk3, echo=TRUE, eval=FALSE}
 str(airquality)
 ```
 
-To get started, let's say we want to examine the relationship between Ozone and Wind. Let's visualize this first:
+To get started, let's say we want to examine the relationship between Ozone and Wind in these data. Let's visualize this first:
 
 ```{r chunk_chapter3_chunk4, echo=TRUE}
 plot(Ozone ~ Wind, data = airquality)
@@ -49,7 +33,78 @@ cor(airquality$Ozone, airquality$Wind, use = "complete.obs")
 
 to get the (Pearson) correlation, which is negative: -0.6015465.
 
-What we want to do now is fitting regression models through the data with the `lm()`{.R} function of R. The function name lm is short for "linear model". However, remember from the basic course: This model is not called linear because we necessarily fit a linear function. It's called linear because we express the response (in our case Wind) as a polynomial of the predictor(s). That means, the predictors have linear coefficients but they might themselves be for example quadratic or sinus terms. So $y = \operatorname{f}(x) + \mathcal{N}(0, \sigma)$, where $\operatorname{f}$ is a polynomial, e.g. ${a}_{0} + {a}_{1} \cdot x + {a}_{2} \cdot {x}^{2}$, and $\mathcal{N}(0, \sigma)$ means that we assume the data scattering as a normal (Gaussian) distribution with unknown standard deviation $\sigma$ around $\operatorname{f}(x)$. The model is called linear because when estimating the unknown parameters (we call them "*effects*") of the polynomial, we will see that they are all affecting the predictions linearly, and can thus be solved as a system of linear equations.
+::: {.callout-caution icon="false"}
+#### Questions
+1. Look at the coding of the variables - do all variables have the correct type?
+2. What correlation coefficients do you know other than Pearson? Which should be preferred?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+1. Month / Day would be better coded as date or (ordered) factors
+2. The most important alternative are rank correlation coefficients such as Kendall or Spearman. Usually to be preferred because they work better for nonlinear correlations and are less influenced by outliers. 
+:::
+
+
+## Fitting a simple linear regression
+
+What we want to do now is fitting regression models through the data with the `lm()`{.R} function of R. 
+
+::: callout-note
+The function name lm is short for "linear model". However, remember from your basic stats course: This model is not called linear because we necessarily fit a linear function. It's called linear because we express the response (in our case Wind) as a polynomial of the predictor(s). That means, the predictors have linear coefficients but they might themselves be for example quadratic or sinus terms. So $y = \operatorname{f}(x) + \mathcal{N}(0, \sigma)$, where $\operatorname{f}$ is a polynomial, e.g. ${a}_{0} + {a}_{1} \cdot x + {a}_{2} \cdot {x}^{2}$, and $\mathcal{N}(0, \sigma)$ means that we assume the data scattering as a normal (Gaussian) distribution with unknown standard deviation $\sigma$ around $\operatorname{f}(x)$. The model is called linear because when estimating the unknown parameters (we call them "*effects*") of the polynomial, we will see that they are all affecting the predictions linearly, and can thus be solved as a system of linear equations.
+:::
+
+The most natural choice would be a model with slope and intercept, which is the default in R if you type lm(y~x):
+
+```{r chunk_chapter3_chunk12, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind, data = airquality)
+```
+
+Let's visualize the fitted line
+
+```{r}
+plot(Ozone ~ Wind, data = airquality)
+abline(fit)
+```
+
+We can get a summary of the statistical estimates with the summary() function
+
+```{r}
+summary(fit)
+```
+
+In interpreting this, recall that:
+
+-   "**Call**" repeats the regression formula.
+-   "**Residuals**" gives you an indication about how far the observed data scatters around the fitted regression line / function.
+-   The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second (standard error) is the 0.63 confidence interval (for 0.95 confidence interval multiply with 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored.
+-   The last section of the summary provides information about the *model fit*.
+    -   Residual error = Standard deviation of the residuals,
+    -   114 df = Degrees of freedom = Observed - fitted parameters.
+    -   R-squared $\left({R}^{2}\right)$ = How much of the signal, respective variance is explained by the model, calculated by $\displaystyle 1 - \frac{\text{residual variance}}{\text{total variance}}$.
+    -   Adjusted R-squared = Adjusted for model complexity.
+    -   F-test = Test against intercept only model, i.e. is the fitted model significantly better than the intercept only model (most relevant for models with \> 1 predictor).
+
+
+::: {.callout-caution icon="false"}
+#### Question
+1. What is the meaning of "An effect is not significant"?
+2. Is an effect with three \*\*\* more significant / certain than an effect with one \*?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+1. You should NOT say that the effect is zero, or that the null hypothesis has been accepted. Official language is "there is no significant evidence for an effect(p = XXX)". If we would like to assess what that means, some people do a post-hoc power analysis (which effect size could have been estimated), but better is typically just to discuss the confidence interval, i.e. look at the confidence interval and say: if there is an effect, we are relatively certain that it is smaller than X, given the confidence interval of XYZ.
+
+2. Many people view it that way, and some even write "highly significant" for \*\*\* . It is probably true that we should have a slightly higher confidence in a very small p-value, but strictly speaking, however, there is only *significant*, or *not significant*. Interpreting the p-value as a measure of certainty is a slight misinterpretation. Again, if we want to say how certain we are about the effect, it is better to look again at the confidence interval, i.e. the standard error and use this to discuss the precision of the estimate (small confidence interval / standard error = high precision / certainty).
+:::
+
+    
+
+## Adjusting the Functional Form
+
+
+  
 
 ### Fitting and Interpreting the Regression
 
@@ -115,82 +170,67 @@ plot(Ozone ~ Wind, data = airquality)
 abline(fit)
 ```
 
-**Slope and Intercept**
 
-The most common case will be a model with slope and intercept which is probably corresponds most with our visual assessment.
 
-```{r chunk_chapter3_chunk12, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Wind, data = airquality)
-plot(Ozone ~ Wind, data = airquality)
-abline(fit)
+In the residual ~ fitted plot above, we can clearly see a pattern, which means that our model has a systematic misfit. Note that in a multiple regression, you should also check res ~ predictor for all predictors, because patterns of misfit often show up more clearly when plotted against the single predictors. 
+
+What should we do if we see a pattern? Here a few strategies that you might want to consider:
+
+### Changing the regression formular
+
+The easiest strategy is to add complexity to the polynomial, e.g. quadratic terms, interactions etc.
+
+```{r chunk_chapter4_chunk3, echo=TRUE, eval=TRUE}
+library(effects)
+
+fit = lm(Ozone ~ Wind * Temp + I(Wind^2) + I(Temp^2), data = airquality)
+
+plot(allEffects(fit, partial.residuals = T), selection = 1)
+plot(allEffects(fit, partial.residuals = T), selection = 2)
+plot(allEffects(fit, partial.residuals = T), selection = 3)
+```
+
+and see if the residuals are getting better. To avoid doing this totally randomly, it may be useful to plot residuals against individual predictors by hand!
+
+
+### Generalized additive models (GAMs)
+
+Another options are GAMs = Generalized Additive Models. The idea is to fit a smooth function to data, to automatically find the "right" functional form. The smoothness of the function is automatically optimized.
+
+```{r chunk_chapter4_chunk4, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+library(mgcv)
+
+fit = gam(Ozone ~ s(Wind) + s(Temp) + s(Solar.R) , data = airquality)
 summary(fit)
+
+# allEffects doesn't work here.
+plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.8, cex = 0.7,
+     col = c("black", rep("red", length(fit$residuals))))
+AIC(fit)
 ```
 
-This time, we want to look in full at the regression table. Recall that:
+Comparison to normal `lm()`{.R}:
 
--   "**Call**" repeats the regression formula.
--   "**Residuals**" gives you an indication about how far the observed data scatters around the fitted regression line / function.
--   The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second (standard error) is the 0.63 confidence interval (for 0.95 confidence interval multiply with 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored.
--   The last section of the summary provides information about the *model fit*.
-    -   Residual error = Standard deviation of the residuals,
-    -   114 df = Degrees of freedom = Observed - fitted parameters.
-    -   R-squared $\left({R}^{2}\right)$ = How much of the signal, respective variance is explained by the model, calculated by $\displaystyle 1 - \frac{\text{residual variance}}{\text{total variance}}$.
-    -   Adjusted R-squared = Adjusted for model complexity.
-    -   F-test = Test against intercept only model, i.e. is the fitted model significantly better than the intercept only model (most relevant for models with \> 1 predictor).
+```{r chunk_chapter4_chunk5, echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind + Temp + Solar.R , data = airquality)
+AIC(fit)
+```
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Discussion</span></strong><br/>
-```
-What is the meaning of "An effect is not significant"?
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-You should NOT say that the effect is zero, or that the null hypothesis has been accepted. Official language is "there is no significant evidence for an effect(p = XXX)". If we would like to assess what that means, some people do a post-hoc power analysis (which effect size could have been estimated), but better is typically just to discuss the confidence interval, i.e. look at the confidence interval and say: if there is an effect, we are relatively certain that it is smaller than X, given the confidence interval of XYZ.
 
-```{=html}
-    </p>
-  </details>
-  <br/>
-```
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Discussion</span></strong><br/>
-```
-Is an effect with three \*\*\* more significant / certain than an effect with one \*?
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-Many people view it that way, and some even write "highly significant" for \*\*\* . It is probably true that we should have a slightly higher confidence in a very small p-value, but strictly speaking, however, there is only *significant*, or *not significant*. Interpreting the p-value as a measure of certainty is a slight misinterpretation. Again, if we want to say how certain we are about the effect, it is better to look again at the confidence interval, i.e. the standard error and use this to discuss the precision of the estimate (small confidence interval / standard error = high precision / certainty).
 
-```{=html}
-    </p>
-  </details>
-  <br/>
-```
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+
+
+
+::: {.callout-caution icon="false"}
+#### Excercise
 Fit simple (univariate) linear regression models for the other two numeric variables (Temp and Solar.R) and interpret the results with your partner.
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
 ```{r chunk_chapter3_task_0, message=FALSE, warning=FALSE}
 fit = lm(Ozone ~ Temp, data = airquality)
 summary(fit)
@@ -211,12 +251,9 @@ abline(fit)
 ```
 
 Solar.R seems to have a positive effect of Ozone and this effect is significant. The intercept (value for Ozone at Solar.R = 0) is positive and also significant. This model explains slightly more than 10% of the variance of the given data. This holds even for the complexity adjusted ${R}^{2}$ measure. 42 observations have missing data and are omitted. Thus this model has not the power of the previous one. Compared to the model with only an intercept, this model is significantly different.
+:::
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+
 ### Centering and Scaling of Predictors
 
 In the last model
@@ -286,6 +323,14 @@ summary(fit)
 
 which is now around 23 (before it was 2.4). The difference in interpretation is the following: for the unscaled variable, we estimate the effect of 1 unit change of temperature on Ozone. For the scaled variable, we estimate the effect of a temperature change of 1 sd of the temperature values, so we can interpret this as an Ozone effect scaled to typical temperature differences in the data.
 
+::: {.callout-caution icon="false"}
+#### Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
@@ -337,6 +382,14 @@ summary(fit)
 plot(Ozone ~ TempMix, data = airquality, main = "Mixed")
 abline(fit)
 ```
+
+::: {.callout-caution icon="false"}
+## Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
 
 ```{=html}
     </p>
@@ -391,6 +444,14 @@ Solution: both centered and uncentered inherently fit the same model, but uncert
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
 ```
+::: {.callout-caution icon="false"}
+## Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
+
 ### Residual Checks
 
 So far, we fitted a regression model, but we didn't check if the model assumptions fit to the data. Actually, in quite a few examples above we actually saw quite bad fits. For example, let's take the slope only model `lm(Ozone ~ Wind - 1, data = airquality)`{.R}, where we assumed that the regression line should go through (0, 0). Maybe we have good reasons to think that this should be the case biologically, but our data seem to suggest a different behavior.
@@ -516,6 +577,8 @@ anova(fit1, fit2)
   </details>
   <br/><hr/>
 ```
+
+
 ### Categorical Predictors
 
 The `lm()`{.R} function can handle both numerical and categorical variables. To understand what happens if the predictor is categorical, we'll use another data set here, `PlantGrowth`{.R} (type `?PlantGrowth`{.R} or F1 help if you want details). We visualize the data via:
@@ -566,115 +629,23 @@ So, if the ordering influences what levels are compared (technically, we call th
 
 First, in many cases, the scientific question / experimental design determines which factor level should be first. In this case, the original reference was ctrl. This clearly stands for control. So, we have a special treatment here (control), and we are probably interested in the contrast between control and the treatments, but not between the different treatments. In this case, we are probably fine.
 
-***ANOVA (Analysis of Variance)***
+::: {.callout-caution icon="false"}
+## Excercise
 
-Second, there is a another test that is commonly performed in this case, the **ANOVA**. We can run this via
-
-```{r chunk_chapter3_chunk33, echo=TRUE, eval=TRUE}
-anov = aov(fit)
-summary(anov)
-```
-
-And the result is
-
-```{r chunk_chapter3_chunk34, echo=FALSE, eval=TRUE}
-summary(anov)
-```
-
-To interpret this, recall that in a nutshell, the ANOVA starts with a base model (in this case intercept only) and adds the variable group. It then measures:
-
--   How much the model improves in terms of ${R}^{2}$ (this is in the column Sum Sq).
--   If this increase of model fit is significant.
-
-In this case, we can conclude that the variable group (3 levels) significantly improves model fit, i.e. the group seems to have an overall effect, even though the individual contrasts in the original model where not significant.
-
-***Post-Hoc Tests***
-
-Third, if there is no clear reference level, and the ANOVA confirms that the factor has an effect, we may want to compute p-values for all possible combinations of factor levels. This is done via the so-called post-hoc tests:
-
-```{r chunk_chapter3_chunk35, echo=TRUE, eval=FALSE}
-TukeyHSD(anov)
-```
-
-The result is:
-
-```{r chunk_chapter3_chunk36, echo=FALSE, eval=TRUE}
-TukeyHSD(anov)
-```
-
-This highlights, as before, a significant difference between trt1 and trt2. It is common to visualize the results of the post-hoc tests with the so-called **Compact Letter Display** (cld). This doesn't work with the base `TukeyHSD`{.R} function, so we will use the `multcomp`.{R} pacakge:
-
-```{r chunk_chapter3_chunk37, echo=TRUE, eval=TRUE, fig.show='hide', message=FALSE, warning=FALSE}
-library(multcomp)
-
-fit = lm(weight ~ group, data = PlantGrowth)
-tuk = glht(fit, linfct = mcp(group = "Tukey"))
-summary(tuk)          # Standard display.
-tuk.cld = cld(tuk)    # Letter-based display.
-plot(tuk.cld)
-```
-
-The cld gives a new letter for each group of factor levels that are statistically undistinguishable. You can see the output via `tuk.cld`{.R}, here I only show the plot:
-
-```{r chunk_chapter3_chunk38, echo=FALSE, eval=TRUE}
-plot(tuk.cld)
-```
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task: Categorical analysis for the airquality data set</span></strong><br/>
-```
 The airquality data set contains a categorical predictor "month", which, however, is wrongly coded as a numeric value. We can correct this by doing
+
 
 ```{r chunk_chapter3_task_17, echo=TRUE, eval=TRUE}
 airquality$fMonth = factor(airquality$Month)
 ```
 
 Execute this code and fit a regression for fMonth!
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-```{r chunk_chapter3_task_18, message=FALSE, warning=FALSE}
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
 
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-***Advanced topic: Changing the contrasts***
-
-Before, I said that there is a long and short answer to the interpretation of the regression coefficients. Now here is the long answer: If you have a categorical predictor with \> 2 levels, there are several ways to set up the model to fit those levels. Maybe the easiest idea would be to fit a mean per level. You can actually tell R to do this via
-
-```{r chunk_chapter3_chunk39, echo=TRUE, eval=TRUE}
-fit = lm(weight ~ 0 + group, data = PlantGrowth)
-```
-
-If we look at the output, we see that now we simply get the mean of each group (level):
-
-```{r chunk_chapter3_chunk40, echo=FALSE, eval=TRUE}
-summary(fit)
-```
-
-Why does R not do that by default? Because now, we see the comparison of each group against zero in the p-values. In some cases, this can be interesting, but in most cases where we have a control and treatment and are interested in the difference between treatment and control, this is not informative. Therefore, R uses the so-called treatment contrasts, which is what we had before.
-
-There are actually a number of further options for specifying contrasts. You can tell R by hand how the levels should be compared or use some of the pre-defined contrasts. Here is an example:
-
-```{r chunk_chapter3_chunk41, echo=TRUE, eval=TRUE}
-PlantGrowth$group3 = PlantGrowth$group
-contrasts(PlantGrowth$group3) = contr.helmert
-fit = lm(weight ~ group3, data = PlantGrowth)
-summary(fit)
-```
-
-What we are using here is **Helmert contrasts**, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see here:\
-<a href="https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x" target="_blank" rel="noopener">https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x</a>.
 
 ### Exercise: Global Plant Trait Analysis {#plantTrait1}
 
@@ -688,6 +659,14 @@ summary(model)
 ```
 
 The model suggests a significant global trend of plant height increasing with temperature.
+
+::: {.callout-caution icon="false"}
+## Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
 
 ```{=html}
   <hr/>
@@ -781,6 +760,14 @@ plot(Wind ~ Temp, data = airquality)
 
 This means that if we take Temp out of the model, Wind will absorb a part of the effect of Temp, or, to put it differently: If we include Temp in the model, the model will fit the effect of Wind **after** removing the effect that can be explained by Temp, and vice versa.
 
+::: {.callout-caution icon="false"}
+## Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
@@ -857,6 +844,14 @@ The multivariate model, on the other hand, gets the right estimates (with a bit 
 ```{r chunk_chapter3_chunk57, echo=TRUE, eval=TRUE}
 coef(lm(y~x1 + x2))
 ```
+
+::: {.callout-caution icon="false"}
+## Excercise
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
 
 ```{=html}
   <hr/>
@@ -949,68 +944,6 @@ Discuss: Under which circumstances should you center / scale, and how should you
     <p>
 ```
 Scaling = estimate of relative imporatance. Original units: interpretable as effect per unit change.
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-### ANOVA for Multiple Regression
-
-Another option to see which variable is more important is variance partitioning, aka ANOVA.
-
-In an ANOVA, we add variable by variable to the model, and see how much the fit to the data (expressed by residual sum of squares) improves. We can do this via
-
-```{r chunk_chapter3_chunk63, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Wind + Temp, data = airquality)
-summary(aov(fit))
-```
-
-So, why has Wind the larger effect, again? Didn't we just say that Temp has a larger effect? Is there something wrong with our ANOVA?
-
-The problem with the `aov`{.R} function is that it performs a so-called type I ANOVA. The type I ANOVA adds variables in the order in which they are in the model formula. If I specify another formula, the result is different:
-
-```{r chunk_chapter3_chunk64, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Temp + Wind, data = airquality)
-summary(aov(fit))
-```
-
-The difference is due to the collinearity of the variables. Because Temp and Wind are collinear, the variable that is added first to the model will absorb variation from the other, and thus seems to explain more of the response.
-
-There are other types of ANOVA that avoid this problem. The so-called type II ANOVA shows for each variable only the part that is uniquely attributable to the respective variable
-
-```{r chunk_chapter3_chunk65, echo=TRUE, eval=TRUE}
-car::Anova(fit, type = "II")
-```
-
-There is also type III, which is as type II, but avoids a similar problem for interactions (see next subchapter). This is probably the most conservative setting:
-
-```{r chunk_chapter3_chunk66, echo=TRUE, eval=TRUE}
-car::Anova(fit, type = "III")
-```
-
-Here is an overview of the situation for 2 predictors A and B and their interaction. The upper left figure corresponds to the case where we have no collinearity between either of those variables. The figure on the top right (and similarly types I - III) are the three possible types of ANOVA for variables with collinearity. The "overlap" between the circles depicts the shared part, i.e. the variability that can be expressed by either variable (due to collinearity). Note that the shares in Type II, III do not add up to 1, as there is a kind of "dark variation" that we cannot securely add to either variable.
-
-```{r chunk_chapter3_67, echo=FALSE, out.width="150%", out.height="150%"}
-knitr::include_graphics(c("images/ANOVA.jpg"))
-```
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see next section).
-
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-```{r chunk_chapter3_task_28, message=FALSE, warning=FALSE}
-
-```
 
 ```{=html}
     </p>
@@ -1148,3 +1081,44 @@ Ask me to comment on case 3!
   </details>
   <br/><hr/>
 ```
+## Parametric vs. nonparametric estimates
+
+### Non-parametric p-values: Null Models
+
+Parametric hypothesis tests usually make a fixed assumption about H0. A non-parametric method to get around this that is used for complicated situations are **randomization null models**. The idea of these is to shuffle around the data, and thus generate a null distribution
+
+```{r chunk_chapter7_chunk19, echo=TRUE, eval=TRUE}
+set.seed(1337)
+
+# Permutation t-test.
+# A hand-coded randomization test for comparing two groups with arbitrary distribution.
+
+groupA = rnorm(50)
+groupB = rlnorm(50)
+
+dat = data.frame(value = c(groupA, groupB), group = factor(rep(c("A", "B"), each = 50)))
+plot(value ~ group, data = dat)
+
+# We can't do a t-test, because groups are not normal. So, let's create a non-parametric p-value
+
+# test statistic: difference of the means
+reference = mean(groupA) - mean(groupB)
+
+# now, we generate the null expecation of the test statistic by re-shuffling the data
+nSim = 5000
+nullDistribution = rep(NA, nSim)
+
+for(i in 1:nSim){
+  sel = dat$value[sample.int(100, size = 100)]
+  nullDistribution[i] = mean(sel[1:50]) - mean(sel[51:100])
+}
+
+hist(nullDistribution, xlim = c(-2,2))
+abline(v = reference, col = "red")
+ecdf(nullDistribution)(reference) # 1-sided p-value
+```
+
+Null models are used in many R packages where analytical p-values are not available, e.g., in:
+
+-   `library(vegan)`.{R}
+-   `library(bipartide)`.{R}

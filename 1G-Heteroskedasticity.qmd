@@ -36,51 +36,6 @@ The usual strategy now is to
 
 We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models). 
 
-## Adjusting the Functional Form
-
-In the residual ~ fitted plot above, we can clearly see a pattern, which means that our model has a systematic misfit. Note that in a multiple regression, you should also check res ~ predictor for all predictors, because patterns of misfit often show up more clearly when plotted against the single predictors. 
-
-What should we do if we see a pattern? Here a few strategies that you might want to consider:
-
-### Changing the regression formular
-
-The easiest strategy is to add complexity to the polynomial, e.g. quadratic terms, interactions etc.
-
-```{r chunk_chapter4_chunk3, echo=TRUE, eval=TRUE}
-library(effects)
-
-fit = lm(Ozone ~ Wind * Temp + I(Wind^2) + I(Temp^2), data = airquality)
-
-plot(allEffects(fit, partial.residuals = T), selection = 1)
-plot(allEffects(fit, partial.residuals = T), selection = 2)
-plot(allEffects(fit, partial.residuals = T), selection = 3)
-```
-
-and see if the residuals are getting better. To avoid doing this totally randomly, it may be useful to plot residuals against individual predictors by hand!
-
-
-### Generalized additive models (GAMs)
-
-Another options are GAMs = Generalized Additive Models. The idea is to fit a smooth function to data, to automatically find the "right" functional form. The smoothness of the function is automatically optimized.
-
-```{r chunk_chapter4_chunk4, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-library(mgcv)
-
-fit = gam(Ozone ~ s(Wind) + s(Temp) + s(Solar.R) , data = airquality)
-summary(fit)
-
-# allEffects doesn't work here.
-plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.8, cex = 0.7,
-     col = c("black", rep("red", length(fit$residuals))))
-AIC(fit)
-```
-
-Comparison to normal `lm()`{.R}:
-
-```{r chunk_chapter4_chunk5, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Wind + Temp + Solar.R , data = airquality)
-AIC(fit)
-```
 
 Spline interaction is called a **tensor spline**:
 
@@ -102,13 +57,8 @@ summary(fit)
 In this way, you still get a nicely interpretable linear effect for Wind, but you don't have to worry about the functional form of the other predictors.
 
 
-### Exercise functional form
-
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+:::{.callout-caution icon=false}
+## Excercise
 
 Assume our base model is
 
@@ -119,21 +69,13 @@ fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
 and we are mainly interested in the effect of wind (Temp - Solar.R are added as confounders). 
 
 Adjust the functional form until the mean is fitted well!
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
 
+:::
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
 
 
 ## Modelling Variance Terms
@@ -210,10 +152,8 @@ par(mfrow = c(2, 2))
 plot(m1)
 ```
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+:::{.callout-caution icon=false}
+#### Excercise
 
 We could of course consider other predictors, but let's say we want to fit this model specifically
 
@@ -221,23 +161,12 @@ We could of course consider other predictors, but let's say we want to fit this 
 2. Use the `gls`{.R} function (package `nlme`{.R}) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses`.{R} and decide how to model this.
 3. Use `glmmTMB`.{R} to model heteroskedasticity.
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::
 
-```{r chunk_chapter4_task_1, message=FALSE, warning=FALSE}
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+#### Solution
 
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::
 
 
 ## Non-normality and Outliers

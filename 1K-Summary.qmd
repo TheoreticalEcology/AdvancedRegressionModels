@@ -1,11 +1,9 @@
 # Summary and concluding thoughts
 
-
 ```{=html}
 <!-- Put this here (right after the first markdown headline) and only here for each document! -->
 <script src="./scripts/multipleChoice.js"></script>
 ```
-
 ## Reminder: Modelling Strategy
 
 ```{r chunk_chapter7_chunk0, echo=FALSE, out.width="150%", out.height="150%"}
@@ -14,46 +12,45 @@ knitr::include_graphics(c("images/reminder.jpg"))
 
 ***Things to note:***
 
-1. For an lm, the link function is the identity function.
-2. Fixed effects $\operatorname{f}(x)$ can be either a polynomial $\left( a \cdot x = b \right)$ = linear regression, a nonlinear function = nonlinear regression, or a smooth spline = generalized additive model (GAM).
-3. Random effects assume normal distribution for groups.
-4. Random effects can also act on fixed effects (random slope).
-5. For an lm with correlation structure, C is integrated in Dist. For all other GLMMs, there is another distribution, plus the additional multivariate normal on the linear predictor.
-
+1.  For an lm, the link function is the identity function.
+2.  Fixed effects $\operatorname{f}(x)$ can be either a polynomial $\left( a \cdot x = b \right)$ = linear regression, a nonlinear function = nonlinear regression, or a smooth spline = generalized additive model (GAM).
+3.  Random effects assume normal distribution for groups.
+4.  Random effects can also act on fixed effects (random slope).
+5.  For an lm with correlation structure, C is integrated in Dist. For all other GLMMs, there is another distribution, plus the additional multivariate normal on the linear predictor.
 
 ***Strategy for analysis:***
 
-1. Define formula via scientific questions + confounders.
-2. Define type of GLM (lm, logistic, Poisson).
-3. Blocks in data -> Random effects, start with random intercept.
+1.  Define formula via scientific questions + confounders.
+2.  Define type of GLM (lm, logistic, Poisson).
+3.  Blocks in data -\> Random effects, start with random intercept.
 
 Fit this base model, then do residual checks for
 
-* Wrong functional form -> Change fitted function.
-* Wrong distribution-> Transformation or GLM adjustment.
-* (Over)dispersion -> Variable dispersion GLM.
-* Heteroskedasticity -> Model dispersion.
-* Zero-inflation -> Add ZIP term.
-* Correlation -> Add correlation structure.
+-   Wrong functional form -\> Change fitted function.
+-   Wrong distribution-\> Transformation or GLM adjustment.
+-   (Over)dispersion -\> Variable dispersion GLM.
+-   Heteroskedasticity -\> Model dispersion.
+-   Zero-inflation -\> Add ZIP term.
+-   Correlation -\> Add correlation structure.
 
 And adjust the model accordingly.
 
 Packages:
 
-* `baseR`.{R}: `lm`.{R}, `glm`.{R}.
-* `lme4`.{R}: mixed models, `lmer`.{R}, `glmer`.{R}.
-* `mgcv`.{R}: GAM.
-* `nlme`.{R}: Variance and correlations structure modelling for linear (mixed) models, using `gls`.{R} + `lme`.{R}.
-* `glmmTMB`.{R}: Generalized linear mixed models with variance / correlation modelling and zip term.
+-   `baseR`.{R}: `lm`.{R}, `glm`.{R}.
+-   `lme4`.{R}: mixed models, `lmer`.{R}, `glmer`.{R}.
+-   `mgcv`.{R}: GAM.
+-   `nlme`.{R}: Variance and correlations structure modelling for linear (mixed) models, using `gls`.{R} + `lme`.{R}.
+-   `glmmTMB`.{R}: Generalized linear mixed models with variance / correlation modelling and zip term.
 
 ## Thoughts About the Analysis Pipeline
 
 In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the protocol that I sketched in chapter \@ref(protocol). What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
 
-* What is the typical error of the estimate?
-* What is the Type I error (false positives)?
-* Are the confidence intervals correctly calculated?
-* ...
+-   What is the typical error of the estimate?
+-   What is the Type I error (false positives)?
+-   Are the confidence intervals correctly calculated?
+-   ...
 
 The way to check this is to run simulations. For example, the following function creates data that follows the assumptions of a linear regression with slope 0.5, then fits a linear regression, and returns the estimate
 
@@ -75,7 +72,7 @@ set.seed(543210)
 out = replicate(1000, getEstimate())
 ```
 
-Plotting the result, we can check whether the linear regression is an unbiased estimator for the slope. 
+Plotting the result, we can check whether the linear regression is an unbiased estimator for the slope.
 
 ```{r chunk_chapter7_chunk3, echo=TRUE, eval=TRUE}
 hist(out, breaks = 50)
@@ -84,19 +81,13 @@ abline(v = 0.5, col = "red")
 
 "Unbiased" means that, while each single estimate will have some error, the mean of many estimates will spread around the true value.
 
-
-
 ***Explicitly calculating these values***
-
-
 
 **Bias**
 
 ```{r chunk_chapter7_chunk4, echo=TRUE, eval=TRUE}
 mean(out) - 0.5 # Should be ~0.
 ```
-
-
 
 **Variance / standard deviation of the estimator**
 
@@ -126,4 +117,3 @@ mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
 ```
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
-

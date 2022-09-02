@@ -2,26 +2,6 @@
 
 This Appendix reminds you about basic R data types and how to operate on them. Also suitable for self-study prior to the course!
 
-### Installing Libraries
-
-The R engine comes with a number of base functions, but one of the great things about R is that you can extend these base functions by libraries that can be programmed by anyone. In principle, you can install libraries from any website or file. In practice, however, most commonly used libraries are distributed via two major repositories. For statistical methods, this is **CRAN**, and for bioinformatics, this is **Bioconductor**. To install a package from a library, use the command
-
-```{r chunk_chapter2_0, eval=FALSE, purl=FALSE}
-install.packages(LIBRARY)
-```
-
-Exchange "LIBRARY" with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install
-
-    build-essential
-    gfortran
-    libmagick++-dev
-    r-base-dev
-    cmake
-
-If you are new to installing packages on Debian / Ubuntu, etc., type the following:
-
-    sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
-
 ## Representing Data in R
 
 ### Exploring Data Structures
@@ -50,6 +30,16 @@ str(x)
 
 allow you to explore the structure of variables and the data they contain. Ask yourself, or discuss with your partner(s):
 
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
@@ -71,6 +61,16 @@ What is the meaning of the three functions, and what is the structure / properti
     <p>
 ```
 Atomic types: e.g. numeric, factor, boolean ...; List can have severa tyes, vector not! data.frame is list of vectors. matrix is 2-dim array, array can have any dim, only one type.
+
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
 
 ```{=html}
     </p>

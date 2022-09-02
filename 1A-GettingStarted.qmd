@@ -1,10 +1,15 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
 # Getting Started
 
 ```{=html}
 <!-- Put this here (right after the first markdown headline) and only here for each document! -->
 <script src="./scripts/multipleChoice.js"></script>
 ```
-
 ## Your R System
 
 In this course, we work with the combination of R + RStudio.
@@ -12,11 +17,35 @@ In this course, we work with the combination of R + RStudio.
 -   R is the calculation engine that performs the computations.
 -   RStudio is the editor that helps you sending inputs to R and collect outputs.
 
-Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good introductory video.
+Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good video introducing the basic system and how R and RStudio interact.
 
-## Packages that you will need
+## Libraries that you will need
 
-In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first run
+The R engine comes with a number of base functions, but one of the great things about R is that you can extend these base functions by libraries that can be programmed by anyone. In principle, you can install libraries from any website or file. In practice, however, most commonly used libraries are distributed via two major repositories. For statistical methods, this is **CRAN**, and for bioinformatics, this is **Bioconductor**.
+
+::: {.callout-tip collapse="true"}
+## Click to see more on installing libraries in R
+
+To install a package from a library, use the command
+
+```{r chunk_chapter2_0, eval=FALSE, purl=FALSE}
+install.packages(LIBRARY)
+```
+
+Exchange "LIBRARY" with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install
+
+    build-essential
+    gfortran
+    libmagick++-dev
+    r-base-dev
+    cmake
+
+If you are new to installing packages on Debian / Ubuntu, etc., type the following:
+
+    sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
+:::
+
+In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first install devtools from CRAN by running
 
 ```{r, eval=FALSE}
 install.packages("devtools")
@@ -30,3 +59,18 @@ devtools::install_github(repo = "TheoreticalEcology/EcoData",
 ```
 
 For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set `dependencies = F, build_vignettes = F`.
+
+## R prerequisites
+
+As mentioned in the preface, this book assumes that you have basic knowledge about data manipulation (reading in data, removing or selecting columns or rows, calculating means per group etc.) and plotting in R. Note that for both purposes, there are currently two main schools in the R environment which do the same things, but with very different syntax:
+
+1.  **base R**, which uses functions such as plot(), apply(), aggregate()
+2.  **tidyverse**, with packages such as **dplyr** and **ggplot2**, which provide functions such as mutate(), filter() and heavily rely on the %\>% pipe operator.
+
+There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.
+
+For this course, however, all examples are prepared in base R. If you're not familiar with the base R syntax for these purposes, have a look at the appendix, which covers the most common tasks in this area.
+
+::: callout-note
+The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
+:::

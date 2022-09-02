@@ -147,6 +147,16 @@ anova(fit1, fit2)
 
 ### Exercise
 
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
@@ -346,6 +356,16 @@ For fitting PGLS with various models, you should also consider the `caper`{.R} p
 
 ### Exercise
 
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
+
 ```{=html}
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
@@ -464,6 +484,16 @@ The observation is that the PGLS effect estimate is significant while normal lm 
 ## Case studies
 
 ### Snouter
+
+:::{.callout-caution icon=false}
+## Excercise
+
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+## Solution
+
+:::
 
 ```{=html}
   <hr/>
