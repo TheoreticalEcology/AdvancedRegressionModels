@@ -1,33 +1,48 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "Advanced Regression Models with R"
-  author: "Florian Hartig"
+  author: 
+     name: "Florian Hartig"
+     url: https://www.uni-regensburg.de/biologie-vorklinische-medizin/theoretische-oekologie/mitarbeiter/hartig/
+  citation:
+  
   date: "Sept 2020"
+  site-url: https://TheoreticalEcology.github.io/AdvancedRegressionModels/
+  repo-url: https://github.com/TheoreticalEcology/AdvancedRegressionModels
+  repo-branch: master
+  repo-actions: [edit]
+  sharing: [twitter, facebook, linkedin]
   chapters:
     - index.qmd
+    
     - 1A-GettingStarted.qmd
     - 1B-LinearRegression.qmd
     - 1C-ModelChoice.qmd
-    - 1D-ANOVA.qmd
-    - 1E-MissingData.qmd
-    - 1F-GLMs.qmd
-    - 1G-Heteroskedasticity.qmd
+    - 1D-ModelSelection.qmd
+    - 1E-ANOVA.qmd
+    - 1K-MissingData.qmd
+    - 1F-GLMs.qmd    
     - 1H-RandomEffects.qmd
+    - 1G-Heteroskedasticity.qmd
     - 1I-CorrelationStructures.qmd
     - 1J-Nonparametrics.qmd
     - 1K-Summary.qmd
+    - 1Y-References.qmd
+  appendices:
     - 1Z-Appendix.qmd
-    
+  
 bibliography: literature.bib
+google-scholar: true
 
 execute:
-  cache: true
+  cache: false
 
 format:
   html:
     theme: cosmo
-
 editor: visual
+
 

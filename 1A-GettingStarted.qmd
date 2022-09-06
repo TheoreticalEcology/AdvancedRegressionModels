@@ -6,10 +6,6 @@ editor_options:
 
 # Getting Started
 
-```{=html}
-<!-- Put this here (right after the first markdown headline) and only here for each document! -->
-<script src="./scripts/multipleChoice.js"></script>
-```
 ## Your R System
 
 In this course, we work with the combination of R + RStudio.
@@ -24,7 +20,7 @@ Make sure you have a recent version of R + RStudio installed on your computer. I
 The R engine comes with a number of base functions, but one of the great things about R is that you can extend these base functions by libraries that can be programmed by anyone. In principle, you can install libraries from any website or file. In practice, however, most commonly used libraries are distributed via two major repositories. For statistical methods, this is **CRAN**, and for bioinformatics, this is **Bioconductor**.
 
 ::: {.callout-tip collapse="true"}
-## Click to see more on installing libraries in R
+#### Click to see more on installing libraries in R
 
 To install a package from a library, use the command
 

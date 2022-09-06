@@ -5,14 +5,11 @@
 <script src="./scripts/multipleChoice.js"></script>
 ```
 
-This chapter explains how to model correlation structures in the residuals.
-
-
 ## General Idea
 
 Except for the random effects, we have so far assumed that observations are independent. However, there are a number of other common correlation structures that we may want to consider. Here a visualization from <a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.02881" target="_blank" rel="noopener">Roberts et al., 2016</a> (reproduced as OA, copyright: the authors).
 
-```{r chunk_chapter6_chunk0, echo=FALSE, out.width="150%", out.height="150%"}
+```{r chunk_chapter6_chunk0, echo=FALSE, out.width="100%", out.height="100%"}
 knitr::include_graphics(c("images/correlation.png"))
 ```
 
@@ -114,7 +111,8 @@ tann.dir.vgm = variogram(residuals(fit) ~ 1,
 plot(tann.dir.vgm)
 ```
 
-Remove trend via a GAM:
+To remove the spatial trend, we can use a 2d-spine, called a tensor spline:
+
 
 ```{r chunk_chapter6_chunk5, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(mgcv)
@@ -145,37 +143,19 @@ fit1 = gls(thick ~ soil + north + I(north^2), data = thickness)
 anova(fit1, fit2)
 ```
 
-### Exercise
+
 
 :::{.callout-caution icon=false}
-## Excercise
-
-:::
-
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
-## Solution
-
-:::
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
+#### Plant counts in Regensburg
 Use the dataset EcoData::plantcounts. Our scientific question is if richness ~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of ?plantcounts.
 
 This is count data, so start with a Poisson or Neg Binom GLM. The quadrats are not all equally sized, so you should include an offest to account for area. Then, check for spatial autocorrelation.
 
 If you find autocorrelation that cannot be removed with a gam, the problem is that the gls function that we have used so far only extends lm, and not glm models. In this case, you can either read up in https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html how to specify a spatial covariance in glmmTMB, or just log transform your counts + 1, and fit a gls. 
+:::
 
-
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+#### Solution
 
 ```{r message=FALSE, warning=FALSE}
 ?EcoData::plantcounts
@@ -213,11 +193,25 @@ plot(res)
 testSpatialAutocorrelation(res, x = plants_sf$lon, y =  plants_sf$lat)
 ```
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
+
+:::
+
+
+
+:::{.callout-caution icon=false}
+#### The snouter data
+
+Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
+:::
+
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+#### Solution
+
+```{r chunk_chapter6_task_0, message=FALSE, warning=FALSE}
+library(EcoData)
+str(snouter)
 ```
+:::
 
 
 ## Phylogenetic Structures (PGLS)
@@ -275,7 +269,6 @@ You can also check with DHARMa, using this works also for GLMMs
 res = simulateResiduals(fit)
 testSpatialAutocorrelation(res, distMat = cophenetic(anolisTree))
 ```
-
 
 An old-school method to deal with the problem are the so-called **Phylogenetically Independent Contrasts** (PICs) (Felsenstein, J. (1985) "Phylogenies and the comparative method". American Naturalist, 125, 1–15.). The idea here is to transform your data in a way that an lm is still appropriate. For completeness, I show the method here.
 
@@ -354,23 +347,8 @@ Other example: <a href="http://schmitzlab.info/pgls.htmla" target="_blank" rel="
 For fitting PGLS with various models, you should also consider the `caper`{.R} package.
 
 
-### Exercise
-
 :::{.callout-caution icon=false}
-## Excercise
-
-:::
-
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
-## Solution
-
-:::
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
+#### Excercise
 
 Download the following two datasets
 
@@ -394,15 +372,10 @@ geiger::name.check(reducedTree,dat)
 ```
 
 Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote~Lnalt
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-
+:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+#### Solution
 
 ```{r}
 plot(Lnote~Lnalt, data = dat)
@@ -471,55 +444,9 @@ summary(fit)
 ```
 
 The observation is that the PGLS effect estimate is significant while normal lm is not. The reason is probably that the PGLS is re-weighting residuals, and it seems that in this case, the re-weighting is changing the slope. What we learn by this example is that a PGLS can increase significance, and in this case I would argue wrongly so, as we have no indication that there is a phylogenetic signal. I would therefore NOT recommend to blindly fit PGLS, but rather test first if a PGLS is needed, and only then apply.  
-
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-
-
-
-## Case studies
-
-### Snouter
-
-:::{.callout-caution icon=false}
-## Excercise
-
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
-## Solution
 
-:::
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-
-Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
-
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-
-```{r chunk_chapter6_task_0, message=FALSE, warning=FALSE}
-library(EcoData)
-str(snouter)
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
 
 
 ### Covariance structures in glmmTMB

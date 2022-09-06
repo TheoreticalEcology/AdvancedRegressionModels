@@ -2,12 +2,53 @@
 
 ## Nonparametric estimators
 
+## Parametric vs. nonparametric estimates
+
+### Non-parametric p-values: Null Models
+
+Parametric hypothesis tests usually make a fixed assumption about H0. A non-parametric method to get around this that is used for complicated situations are **randomization null models**. The idea of these is to shuffle around the data, and thus generate a null distribution
+
+```{r chunk_chapter7_chunk19, echo=TRUE, eval=TRUE}
+set.seed(1337)
+
+# Permutation t-test.
+# A hand-coded randomization test for comparing two groups with arbitrary distribution.
+
+groupA = rnorm(50)
+groupB = rlnorm(50)
+
+dat = data.frame(value = c(groupA, groupB), group = factor(rep(c("A", "B"), each = 50)))
+plot(value ~ group, data = dat)
+
+# We can't do a t-test, because groups are not normal. So, let's create a non-parametric p-value
+
+# test statistic: difference of the means
+reference = mean(groupA) - mean(groupB)
+
+# now, we generate the null expecation of the test statistic by re-shuffling the data
+nSim = 5000
+nullDistribution = rep(NA, nSim)
+
+for(i in 1:nSim){
+  sel = dat$value[sample.int(100, size = 100)]
+  nullDistribution[i] = mean(sel[1:50]) - mean(sel[51:100])
+}
+
+hist(nullDistribution, xlim = c(-2,2))
+abline(v = reference, col = "red")
+ecdf(nullDistribution)(reference) # 1-sided p-value
+```
+
+Null models are used in many R packages where analytical p-values are not available, e.g., in:
+
+-   `library(vegan)`.{R}
+-   `library(bipartide)`.{R}
 
 ### Non-parametric p-values: Null Models
 
 Parametric hypothesis tests usually make a fixed assumption about H0. A non-parametric method to get around this that is used for complicated situations are **randomization null models**. The idea of these is to shuffle around the data, and thus generate a null distribution 
 
-```{r chunk_chapter7_chunk19, echo=TRUE, eval=TRUE}
+```{r , echo=TRUE, eval=TRUE}
 set.seed(1337)
 
 # Permutation t-test.

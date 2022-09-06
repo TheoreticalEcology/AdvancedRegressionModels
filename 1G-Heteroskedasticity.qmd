@@ -37,45 +37,6 @@ The usual strategy now is to
 We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models). 
 
 
-Spline interaction is called a **tensor spline**:
-
-```{r chunk_chapter4_chunk6, echo=TRUE, eval=TRUE}
-fit = gam(Ozone ~ te(Wind, Temp) + s(Solar.R) , data = airquality)
-summary(fit)
-
-plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.9, cex = 0.4)
-AIC(fit)
-```
-
-GAMs are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone ~ Wind, account for the other variables, a good strategy might be:
-
-```{r chunk_chapter4_chunk7, echo=TRUE, eval=TRUE}
-fit = gam(Ozone ~ Wind + s(Temp) + s(Solar.R) , data = airquality)
-summary(fit)
-```
-
-In this way, you still get a nicely interpretable linear effect for Wind, but you don't have to worry about the functional form of the other predictors.
-
-
-:::{.callout-caution icon=false}
-## Excercise
-
-Assume our base model is
-
-```{r, echo=TRUE, eval=TRUE}
-fit <- lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)
-```
-
-and we are mainly interested in the effect of wind (Temp - Solar.R are added as confounders). 
-
-Adjust the functional form until the mean is fitted well!
-:::
-
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
-## Solution
-
-:::
-
 
 
 ## Modelling Variance Terms

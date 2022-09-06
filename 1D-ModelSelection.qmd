@@ -1,0 +1,308 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Model selection
+
+## The Bias-Variance Trade-off
+
+Apart from causality, the arguably most fundamental idea about modelling choice is the **bias-variance trade-off**, which applies regardless of whether we are interested in causal effects or predictive models. The idea is the following:
+
+-   The more variables / complexity we include in the model, the better it can (in principle) adjust to the true relationship, thus reducing model error from bias.
+-   The more variables / complexity we include in the model, the larger our error (variance) on the fitted coefficients, thus increasing model error from variance. This means, the model adopts to the given data but no longer to the underlying relationship.
+
+If we sum both terms up, we see that at the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
+
+```{r chunk_chapter3_71, echo=FALSE, out.width="100%", out.height="100%"}
+knitr::include_graphics(c("images/BiasBarianceTradeOff.jpg"))
+```
+
+Let's confirm this with a small simulation - let's assume I have a simple relationship between x and y:
+
+```{r}
+set.seed(123)
+
+x = runif(100)
+y = 0.25 * x + rnorm(100, sd = 0.3)
+
+summary(lm(y~x))
+```
+
+As you see, the effect is significant. Now, I add 80 new variables to the model which are just noise
+
+```{r}
+xNoise = matrix(runif(8000), ncol = 80)
+dat = data.frame(y=y,x=x, xNoise)
+
+fullModel = lm(y~., data = dat)
+summary(fullModel)
+```
+
+The effect estimates are relatively unchanged, but the CI has increased, and the p-values are n.s.
+
+## Model Selection Methods
+
+Because of the bias-variance trade-off, we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would loose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
+
+1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests
+2.  Optimize a penalized fit to the data -\> AIC selection
+3.  Specify a preference for parameter estimates to be small -\> shrinkage estimation
+
+Let's go through them one by one
+
+### Likelihood-ratio tests
+
+A likelihood-ratio test (LRT) is a hypothesis test that can be used to compare 2 **nested** models. Nested means that the simpler of the 2 models is included in the more complex model.
+
+The more complex model will always fit the data better, i.e. have a higher likelihood. This is the reason why you shouldn't use fit or residual patterns for model selection. The likelihood-ratio test tests whether this improvement in likelihood is significantly larger than one would expect if the simpler model is the correct model.
+
+Likelihood-ratio tests are used to get the p-values in an R ANOVA, and thus you can also use the `anova`{.R} function to perform an likelihood-ratio test between 2 models (Note: For simple models, this will run an F-test, which is technically not exactly a likelihood-ratio test, but the principle is the same):
+
+```{r chunk_chapter3_chunk74, echo=TRUE, eval=TRUE}
+# Model 1
+m1 = lm(Ozone ~ Wind , data = airquality)
+
+# Model 2
+m2 = lm(Ozone ~ Wind + Temp, data = airquality)
+
+# LRT
+anova(m1, m2)
+```
+
+### AIC model selection
+
+Another method for model selection, and probably the most widely used, also because it does not require that models are nested, is the AIC = **Akaike Information Criterion**.
+
+The AIC is defined as $2 \ln(\text{likelihood}) + 2k$, where $k$ = number of parameters.
+
+Essentially, this means AIC = Fit - Penalty for complexity.
+
+**Lower AIC is better!**
+
+```{r chunk_chapter3_chunk75, echo=TRUE, eval=TRUE}
+m1 = lm(Ozone ~ Temp, data = airquality)
+m2 = lm(Ozone ~ Temp + Wind, data = airquality)
+
+AIC(m1)
+AIC(m2)
+```
+
+**Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation, so what AIC is optimizing is essentially the predictive error of the model on new data.
+
+**Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just the note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
+
+::: {.callout-caution icon="false"}
+#### Excercise
+
+Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or the other?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+:::
+
+### Shrinkage estimation
+
+A third option option for model selection are shrinkage estimators. These include the LASSO and ridge, but also random-effects could be seen as shrinkage estimators.
+
+The basic idea behind these estimators is not to reduce the number of parameters, but to reduce the flexibility of the model by introducing a penalty on the regression coefficients that code a preference for smaller or zero coefficient values. Effectively, this can either amount to model selection (because some coefficients are shrunk directly to zero), or it can mean that we can fit very large models while still being able to do good predictions, or avoid overfitting.
+
+To put a ridge penalty on the standard `lm`{.R}, we can use
+
+```{r chunk_chapter3_chunk76, echo=TRUE, eval=TRUE}
+library(MASS)
+lm.ridge(Ozone ~ Wind + Temp + Solar.R, data = airquality, lambda = 2)
+```
+
+We can see how the regression estimates vary for different penalties via
+
+```{r chunk_chapter3_chunk77, echo=TRUE, eval=TRUE}
+plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
+              lambda = seq(0, 200, 0.1) ) )
+```
+
+### P-hacking {#pHacking}
+
+The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercises is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
+
+::: {.callout-caution icon="false"}
+## p-hacking exercise
+
+We have (simulated) measurements of plant performance. The goal of the analysis was to find out if Gen1 has an effect on Performance. Various other variables are measured. As you can see, the way I simulated the data, none of the variables has an effect on the response, so this is pure noise
+
+```{r chunk_chapter3_chunk78, echo=TRUE, eval=T}
+set.seed(1)
+dat = data.frame(matrix(rnorm(300), ncol = 10))
+colnames(dat) = c("Performance", "Gen1", "Gen2", "soilC", "soilP", "Temp",
+                  "Humidity", "xPos", "yPos", "Water")
+fullModel <- lm(Performance ~ ., data = dat)
+```
+
+When you run summary(fullModel), you will see that there is no significant effect of of Gen1. Task for you: P-hack the analysis, i.e. make an effect appear, by trying around (systematically, e.g. with selecting with data, model selection, or by hand to find a model combination that has an effect). Popular strategies for p-hacking include changing the mdoel, but also sub-selecting particualr data. The group who finds the model with the highest significance for Gen1 wins!
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Possible solution
+
+```{r}
+summary(lm(Performance ~ Gen1 * Humidity, data = dat[20:30,]))
+```
+:::
+
+Here some more inspiration on p-hacking:
+
+1.  Hack Your Way To Scientific Glory: <a href="https://projects.fivethirtyeight.com/p-hacking/" target="_blank" rel="noopener">https://projects.fivethirtyeight.com/p-hacking/</a>
+2.  False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant: <a href="https://journals.sagepub.com/doi/full/10.1177/0956797611417632" target="_blank" rel="noopener">https://journals.sagepub.com/doi/full/10.1177/0956797611417632</a>
+3.  Sixty seconds on ... P-hacking: <a href="https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039" target="_blank" rel="noopener">https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039</a>
+
+John Oliver about p-hacking:
+
+```{r chunk_chapter3_78, eval=knitr::is_html_output(excludes = "epub"), results = 'asis', echo = F}
+cat(
+  '<iframe width="560" height="315"
+  src="https://www.youtube.com/embed/FLNeWgs2n_Q" title="YouTube video player"
+  frameborder="0" allow="accelerometer; autoplay; clipboard-write;
+  encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  </iframe>'
+)
+```
+
+## Problems with model selection for inference
+
+Model selection works great to generate predictive models. The big problem with model selection is when we want interpret effect estimates. Here, we have two problems
+
+1.  Model selection doesn't respect causal relationships
+2.  Model selection methods often lead to wrong p-values, CIs etc.
+
+Let's look at them 1 by one:
+
+### Causality
+
+In general, model selection does NOT solve the problem of estimating causal effects. Quite the contrary: most model selection methods act against estimating causal effects. Consider the following example, where we create a response that causally depends on two collinear predictors, both with an effect size of 1
+
+```{r}
+set.seed(123)
+x1 = runif(100)
+x2 = 0.8 * x1 + 0.2 *runif(100)
+y = x1 + x2 + rnorm(100)
+```
+
+Given the structure of the data, we should run a multiple regression, and the multiple regression will get it roughly right: both effects are n.s., but estimates are roughly right and true values are in the 95% CI.
+
+```{r}
+m1 = lm(y ~ x1 + x2)
+summary(m1)
+```
+
+A model selection (more on the method later) will remove one of the variables and consequently overestimates the effect size (effect size too high, true causal value outside the 95% CI).
+
+```{r}
+m2 = MASS::stepAIC(m1)
+summary(m2)
+```
+
+If you understand what AIC model selection is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
+
+
+
+```{r}
+set.seed(123)
+x1 = runif(100)
+x2 = 0.95 * x1 + 0.05 *runif(100)
+x3 = runif(100)
+y = x1 + x2 + x3 + rnorm(100)
+m1 = lm(y ~ x1)
+AIC(m1)
+```
+
+Comparing a base model with only x1 to x1 + x2
+
+```{r}
+m2 = lm(y ~ x1 + x2)
+anova(m1, m2)
+AIC(m2)
+```
+
+The same for the comparison of x1 to x1 + x3
+
+```{r}
+m3 = lm(y ~ x1 + x3)
+anova(m1, m3)
+AIC(m3)
+```
+
+What we see is that the model selection methods are far more enthusiastic about including x3. And with good reason: x3 is an independent predictor, so adding x3 improves the model a lot. The effect of x2, however, is mostly already included in x1, so adding x2 will only slightly improve the model. Thus, from the point of view of how good the data is explained, it doesn't pay off to add x2. From the causal viewpoint, however, adding x3 is irrelevant, because it is not a confounder, while adding x2 is crucial (assuming the causal direction is such that it is a confounder).
+
+### P-values
+
+The second problem with model selection is the calibration of p-values. Let's revisit our simulation example from the bias-variance trade-off, where we added 80 noisy predictors with no effect to a situation where we had one variable with an effect.
+
+```{r}
+set.seed(123)
+x = runif(100)
+y = 0.25 * x + rnorm(100, sd = 0.3)
+xNoise = matrix(runif(8000), ncol = 80)
+dat = data.frame(y=y,x=x, xNoise)
+fullModel = lm(y~., data = dat)
+```
+
+We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
+
+::: callout-tip
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that start with the most simple (forward) or the most comples (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is MASS::StepAIC, for global selection MuMIn::dredge. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
+:::
+
+```{r, echo=FALSE}
+library(MASS)
+reduced = stepAIC(fullModel)
+```
+
+::: callout-note
+When you inspect the output of stepAIC, you can see that the function calculates at each step the AIC improvement for each predictor that could be removed, and then chooses to remove the predictor that leads to the strongest AIC improvement first.
+:::
+
+Here is the selected model
+
+```{r}
+summary(reduced)
+```
+
+The result ist good and bad. Good is that we now get the effect of y \~ x significant. Bad is that a lot of the other noisy variables are also significant, and the rate at which this occurs is much higher than we should expect (22/80 random predictors significant is much higher than the expected type I error rate).
+
+The phenomenon is well-known in the stats literature, and the reason is that performing a stepwise / global selection + calculating a regression table for the selected model is **hidden multiple testing** and has inflated Type I error rates! Remember, you are implicitly trying out hundreds or thousand of models, and are taking the one that is showing the strongest effects.
+
+There are methods to correct for the problem (keyword: post-selection inference), but none of them are readily available in R, and also, mostly those corrected p-values have lower power than the full model.
+
+## Case studies
+
+### Exercise: Global Plant Trait Analysis #3
+
+::: {.callout-caution icon="false"}
+## Excercise
+
+Revisit exercises our previous analyses of the dataset plantHeight, and discuss / analyze:
+
+Which would be the appropriate model, if we want to get a predictive model for plant height, based on all the variables in the data set? Note: some text-based variables may need to be included, so probably it's the easiest if you start with a large model that you specify by hand. You can also include interactions. The syntax:
+
+```{r, eval = F}
+fit <- lm((x1 + x2 + x3)^2)
+```
+
+includes all possible 2nd-order interactions between the variables in your model. You can extend this to x\^3, x\^4 but I would not recommend it, your model will get too large.
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+
+```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE}
+library(EcoData)
+plantHeight
+fullModel <- lm(loght ~ (growthform + Family + lat + long + alt + temp + NPP )^2, data = plantHeight)
+selectedModel = stepAIC(fullModel)
+summary(selectedModel)
+```
+
+R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlation in the data, or if you use variables that are (indirectly) identical to your response.
+:::

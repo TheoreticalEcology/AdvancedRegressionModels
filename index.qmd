@@ -1,9 +1,5 @@
 # Preface {.unnumbered}
 
-```{=html}
-<!-- Put this here (right after the first markdown headline) and only here for each document! -->
-<script src="./scripts/multipleChoice.js"></script>
-```
 ```{r chunk_chapter1_0, eval=TRUE, include=FALSE}
 # Automatically create a bib database for R packages.
 knitr::write_bib(c(.packages(), 'bookdown', 'knitr', 'rmarkdown'),
@@ -12,6 +8,7 @@ knitr::write_bib(c(.packages(), 'bookdown', 'knitr', 'rmarkdown'),
 knitr::opts_chunk$set(cache = TRUE)
 set.seed(123)
 ```
+
 
 If we have a response variable and want to understand how this response variable is influenced by one or several factors, we will typically use a **regression model**. The aim of this course is to enable you to run such a regression model in the quality expected for a "real" scientific study. To do so, you will have to master a number of skills, in particular:
 
@@ -25,6 +22,8 @@ This is what we will mainly train in this course. Don't worry if you think that 
 
 This course assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelors Biology Lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. There is also an appendix in this book which covers the most common functions for data manipulation and plotting in R.
 
+If you have comments, questions or suggestions regarding this book, please submit them [here](https://github.com/TheoreticalEcology/AdvancedRegressionModels/issues).
+
 ```{=html}
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a> Note that some elements of this work (embedded videos, graphics) may be under a seperate licence and are thus not included in this licence. 
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>. Note that some elements of this work (embedded videos, graphics) may be under a seperate licence and are thus not included in this licence. 
 ```
