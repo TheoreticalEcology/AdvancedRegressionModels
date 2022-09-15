@@ -1,0 +1,6 @@
+# References {.unnumbered}
+
+TEST
+
+::: {#refs}
+:::
