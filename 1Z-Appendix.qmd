@@ -30,8 +30,9 @@ str(x)
 
 allow you to explore the structure of variables and the data they contain. Ask yourself, or discuss with your partner(s):
 
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### Excercise
+
 What is the meaning of the three functions, and what is the structure / properties of the following data types in R:
 
 -   Atomic types (which atomic types exist),
@@ -42,15 +43,15 @@ What is the meaning of the three functions, and what is the structure / properti
 -   array.
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 Atomic types: e.g. numeric, factor, boolean ...; List can have severa tyes, vector not! data.frame is list of vectors. matrix is 2-dim array, array can have any dim, only one type.
 :::
 
-
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### Excercise
+
 What is the data type of the iris data set, which is built-in in R under the name
 
 ```{r chunk_chapter2_6, eval=FALSE}
@@ -58,8 +59,9 @@ iris
 ```
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
 Iris, like most simple datasets, is of type data.frame
 :::
 

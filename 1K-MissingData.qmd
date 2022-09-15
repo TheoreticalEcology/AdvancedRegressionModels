@@ -1,5 +1,7 @@
 ## Missing data
 
+### Understanding na.action
+
 One output of the summary() function that we didn't look at in detail so far is the missing observations. Let's take this regression for example:
 
 ```{r}
@@ -7,13 +9,19 @@ fit = lm(Ozone ~ Wind + Temp, data = airquality)
 summary(fit)
 ```
 
-The summary() alerts us that "37 observations deleted due to missingness". What does that mean? The answer is is in the global option na.action - if we run this, we see that the default in R is to ommit missing variables in the regression 
+The summary() alerts us that "37 observations deleted due to missingness". So, R has apparently removed observations from the data, but why?
+
+::: callout-note
+Missing values in R are coded with the special type `NA`. You can check whether a single variable entry is NA via `is.na()`. More convenient, however, is to use the summary() function to get an overview about the NAs in your dataset.
+:::
+
+The answer is that a standard regression model cannot deal with a missing value in either the response or the predictors. Missing values are very common, however, and to avoid that regressions stop with an error all the time, there is the global R option na.action, which we can see via
 
 ```{r}
 options("na.action")
 ```
 
-Thus, if there is an missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change the setting per model 
+We see that the default in R is "na.omit", which means that if there is an missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model
 
 ```{r, eval=F}
 fit = lm(Ozone ~ Wind + Temp, data = airquality, na.action = "na.fail")
@@ -25,27 +33,64 @@ or also globally (careful)
 options(na.action = "na.fail")
 ```
 
-Why would you do that? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
+Why would you set na.action = "na.fail"? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
 
-1. If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
-2. If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power
-3. If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
+1.  If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
+2.  If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power
+3.  If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
 
-### Missing at random 
+For all this reason, you should get a good overview about your NAs, and consider what to do with them.
 
-1. MCAR = missing completely at random
-2. MAR = missing at random 
-3. MNAR = missing not at random
+### Summarizing NAs
 
+As mentioned, a quick way to get a summary about the NAs in your data is to run the summary() function, which will return the number of NAs per predictor. You can check this out via running:
+
+```{r, eval = F}
+summary(airquality)
+```
+
+The problem with the summary is that in regression models, an observation will be removed as soon as one of the predictors has an NA. It is therefore crucial in which combinations NAs occur - we need complete rows. Let's visualize the position of NAs in the data
+
+```{r}
+image(is.na(t(airquality)), axes = F)
+axis(3, at = seq(0,1, len = 6), labels = colnames(airquality))
+```
+
+We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are seperate. To check if you have a complete row, we can use the function complete.cases(), which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
+
+```{r, eval = F}
+sum(complete.cases(airquality))
+```
+
+To create a dataset with all observations that contain NAs removed, use
+
+```{r, eval = F}
+airquality[complete.cases(airquality), ]
+```
+
+Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed.
+
+### Missing at random
+
+After having an overview about the NAs in your data, as second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:
+
+1.  MCAR = missing completely at random
+2.  MAR = missing at random
+3.  MNAR = missing not at random
+
+While the difference between 1,2 and 3 is easy to explain, the difference between 1 and 2 is more complicated. Let's start with the easy thing:
+
+The big problem is if your NAs are MNAR (= missing not at random). That would mean that
 
 [@bhaskaran2014difference]
 
-When observations of a variable are missing completely at random, the missing observations are a random subset of all observations; the missing and observed values will have similar distributions.
-Missing at random means there might be systematic differences between the missing and observed values, but these can be entirely explained by other observed variables.
+[@james2021]
 
-### (Multiple) Imputation 
+the missing and observed values will have similar distributions. Missing at random means there might be systematic differences between the missing and observed values, but these can be entirely explained by other observed variables.
 
-The main alternative to throwing out observations with NAs is filling them up. This process is known as (multiple) imputation. There are a number of packages that do that 
+### Dealing with NAs
+
+The main alternative to throwing out observations with NAs is filling them up. This process is known as (multiple) imputation. There are a number of packages that do that
 
 ```{r}
 library(missRanger)
@@ -55,6 +100,4 @@ airqualityImp<- missRanger(
 )
 ```
 
-
 https://stefvanbuuren.name/fimd/
-

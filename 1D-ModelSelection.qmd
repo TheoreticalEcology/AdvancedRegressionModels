@@ -198,13 +198,15 @@ summary(m1)
 
 A model selection (more on the method later) will remove one of the variables and consequently overestimates the effect size (effect size too high, true causal value outside the 95% CI).
 
-```{r}
+```{r, results='hide'}
 m2 = MASS::stepAIC(m1)
+```
+
+```{r}
 summary(m2)
 ```
 
 If you understand what AIC model selection is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
-
 
 
 ```{r}
@@ -254,7 +256,7 @@ We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's
 Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that start with the most simple (forward) or the most comples (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is MASS::StepAIC, for global selection MuMIn::dredge. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
 :::
 
-```{r, echo=FALSE}
+```{r, echo=T, results='hide'}
 library(MASS)
 reduced = stepAIC(fullModel)
 ```

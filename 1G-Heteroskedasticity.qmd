@@ -1,22 +1,17 @@
 # Heteroskedasticity
 
-```{=html}
-<!-- Put this here (right after the first markdown headline) and only here for each document! -->
-<script src="./scripts/multipleChoice.js"></script>
-```
-
 In the last chapter, we have discussed how to set up a basic lm, including the selection of predictors according to the purpose of the modelling (prediction, causal analysis). Remember in particular that for a causal analysis, which I consider the standard case in the scineces, first, think about the problem and your question an decide on a base structure. Ideally, you do this by:
 
-* Writing down your scientific questions (e.g. Ozone ~ Wind)
-* Then add confounders / mediators if needed.
-* Remember to make a difference between variables controlled for confounding, and other confounders (which are typically not controlled for confounding). We may have to use some model selection, but in fact with a good analysis plan this is rarely necessary for a causal analysis.
+-   Writing down your scientific questions (e.g. Ozone \~ Wind)
+-   Then add confounders / mediators if needed.
+-   Remember to make a difference between variables controlled for confounding, and other confounders (which are typically not controlled for confounding). We may have to use some model selection, but in fact with a good analysis plan this is rarely necessary for a causal analysis.
 
 After having arrived at such a base structure, we will have to check if the model is appropriate for the analysis. Yesterday, we already discussed about residual checks and we discussed that the 4 standard residual plots check for 4 different problems.
 
-* Residuals vs Fitted = Functional relationship.
-* Normal Q-Q = Normality of residuals.
-* Scale - Location = Variance homogeneity.
-* Residuals vs Leverage = Should we worry about certain outliers?
+-   Residuals vs Fitted = Functional relationship.
+-   Normal Q-Q = Normality of residuals.
+-   Scale - Location = Variance homogeneity.
+-   Residuals vs Leverage = Should we worry about certain outliers?
 
 Here an example for a linear regression of Ozone against Wind:
 
@@ -31,13 +26,10 @@ plot(fit)
 
 The usual strategy now is to
 
-1. First get the functional relationship right, so that the model correctly describe the mean
-2. Then adjust the model assumptions regardigng distribution, variance and outliers.
+1.  First get the functional relationship right, so that the model correctly describe the mean
+2.  Then adjust the model assumptions regardigng distribution, variance and outliers.
 
-We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models). 
-
-
-
+We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models).
 
 ## Modelling Variance Terms
 
@@ -64,7 +56,7 @@ So, what can we do?
 
 ### Transformation
 
-One option is to search for a transformation of the response that improves the problem  - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.
+One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.
 
 ### Model the variance
 
@@ -99,7 +91,7 @@ summary(fit)
 
 ### Exercise variance modelling
 
-Take this plot of Ozone ~ Solar.R using the airquality data. Clearly there is heteroskedasticity in the relationship:
+Take this plot of Ozone \~ Solar.R using the airquality data. Clearly there is heteroskedasticity in the relationship:
 
 ```{r chunk_chapter4_chunk14, echo=TRUE, eval=TRUE}
 plot(Ozone ~ Solar.R, data = airquality)
@@ -113,22 +105,19 @@ par(mfrow = c(2, 2))
 plot(m1)
 ```
 
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### Excercise
 
 We could of course consider other predictors, but let's say we want to fit this model specifically
 
-1. Try to get the variance stable with a transformation.
-2. Use the `gls`{.R} function (package `nlme`{.R}) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses`.{R} and decide how to model this.
-3. Use `glmmTMB`.{R} to model heteroskedasticity.
-
+1.  Try to get the variance stable with a transformation.
+2.  Use the `gls`{.R} function (package `nlme`{.R}) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses`.{R} and decide how to model this.
+3.  Use `glmmTMB`.{R} to model heteroskedasticity.
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
 :::
-
 
 ## Non-normality and Outliers
 
@@ -154,11 +143,10 @@ plot(fit)
 
 What can we do to deal with such distributional problems and outliers?
 
-* **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
-* **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other. -> We will do this on Wednesday.
-* **Robust regressions**.
-* **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
-
+-   **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
+-   **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other. -\> We will do this on Wednesday.
+-   **Robust regressions**.
+-   **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
 
 ***Change distribution***
 
@@ -201,10 +189,10 @@ summary(fit)
 
 Actions on **real outliers**:
 
-* Robust regression.
-* Remove
+-   Robust regression.
+-   Remove
 
 Actions on **different distributions**:
 
-* Transform.
-* Change distribution or quantile regression.
+-   Transform.
+-   Change distribution or quantile regression.

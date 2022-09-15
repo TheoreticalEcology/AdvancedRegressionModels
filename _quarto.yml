@@ -7,8 +7,6 @@ book:
   author: 
      name: "Florian Hartig"
      url: https://www.uni-regensburg.de/biologie-vorklinische-medizin/theoretische-oekologie/mitarbeiter/hartig/
-  citation:
-  
   date: "Sept 2020"
   site-url: https://TheoreticalEcology.github.io/AdvancedRegressionModels/
   repo-url: https://github.com/TheoreticalEcology/AdvancedRegressionModels
@@ -17,22 +15,30 @@ book:
   sharing: [twitter, facebook, linkedin]
   chapters:
     - index.qmd
-    
     - 1A-GettingStarted.qmd
-    - 1B-LinearRegression.qmd
-    - 1C-ModelChoice.qmd
-    - 1D-ModelSelection.qmd
-    - 1E-ANOVA.qmd
-    - 1K-MissingData.qmd
-    - 1F-GLMs.qmd    
-    - 1H-RandomEffects.qmd
-    - 1G-Heteroskedasticity.qmd
-    - 1I-CorrelationStructures.qmd
-    - 1J-Nonparametrics.qmd
-    - 1K-Summary.qmd
-    - 1Y-References.qmd
+    - part: "Modelling the mean"
+      chapters: 
+      - 1B-LinearRegression.qmd
+      - 1E-ANOVA.qmd
+      - 1H-RandomEffects.qmd
+    - part: "Model Choice"
+      chapters: 
+      - 1K-MissingData.qmd
+      - 1C-ModelChoice.qmd
+      - 1D-ModelSelection.qmd
+      - 1J-Nonparametrics.qmd
+    - part: "Modelling the distribution"
+      chapters: 
+      - 1F-GLMs.qmd    
+      - 1G-Heteroskedasticity.qmd
+      - 1I-CorrelationStructures.qmd
+    - part: "Summary and references"
+      chapters: 
+      - 1K-Summary.qmd   
+      - 1Y-References.qmd
   appendices:
     - 1Z-Appendix.qmd
+  engine: knitr
   
 bibliography: literature.bib
 google-scholar: true

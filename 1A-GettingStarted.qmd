@@ -56,7 +56,7 @@ devtools::install_github(repo = "TheoreticalEcology/EcoData",
 
 For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set `dependencies = F, build_vignettes = F`.
 
-## R prerequisites
+## Assumed R knowledge
 
 As mentioned in the preface, this book assumes that you have basic knowledge about data manipulation (reading in data, removing or selecting columns or rows, calculating means per group etc.) and plotting in R. Note that for both purposes, there are currently two main schools in the R environment which do the same things, but with very different syntax:
 
@@ -70,3 +70,11 @@ For this course, however, all examples are prepared in base R. If you're not fam
 ::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
+
+### Organization of this book
+
+This book is organized in three parts:
+
+1.  The first part of this book is focusing on using regression models to describe the mean response as a function of the one or several predictor variables. To that end, we will stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression, ANOVA and mixed models
+2.  The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods
+3.  The third part of the book is about modelling variance. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.
