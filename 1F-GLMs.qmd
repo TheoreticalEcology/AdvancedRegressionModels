@@ -1,4 +1,4 @@
-# GLMs
+# GL(M)Ms
 
 ---
 site: bookdown::bookdown_site
@@ -10,22 +10,47 @@ editor_options:
   chunk_output_type: console
 ---
 
-# GLMMs {#GLMMs}
-
-```{=html}
-<!-- Put this here (right after the first markdown headline) and only here for each document! -->
-<script src="./scripts/multipleChoice.js"></script>
-```
 ## Basics
 
-Generalized linear models (GLMs) in R are fit with the `glm()`{.R} function. The main difference from `lm()`{.R} is that you can specify the 'family' parameter, which gives you the option to use different distributions than the normal distribution.
+Generalized linear models (GLMs) extend the linear model (LM) to other (i.e. non-normal) distributions. The idea is the following:
 
-The family argument also includes the link function. The link function internally transforms a linear model on the predictors, so that its response corresponds to the range of the outcome distribution. If you don't specify a link, the default link for each family is chosen. The most important are
+1.  We want to keep the regression formula y \~ f(x) of the lm with all it's syntax, inlcuding splines, random effects and all that. In the GLM world, this is called the "linear predictor".
 
--   Log link for Poisson family.
--   Logit link for Bernoulli / Binomial family.
+2.  However, in the GLM, we now allow other residual distributions than normal, e.g. binomial, Poisson, Gamma, etc.
 
-Of course, there are many additional distributions that you could consider for your response. Here an overview of the most common choices:
+3.  Some families require a particular range of the predictions (e.g. binomial requires predictions between zero and one). To achieve this, we use a so-called link function to bring the results of the linear predictor to the desired range.
+
+In R, the distribution is specified via the family() function, which distinguishes the glm from the lm function. If you look at the help of family, you will see that the link function is an argument of family(). If no link is provided, the default link for the respective family is chosen.
+
+```{r}
+?family
+```
+
+A full GLM structure is thus:
+
+$$
+y \sim family[link^{-1}(f(x) + RE)]
+$$
+
+::: callout-note
+As you see, in noted the link function as $link^{-1}$ in this equation. The reason is that traditionally, the link function is applied to the left hand side of the equation, i.e.
+
+$$
+link(y) \sim x
+$$
+
+This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that log(y) = x, which actually means that we assume y = exp(x), i.e. the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.
+:::
+
+## Important GLM variants
+
+The most important are
+
+-   Logit link for Bernoulli / Binomial family = logistic regression
+-   Log link for Poisson family = Poisson regression
+-   Beta regresion for continous 0/1 data
+
+Of course, there are many additional distributions that you could consider for your response. Here an overview of the common choices:
 
 ```{r chunk_chapter4_0, echo=FALSE, out.width="150%", out.height="150%"}
 knitr::include_graphics(c("images/linkFunctions.jpg"))
@@ -34,7 +59,58 @@ knitr::include_graphics(c("images/linkFunctions.jpg"))
 ```{=html}
 <p><small>Screenshot taken from Wikipedia: <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function</a>. Content licensed under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike License 3.0</a>.</small></p>
 ```
-### Binomial data - logistic regression
+### Count data - Poisson regression
+
+The standard model for count data (1,2,3) is the Poisson regression, which assumes a Poisson distribution + log link function. Here an example:
+
+```{r}
+library(EcoData)
+
+str(birdfeeding)
+plot(feeding ~ attractiveness, data = birdfeeding)
+```
+
+```{r}
+fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
+summary(fit)
+```
+
+Log link means that calculating predicted value for attractiveness requires exp(linear response).
+
+```{r chunk_chapter5_chunk17, echo=TRUE, eval=TRUE}
+exp(1.47459 + 3 * 0.14794)
+```
+
+Alternatively, you can use the predict() function with type = "response"
+
+```{r}
+dat = data.frame(attractiveness = 3)
+predict(fit, newdata = dat) # linear predictor
+predict(fit, newdata = dat, type = "response") # response scale
+```
+
+Effect plots, note the log scaling on the y axis
+
+```{r chunk_chapter5_chunk18, echo=TRUE, eval=TRUE}
+library(effects)
+plot(allEffects(fit))
+```
+
+#### Notes
+
+For count data, the log link is nearly always used. Before GLMs were widely available, was common to it lm with log transformed counts, which is basically log link + normal distribution
+
+Poisson models are often overdispersed -\> see chapter on residual checks. Common alternative to the Poisson is the negative binomial, which is essentially a Poisson with a parameter for the variance (to address overdispersion)
+
+If there is a variable that that controls the number of counts (e.g. time, area), this variable is usually added as a offset in the following form
+
+```{r, eval = F}
+fit = glm(y ~ x + offset(log(area)), family = "poisson")
+```
+
+As the log-link connects the linear predictor as in y = exp(x), and exp(x + log(area)) = exp(x) \* area, this makes the expected counts proportional to area, or whatever variable is added as a log offset.
+
+### 0/1 or k/n data - logistic regression
 
 The standard model to fit binomial (0/1 or k/n) data is the logistic regression, which combines the binomial distribution with a logit link function. To get to know this model, let's have a look at the titanic data set in EcoData:
 
@@ -93,11 +169,53 @@ Note:
 -   If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with k \~ x, weights = n
 -   For interactions, as in our age effect for male / female, effect sizes can in general not be directly be compared, because they are calculated at a different intercept, and through the nonlinear link, this leads to a different effect on the response. One option to solve this are the so-called **odds ratios**. Or just look at the response scale, e.g. via the effect plots, and interpret there! In our example, however, effect directions changed, so there is no question that there is an interactions.
 
-***Residual checks***
+### Example - Elk Data
+
+```{=html}
+  <hr/>
+  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
+```
+You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:
+
+a)  A predictive analysis, i.e. a model to predict where Elks can be found.
+b)  A causal analysis, trying to understand the effect of roads on Elk presence.
+
+```{=html}
+  <details>
+    <summary>
+      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
+    </summary>
+    <p>
+```
+***a***
+
+```{r chunk_chapter5_task_0, message=FALSE, warning=FALSE}
+
+```
+
+***b***
+
+```{r chunk_chapter5_task_1, message=FALSE, warning=FALSE}
+
+```
+
+```{=html}
+    </p>
+  </details>
+  <br/><hr/>
+```
+## Residual checks in GLMs
+
+Let's look again at the titanic example
+
+```{r}
+m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
+```
 
 How can we check the residuals of a GLM? First of all: Due to an unfortunate programming choice in R (Nerds: Check class(m1)), the standard residual plots still work
 
 ```{r chunk_chapter5_chunk10, echo=TRUE, eval=TRUE}
+
 par(mfrow = c(2, 2))
 plot(m1)
 ```
@@ -152,73 +270,8 @@ plotResiduals(m2, form = model.frame(m2)$pclass)
 Now, residuals look fine. We will talk about `DHARMa`.{R} more later, see also comments on testing binomial GLMs\
 <a href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data" target="_blank" rel="noopener">here</a>.
 
-### Poisson regression
+## Problems in GLMs
 
-The second common regression model is the Poisson regression, which is used for count data (1,2,3). The Poisson regression means a Poisson distribution + log link function.
-
-```{r chunk_chapter5_chunk16, echo=TRUE, eval=TRUE}
-library(EcoData)
-
-str(birdfeeding)
-plot(feeding ~ attractiveness, data = birdfeeding)
-
-fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
-summary(fit)
-```
-
-Log link means that calculating predicted value for attractiveness requires exp(linear response).
-
-```{r chunk_chapter5_chunk17, echo=TRUE, eval=TRUE}
-exp(1.47459 + 3 * 0.14794)
-```
-
-Effect plots, note the log scaling on the y axis
-
-```{r chunk_chapter5_chunk18, echo=TRUE, eval=TRUE}
-plot(allEffects(fit))
-```
-
-Residual checks are OK, but note that most Poisson models in practice tend to be overdispersed (see next chapter).
-
-```{r chunk_chapter5_chunk19, echo=TRUE, eval=TRUE}
-res = simulateResiduals(fit, plot = T)
-```
-
-### Example - Elk Data
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
-You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:
-
-a)  A predictive analysis, i.e. a model to predict where Elks can be found.
-b)  A causal analysis, trying to understand the effect of roads on Elk presence.
-
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-***a***
-
-```{r chunk_chapter5_task_0, message=FALSE, warning=FALSE}
-
-```
-
-***b***
-
-```{r chunk_chapter5_task_1, message=FALSE, warning=FALSE}
-
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
 ## Dispersion Problems in GLMs
 
 First of all: all other comments (causal structure, checking for misfit of the model) that we discussed for LMs also apply for GLMs in general, and you should check models for those problems. The reason that I concentrate here on dispersion problems is that those are different in GLMs than in normal LMs, so this is an issue that comes on top of the other things.

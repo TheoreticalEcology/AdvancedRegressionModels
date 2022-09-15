@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: docs
+  output-dir: temp
 
 book:
   title: "Advanced Regression Models with R"
@@ -37,7 +37,8 @@ book:
       - 1K-Summary.qmd   
       - 1Y-References.qmd
   appendices:
-    - 1Z-Appendix.qmd
+    - 5A-RCrashCourse.qmd
+    - 5B-CheatSheet.qmd
   engine: knitr
   
 bibliography: literature.bib
@@ -45,7 +46,9 @@ google-scholar: true
 
 execute:
   cache: false
-
+  execute_dir: render
+  cache_dir: cache
+  
 format:
   html:
     theme: cosmo

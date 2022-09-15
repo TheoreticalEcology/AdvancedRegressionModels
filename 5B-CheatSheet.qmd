@@ -1,0 +1,17 @@
+# Cheat sheet
+
+## Formula syntax
+
+| Formula                | Interpretation                                                           |
+|------------------------|--------------------------------------------------------------------------|
+| `y ~ x`                | Intercept + slope                                                        |
+| `y ~ 1`                | intercept only                                                           |
+| `y ~ x - 1` or `x + 0` | only slope, for categorical                                              |
+| `log(x) ~ sqrt(x)`     | predictor and response variable can be transformed                       |
+| `y ~ x1 + x2`          | multiple predictors can be added                                         |
+| `y ~ x1 * x2`          | interaction and main effects                                             |
+| `y ~ x1:x2`            | only interaction                                                         |
+| `y ~ (x1 + x2)^2`      | all 2nd order interactions, works also with 3rd order \^3 etc            |
+| `y ~ I(x^2)`           | I() forces mathematical interpretation of whatever is in the parenthesis |
+| `y ~ s(x)`             | spline (works only for mgcv)                                             |
+| `y ~ te(x1, x2)`       | tesnsor spline (works only for mgcv)                                     |

@@ -1,10 +1,5 @@
 # Correlation structures {#correlation}
 
-```{=html}
-<!-- Put this here (right after the first markdown headline) and only here for each document! -->
-<script src="./scripts/multipleChoice.js"></script>
-```
-
 ## General Idea
 
 Except for the random effects, we have so far assumed that observations are independent. However, there are a number of other common correlation structures that we may want to consider. Here a visualization from <a href="https://onlinelibrary.wiley.com/doi/10.1111/ecog.02881" target="_blank" rel="noopener">Roberts et al., 2016</a> (reproduced as OA, copyright: the authors).
@@ -15,31 +10,30 @@ knitr::include_graphics(c("images/correlation.png"))
 
 The figure shows random effects, and a number of other correlation structures. In random effects, residuals are structured in groups. All of the other three correlation structures discussed here are different. They are distance-based correlations between data points. Distance is expressed, e.g., by:
 
-* Spatial distance.
-* Temporal distance.
-* Phylogenetic distance.
+-   Spatial distance.
+-   Temporal distance.
+-   Phylogenetic distance.
 
 For either of these structures, there can be two phenomena that lead to correlations:
 
-1. There can be a **trend** in the given space (e.g. time, space), which we have to remove first.
-2. After accounting for the trend, there can be a so-called **autocorrelation** between data points.
+1.  There can be a **trend** in the given space (e.g. time, space), which we have to remove first.
+2.  After accounting for the trend, there can be a so-called **autocorrelation** between data points.
 
 The idea of the so-called **conditional autoregressive** (CAR) structures is, that we make parametric assumptions for how the correlation between data points falls off with distance. Then, we fit the model with this structure.
 
 Similar as for the variance modelling, we can add this structures
 
-* either in `nlme::gls`{.R}, see <a href="https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html" target="_blank" rel="noopener">https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html</a>,
-* or in `glmmTMB`{.R}, see <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html</a>.
+-   either in `nlme::gls`{.R}, see <a href="https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html" target="_blank" rel="noopener">https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html</a>,
+-   or in `glmmTMB`{.R}, see <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html</a>.
 
 The following pages provide examples and further comments on how to do this.
-
 
 ## Temporal Correlation Structures
 
 In principle, spatial and temporal correlation are quite similar, there are 2 options we can have:
 
-1. There is a spatial trend in time / space, which creates a correlation in space / time.
-2. There truly is a spatial correlation, after accounting for the trend.
+1.  There is a spatial trend in time / space, which creates a correlation in space / time.
+2.  There truly is a spatial correlation, after accounting for the trend.
 
 Unfortunately, the distinction between a larger trend and a correlation is quite fluid. Nevertheless, one should always first check for and remove the trend, typically by including time/space as a predictor, potentially in a flexible way (GAMs come in handy). After this is done, we can fit a model with a temporally/spatially correlated error.
 
@@ -66,7 +60,7 @@ res2 = recalculateResiduals(res, group = hurricanes$Year)
 testTemporalAutocorrelation(res2, time = unique(hurricanes$Year))
 ```
 
-A second example from Pinheiro and Bates, pp. 255-258. The data originates from Vonesh and Carter (1992), who describe data measured on high-flux hemodialyzers to assess their in vivo ultrafiltration characteristics. The ultrafiltration rates (in mL/hr) of 20 high-flux dialyzers were measured at seven different transmembrane pressures (in dmHg). The in vitro evaluation of the dialyzers used bovine blood at flow rates of either 200~dl/min or 300~dl/min. The data, are also analyzed in Littell, Milliken, Stroup and Wolfinger (1996).
+A second example from Pinheiro and Bates, pp. 255-258. The data originates from Vonesh and Carter (1992), who describe data measured on high-flux hemodialyzers to assess their in vivo ultrafiltration characteristics. The ultrafiltration rates (in mL/hr) of 20 high-flux dialyzers were measured at seven different transmembrane pressures (in dmHg). The in vitro evaluation of the dialyzers used bovine blood at flow rates of either 200\~dl/min or 300\~dl/min. The data, are also analyzed in Littell, Milliken, Stroup and Wolfinger (1996).
 
 See `?Dialyzer`{.R} for explanation of the variables (data comes with the package `nlme`.{R}).
 
@@ -83,7 +77,6 @@ plot(fm2Dial.gls)
 fm3Dial.gls = update(fm2Dial.gls, corr = corAR1(0.771, form = ~ 1 | Subject))
 summary(fm3Dial.gls)
 ```
-
 
 ## Spatial Correlation Structures
 
@@ -112,7 +105,6 @@ plot(tann.dir.vgm)
 ```
 
 To remove the spatial trend, we can use a 2d-spine, called a tensor spline:
-
 
 ```{r chunk_chapter6_chunk5, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(mgcv)
@@ -143,18 +135,17 @@ fit1 = gls(thick ~ soil + north + I(north^2), data = thickness)
 anova(fit1, fit2)
 ```
 
-
-
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### Plant counts in Regensburg
-Use the dataset EcoData::plantcounts. Our scientific question is if richness ~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of ?plantcounts.
+
+Use the dataset EcoData::plantcounts. Our scientific question is if richness \~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of ?plantcounts.
 
 This is count data, so start with a Poisson or Neg Binom GLM. The quadrats are not all equally sized, so you should include an offest to account for area. Then, check for spatial autocorrelation.
 
-If you find autocorrelation that cannot be removed with a gam, the problem is that the gls function that we have used so far only extends lm, and not glm models. In this case, you can either read up in https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html how to specify a spatial covariance in glmmTMB, or just log transform your counts + 1, and fit a gls. 
+If you find autocorrelation that cannot be removed with a gam, the problem is that the gls function that we have used so far only extends lm, and not glm models. In this case, you can either read up in https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html how to specify a spatial covariance in glmmTMB, or just log transform your counts + 1, and fit a gls.
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 ```{r message=FALSE, warning=FALSE}
@@ -192,19 +183,15 @@ res <- simulateResiduals(fit2)
 plot(res)
 testSpatialAutocorrelation(res, x = plants_sf$lon, y =  plants_sf$lat)
 ```
-
-
 :::
 
-
-
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### The snouter data
 
 Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 ```{r chunk_chapter6_task_0, message=FALSE, warning=FALSE}
@@ -212,7 +199,6 @@ library(EcoData)
 str(snouter)
 ```
 :::
-
 
 ## Phylogenetic Structures (PGLS)
 
@@ -250,7 +236,6 @@ summary(fit)
 abline(fit)
 ```
 
-
 Check for phylogenetic signal in residuals.
 
 ```{r}
@@ -270,7 +255,7 @@ res = simulateResiduals(fit)
 testSpatialAutocorrelation(res, distMat = cophenetic(anolisTree))
 ```
 
-An old-school method to deal with the problem are the so-called **Phylogenetically Independent Contrasts** (PICs) (Felsenstein, J. (1985) "Phylogenies and the comparative method". American Naturalist, 125, 1–15.). The idea here is to transform your data in a way that an lm is still appropriate. For completeness, I show the method here.
+An old-school method to deal with the problem are the so-called **Phylogenetically Independent Contrasts** (PICs) (Felsenstein, J. (1985) "Phylogenies and the comparative method". American Naturalist, 125, 1--15.). The idea here is to transform your data in a way that an lm is still appropriate. For completeness, I show the method here.
 
 ```{r chunk_chapter6_chunk12, echo=TRUE, eval=TRUE}
 # Extract columns.
@@ -306,8 +291,7 @@ plot(hostility ~ awesomeness, data = anolisData)
 abline(pglsModel, col = "red")
 ```
 
-OK, same result, but PGLS is WAY more flexible than PICs.
-For example, we can include a discrete predictor:
+OK, same result, but PGLS is WAY more flexible than PICs. For example, we can include a discrete predictor:
 
 ```{r chunk_chapter6_chunk14, echo=TRUE, eval=TRUE}
 pglsModel2 = gls(hostility ~ ecomorph,
@@ -346,16 +330,14 @@ Other example: <a href="http://schmitzlab.info/pgls.htmla" target="_blank" rel="
 
 For fitting PGLS with various models, you should also consider the `caper`{.R} package.
 
-
-:::{.callout-caution icon=false}
+::: {.callout-caution icon="false"}
 #### Excercise
 
 Download the following two datasets
 
-http://www.phytools.org/Cordoba2017/data/BarbetTree.nex
-http://www.phytools.org/Cordoba2017/data/Barbetdata.csv
+http://www.phytools.org/Cordoba2017/data/BarbetTree.nex http://www.phytools.org/Cordoba2017/data/Barbetdata.csv
 
-These data are from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called “barbets.” The code reads in and cleans the data:
+These data are from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called "barbets." The code reads in and cleans the data:
 
 ```{r, eval = T}
 library(ape)
@@ -371,10 +353,10 @@ reducedTree<-drop.tip(tree, obj$tree_not_data)
 geiger::name.check(reducedTree,dat)
 ```
 
-Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote~Lnalt
+Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote\~Lnalt
 :::
 
-:::{.callout-tip collapse="true" appearance="minimal" icon=false }
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 ```{r}
@@ -385,7 +367,7 @@ library(effects)
 plot(allEffects(fit,partial.residuals = T))
 ```
 
-Bit of a misfit, to get a good fit, after playing around, I added an interaction with a quadratic effect - you can probably also find other solutions. 
+Bit of a misfit, to get a good fit, after playing around, I added an interaction with a quadratic effect - you can probably also find other solutions.
 
 ```{r}
 fit <- lm(Lnote~ scale(Lnalt) * I(scale(Lnalt)^2), data = dat)
@@ -443,16 +425,11 @@ fit <- gls(Lnote~ scale(Lnalt),
 summary(fit)
 ```
 
-The observation is that the PGLS effect estimate is significant while normal lm is not. The reason is probably that the PGLS is re-weighting residuals, and it seems that in this case, the re-weighting is changing the slope. What we learn by this example is that a PGLS can increase significance, and in this case I would argue wrongly so, as we have no indication that there is a phylogenetic signal. I would therefore NOT recommend to blindly fit PGLS, but rather test first if a PGLS is needed, and only then apply.  
+The observation is that the PGLS effect estimate is significant while normal lm is not. The reason is probably that the PGLS is re-weighting residuals, and it seems that in this case, the re-weighting is changing the slope. What we learn by this example is that a PGLS can increase significance, and in this case I would argue wrongly so, as we have no indication that there is a phylogenetic signal. I would therefore NOT recommend to blindly fit PGLS, but rather test first if a PGLS is needed, and only then apply.
 :::
-
-
-
 
 ### Covariance structures in glmmTMB
 
 gls only allows normally distributed responses. For GLMMs, you can use glmmTMB, which has (experimental) support for spatial, temporal or phylogenetic covariance structures on the REs. If you want to specific residual autocorrelation, you can create and observation-level RE and specify the covariance structure there. Take one of the examples that we had before (e.g. plantcount) and try to fit a spatial covariance with glmmTMB, using the tutorial here https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html
 
-Alternative packages for spatial models are MASS::glmmPQL, BRMS, or INLA. 
-
-
+Alternative packages for spatial models are MASS::glmmPQL, BRMS, or INLA.

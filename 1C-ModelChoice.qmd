@@ -249,7 +249,6 @@ summary(fit)
 Note that you shouldn't interpret the other variables (Table II fallacy) in a causal analysis, unless the other variables are analyzed / corrected for confounders / colliders.
 :::
 
-
 ## SEMs
 
 Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
@@ -289,4 +288,3 @@ Plot options ... not so nice as before.
 library(lavaanPlot)
 lavaanPlot(model = fit)
 ```
-

@@ -71,7 +71,7 @@ For this course, however, all examples are prepared in base R. If you're not fam
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
 
-### Organization of this book
+## Organization of this book
 
 This book is organized in three parts:
 

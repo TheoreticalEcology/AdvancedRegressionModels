@@ -9,7 +9,6 @@ knitr::opts_chunk$set(cache = TRUE)
 set.seed(123)
 ```
 
-
 If we have a response variable and want to understand how this response variable is influenced by one or several factors, we will typically use a **regression model**. The aim of this course is to enable you to run such a regression model in the quality expected for a "real" scientific study. To do so, you will have to master a number of skills, in particular:
 
 -   Understanding the fundamental statistical indicators in regression analysis (p-value, estimator) and their quality (power, bias, error, coverage),

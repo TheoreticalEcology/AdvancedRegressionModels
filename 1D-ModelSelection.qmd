@@ -208,7 +208,6 @@ summary(m2)
 
 If you understand what AIC model selection is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
 
-
 ```{r}
 set.seed(123)
 x1 = runif(100)
@@ -276,6 +275,41 @@ The result ist good and bad. Good is that we now get the effect of y \~ x signif
 The phenomenon is well-known in the stats literature, and the reason is that performing a stepwise / global selection + calculating a regression table for the selected model is **hidden multiple testing** and has inflated Type I error rates! Remember, you are implicitly trying out hundreds or thousand of models, and are taking the one that is showing the strongest effects.
 
 There are methods to correct for the problem (keyword: post-selection inference), but none of them are readily available in R, and also, mostly those corrected p-values have lower power than the full model.
+
+## Non-parametric R2 - cross-validation
+
+Cross-validation is the non-parametric alternative to AIC. Note that AIC is asymptotically equal to leave-one-out cross-validation.
+
+For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`.{R}, using the `cv.glm`{.R} function:
+
+```{r chunk_chapter7_chunk18, echo=TRUE, eval=TRUE}
+library(boot)
+
+# Leave-one-out and 6-fold cross-validation prediction error for the mammals data set.
+data(mammals, package="MASS")
+mammals.glm = glm(log(brain) ~ log(body), data = mammals)
+cv.err = cv.glm(mammals, mammals.glm, K = 5)$delta
+
+
+# As this is a linear model we could calculate the leave-one-out 
+# cross-validation estimate without any extra model-fitting.
+muhat = fitted(mammals.glm)
+mammals.diag = glm.diag(mammals.glm)
+(cv.err = mean((mammals.glm$y - muhat)^2/(1 - mammals.diag$h)^2))
+
+# Leave-one-out and 11-fold cross-validation prediction error for 
+# the nodal data set.  Since the response is a binary variable an
+# appropriate cost function is
+cost = function(r, pi = 0){ mean(abs(r - pi) > 0.5) }
+
+nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
+(cv.err = cv.glm(nodal, nodal.glm, cost, K = nrow(nodal))$delta)
+(cv.11.err = cv.glm(nodal, nodal.glm, cost, K = 11)$delta)
+```
+
+Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see Roberts, David R., et al. "Cross‐validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure." *Ecography* 40.8 (2017): 913-929., methods implemented in package `blockCV`{.R}, see <a href="https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html</a>.
+
+
 
 ## Case studies
 

@@ -2,7 +2,7 @@
 
 ## Reminder: Modelling Strategy
 
-```{r chunk_chapter7_chunk0, echo=FALSE, out.width="150%", out.height="150%"}
+```{r chunk_chapter7_chunk0, echo=FALSE}
 knitr::include_graphics(c("images/reminder.jpg"))
 ```
 
@@ -113,3 +113,18 @@ mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
 ```
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
+
+## Advanced topics 
+
+Bayesian estimation as a good general platform 
+
+- shrinkage
+- p-value / df problems less visible 
+
+
+
+
+
+
+
+
