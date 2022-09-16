@@ -637,19 +637,13 @@ It is important to note that this is a description of the fitted model, not nece
 
 As mentioned above, tests for significance of the random effect structure are complicated
 
-## Non-parametric methods
+## Excursion: the bootstrap
 
-The beautiful thing about the linear regression (LM) is that LM exact solutions for unbiased estimates, p-values and all other indicators are known analytically, regardless of the sample size.
+The linear model (LM) has the beautiful property that it delivers unbiased estimates, calibrated p-values and all that based on analytical expressions that remain valid, regardless of the sample size.
 
-Unfortunately, there are very few extensions of the LM that completely maintain all of these desirable properties for limited sample sizes. The underlying problem is that for more complicated models, there are usually no analytic expressions for the expected null or sampling distributions, or those distributions depend on the observed data. For that reason, non-parametric methods to generate confidence intervals and p-values are increasingly used when going to more complicated models
+Unfortunately, there are very few extensions of the LM that completely maintain all of these desirable properties for limited sample sizes. The underlying problem is that for more complicated models, there are usually no analytic expressions for the expected null or sampling distributions, or those distributions depend on the observed data.
 
-The core for a
-
-This chapter does not directly belong to the area of model choice, but I think
-
-We have seen so far that calculating p-values
-
-## Non-parametric CI - the bootstrap
+For that reason, non-parametric methods to generate confidence intervals and p-values are increasingly used when going to more complicated models (as we saw in the repeated use of the parametric bootstrap for mixed models), which motivates this small excursion into non-parametric methods, and in particular the bootstrap.
 
 ### Standard (non-parametric) bootstrap
 
@@ -657,7 +651,6 @@ The **bootstrap** is a method to generate approximate confidence intervals based
 
 ```{r chunk_chapter7_chunk7, echo=TRUE, eval=TRUE}
 set.seed(123)
-
 data = ifelse(rbinom(100, 1, 0.5) == 1, rexp(100, 4) , rnorm(100, -2))
 hist(data)
 ```
@@ -694,16 +687,6 @@ boot.ci(out)
 
 ::: {.callout-caution icon="false"}
 ## Excercise
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
-:::
-
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
 Calculate a bootstrapped confidence interval for the mean of this exponential distribution. Compare it to the naive standard error:
 
 ```{r chunk_chapter7_task_0, message=FALSE, warning=FALSE}
@@ -711,43 +694,12 @@ set.seed(1234)
 data = rexp(500)
 ```
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-```{r chunk_chapter7_task_1, message=FALSE, warning=FALSE}
+:::
 
-```
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+:::
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-### Jacknife
-
-An alternative to the bootstrap is the **jacknife**.
-
-From Wikipedia:
-
-> In statistics, the jackknife is a resampling technique especially useful for variance and bias estimation. The jackknife predates other common resampling methods such as the bootstrap. The jackknife estimator of a parameter is found by systematically leaving out each observation from a data set and calculating the estimate and then finding the average of these calculations. Given a sample of size N, the jackknife estimate is found by aggregating the estimates of each N-1-sized sub-sample.
-
-> The jackknife technique was developed by Maurice Quenouille (1949, 1956). John Tukey (1958) expanded on the technique and proposed the name "jackknife" since, like a physical jack-knife (a compact folding knife), it is a rough-and-ready tool that can improvise a solution for a variety of problems even though specific problems may be more efficiently solved with a purpose-designed tool.
-
-> The jackknife is a linear approximation of the bootstrap.
-
-```{r chunk_chapter7_chunk10, echo=TRUE, eval=TRUE}
-library(bootstrap)
-
-theta = function(x){ mean(x) }
-results = jackknife(data, theta)
-
-results$jack.se
-results$jack.bias
-```
 
 ### Parametric bootstrap
 
@@ -765,7 +717,7 @@ m = lm(y ~ x)
 summary(m)
 ```
 
-We are interested in getting the confidence intervals for the coefficients of the model:
+We are interested in getting the confidence intervals for the coefficients of the model. We could apply a non-parametric bootstrap, re-sampling the 
 
 ```{r chunk_chapter7_chunk12, echo=TRUE, eval=TRUE}
 resampledParameters = function(){

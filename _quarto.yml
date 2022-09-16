@@ -18,37 +18,35 @@ book:
     - 1A-GettingStarted.qmd
     - part: "Modelling the mean"
       chapters: 
-      - 1B-LinearRegression.qmd
-      - 1E-ANOVA.qmd
-      - 1H-RandomEffects.qmd
+      - 2A-LinearRegression.qmd
+      - 2B-ANOVA.qmd
+      - 2C-RandomEffects.qmd
     - part: "Model Choice"
       chapters: 
-      - 1K-MissingData.qmd
-      - 1C-ModelChoice.qmd
-      - 1D-ModelSelection.qmd
-      - 1J-Nonparametrics.qmd
+      - 3A-MissingData.qmd
+      - 3B-CausalInference.qmd
+      - 3C-ModelSelection.qmd
     - part: "Modelling the distribution"
       chapters: 
-      - 1F-GLMs.qmd    
-      - 1G-Heteroskedasticity.qmd
-      - 1I-CorrelationStructures.qmd
+      - 4A-GLMs.qmd    
+      - 4B-Heteroskedasticity.qmd
+      - 4C-CorrelationStructures.qmd
     - part: "Summary and references"
       chapters: 
-      - 1K-Summary.qmd   
-      - 1Y-References.qmd
+      - 5A-Summary.qmd   
+      - 5B-References.qmd
   appendices:
-    - 5A-RCrashCourse.qmd
-    - 5B-CheatSheet.qmd
+    - 6A-RCrashCourse.qmd
+    - 6B-CheatSheet.qmd
   engine: knitr
   
 bibliography: literature.bib
 google-scholar: true
 
 execute:
+  freeze: auto
   cache: false
-  execute_dir: render
-  cache_dir: cache
-  
+
 format:
   html:
     theme: cosmo
