@@ -1,39 +1,10 @@
-# Heteroskedasticity
+# Dispersion models
 
-In the last chapter, we have discussed how to set up a basic lm, including the selection of predictors according to the purpose of the modelling (prediction, causal analysis). Remember in particular that for a causal analysis, which I consider the standard case in the scineces, first, think about the problem and your question an decide on a base structure. Ideally, you do this by:
+Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is know as heteroskedasticity.
 
--   Writing down your scientific questions (e.g. Ozone \~ Wind)
--   Then add confounders / mediators if needed.
--   Remember to make a difference between variables controlled for confounding, and other confounders (which are typically not controlled for confounding). We may have to use some model selection, but in fact with a good analysis plan this is rarely necessary for a causal analysis.
+## Heteroskedasticity in the linear model
 
-After having arrived at such a base structure, we will have to check if the model is appropriate for the analysis. Yesterday, we already discussed about residual checks and we discussed that the 4 standard residual plots check for 4 different problems.
-
--   Residuals vs Fitted = Functional relationship.
--   Normal Q-Q = Normality of residuals.
--   Scale - Location = Variance homogeneity.
--   Residuals vs Leverage = Should we worry about certain outliers?
-
-Here an example for a linear regression of Ozone against Wind:
-
-```{r chunk_chapter4_chunk2, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Temp , data = airquality)
-plot(Ozone ~ Temp, data = airquality)
-abline(fit)
-
-par(mfrow = c(2, 2))
-plot(fit)
-```
-
-The usual strategy now is to
-
-1.  First get the functional relationship right, so that the model correctly describe the mean
-2.  Then adjust the model assumptions regardigng distribution, variance and outliers.
-
-We will go through these steps now, and on the way also learn how to deal with heteroskedasticity, outliers, weird distributions and grouped data (random or mixed models).
-
-## Modelling Variance Terms
-
-After we have fixed the functional form, we want to look at the distribution of the residuals. We said yesterday that you can try to get them more normal by applying an appropriate transformation, e.g. the logarithm or square root. Without transformation, we often find that data shows heteroskedasticity, i.e. the residual variance changes with some predictor or the mean estimate (see also Scale - Location plot). Maybe your experimental data looks like this:
+The easiest way to understand heteroskedasticity is in the linear model. Let's look at an extreme example that we create by simulating some data
 
 ```{r chunk_chapter4_chunk8, echo=TRUE, eval=TRUE}
 set.seed(125)
@@ -58,38 +29,40 @@ So, what can we do?
 
 One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.
 
-### Model the variance
+### Modelling the variance / dispersion
 
-The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. The basic option in R is `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In this function, you can specify a dependency of the residual variance on a predictor or the response. See options via `?varFunc`{.R}. In our case, we will use the varIdent option, which allows to specify a different variance per treatment.
+The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow to model the dispersion
+
+The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In the gls function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the varIdent function, which allows to specify a different variance per treatment.
 
 ```{r chunk_chapter4_chunk10, echo=TRUE, eval=TRUE}
 library(nlme)
 
-fit = gls(observation ~ treatment, data = data, weights = varIdent(form = ~ 1 | treatment))
+fit = gls(observation ~ treatment, data = data, 
+          weights = varIdent(form = ~ 1 | treatment))
 summary(fit)
 ```
 
-If you check the ANOVA, also the ANOVA is significant!
+If we check the ANOVA, we see that, unlike before, we get a significant effect of the treatment
 
 ```{r chunk_chapter4_chunk11, echo=TRUE, eval=TRUE}
 anova(fit)
 ```
 
-The second option for modeling variances is to use the `glmmTMB`.{R} package, which we will use quite frequently this week. Here, you can specify an extra regression formula for the dispersion (= residual variance). If we fit this:
+The second option for modeling variances is to use the `glmmTMB` package. Here, you can specify an extra regression formula for the dispersion (= residual variance). If we fit this:
 
 ```{r chunk_chapter4_chunk12, echo=TRUE, eval=TRUE}
 library(glmmTMB)
 
-fit = glmmTMB(observation ~ treatment, data = data, dispformula = ~ treatment)
+fit = glmmTMB(observation ~ treatment, data = data, 
+              dispformula = ~ treatment)
+summary(fit)
 ```
 
 We get 2 regression tables as outputs - one for the effects, and one for the dispersion (= residual variance). We see, as expected, that the dispersion is higher in groups B and C compared to A. An advantage over gls is that we get confidence intervals and p-values for these differences on top!
 
-```{r chunk_chapter4_chunk13, echo=TRUE, eval=TRUE}
-summary(fit)
-```
-
-### Exercise variance modelling
+::: {.callout-caution icon="false"}
+#### Excercise variance modelling
 
 Take this plot of Ozone \~ Solar.R using the airquality data. Clearly there is heteroskedasticity in the relationship:
 
@@ -99,27 +72,42 @@ plot(Ozone ~ Solar.R, data = airquality)
 
 We can also see this when we fit the regression model:
 
-```{r chunk_chapter4_chunk15, echo=TRUE, eval=TRUE}
+```{r chunk_chapter4_chunk15, echo=TRUE, eval=F}
 m1 = lm(Ozone ~ Solar.R, data = airquality)
 par(mfrow = c(2, 2))
 plot(m1)
 ```
 
-::: {.callout-caution icon="false"}
-#### Excercise
-
 We could of course consider other predictors, but let's say we want to fit this model specifically
 
 1.  Try to get the variance stable with a transformation.
-2.  Use the `gls`{.R} function (package `nlme`{.R}) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses`.{R} and decide how to model this.
-3.  Use `glmmTMB`.{R} to model heteroskedasticity.
+2.  Use the `gls` function (package `nlme`) with the untransformed response to make the variance dependent on Solar.R. Hint: Read in `varClasses` and decide how to model this.
+3.  Use `glmmTMB` to model heteroskedasticity.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 :::
 
-## Non-normality and Outliers
+## Heteroskedasticity in GLMMs
+
+GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. In `glmmTMB`, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula`.{R} argument, in the same way as in `nlme`.{R} for the linear model.
+
+Variance problems would show up when plotting residuals against predicted and predictors. On the previous page, we saw some variance problems in the Salamander model. We could add a variable dispersion model via
+
+```{r chunk_chapter5_chunk21, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+m3 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom1,
+             dispformula = ~ spp + mined ,  data = Salamanders)
+summary(m3)
+library(DHARMa)
+res = simulateResiduals(m3, plot = T)
+
+par(mfrow = c(1, 2))
+plotResiduals(res, Salamanders$spp)
+plotResiduals(res, Salamanders$mined)
+```
+
+## Excursion: outliers, robust and quantile regression
 
 What can we do if, after accounting for the functional relationship, response transformation and variance modelling, residual diagnostic 2 shows non-normality, in particular strong outliers? Here simulated example data with strong outliers / deviations from normality:
 
@@ -144,15 +132,11 @@ plot(fit)
 What can we do to deal with such distributional problems and outliers?
 
 -   **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
--   **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other. -\> We will do this on Wednesday.
+-   **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other.
 -   **Robust regressions**.
 -   **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
 
-***Change distribution***
-
-If we want to change the distribution, we have to go to a GLM, see Wednesday.
-
-***Robust regression***
+### Robust regression
 
 Robust methods generally refer to methods that are robust to violation of assumptions, e.g. outliers. More specifically, standard robust regressions typically downweight datap oints that have a too high influence on the fit. See <a href="https://cran.r-project.org/web/views/Robust.html" target="_blank" rel="noopener">https://cran.r-project.org/web/views/Robust.html</a> for a list of robust packages in R.
 
@@ -172,7 +156,7 @@ fit = lmrob(growth ~ concentration)
 summary(fit)
 ```
 
-***Quantile regression***
+### Quantile regression
 
 Quantile regressions don't fit a line with an error spreading around it, but try to fit a quantile (e.g. the 0.5 quantile, the median) regardless of the distribution. Thus, they work even if the usual assumptions don't hold.
 
@@ -185,14 +169,3 @@ fit = qgam(growth ~ concentration, data = dat, qu = 0.5)
 summary(fit)
 ```
 
-***Summary***
-
-Actions on **real outliers**:
-
--   Robust regression.
--   Remove
-
-Actions on **different distributions**:
-
--   Transform.
--   Change distribution or quantile regression.

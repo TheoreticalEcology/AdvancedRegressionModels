@@ -684,9 +684,11 @@ Under which circumstances should you center / scale, and how should you discuss 
 Scaling: scaled, you get estimate of relative importance, while unscaled, effects are interpretable in their original units. Depending on what you are more interested in, you may report one of the two, or both. Centering: changes the place of the origin, and thus the interpretation of the intercept (and possibly also main effects if interactions are present, see next chapter). Per default, I would scale.
 :::
 
+::: {.callout-caution icon="false"}
 #### Excercise
 
 How does adding or multiplying a factor on the predictor change the intercept and slope (effect, CI, p-values) of a regression?
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -917,3 +919,189 @@ plot(Wind, pred$fit, type = "l")
 lines(Wind, pred$fit - 1.96 * pred$se.fit, lty = 2)
 lines(Wind, pred$fit + 1.96 * pred$se.fit, lty = 2)
 ```
+
+## Nonparametrics and the bootstrap
+
+The linear model (LM) has the beautiful property that it delivers unbiased estimates, calibrated p-values and all that based on analytical expressions that remain valid, regardless of the sample size. Unfortunately, there are very few extensions of the LM that completely maintain all of these desirable properties for limited sample sizes. The underlying problem is that for more complicated models, there are usually no closed-form solutions for the expected null or sampling distributions, or those distributions depend on the observed data. For that reason, non-parametric methods to generate confidence intervals and p-values are increasingly used when going to more complicated models, which motivates this first small excursion into non-parametric methods, and in particular cross-validation and the bootstrap.
+
+There are two non-parametric methods that you should absolutely know and that form the backbone of basically all non-parametric for regression analyses with statistical and machine learning models. Those two are:
+
+1. the bootstrap: generate variance of estimates, allows us to calculate non-parametric CIs and p-values
+2. cross-validation: generate non-parametric estimates of the predictive error of the model (connects to ANOVA, AIC, see later sections on ANOVA and model selection)
+
+Here, we will look at the bootstrap. Cross-validation will be introduced in the chapter on model selection. 
+
+::: {.callout-tip collapse="true"}
+#### Excursion: randomization null models
+
+Another non-parametric method that you may encounter are randomization null models.  Let's look at this with an example: here, we create data from a normal and a lognormal distribution. We are interested in the difference of the mean of the two (test statistic).
+
+```{r}
+set.seed(1337)
+
+groupA = rnorm(50)
+groupB = rlnorm(50)
+
+dat = data.frame(value = c(groupA, groupB), group = factor(rep(c("A", "B"), each = 50)))
+plot(value ~ group, data = dat)
+
+# test statistic: difference of the means
+reference = mean(groupA) - mean(groupB)
+```
+
+We can show mathematically that means of repeated draws from a normal distribution are Student-t distributed, which is why we can use this distribution in the t-test to calculate the probability of a certain deviation from a null expectation. If we work with different distributions, however, we may not be so sure what the null distribution should be. Either we have to do the (possibly very complicated) math to get a closed-form expression for this problem, or we try to generate a non-parametric expectation for the null distribution via a **randomization null model**.
+
+The idea is that we generate a null expectation for the test statistic by re-shuffling the data in a way that conforms to the null assumption. In this case, we can just randomize the group labels, which means that we assume that both distributions (A,B) are the same (note that this is a bit more than asking if they have the same mean, but for the sake of the example, we are happy with this simplification).
+
+
+```{r}
+nSim = 5000
+nullDistribution = rep(NA, nSim)
+
+for(i in 1:nSim){
+  sel = dat$value[sample.int(100, size = 100)]
+  nullDistribution[i] = mean(sel[1:50]) - mean(sel[51:100])
+}
+
+hist(nullDistribution, xlim = c(-2,2))
+abline(v = reference, col = "red")
+ecdf(nullDistribution)(reference) # 1-sided p-value
+```
+
+Voila, we have a p-value, and it is significant. Randomization null models are used in many R packages where analytical p-values are not available, e.g., in the packages vegan (ordinations, community analysis) and bipartide (networks). 
+:::
+
+### Non-parametric bootstrap
+
+The key problem to calculate parametric p-values or CIs is that we need to know the distribution of the statistics of interest that we would obtain if we (hypothetically) repeated the experiment many times. The bootstrap generates new data so that we can approximate this distribution. There are two variants of the bootstrap:
+
+1. Non-parametric bootstrap: we sample new data from the old data with replacement
+2. Parametric bootstrap: we sample new data from the fitted model
+
+Let's first look at the non-parametric bootstrap, using a simple regression of Ozone ~ Wind
+
+```{r}
+fit = lm(Ozone ~ Wind, data = airquality)
+```
+
+First, for convenience, we generate a function that extracts the estimate that we want to bootstrap from a fitted model. I decided to extract the slope estimate for Wind, but you could make difference choices
+
+```{r}
+getEstimate <- function(model){
+  coef(model)[2]
+}
+getEstimate(fit)
+```
+
+Next, we perform the parametric bootstrap
+
+```{r}
+performBootstrap = function(){
+  sel = sample.int(n = nrow(airquality), replace = T) 
+  
+  fitNew = lm(Ozone ~ Wind, data = airquality[sel,])
+  return(getEstimate(fitNew))
+}
+
+bootstrappedEstimate = replicate(1000, performBootstrap())
+```
+
+The bootstrapped estimates of the slope can basically be interpreted as the uncertainty of the slope estimate. 
+
+```{r}
+hist(bootstrappedEstimate, breaks = 50)
+abline(v = mean(bootstrappedEstimate), col = "red", lwd = 2)
+abline(v = getEstimate(fit), col = "red", lwd = 2, lty = 2)
+sd(bootstrappedEstimate)
+```
+
+We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by summary.lm()
+
+```{r}
+summary(fit)
+```
+
+In R, you don't have to code the bootstrap by hand, you can also use the boot package. The code will not neccessarily be shorter, because you still need to code the statistics, but it offers a few convenient downstream functions for CIs etc.
+
+
+::: {.callout-tip collapse="true"}
+#### Code for same example using the boot package
+
+```{r}
+# see help, needs arguments d = data, k = index
+getBoot = function(d, k){
+  fitNew = lm(Ozone ~ Wind, data = d[k,])
+  return(getEstimate(fitNew))
+}
+
+library(boot)
+b1 = boot(airquality, getBoot, R = 1000)
+b1
+```
+:::
+
+
+### Parametric bootstrap
+
+The non-parametric bootstrap does the same thing, but the data is not re-sampled, but generated from the fitted model. This can be done conveniently in R as long as the regression package implements a simulate() function that works on the fitted model. 
+
+
+```{r}
+performBootstrapParametric = function(){
+
+  newData = model.frame(fit)
+  newData$Ozone = unlist(simulate(fit))
+  
+  fitNew = lm(Ozone ~ Wind, data = newData)
+  return(getEstimate(fitNew))
+}
+
+bootstrappedEstimateParametric = replicate(1000, 
+                                           performBootstrapParametric())
+```
+
+In the results, we see that the parametric boostrap is much closer to the analytical results
+
+```{r}
+hist(bootstrappedEstimateParametric, breaks = 50)
+abline(v = mean(bootstrappedEstimateParametric), col = "red", lwd = 2)
+abline(v = getEstimate(fit), col = "red", lwd = 2, lty = 2)
+sd(bootstrappedEstimateParametric)
+```
+
+
+::: {.callout-tip collapse="true"}
+#### Code for same example using the boot package
+
+For the parametric boostrap, we just need a function of the data to return the estimate
+
+```{r}
+getBoot = function(d){
+  fitNew = lm(Ozone ~ Wind, data = d)
+  return(getEstimate(fitNew))
+}
+```
+
+Plus, we need a function that generates the simulations.
+
+```{r}
+rgen = function(dat, mle){
+  newData = model.frame(mle)
+  newData$Ozone = unlist(simulate(mle))
+  return(newData)
+}
+```
+
+The call to boot is then
+
+```{r}
+b2 = boot(airquality, getBoot, R = 1000, sim = "parametric", ran.gen = rgen, mle = fit)
+b2
+```
+:::
+
+
+
+
+
+

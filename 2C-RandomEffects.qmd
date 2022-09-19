@@ -482,13 +482,13 @@ summary(m2)
 ```
 
 ::: {.callout-caution icon="false"}
-## Excercise: mixed vs. fixed effect models
+#### Excercise: mixed vs. fixed effect models
 
 For the plantHeigt mixed models in the previous exercise, compare the p-values of the slope for temp to the fixed-effect equivalent (adding family as main effect / interaction). What do you find?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
+#### Solution
 
 ```{r, eval = F}
 fixedInterceptModel <- lm(loght ~ temp + Family, data = plantHeight)
@@ -594,16 +594,22 @@ Regarding when to use what, use the following rule of thumb:
 In the next part of the book, we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend to stick to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see below).
 :::
 
-### Model selection with mixed models
+### Model selection and hypothesis tests with mixed models
 
 For model selection, the degrees of freedom problem means that normal model selection techniques such as AIC or naive LRTs don't work on the random effect structure, because they don't count the correct degrees of freedom.
 
-However, assuming that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use standard model selection on the fixed effect structure. All I have said about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference.
+#### Selecting on fixed effects
 
-Regarding the random effect structure - my personal recommendation for most cases is the following:
+The easy part is the selection on the fixed effect structure - if we can assume that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use all standard model selection methods (with all their caveats) as before on the fixed effect structure. All I have said about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference.
+
+#### A prior selection on random effects
+
+When changing the RE structure, you should not use standard AIC or LRTs, because of the df problem. For that reason, I would generally recommend to fix the RE structure a priori and keep selection on REs to a minimum.
+
+What structure you should choose may depend on the experimental setting and scientific / biological expectations, but a base recipe for a limited number of data is:
 
 1.  add random intercept on all obvious grouping variables
-2.  check residuals per group (e.g. with the plot function below), add random slope if needed
+2.  check residuals per group (e.g. with the plot function below), or simualted LRT (see below) and add random slope if needed
 
 ```{r, eval = F}
 m1 <- lmer(y ~ x + (1|group))
@@ -613,14 +619,89 @@ plot(m1,
      abline = 0)
 ```
 
-If you absolutely want to do model selection on the RE structure
+I would deviate from this recipe and also add random slopes a priori when I have either sufficient power to support the random slopes without problems (see also section on model selection), or if there are good a priori reasons to expect random slopes.
 
--   lmerTest::ranova performs an ANOVA with estimated df, adding entire RE groups
--   if you want to do details model selections on the RE structure, you should implement a simulated LRT based on a parametric bootstrap. See day 5, on the parametric bootstrap.
+#### Simulated LRTs
+
+If you want to formally select on the variance structure, the best way is to use a simulated likelihood-ratio test (LRT), based on the parametric bootstrap, which we introduced in the section on ANOVA. In such a test, we make the same assumptions as in a standard LRT, which is:
+
+1.  We want to compare 2 nested models M0, M1
+2.  H0: simpler model M0 is correct
+3.  Test statistic: M1/M0 or log(M1/M0) = log(M1) - log(M0)
+
+However, unlike in the standard LRT, where we assumed that the test statistic is chi-2 distributed, we use the parametric bootstrap (see section on non-parametric methods) to generate new data under H0, fit M0 and M1 to this simulated data, and thus generate a null distribution of the LR for these two models. 
+
+Simulated LRTs for mixed models are implemented in a number of packages. To my knowledge, one of the most general functions is DHARMa::simulateLRT. Here an example:
+
+```{r}
+set.seed(123)
+dat <- DHARMa::createData(sampleSize = 200, randomEffectVariance = 1)
+
+library(lme4)
+m1 = glmer(observedResponse ~ Environment1 + (1|group), data = dat, family = "poisson")
+m0 = glm(observedResponse ~ Environment1 , data = dat, family = "poisson")
+
+DHARMa::simulateLRT(m0, m1)
+```
+
+If you want to understand the method in more detail, you can expand the hand-coded example of a simulated LRT below:
+
+::: {.callout-tip collapse="true"}
+
+#### Hand-coded simulated LRT
+
+We use the models from the previous example - first, let's look at the observed LR
+
+```{r}
+observedLR = logLik(m1) - logLik(m0)
+```
+
+The log LR of m1 (the RE model) over m0 is 225, meaning that seing the observed data under m1 is exp(225) times more likely than under m0.
+
+As noted, the complex model will always fit better, so that the data is more likely under M1 is expected, but is the increase significant? In this case, the LR is actually so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we could 1 df for each RE group, this should be easily significant. Nervertheless, let's do the formal test, and this time by hand. 
+
+First, we write a function that creates new LRs under H0, by simulating new data from the fitted M0, and re-fitting M0/M1 to this data, and return the LR. 
+
+```{r, warning=F, message=F}
+resampledParameters = function(){
+  newData = dat
+  newData$observedResponse = unlist(simulate(m0))
+  mNew0 = glm(observedResponse ~ Environment1, data = newData, family = "poisson")
+  mNew1 = glmer(observedResponse ~ Environment1 + (1|group), data = newData, family = "poisson")
+  return(logLik(mNew1) - logLik(mNew0))
+}
+```
+
+Now, let's generate the null distribution. There will be a lot of warnings which you can usually ignore. The reason is that we simulate the data under H0, i.e. with no RE, and thus the mixed model estimates the RE variance to zero, which creates a warning. 
+
+```{r}
+nullDistribution = replicate(500, resampledParameters())
+```
+
+If we plot the null distribution, we see that if the data would really not have an RE, we would expect an increase of likelihood for the more complicated model of not more than 4 or so. 
+
+```{r}
+hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))")
+```
+
+However, what we actually observe is an increase of 225. I rescaled the x axis to make this visible. 
+
+```{r}
+hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))", xlim = c(-5,250))
+abline(v = observedLR, col = "red")
+```
+
+The p-value is 0  obviously
+
+```{r}
+mean(nullDistribution > observedLR)
+```
+:::
+
 
 ### Variance partitioning / ANOVA
 
-Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpreatio above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn`.{R} package. With this, we can run
+Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpretation above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn`.{R} package. With this, we can run
 
 ```{r chunk_chapter4_chunk33, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(MuMIn)
@@ -633,198 +714,12 @@ Interpretation
 -   **R2m**: Marginal ${R}^{2}$ value associated with fixed effects.
 -   **R2c**: Conditional ${R}^{2}$ value associated with fixed effects plus the random effects.
 
-It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure.
-
-As mentioned above, tests for significance of the random effect structure are complicated
-
-## Excursion: the bootstrap
-
-The linear model (LM) has the beautiful property that it delivers unbiased estimates, calibrated p-values and all that based on analytical expressions that remain valid, regardless of the sample size.
-
-Unfortunately, there are very few extensions of the LM that completely maintain all of these desirable properties for limited sample sizes. The underlying problem is that for more complicated models, there are usually no analytic expressions for the expected null or sampling distributions, or those distributions depend on the observed data.
-
-For that reason, non-parametric methods to generate confidence intervals and p-values are increasingly used when going to more complicated models (as we saw in the repeated use of the parametric bootstrap for mixed models), which motivates this small excursion into non-parametric methods, and in particular the bootstrap.
-
-### Standard (non-parametric) bootstrap
-
-The **bootstrap** is a method to generate approximate confidence intervals based on resampling the data. Imagine you have some kind of weird data distribution:
-
-```{r chunk_chapter7_chunk7, echo=TRUE, eval=TRUE}
-set.seed(123)
-data = ifelse(rbinom(100, 1, 0.5) == 1, rexp(100, 4) , rnorm(100, -2))
-hist(data)
-```
-
-We want to calculate the mean and it's uncertainty. The mean is simple, but what is the uncertainty of the mean? The standard error can't be used, because this is not a normal distribution. If we don't know the distribution, we can't use a parametric method to calculate the confidence interval.
-
-The solution is the bootstrap. The idea is the following: We re-sample from the data to generate an estimation of the uncertainty of the mean. Let's first do this by hand:
-
-```{r chunk_chapter7_chunk8, echo=TRUE, eval=TRUE}
-set.seed(123)
-
-performBootstrap = function(){
-  resampledData = sample(data, size = length(data), replace = T) 
-  return(mean(resampledData))
-}
-
-bootstrappedMean = replicate(500, performBootstrap())
-hist(bootstrappedMean, breaks = 50)
-abline(v = mean(data), col = "red")
-```
-
-Roughly, this distribution is the confidence interval for the mean for this particular distribution.
-
-In detail, there are a few tricks to correct confidence intervals for the bootstrap, which are implemented in the `boot`.{R} package. Here is how you would do a boostrap with the boot package. The trick here is to implement the function `f()`.{R}, which must take the data as well as a selection of data points "k" (for example `c(1,3,4,5,8,9)`{.R}, or `1:20`{.R}, etc.) as input, and calculate the desired statistics.
-
-```{r chunk_chapter7_chunk9, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-library(boot)
-
-f = function(d, k){ mean(d[k]) }
-out = boot(data, f, 500)
-plot(out)
-boot.ci(out)
-```
-
-::: {.callout-caution icon="false"}
-## Excercise
-Calculate a bootstrapped confidence interval for the mean of this exponential distribution. Compare it to the naive standard error:
-
-```{r chunk_chapter7_task_0, message=FALSE, warning=FALSE}
-set.seed(1234)
-data = rexp(500)
-```
-
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
-:::
-
-
-### Parametric bootstrap
-
-We call it a **parametric bootstrap** if we don't re-sample the data to generate new data, but simulate from the fitted model. Simple example with a linear model:
-
-```{r chunk_chapter7_chunk11, echo=TRUE, eval=TRUE}
-set.seed(123)
-
-x = runif(100, -2, 2)
-y = rnorm(100, 1 + 2*x, 1)
-dat = data.frame(x = x, y = y)
-
-m = lm(y ~ x)
-
-summary(m)
-```
-
-We are interested in getting the confidence intervals for the coefficients of the model. We could apply a non-parametric bootstrap, re-sampling the 
-
-```{r chunk_chapter7_chunk12, echo=TRUE, eval=TRUE}
-resampledParameters = function(){
-  newData = dat
-  newData$y = unlist(simulate(m))
-  mNew = lm(y ~ x, newData)
-  return(coef(mNew)[1])
-}
-bootstrappedIntercept = replicate(500, resampledParameters())
-
-hist(bootstrappedIntercept, breaks = 50)
-abline(v = coef(m)[1], col = "red")
-```
-
-The same with the `boot`.{R} package. We need a statistics:
-
-```{r chunk_chapter7_chunk14, echo=TRUE, eval=TRUE}
-foo = function(out){
-  m = lm(y ~ x, out)
-  return(coef(m))
-}
-```
-
-and a function to create new data
-
-```{r chunk_chapter7_chunk15, echo=TRUE, eval=TRUE}
-rgen = function(dat, mle){
-  out = dat
-  out$y = unlist(simulate(mle))
-  return(out)
-}
-
-b2 = boot(dat, foo, R = 1000, sim = "parametric", ran.gen = rgen, mle = m)
-boot.ci(b2, type = "perc", index = 1)
-```
-
-***Application: Simulated likelihood ratio test***
-
-The parametric bootstrap can be used to generate simulated likelihood ratio tests for mixed models. This allows us to test for the significance of variance components without specifying degrees of freedom.
-
-To demonstrate this, let's simulated some Poisson data under a model with a random intercept, and fit with am appropriate mixed model (M1) and a standard GLM (M0):
-
-```{r}
-set.seed(123)
-dat <- DHARMa::createData(sampleSize = 200, randomEffectVariance = 1)
-
-library(lme4)
-m1 = glmer(observedResponse ~ Environment1 + (1|group), data = dat, family = "poisson")
-
-
-m0 = glm(observedResponse ~ Environment1 , data = dat, family = "poisson")
-
-observedLR = logLik(m1) - logLik(m0)
-```
-
-The log LR of m1 (the RE model) over m0 is 225, meaning that seing the observed data under m1 is exp(225) times more likely than under m0.
-
-This is expected, given that we simulated the data under an RE model, but is the difference significant?
-
-Well, the LR is so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we could 1 df for each RE group, this should be easily significant.
-
-Nevertheless, if we want to be sure, a standard ANOVA as well as AIC have the problem, that df are not exact. We can circumvent this by using a simulated LRT. The idea is the following:
-
-1.  H0: simple model, without RE
-2.  Test statistic: M1/M0 or log(M1/M0) = log(M1) - log(M0)
-3.  Distribution of test statistic: we use the parametric bootstrap to new data, and fit M0 to this data to generate a distribution under H0
-
-Here is the code to do this:
-
-```{r, warning=F, message=F}
-resampledParameters = function(){
-  newData = dat
-  newData$observedResponse = unlist(simulate(m0))
-  mNew0 = glm(observedResponse ~ Environment1, data = newData, family = "poisson")
-  mNew1 = glmer(observedResponse ~ Environment1 + (1|group), data = newData, family = "poisson")
-  return(logLik(mNew1) - logLik(mNew0))
-}
-
-nullDistribution = replicate(500, resampledParameters())
-```
-
-This is the null distribution for the LR - we see that if the data would really not have an RE, we would expect an increase of likelihood for the more complicated model of not more than 4 or so.
-
-```{r}
-hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))")
-```
-
-However, what we actually observe is an increase of 225. I rescaled the x axis to make this visible.
-
-```{r}
-hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))", xlim = c(-5,250))
-
-abline(v = observedLR, col = "red")
-```
-
-The p-value is 0 obviously
-
-```{r}
-mean(nullDistribution > observedLR)
-```
-
-Simulated LRTs are implemented in a number of R packages, including pbkrtest and RLRsim, but neither of these fully generalizes to all models that you want to compare, so I recommend to use the hand-coded version.
+It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R2 values under a cross-validation.
 
 ## Case studies
 
 ::: {.callout-caution icon="false"}
-## Case Study 2 - Honeybee Data
+#### Case Study 2 - Honeybee Data
 
 We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease.
 
@@ -837,7 +732,7 @@ Perform the data analysis, according to the hypothesis discussed in the course.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
+#### Solution
 
 ```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 # adding BeesN as a possible confounder

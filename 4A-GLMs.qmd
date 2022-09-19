@@ -1,20 +1,16 @@
-# GL(M)Ms
-
 ---
-site: bookdown::bookdown_site
-output: 
-  bookdown::gitbook:
-    highlight: kate
-documentclass: book
+output: html_document
 editor_options: 
   chunk_output_type: console
 ---
 
-## Basics
+# GL(M)Ms
+
+## Introduction to GLMs
 
 Generalized linear models (GLMs) extend the linear model (LM) to other (i.e. non-normal) distributions. The idea is the following:
 
-1.  We want to keep the regression formula y \~ f(x) of the lm with all it's syntax, inlcuding splines, random effects and all that. In the GLM world, this is called the "linear predictor".
+1.  We want to keep the regression formula $y \sim f(x)$ of the lm with all it's syntax, inlcuding splines, random effects and all that. In the GLM world, this is called the "linear predictor".
 
 2.  However, in the GLM, we now allow other residual distributions than normal, e.g. binomial, Poisson, Gamma, etc.
 
@@ -42,6 +38,12 @@ $$
 This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that log(y) = x, which actually means that we assume y = exp(x), i.e. the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.
 :::
 
+The function f(x) itself can have all components that we discussed before, in particular
+
+-   You can add random effects as before (using functions lme4::glmer or glmmTMB::glmmTMB)
+
+-   You can also use splines using mgcv::gam
+
 ## Important GLM variants
 
 The most important are
@@ -61,27 +63,44 @@ knitr::include_graphics(c("images/linkFunctions.jpg"))
 ```
 ### Count data - Poisson regression
 
-The standard model for count data (1,2,3) is the Poisson regression, which assumes a Poisson distribution + log link function. Here an example:
+The standard model for count data (1,2,3) is the Poisson regression, which implements
+
+-   A log-link function -\> y = exp(ax + b)
+
+-   A Poisson distribution
+
+As an example, we use the data set birdfeeding from the EcoData package - the dataset consists of observations of foods given to nestlings to parents as a function of the attractiveness of the nestling.
 
 ```{r}
 library(EcoData)
-
-str(birdfeeding)
+#str(birdfeeding)
 plot(feeding ~ attractiveness, data = birdfeeding)
 ```
+
+To fit a Poisson regression to this data, we use the glm() function, specifying family = "poisson". Note again that the log link function is the default (see ?family), so it does not have to be specified.
 
 ```{r}
 fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-Log link means that calculating predicted value for attractiveness requires exp(linear response).
+The output is very similar to the lm(), however, as the residuals are not any more assumed to scatter normally, all statistics based on R2 have been replaced by the deviance (deviance = - 2 log likelihood). So, we have
+
+-   Deviance residuals on top
+
+-   Instead of R2, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R2, e.g. McFadden, which is 1-\[LogL(M)/LogL(M0))\] -\> in this case 1-25.8/18.3
+
+::: callout-note
+Unfortunately, the deviance is not used consistently in
+:::
+
+If we want to calculate model predictions, we have to transform to the response scale. Here we have a log link, i.e. we have to transform with exp(linear response).
 
 ```{r chunk_chapter5_chunk17, echo=TRUE, eval=TRUE}
 exp(1.47459 + 3 * 0.14794)
 ```
 
-Alternatively, you can use the predict() function with type = "response"
+Alternatively (and preferably), you can use the predict() function with type = "response"
 
 ```{r}
 dat = data.frame(attractiveness = 3)
@@ -89,20 +108,18 @@ predict(fit, newdata = dat) # linear predictor
 predict(fit, newdata = dat, type = "response") # response scale
 ```
 
-Effect plots, note the log scaling on the y axis
+Effect plots work as before. Note that the effects package always transforms the y axis according to the link, so we have log scaling on the y axis, and the effect lines remain straight
 
-```{r chunk_chapter5_chunk18, echo=TRUE, eval=TRUE}
+```{r}
 library(effects)
 plot(allEffects(fit))
 ```
 
-#### Notes
+#### Notes on the Poisson regression
 
-For count data, the log link is nearly always used. Before GLMs were widely available, was common to it lm with log transformed counts, which is basically log link + normal distribution
+**Poisson vs. log transformed count data:** For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, was common to it lm with log transformed counts, which is basically log link + normal distribution
 
-Poisson models are often overdispersed -\> see chapter on residual checks. Common alternative to the Poisson is the negative binomial, which is essentially a Poisson with a parameter for the variance (to address overdispersion)
-
-If there is a variable that that controls the number of counts (e.g. time, area), this variable is usually added as a offset in the following form
+**Log offset:** If there is a variable that that controls the number of counts (e.g. time, area), this variable is usually added as a offset in the following form
 
 ```{r, eval = F}
 fit = glm(y ~ x + offset(log(area)), family = "poisson")
@@ -110,101 +127,88 @@ fit = glm(y ~ x + offset(log(area)), family = "poisson")
 
 As the log-link connects the linear predictor as in y = exp(x), and exp(x + log(area)) = exp(x) \* area, this makes the expected counts proportional to area, or whatever variable is added as a log offset.
 
+**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.
+
 ### 0/1 or k/n data - logistic regression
 
 The standard model to fit binomial (0/1 or k/n) data is the logistic regression, which combines the binomial distribution with a logit link function. To get to know this model, let's have a look at the titanic data set in EcoData:
 
-```{r chunk_chapter5_chunk2, echo=TRUE, eval=TRUE}
+```{r}
 library(EcoData)
-
-str(titanic)
-mosaicplot( ~ survived + sex + pclass, data = titanic)
-
+#str(titanic)
+#mosaicplot( ~ survived + sex + pclass, data = titanic)
 titanic$pclass = as.factor(titanic$pclass)
 ```
 
-We want to analyze how survival in the titanic accident dependend on other predictors. We could fit an lm, but the residual checks make it very evident that the data with a 0/1 response don't fit to the assumption of an lm:
+We want to analyze how survival in the titanic accident depended on other predictors. We could fit an lm, but the residual checks make it very evident that the data with a 0/1 response don't fit to the assumption of an lm:
 
-```{r chunk_chapter5_chunk3, echo=TRUE, eval=TRUE}
+```{r}
 fit = lm(survived ~ sex * age, data = titanic)
 summary(fit)
 par(mfrow = c(2, 2))
 plot(fit)
 ```
 
-Thus, what we want to fit is a logistic regression, which assumes a 0/1 response + logit link. In principle, this is distribution is called Bernoulli, but in R both 0/1 and k/n are called "binomial", as Bernoulli is the special case of binomial where n = 1.
+Thus, let's move to the logistic regression, which assumes a 0/1 response + logit link. In principle, this is distribution is called Bernoulli, but in R both 0/1 and k/n are called "binomial", as Bernoulli is the special case of binomial where n = 1.
 
-```{r chunk_chapter5_chunk4, echo=TRUE, eval=TRUE}
+```{r}
 m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
 summary(m1)
 ```
 
-Can you interpret the output? What do the regression coefficients mean?
+::: callout-note
+The syntax here is for 0/1 data. If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with k \~ x, weights = n
+:::
 
-In principle, interpretation as before, but if you want transform the coefficients in predictions, you have to apply the link function on the linear predictor. Binomial uses per default the logit link, to calculate the response use:
+The interpretation of the regression table remains unchanged. To transform to predictions, we have to use the inverse logit, which is in R:
 
 ```{r chunk_chapter5_chunk5, echo=TRUE, eval=TRUE}
 plogis(0.493381 + 0.022516 * 20)  # Women, age 20.
 plogis(0.493381 -1.154139 + 20*(0.022516-0.046276)) # Men, age 20
 ```
 
-Alternatively, you can also use the predict function to transform predictions to the response scale
+Alternatively, we can again use the predict function
 
-```{r chunk_chapter5_chunk6, echo=TRUE, eval=TRUE}
+```{r}
 newDat = data.frame(sex = as.factor(c("female", "male")), age = c(20,20))
 predict(m1, newdata = newDat) # Linear predictor.
 predict(m1, newdata = newDat, type = "response")  # Response scale.
 ```
 
-A third alternative is to look at the effect plots, which scale the y axis according to the link scale
+Finally, the effect plots - note again the scaling of the y axis, which is now logit.
 
-```{r chunk_chapter5_chunk7, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+```{r}
 library(effects)
 plot(allEffects(m1))
 ```
 
-Note:
+#### Notes on the logistic regression
 
--   Treatment coding for factors works as before.
--   If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with k \~ x, weights = n
--   For interactions, as in our age effect for male / female, effect sizes can in general not be directly be compared, because they are calculated at a different intercept, and through the nonlinear link, this leads to a different effect on the response. One option to solve this are the so-called **odds ratios**. Or just look at the response scale, e.g. via the effect plots, and interpret there! In our example, however, effect directions changed, so there is no question that there is an interactions.
+**Offset:** there is no exact solution for making 0/1 data dependent on a scaling factor via an offset, which is often desirable, for example in the context of survival analysis with different exposure times. An approximate solution is to use an offset together with the log-log link (instead of logit).
 
-### Example - Elk Data
+**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+**Overdispersion:** 0/1 poisson responses cannot be overdispersed, but k/n responses can be. However, 0/1 responses can show overdispersion if grouped to k/n. Note next section on residual checks, as well as comments on testing binomial GLMs in the\
+<a href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data" target="_blank" rel="noopener">DHARMa vignette</a>.
+
+::: {.callout-caution icon="false"}
+#### Example - Elk Data
+
 You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:
 
 a)  A predictive analysis, i.e. a model to predict where Elks can be found.
 b)  A causal analysis, trying to understand the effect of roads on Elk presence.
+:::
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-***a***
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
 
-```{r chunk_chapter5_task_0, message=FALSE, warning=FALSE}
+TODO
+:::
 
-```
+## Residual and their solutions in GLMs
 
-***b***
-
-```{r chunk_chapter5_task_1, message=FALSE, warning=FALSE}
-
-```
-
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
-## Residual checks in GLMs
+First of all: everything we said about model selection and residual checks for LMs also apply for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.
 
 Let's look again at the titanic example
 
@@ -212,15 +216,18 @@ Let's look again at the titanic example
 m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
 ```
 
-How can we check the residuals of a GLM? First of all: Due to an unfortunate programming choice in R (Nerds: Check class(m1)), the standard residual plots still work
+How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check class(m1)), the standard residual plots still work
 
 ```{r chunk_chapter5_chunk10, echo=TRUE, eval=TRUE}
-
 par(mfrow = c(2, 2))
 plot(m1)
 ```
 
-but they don't look any better than before, because they still check for normality of the residuals, while we are interested in the question of whether the residuals are binomially distributed. The `DHARMa`.{R} package solves this problem. Load the `DHARMa`.{R} package, which should have been installed with `EcoData`{.R} already:
+but they look horrible, because they still check for normality of the residuals, while we are interested in the question of whether the residuals are binomially distributed.
+
+### DHARMA residual plots for GL(M)Ms
+
+The `DHARMa` package that we already introduced solves this problem
 
 ```{r chunk_chapter5_chunk12, echo=TRUE, eval=TRUE}
 library(DHARMa)
@@ -243,7 +250,7 @@ b)  Visual homogeneity of residuals in both vertical and horizontal direction, a
 
 Deviations from these expectations can be interpreted similarly to a linear regression. See the vignette for detailed examples.
 
-Also residuals against predictors shows no particular problem:
+With that in mind, we can say that there is nothing special to see here. Also residuals against predictors shows no particular problem:
 
 ```{r chunk_chapter5_chunk14, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 par(mfrow = c(1, 2))
@@ -251,7 +258,7 @@ plotResiduals(m1, form = model.frame(m1)$age)
 plotResiduals(m1, form = model.frame(m1)$sex)
 ```
 
-Residuals against missing predictor show a clear problem:
+However, residuals against the missing predictor pclass show a clear problem:
 
 ```{r chunk_chapter5_chunk15, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 dataUsed = as.numeric(rownames(model.frame(m1)))
@@ -267,104 +274,115 @@ summary(m2)
 plotResiduals(m2, form = model.frame(m2)$pclass)
 ```
 
-Now, residuals look fine. We will talk about `DHARMa`.{R} more later, see also comments on testing binomial GLMs\
-<a href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data" target="_blank" rel="noopener">here</a>.
+Now, residuals look fine. Of course, if your model gets more complicated, you may want to do additional checks, for example for the distribution of random effects etc.
 
-## Problems in GLMs
+### Dispersion Problems in GLMs
 
-## Dispersion Problems in GLMs
+One thing that is different between GLMs and LM is that GLMs can display overall dispersion problems. The most common GLMs to show overdispersion are the Poisson and the logistic regression.
 
-First of all: all other comments (causal structure, checking for misfit of the model) that we discussed for LMs also apply for GLMs in general, and you should check models for those problems. The reason that I concentrate here on dispersion problems is that those are different in GLMs than in normal LMs, so this is an issue that comes on top of the other things.
+The reason is that simple GLM distributions such as the Poisson or the Binomial (for k/n data) do not have a parameter for adjusting the spread of the observed data around the regression line (dispersion), but their variance is a fixed as function of the mean.
 
-GLMs have more problems with dispersion because standard GLM distributions such as the Poisson or the Binomial (for k/n data) do not have a parameter for adjusting the spread of the observed data around the regression line (dispersion). Thus, unlike the normal distribution, which can have different levels of spread around the regression line, *the Poisson distribution always assumes a certain mean corresponds to a fixed variance*.
+There are good reasons for why this is the case (Poisson and Binomial describe particular processes, e.g. coin flip, for which the variance is a fixed function of the mean), but the fact is that when applying these GLMs on real data, we often find overdispersion (more dispersion than expected), and more rarely, underdispersion (less dispersion than expected).
 
-This is obviously not always a good assumption. In most cases with count data, we actually find overdispersion (more dispersion than expected). You can, however, also have underdispersion, i.e. less dispersion than expected. Ways to treat this include
+To remove the assumptions of a fixed dispersion, there are three options, of which you should definitely take the third one:
 
 1.  **Quasi-distributions**, which are available in glm. Those add a term to the likelihood that corrects the p-values for the dispersion, but they are not distributions .-\> Can't check residuals, no AIC. -\> Discouraged.
 2.  **Observation-level random effect (OLRE)** - Add a separate random effect per observation. This effectively creates a normal random variate at the level of the linear predictor, increases variance on the responses.
 3.  A **GLM distribution with variable dispersion**, for Poisson usually the negative binomial.
 
-Because the 3rd option gives us more possibilities to model e.g. heteroskedasticity later, its preferable over an OLRE. I would always recommend the third option.
+The reason why we should prefer the 3rd option is that it allows better residual checks and to model the dispersion as a function of the predictors, see next section.
 
-***Example:***
+::: callout-note
+Overdispersion is often created by model misfit. Thus, before moving to a variable dispersion GLM, you should check for / correct model misfit.
+:::
 
-```{r chunk_chapter5_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+#### Recognizing overdispersion
+
+To understand how to recognize overdispersion, let's look at an example. We'll use the Salamanders dataset from the package glmmTMB, staring with a simple Poisson glm:
+
+```{r}
 library(glmmTMB)
 library(lme4)
 library(DHARMa)
 
 m1 = glm(count ~ spp + mined, family = poisson, data = Salamanders)
-summary(m1)
+```
+
+Overdispersion will be automatically highlighted in the standard DHARMa plots
+
+```{r}
 res = simulateResiduals(m1, plot = T)
+```
 
-# Looks overdispersed, additional check.
+You see the dispersion problem by:
+
+-   Dispersion test in the left plot significant
+
+-   QQ plot S-shaped
+
+-   Quantile lines in the right plots outside their expected quantiles
+
+You can get a more detailed output with the testDispersion function, which also displays the direction of the dispersion problem (over or underdispersion)
+
+```{r}
 testDispersion(res)
+```
 
-# Add random effect for site.
-m2 = glmer(count ~ spp + mined + (1|site), family = poisson, data = Salamanders)
-summary(m2)
+OK, often the dispersion problem is caused by structural problems. Let's add a random effect for site, which makes sense.
+
+```{r}
+m2 = glmer(count ~ spp + mined + (1|site), 
+           family = poisson, data = Salamanders)
+```
+
+The standard dispersion test is OK
+
+```{r}
 res = simulateResiduals(m2, plot = T)
+```
 
-# Now dispersion seems to be OK, rather another problem with heteroskedasticity, see next.
+But when random effects are added, you should prefer to calcualte conditional residuals, because this test is more powerful. For lme4 models, we can switch via re.form = T
 
-# Just for the sake of completeness, if we would have still overdispersion,
-# these would be the two options:
+```{r}
+res = simulateResiduals(m2, plot = T, re.form = NULL)
+```
 
-# Variable dispersion via OLRE.
-Salamanders$ID = 1:nrow(Salamanders)
-m3 = glmer(count ~ spp + mined + (1|site) + (1|ID), family = poisson, data = Salamanders)
-summary(m3)
-res = simulateResiduals(m3, plot = T)
+This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let's switch to a negative binomial model, using glmmTMB
 
-# Variable dispersion via negative binomial.
+```{r}
 m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamanders)
-summary(m4)
 res = simulateResiduals(m4, plot = T)
 ```
 
-### Heteroskedasticity in GLMMs
-
-GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. In `glmmTMB`.{R}, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula`.{R} argument, in the same way as in `nlme`.{R} for the linear model.
-
-Variance problems would show up when plotting residuals against predicted and predictors. On the previous page, we saw some variance problems in the Salamander model. We could add a variable dispersion model via
-
-```{r chunk_chapter5_chunk21, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-m3 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom1,
-             dispformula = ~ spp + mined ,  data = Salamanders)
-summary(m3)
-res = simulateResiduals(m3, plot = T)
-
-par(mfrow = c(1, 2))
-plotResiduals(res, Salamanders$spp)
-plotResiduals(res, Salamanders$mined)
-```
+Unfortunately, glmmTMB doesn't allow to calculate conditional residuals, so we have to be satisfied with the fact that the unconditional residuals look great.
 
 ### Zero-inflation
 
-Another common problem in count data (Poisson / negative binomial), but also other GLMs (e.g. beta) is that the observed data has more zeros than expected by the fitted distribution. To deal with this **zero-inflation**, we have to add an additional model component that controls how many zeros are produced. The default way to do this is assuming two separate processes which act after one another:
+Another common problem in count data (Poisson / negative binomial), but also other GLMs (e.g. binomial, beta) is that the observed data has more zeros than expected by the fitted distribution. For the beta, 1-inflation, and for the k/n binomial, n-inflation is also common, and tested for / addressed in the same way.
 
-1.  A binomial model for 0 or not,
-2.  if is not zero, a number from Poisson or negative binomial.
+To deal with this **zero-inflation**, one usually adds an additional model component that controls how many zeros are produced. The default way to do this is assuming two separate processes which act after one another:
 
-Note that the result of 2. can again be zero, so there are two explanations for a zero in the data.
+1.  First, we have the normal GLM, predicting what values we would expect
+2.  On top of that, we have a logistic regression, which decides whether the GLM prediction or a zero should be observed
 
-Zero-inflated GLMMs can, for example, be fit with the `glmmTMB`.{R} package, using `ziformula = ~ 0`{.R}.
+Note that the result of 1 can also be zero, so there are two explanations for a zero in the data. Zero-inflated GLMMs can, for example, be fit with glmmTMB, using the ziformula argument.
 
-***How to check for zero-inflation***
+#### Recognizing zero-inflation
 
-*Important*: Do not check for zero-inflation in the response.
+::: callout-caution
+The fact that you have a lot of zeros in your data does not indicate zero-inflation. Zero-inflation is with respect to the fitted model. You can only check for zero-inflation after fitting a model.
+:::
 
-`DHARMa`.{R} has a function for testing zero-inflation:
+Let's look at our last model - DHARMa has a special function to check for zero-inflation
 
 ```{r chunk_chapter5_chunk22, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamanders)
-summary(m4)
-
-res = simulateResiduals(m4, plot = T)
 testZeroInflation(res)
 ```
 
-This shows no sign of zero-inflation. Problem with this test: When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.
+This shows no sign of zero-inflation. There are, however, two problems with this test:
+
+1.  glmmTMB models only allow unconditional residuals, which means that dispersion and zero-inflation tests are less powerfull
+2.  When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.
 
 Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. You can compare a zero-inflation model via AIC or likelihood ratio test to your base model, or simply check if the ZIP term in glmmTMB is significant.
 
@@ -375,7 +393,76 @@ summary(m5)
 
 In this case, we have no evidence for zero-inflation. To see an example where you can find zero-inflation, do the Owl case study below.
 
-## Case Studies {#protocol}
+## Interpreting interactions in GLMs
+
+A significant problem with interpreting GLMs is the interpretation of slopes in the presence of other variables, in particular interactions. To understand this problem, let's first confirm to ourselves: if we simulate data under the model assumptions, parameters will be recovered as expected.
+
+```{r}
+library(effects)
+set.seed(123)
+trt = as.factor(sample(c("ctrl", "trt"), 5000, replace= T))
+concentration =  runif(5000)
+
+response = plogis(0 + 1 * (as.numeric(trt) - 1) + 1*concentration)
+survival = rbinom(5000, 1, prob = response)
+
+dat = data.frame(trt = trt, 
+                 concentration = concentration,
+                 survival = survival)
+
+m1 = glm(survival ~ trt * concentration, data = dat, family = "binomial")
+summary(m1)
+plot(allEffects(m1))
+```
+
+The problem with this, however, is the condition that we "simulate data under model assumptions", which includes the nonlinear link function. Let's have a look what happens if we simulate data differently: in this case, we just assume that treatment changes the overall probability of survival (from 45% to 90%), and the concentration increases the survival by up to 10% for each group. We may think that we don't have an interaction in this case, but the model finds one
+
+```{r}
+response = 0.45 * as.numeric(trt) + 0.1*concentration
+survival = rbinom(5000, 1, response)
+
+dat = data.frame(trt = trt, 
+                 concentration = concentration,
+                 survival = survival)
+
+m2 = glm(survival ~ trt * concentration, 
+            data = dat, family = "binomial")
+summary(m2)
+plot(allEffects(m2))
+```
+
+It looks in the effect plots as if the slope is changing as well, but note that this because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.
+
+The reason is simple: if we plot the plogis function, it becomes obvious that at different base levels (which would be controlled by trt in our case), moving a unit in concentration has a different effect.
+
+```{r, echo= F}
+curve(plogis, -6, 6, xlab = "concentration")
+abline(v = 0)
+abline(v = 1, lty = 2)
+abline(v = 3, col = "red")
+abline(v = 4, col = "red", lty =2)
+```
+
+If we turn this around, this means that if want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.
+
+Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
+
+Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. So, for example, we could fit the last model with a binomial distribution, but with an identity link
+
+```{r, warnings = F}
+m3 = glm(survival ~ trt * concentration, 
+            data = dat, family = binomial(link = "identity"))
+summary(m3)
+plot(allEffects(m3))
+```
+
+To solve this problem, there are a number of glm-specific solutions, for example for the logistic regression to prefer the so-called **odds ratios**. Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically.
+
+::: callout-note
+If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
+:::
+
+## Case Studies
 
 Strategy for analysis:
 
@@ -396,10 +483,6 @@ And adjust the model accordingly.
 
 ### Hurricanes
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
 In <a href="https://www.pnas.org/content/111/24/8782" target="_blank" rel="noopener">https://www.pnas.org/content/111/24/8782</a>, Jung et al. claim that "Female hurricanes are deadlier than male hurricanes".
 
 Specifically, they analyze the number of hurricane fatalities, and claim that there is an effect of the femininity of the name on the number of fatalities, correcting for several possible confounders. They interpret the result as causal (including mediators), claiming that giving only male names to hurricanes would considerably reduce death toll.
@@ -435,13 +518,10 @@ Tasks:
 -   Have a look at the ?hurricanes to see a residual analysis of the model in the paper
 -   Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
 ```{r}
 
 library(DHARMa)
@@ -511,11 +591,6 @@ summary(newModel)
 car::Anova(newModel) # nothing regarding MasFem
 ```
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
 ### Researchers Degrees of Freedom --- Skin Color and Red Cards
 
 In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
@@ -547,22 +622,12 @@ Do a re-analysis of the data as if you were the 30th team to contribute the resu
 
 -   Have a look at the other modelling teams. Do you understand the models they fit?
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Solution</span></strong>
-    </summary>
-    <p>
-```
-```{r chunk_chapter5_task_9, message=FALSE, warning=FALSE}
 
-```
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::
+
 ### Ants
 
 The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf) uses a binomial GLMM to analyze the directional decision taken by ants in a Y-maze. Tasks:
@@ -571,12 +636,13 @@ The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf)
 -   re-implement the model, based on the description in the paper
 -   check model assumptions, residuals, and all that. Do you agree with the analysis?
 
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+:::
+
 ### Owls
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
 Look at the Owl data set in the `glmmTMB`.{R} package. The initial hypothesis is
 
 ```{r chunk_chapter5_task_3, message=FALSE, warning=FALSE}
@@ -594,13 +660,11 @@ The offset has a special importance in models with a log link function, because 
 
 Now, try to improve the model with everything we have discussed so far.
 
-```{=html}
-  <details>
-    <summary>
-      <strong><span style="color: #0011AA; font-size:25px;">Possible solution</span></strong>
-    </summary>
-    <p>
-```
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+
 ```{r chunk_chapter5_task_4, message=FALSE, warning=FALSE}
 m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent 
   + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
@@ -614,8 +678,4 @@ testDispersion(m1)
 testZeroInflation(m1)
 ```
 
-```{=html}
-    </p>
-  </details>
-  <br/><hr/>
-```
+:::

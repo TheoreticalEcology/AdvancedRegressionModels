@@ -310,13 +310,12 @@ nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
 Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see Roberts, David R., et al. "Cross‐validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure." *Ecography* 40.8 (2017): 913-929., methods implemented in package `blockCV`{.R}, see <a href="https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html</a>.
 
 
-
 ## Case studies
 
 ### Exercise: Global Plant Trait Analysis #3
 
 ::: {.callout-caution icon="false"}
-## Excercise
+#### Excercise
 
 Revisit exercises our previous analyses of the dataset plantHeight, and discuss / analyze:
 
@@ -330,7 +329,7 @@ includes all possible 2nd-order interactions between the variables in your model
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
+#### Solution
 
 ```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE}
 library(EcoData)

@@ -51,9 +51,11 @@ The result conforms with our intuition - once we control for smoking, there will
 
 ## How to control?
 
-But how do we control for confounders?
+But how do we control for the confounder smoking?
 
 ### Experimental control
+
+The conceptually easiest approach is: we perform a controlled experiment. The entire idea experiments is that we vary only one (or a few) factors, keeping the others constant, and thus we are able to "see" causal effects directly. So, if we did an experiment with people that all smoke the same, varying coffee, we would get the right result:
 
 ```{r}
 smoking <- rep(0.5, 50)
@@ -64,11 +66,13 @@ plot(LungCancer ~ Coffee)
 abline(fit)
 ```
 
-Which us to an important point: people that run controlled experiments always estimate causal effects, unless something went wrong with the control. Actually, all advice regarding experimental design (control, randomization) is aimed are removing any possible confounding with other factors, so that we can isolte causal effects.
+Which us to an important point: people that run controlled experiments always estimate causal effects, unless something went wrong with the control. Actually, all advice regarding experimental design (control, randomization) is aimed are removing any possible confounding with other factors, so that we can isolate causal effects.
 
 ### Synthetic control
 
-The problem with causality arises in observational data.
+In observational data, we have to use statistical methods to achieve synthetic control. Luckily, we have a great tool for that: the multiple regression.
+
+The multiple regression can estimate the effect of coffee, corrected for the effect of smoking. Thus, by including smoking in the multiple regression, we are "virtually" holding smoking constant, thus allowing us to estimate the causal effect of coffee. Let's try this out:
 
 ```{r}
 smoking <- runif(100)
@@ -82,11 +86,9 @@ abline(fit2, col = "red")
 legend("topleft", c("simple regression", "multiple regression"), col = c(1,2), lwd = 1)
 ```
 
-https://www.andrewheiss.com/blog/2020/02/25/closing-backdoors-dags/
-
 ## A framework for causal analysis
 
-The goal of a causal analysis is to control for these other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict.
+What we have just seen is an example of a causal analysis. The goal of a causal analysis is to control for other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict.
 
 You probably have learned in your intro stats class that, to do so, we have to control for **confounders.** I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. Imagine that there is a third variable that is included
 
@@ -152,7 +154,9 @@ Take the example of the past exercise (airquality) and assume, the goal is to un
 -   I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it it will nearly act as a collider, because it can snitch away some of the effects of the other variables.
 :::
 
-## Case study
+## Graphs and models on graphs
+
+https://www.andrewheiss.com/blog/2020/02/25/closing-backdoors-dags/
 
 Let's take a more complicated example. We will use data from Grace & Keeley (2006), who try to understand plant diversity following wildfires in fire-prone shrublands of California. The authors have measured various variables, and they have a specific hypothesis how those are related (see below).
 
@@ -179,7 +183,7 @@ ggdag_paths(dag)
 Looking at the paths, I can see confounding structures, for example for age, abiotic and elevation. So I should definitely control for them. The function
 
 ```{r}
-ggdag_adjustment_set(dag, effect="direct")
+ggdag_adjustment_set(dag)
 ```
 
 helps me by suggesting which confounders I should control for. Note that the function doesn't suggest to adjust for mediation structures per default, but keeps them in the graph, so you have to decide what to do with them. You can directly ask to include adjustment for mediation if you run
@@ -189,6 +193,38 @@ ggdag_adjustment_set(dag, effect="direct")
 ```
 
 in this case, plot suggest to adjust for fireseverity, to isolate the direct effect of cover on richness.
+
+So, the model we should fit is
+
+```{r}
+fit = lm(rich ~ cover + hetero + distance, data = keeley)
+summary(fit)
+```
+
+### Table II fallacy
+
+When reporting this, note that we have only corrected the relationship rich \~ cover for confounding. Consequently, we should not report the entire regression table above, or at least make a clear distinction about which variables have been corrected, and which haven't.
+
+The blind reporting of the entire regression table is known as Table II fallacy (because regression tables are often Table II in a paper).
+
+### Structural equation models (SEMs)
+
+But what if we are interested in all the causal relationships? If we have a graph already, the best option is to fit a structural equation model.
+
+Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>. For linear SEMs, we can estimate the entire DAG in one go. This also allows to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. I will show here only an example using piecewiseSEM.
+
+```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+library(piecewiseSEM)
+
+mod = psem(
+  lm(rich ~ distance + elev + abiotic + age + hetero + firesev + cover, data = keeley),
+  lm(firesev ~ elev + age + cover, data = keeley), 
+  lm(cover ~ age + elev + hetero + abiotic, data = keeley)
+)
+
+summary(mod)
+plot(mod)
+```
 
 ## Case studies
 
@@ -249,42 +285,4 @@ summary(fit)
 Note that you shouldn't interpret the other variables (Table II fallacy) in a causal analysis, unless the other variables are analyzed / corrected for confounders / colliders.
 :::
 
-## SEMs
-
-Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
-
-```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-library(piecewiseSEM)
-
-mod = psem(
-  lm(rich ~ distance + elev + abiotic + age + hetero + firesev + cover, data = keeley),
-  lm(firesev ~ elev + age + cover, data = keeley), 
-  lm(cover ~ age + elev + hetero + abiotic, data = keeley)
-)
-
-summary(mod)
-plot(mod)
-```
-
-For linear SEMs, we can estimate the entire DAG in one go. This also allows to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`.{R}:
-
-```{r chunk_chapter7_chunk21, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
-library(lavaan)
-
-mod = "
-  rich ~ distance + elev + abiotic + age + hetero + firesev + cover
-  firesev ~ elev + age + cover
-  cover ~ age + elev + abiotic 
-"
-
-fit = sem(mod, data = keeley)
-
-summary(fit)
-```
-
-Plot options ... not so nice as before.
-
-```{r chunk_chapter7_chunk22, echo=TRUE, eval=TRUE}
-library(lavaanPlot)
-lavaanPlot(model = fit)
-```
+## 
