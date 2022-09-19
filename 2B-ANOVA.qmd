@@ -16,7 +16,7 @@ Modern explanation: ANOVA is not a statistical model, but a hypothesis test that
 
 ### An example
 
-As an example, here is a ANOVA (function aof(() performed on the fit of a linear model
+As an example, here is a ANOVA (function `aov()`) performed on the fit of a linear model
 
 ```{r}
 fit = lm(Ozone ~ Wind + Temp, data = airquality)
@@ -49,7 +49,7 @@ There are a number of cases where it can make sense to perform an ANOVA for larg
 fit = lm(Ozone ~ Wind + I(Wind^2) + Temp + I(Temp^2), data = airquality)
 ```
 
-Maybe, we would like to ask how much variance is explained by Wind + Wind\^2, and how much by Temp + Temp\^2. In this case, we can perform custom ANOVA, using the anova() function that we already introduced in the section on model selection via LRTs.
+Maybe, we would like to ask how much variance is explained by Wind + Wind\^2, and how much by Temp + Temp\^2. In this case, we can perform custom ANOVA, using the `anova()` function that we already introduced in the section on model selection via likelihood ratio tests (LRTs).
 
 ```{r}
 m0 = lm(Ozone ~ 1, data = airquality)
@@ -73,25 +73,25 @@ Let's look at the problem one by one:
 
 The definition of model fit via sum of squares makes sense as long as we work with linear models.
 
-For GLMs, this definition doesn't make sense any more. A number of so-called pseudo-R2 metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R2 for the linear model.
+For GLMs, this definition doesn't make sense any more. A number of so-called pseudo-R^2^ metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R^2^ for the linear model.
 
-A common metrics is McFadden pseudo-R2, which is defined as 1-\[LogL(M)/LogL(M0))\], where M is our model, and M0 is an intercept only model.
+A common metrics is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~))\], where M is our model, and M0 is an intercept only model.
 
 ### Testing if the improvement is significant
 
 The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT), which we already used in the chapter on model selection. An LRT can be used on two nested models, with M0 being the simpler model, and makes the following assumptions:
 
-1.  H0 = M0 is true
-2.  Test statistic = likelihood ratio -2 \[MLE(M0)/MLE(H1)\]
-3.  Then, under relatively broad conditions, the test static will be chi-2 distributed, with df = difference residual df (parameters) of the models M1, M0
+1.  H~0~ = M~0~ is true
+2.  Test statistic = likelihood ratio -2 \[MLE(M~0~)/MLE(H~1~)\]
+3.  Then, under relatively broad conditions, the test static will be chi^2^ distributed, with df = difference residual df (parameters) of the models M~1~, M~0~
 
 This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:
 
 The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:
 
-1.  Simulate data from H0 (= the fitted model M0)
-2.  Re-fit M0 and M1, and calculate likelihood ratios
-3.  Repeat n times to get an idea about the expected increase in likelihood when moving to M1 under the assumption that M0 is correct
+1.  Simulate data from H~0~ (= the fitted model M~0~)
+2.  Re-fit M~0~ and M~1~, and calculate likelihood ratios
+3.  Repeat n times to get an idea about the expected increase in likelihood when moving to M~1~ under the assumption that M~0~ is correct
 
 ```{r}
 library(DHARMa)
@@ -140,30 +140,31 @@ Try out the difference between type I, II, III ANOVA for the airquality data set
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r , message=FALSE, warning=FALSE}
-x1 = runif(100, -5, 5)
-x2 = -x1 + 0.2*runif(100, -5, 5)
-y = 0 + 1*x1 + 1*x2 + rnorm(100)
+Let's use the model with Wind, Temp, Solar.R, and their interactions. Wind and Temp, and Solar.R and Temp are collinear.
 
-cor(x1, x2)
+```{r chunk_chapter3_68, echo=FALSE}
+fit = lm(Ozone ~ (Wind + Temp + Solar.R)^2 , data = airquality)
+summary(fit)
 
-coef(lm(y ~ x1))
-coef(lm(y ~ x2))
-
-par(mfrow = c(1, 2))
-plot(x1, y, main = "x1 effect", ylim = c(-12, 12))
-abline(lm(y ~ x1))
-abline(0, 1, col = "red")
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
-plot(x2, y, main = "x2 effect", ylim = c(-12, 12))
-abline(lm(y ~ x2))
-abline(0, 1, col = "red")
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
-
-coef(lm(y~x1 + x2))
 ```
 
-*Both effects cancel out*.
+**Difference type I and II ANOVA:**
+
+```{r chunk_chapter3_69, echo=FALSE}
+summary(aov(fit))
+print(car::Anova(fit, type = "II"))
+```
+
+Only the Temp:Solar.R interaction is not affected!
+
+**Difference type II and III ANOVA:**
+
+```{r chunk_chapter3_70, echo=FALSE}
+print(car::Anova(fit, type = "II"))
+print(car::Anova(fit, type = "III"))
+```
+
+Only the main effects are now affected, the interactions remain the same.
 :::
 
 ### Correcting partitions for complexity
@@ -175,16 +176,16 @@ m = lm(Ozone ~ as.factor(Day) , data = airquality)
 summary(aov(m))
 ```
 
-The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the summary.lm() function reports a raw and an adjusted R2 for each model. The adjusted R2 tries to correct the R2 for the complexity of the model.
+The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the `summary.lm()` function reports a raw and an adjusted R2 for each model. The adjusted R^2^ tries to correct the R^2^ for the complexity of the model.
 
 ```{r}
 summary(m)
 ```
 
-Here, we see that the adjusted R2 is considerably lower than the raw R2, even though not zero.
+Here, we see that the adjusted R^2^ is considerably lower than the raw R^2^, even though not zero.
 
-In general, reliably adjusting R2 components for complexity in an ANOVA is very complicated. I would recommend that
+In general, reliably adjusting R^2^ components for complexity in an ANOVA is very complicated. I would recommend that
 
 -   If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance
 
--   Alternatively, if the true variance is really crucial for your study, you can adjust R2 by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H0, this will be a conservative estimate.
+-   Alternatively, if the true variance is really crucial for your study, you can adjust R^2^ by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H~0~, this will be a conservative estimate.
