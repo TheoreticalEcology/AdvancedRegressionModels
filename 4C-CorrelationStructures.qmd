@@ -242,7 +242,7 @@ Almost the same, but simpler:
 fit = lm(thick ~ soil + north + I(north^2), data = thickness)
 ```
 
-If we would have still seen a signal, we should have fit an autoregressive model. Here it's not neccessary, but just to show you the syntax - first nlme:
+If we would have still seen a signal, we should have fit an autoregressive model. Here it's not necessary, but just to show you the syntax - first nlme:
 
 ```{r chunk_chapter6_chunk7, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 fit2 = gls(thick ~ soil , correlation = corExp(form =~ east + north) , data = thickness)
@@ -257,9 +257,15 @@ thickness$pos <- numFactor(thickness$east,
 thickness$group <- factor(rep(1, nrow(thickness)))
 
 fit3 = glmmTMB(thick ~ soil + exp(pos + 0 | group) , data = thickness)
+```
+
+The output of summary is a bit chunky, which is why I suppress it here
+
+```{r, eval = F}
 summary(fit3)
 ```
 
+If you wonder why there is such a large correlation matrix displayed: both the AR1 and the exp(pos + 0 | group) structure impose a particular correlation structure on the random effects. Per default, glmmTMB shows correlations of random effects if they are estimated. In the case of the AR1 structure, the programmers apparently surpressed this, and just showed the stimate of the AR1 parameter. Here, however, they didn't implement this feature, so you see the entire correlation structure, which is, admittedly, less helpful and should be changed. 
 
 ::: {.callout-caution icon="false"}
 #### Plant counts in Regensburg

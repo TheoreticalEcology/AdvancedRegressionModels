@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Advanced Regression Models with R - 8&nbsp; GL(M)Ms</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./4B-Heteroskedasticity.html" rel="next">
+<link href="./3C-ModelSelection.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="citation_title" content="[8]{.chapter-number}&nbsp; [GL(M)Ms]{.chapter-title}">
+<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//4A-GLMs.html">
+<meta name="citation_journal_title" content="undefined">
+<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;">
+<meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_journal_title=Vignette for lme4;">
+<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_fulltext_html_url=https://www.R-project.org/;,citation_publication_date=2021;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;,citation_publication_date=2016;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2015;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_publication_date=2014;,citation_journal_title=Implementing reproducible computational research;">
+<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;,citation_publication_date=2018;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">GL(M)Ms</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Advanced Regression Models with R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Modelling the mean</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2A-LinearRegression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Linear Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2C-RandomEffects.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear mixed models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Model Choice</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3A-MissingData.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3B-CausalInference.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Causal inference</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3C-ModelSelection.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Model selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Modelling the distribution</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4A-GLMs.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">GL(M)Ms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4B-Heteroskedasticity.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Dispersion models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4C-CorrelationStructures.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Correlation structures</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">Summary and references</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5B-References.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">Appendices</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6A-RCrashCourse.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">A crashcourse in R</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction-to-glms" id="toc-introduction-to-glms" class="nav-link active" data-scroll-target="#introduction-to-glms"> <span class="header-section-number">8.1</span> Introduction to GLMs</a></li>
+  <li><a href="#important-glm-variants" id="toc-important-glm-variants" class="nav-link" data-scroll-target="#important-glm-variants"> <span class="header-section-number">8.2</span> Important GLM variants</a>
+  <ul class="collapse">
+  <li><a href="#count-data---poisson-regression" id="toc-count-data---poisson-regression" class="nav-link" data-scroll-target="#count-data---poisson-regression"> <span class="header-section-number">8.2.1</span> Count data - Poisson regression</a></li>
+  <li><a href="#or-kn-data---logistic-regression" id="toc-or-kn-data---logistic-regression" class="nav-link" data-scroll-target="#or-kn-data---logistic-regression"> <span class="header-section-number">8.2.2</span> 0/1 or k/n data - logistic regression</a></li>
+  </ul></li>
+  <li><a href="#residual-and-their-solutions-in-glms" id="toc-residual-and-their-solutions-in-glms" class="nav-link" data-scroll-target="#residual-and-their-solutions-in-glms"> <span class="header-section-number">8.3</span> Residual and their solutions in GLMs</a>
+  <ul class="collapse">
+  <li><a href="#dharma-residual-plots-for-glmms" id="toc-dharma-residual-plots-for-glmms" class="nav-link" data-scroll-target="#dharma-residual-plots-for-glmms"> <span class="header-section-number">8.3.1</span> DHARMA residual plots for GL(M)Ms</a></li>
+  <li><a href="#dispersion-problems-in-glms" id="toc-dispersion-problems-in-glms" class="nav-link" data-scroll-target="#dispersion-problems-in-glms"> <span class="header-section-number">8.3.2</span> Dispersion Problems in GLMs</a></li>
+  <li><a href="#zero-inflation" id="toc-zero-inflation" class="nav-link" data-scroll-target="#zero-inflation"> <span class="header-section-number">8.3.3</span> Zero-inflation</a></li>
+  </ul></li>
+  <li><a href="#interpreting-interactions-in-glms" id="toc-interpreting-interactions-in-glms" class="nav-link" data-scroll-target="#interpreting-interactions-in-glms"> <span class="header-section-number">8.4</span> Interpreting interactions in GLMs</a></li>
+  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"> <span class="header-section-number">8.5</span> Case Studies</a>
+  <ul class="collapse">
+  <li><a href="#hurricanes" id="toc-hurricanes" class="nav-link" data-scroll-target="#hurricanes"> <span class="header-section-number">8.5.1</span> Hurricanes</a></li>
+  <li><a href="#researchers-degrees-of-freedom-skin-color-and-red-cards" id="toc-researchers-degrees-of-freedom-skin-color-and-red-cards" class="nav-link" data-scroll-target="#researchers-degrees-of-freedom-skin-color-and-red-cards"> <span class="header-section-number">8.5.2</span> Researchers Degrees of Freedom — Skin Color and Red Cards</a></li>
+  <li><a href="#ants" id="toc-ants" class="nav-link" data-scroll-target="#ants"> <span class="header-section-number">8.5.3</span> Ants</a></li>
+  <li><a href="#owls" id="toc-owls" class="nav-link" data-scroll-target="#owls"> <span class="header-section-number">8.5.4</span> Owls</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/4A-GLMs.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">GL(M)Ms</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction-to-glms" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="introduction-to-glms"><span class="header-section-number">8.1</span> Introduction to GLMs</h2>
+<p>Generalized linear models (GLMs) extend the linear model (LM) to other (i.e.&nbsp;non-normal) distributions. The idea is the following:</p>
+<ol type="1">
+<li><p>We want to keep the regression formula <span class="math inline">\(y \sim f(x)\)</span> of the lm with all it’s syntax, inlcuding splines, random effects and all that. In the GLM world, this is called the “linear predictor”.</p></li>
+<li><p>However, in the GLM, we now allow other residual distributions than normal, e.g.&nbsp;binomial, Poisson, Gamma, etc.</p></li>
+<li><p>Some families require a particular range of the predictions (e.g.&nbsp;binomial requires predictions between zero and one). To achieve this, we use a so-called link function to bring the results of the linear predictor to the desired range.</p></li>
+</ol>
+<p>In R, the distribution is specified via the family() function, which distinguishes the glm from the lm function. If you look at the help of family, you will see that the link function is an argument of family(). If no link is provided, the default link for the respective family is chosen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>?family</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A full GLM structure is thus:</p>
+<p><span class="math display">\[
+y \sim family[link^{-1}(f(x) + RE)]
+\]</span></p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As you see, in noted the link function as <span class="math inline">\(link^{-1}\)</span> in this equation. The reason is that traditionally, the link function is applied to the left hand side of the equation, i.e.</p>
+<p><span class="math display">\[
+link(y) \sim x
+\]</span></p>
+<p>This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that log(y) = x, which actually means that we assume y = exp(x), i.e.&nbsp;the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.</p>
+</div>
+</div>
+<p>The function f(x) itself can have all components that we discussed before, in particular</p>
+<ul>
+<li><p>You can add random effects as before (using functions lme4::glmer or glmmTMB::glmmTMB)</p></li>
+<li><p>You can also use splines using mgcv::gam</p></li>
+</ul>
+</section>
+<section id="important-glm-variants" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="important-glm-variants"><span class="header-section-number">8.2</span> Important GLM variants</h2>
+<p>The most important are</p>
+<ul>
+<li>Logit link for Bernoulli / Binomial family = logistic regression</li>
+<li>Log link for Poisson family = Poisson regression</li>
+<li>Beta regresion for continous 0/1 data</li>
+</ul>
+<p>Of course, there are many additional distributions that you could consider for your response. Here an overview of the common choices:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="images/linkFunctions.jpg" style="width:150.0%;height:150.0%"></p>
+</div>
+</div>
+<p><small>Screenshot taken from Wikipedia: <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function</a>. Content licensed under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike License 3.0</a>.</small></p>
+<section id="count-data---poisson-regression" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="count-data---poisson-regression"><span class="header-section-number">8.2.1</span> Count data - Poisson regression</h3>
+<p>The standard model for count data (1,2,3) is the Poisson regression, which implements</p>
+<ul>
+<li><p>A log-link function -&gt; y = exp(ax + b)</p></li>
+<li><p>A Poisson distribution</p></li>
+</ul>
+<p>As an example, we use the data set birdfeeding from the EcoData package - the dataset consists of observations of foods given to nestlings to parents as a function of the attractiveness of the nestling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#str(birdfeeding)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(feeding <span class="sc">~</span> attractiveness, <span class="at">data =</span> birdfeeding)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To fit a Poisson regression to this data, we use the glm() function, specifying family = “poisson”. Note again that the log link function is the default (see ?family), so it does not have to be specified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">glm</span>(feeding <span class="sc">~</span> attractiveness, <span class="at">data =</span> birdfeeding, <span class="at">family =</span> <span class="st">"poisson"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = feeding ~ attractiveness, family = "poisson", data = birdfeeding)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-1.55377  -0.72834   0.03699   0.59093   1.54584  
+
+Coefficients:
+               Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)     1.47459    0.19443   7.584 3.34e-14 ***
+attractiveness  0.14794    0.05437   2.721  0.00651 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 25.829  on 24  degrees of freedom
+Residual deviance: 18.320  on 23  degrees of freedom
+AIC: 115.42
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>The output is very similar to the lm(), however, as the residuals are not any more assumed to scatter normally, all statistics based on R2 have been replaced by the deviance (deviance = - 2 log likelihood). So, we have</p>
+<ul>
+<li><p>Deviance residuals on top</p></li>
+<li><p>Instead of R2, we get null vs.&nbsp;residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R2, e.g.&nbsp;McFadden, which is 1-[LogL(M)/LogL(M0))] -&gt; in this case 1-25.8/18.3</p></li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Unfortunately, the deviance is not used consistently in</p>
+</div>
+</div>
+<p>If we want to calculate model predictions, we have to transform to the response scale. Here we have a log link, i.e.&nbsp;we have to transform with exp(linear response).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fl">1.47459</span> <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fl">0.14794</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6.810122</code></pre>
+</div>
+</div>
+<p>Alternatively (and preferably), you can use the predict() function with type = “response”</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">attractiveness =</span> <span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit, <span class="at">newdata =</span> dat) <span class="co"># linear predictor</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+1.918397 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit, <span class="at">newdata =</span> dat, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># response scale</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+6.810034 </code></pre>
+</div>
+</div>
+<p>Effect plots work as before. Note that the effects package always transforms the y axis according to the link, so we have log scaling on the y axis, and the effect lines remain straight</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: carData</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>lattice theme set by effectsTheme()
+See ?effectsTheme for details.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="notes-on-the-poisson-regression" class="level4" data-number="8.2.1.1">
+<h4 data-number="8.2.1.1" class="anchored" data-anchor-id="notes-on-the-poisson-regression"><span class="header-section-number">8.2.1.1</span> Notes on the Poisson regression</h4>
+<p><strong>Poisson vs.&nbsp;log transformed count data:</strong> For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, was common to it lm with log transformed counts, which is basically log link + normal distribution</p>
+<p><strong>Log offset:</strong> If there is a variable that that controls the number of counts (e.g.&nbsp;time, area), this variable is usually added as a offset in the following form</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">glm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(area)), <span class="at">family =</span> <span class="st">"poisson"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As the log-link connects the linear predictor as in y = exp(x), and exp(x + log(area)) = exp(x) * area, this makes the expected counts proportional to area, or whatever variable is added as a log offset.</p>
+<p><strong>Interactions:</strong> As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.</p>
+</section>
+</section>
+<section id="or-kn-data---logistic-regression" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="or-kn-data---logistic-regression"><span class="header-section-number">8.2.2</span> 0/1 or k/n data - logistic regression</h3>
+<p>The standard model to fit binomial (0/1 or k/n) data is the logistic regression, which combines the binomial distribution with a logit link function. To get to know this model, let’s have a look at the titanic data set in EcoData:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#str(titanic)</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#mosaicplot( ~ survived + sex + pclass, data = titanic)</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>titanic<span class="sc">$</span>pclass <span class="ot">=</span> <span class="fu">as.factor</span>(titanic<span class="sc">$</span>pclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We want to analyze how survival in the titanic accident depended on other predictors. We could fit an lm, but the residual checks make it very evident that the data with a 0/1 response don’t fit to the assumption of an lm:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(survived <span class="sc">~</span> sex <span class="sc">*</span> age, <span class="at">data =</span> titanic)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = survived ~ sex * age, data = titanic)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.8901 -0.2291 -0.1564  0.2612  0.9744 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.637645   0.046165  13.812  &lt; 2e-16 ***
+sexmale     -0.321308   0.059757  -5.377 9.35e-08 ***
+age          0.004006   0.001435   2.792  0.00534 ** 
+sexmale:age -0.007641   0.001823  -4.192 3.01e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4115 on 1042 degrees of freedom
+  (263 observations deleted due to missingness)
+Multiple R-squared:  0.3017,    Adjusted R-squared:  0.2997 
+F-statistic:   150 on 3 and 1042 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Thus, let’s move to the logistic regression, which assumes a 0/1 response + logit link. In principle, this is distribution is called Bernoulli, but in R both 0/1 and k/n are called “binomial”, as Bernoulli is the special case of binomial where n = 1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = survived ~ sex * age, family = "binomial", data = titanic)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.0247  -0.7158  -0.5776   0.7707   2.2960  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  0.493381   0.254188   1.941 0.052257 .  
+sexmale     -1.154139   0.339337  -3.401 0.000671 ***
+age          0.022516   0.008535   2.638 0.008342 ** 
+sexmale:age -0.046276   0.011216  -4.126 3.69e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1414.6  on 1045  degrees of freedom
+Residual deviance: 1083.4  on 1042  degrees of freedom
+  (263 observations deleted due to missingness)
+AIC: 1091.4
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The syntax here is for 0/1 data. If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with k ~ x, weights = n</p>
+</div>
+</div>
+<p>The interpretation of the regression table remains unchanged. To transform to predictions, we have to use the inverse logit, which is in R:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="fl">0.493381</span> <span class="sc">+</span> <span class="fl">0.022516</span> <span class="sc">*</span> <span class="dv">20</span>)  <span class="co"># Women, age 20.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7198466</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="fl">0.493381</span> <span class="sc">-</span><span class="fl">1.154139</span> <span class="sc">+</span> <span class="dv">20</span><span class="sc">*</span>(<span class="fl">0.022516-0.046276</span>)) <span class="co"># Men, age 20</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2430632</code></pre>
+</div>
+</div>
+<p>Alternatively, we can again use the predict function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>newDat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">as.factor</span>(<span class="fu">c</span>(<span class="st">"female"</span>, <span class="st">"male"</span>)), <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">20</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(m1, <span class="at">newdata =</span> newDat) <span class="co"># Linear predictor.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1          2 
+ 0.9436919 -1.1359580 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(m1, <span class="at">newdata =</span> newDat, <span class="at">type =</span> <span class="st">"response"</span>)  <span class="co"># Response scale.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1         2 
+0.7198448 0.2430633 </code></pre>
+</div>
+</div>
+<p>Finally, the effect plots - note again the scaling of the y axis, which is now logit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="notes-on-the-logistic-regression" class="level4" data-number="8.2.2.1">
+<h4 data-number="8.2.2.1" class="anchored" data-anchor-id="notes-on-the-logistic-regression"><span class="header-section-number">8.2.2.1</span> Notes on the logistic regression</h4>
+<p><strong>Offset:</strong> there is no exact solution for making 0/1 data dependent on a scaling factor via an offset, which is often desirable, for example in the context of survival analysis with different exposure times. An approximate solution is to use an offset together with the log-log link (instead of logit).</p>
+<p><strong>Interactions:</strong> As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.</p>
+<p><strong>Overdispersion:</strong> 0/1 poisson responses cannot be overdispersed, but k/n responses can be. However, 0/1 responses can show overdispersion if grouped to k/n.&nbsp;Note next section on residual checks, as well as comments on testing binomial GLMs in the<br>
+<a href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data" target="_blank" rel="noopener">DHARMa vignette</a>.</p>
+<div class="callout-caution callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Example - Elk Data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:</p>
+<ol type="a">
+<li>A predictive analysis, i.e.&nbsp;a model to predict where Elks can be found.</li>
+<li>A causal analysis, trying to understand the effect of roads on Elk presence.</li>
+</ol>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>TODO</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="residual-and-their-solutions-in-glms" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="residual-and-their-solutions-in-glms"><span class="header-section-number">8.3</span> Residual and their solutions in GLMs</h2>
+<p>First of all: everything we said about model selection and residual checks for LMs also apply for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.</p>
+<p>Let’s look again at the titanic example</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check class(m1)), the standard residual plots still work</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>but they look horrible, because they still check for normality of the residuals, while we are interested in the question of whether the residuals are binomially distributed.</p>
+<section id="dharma-residual-plots-for-glmms" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="dharma-residual-plots-for-glmms"><span class="header-section-number">8.3.1</span> DHARMA residual plots for GL(M)Ms</h3>
+<p>The <code>DHARMa</code> package that we already introduced solves this problem</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is DHARMa 0.4.6. For overview type '?DHARMa'. For recent changes, type news(package = 'DHARMa')</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Standard plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Out of the help page: The function creates a plot with two panels. The left panel is a uniform Q-Q plot (calling <a href="https://rdrr.io/cran/DHARMa/man/plotQQunif.html" target="_blank" rel="noopener">plotQQunif</a>), and the right panel shows residuals against predicted values (calling <a href="hhttps://rdrr.io/cran/DHARMa/man/plotResiduals.html" target="_blank" rel="noopener">plotResiduals</a>), with outliers highlighted in red.</p>
+<p>Very briefly, we would expect that a correctly specified model shows:</p>
+<ol type="a">
+<li><p>A straight 1-1 line, as well as not significant of the displayed tests in the Q-Q-plot (left) -&gt; Evidence for a correct overall residual distribution (for more details on the interpretation of this plot, see help).</p></li>
+<li><p>Visual homogeneity of residuals in both vertical and horizontal direction, as well as no significance of quantile tests in the Residual vs.&nbsp;predicted plot (for more details on the interpretation of this plot, see help).</p></li>
+</ol>
+<p>Deviations from these expectations can be interpreted similarly to a linear regression. See the vignette for detailed examples.</p>
+<p>With that in mind, we can say that there is nothing special to see here. Also residuals against predictors shows no particular problem:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>age)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>However, residuals against the missing predictor pclass show a clear problem:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dataUsed <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rownames</span>(<span class="fu">model.frame</span>(m1)))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> titanic<span class="sc">$</span>pclass[dataUsed])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Thus, I should add passenger class to the model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age <span class="sc">+</span> pclass, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = survived ~ sex * age + pclass, family = "binomial", 
+    data = titanic)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.3844  -0.6721  -0.4063   0.7041   2.5440  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  2.790839   0.362822   7.692 1.45e-14 ***
+sexmale     -1.029755   0.358593  -2.872  0.00408 ** 
+age         -0.004084   0.009461  -0.432  0.66598    
+pclass2     -1.424582   0.241513  -5.899 3.67e-09 ***
+pclass3     -2.388178   0.236380 -10.103  &lt; 2e-16 ***
+sexmale:age -0.052891   0.012025  -4.398 1.09e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1414.62  on 1045  degrees of freedom
+Residual deviance:  961.92  on 1040  degrees of freedom
+  (263 observations deleted due to missingness)
+AIC: 973.92
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m2, <span class="at">form =</span> <span class="fu">model.frame</span>(m2)<span class="sc">$</span>pclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now, residuals look fine. Of course, if your model gets more complicated, you may want to do additional checks, for example for the distribution of random effects etc.</p>
+</section>
+<section id="dispersion-problems-in-glms" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="dispersion-problems-in-glms"><span class="header-section-number">8.3.2</span> Dispersion Problems in GLMs</h3>
+<p>One thing that is different between GLMs and LM is that GLMs can display overall dispersion problems. The most common GLMs to show overdispersion are the Poisson and the logistic regression.</p>
+<p>The reason is that simple GLM distributions such as the Poisson or the Binomial (for k/n data) do not have a parameter for adjusting the spread of the observed data around the regression line (dispersion), but their variance is a fixed as function of the mean.</p>
+<p>There are good reasons for why this is the case (Poisson and Binomial describe particular processes, e.g.&nbsp;coin flip, for which the variance is a fixed function of the mean), but the fact is that when applying these GLMs on real data, we often find overdispersion (more dispersion than expected), and more rarely, underdispersion (less dispersion than expected).</p>
+<p>To remove the assumptions of a fixed dispersion, there are three options, of which you should definitely take the third one:</p>
+<ol type="1">
+<li><strong>Quasi-distributions</strong>, which are available in glm. Those add a term to the likelihood that corrects the p-values for the dispersion, but they are not distributions .-&gt; Can’t check residuals, no AIC. -&gt; Discouraged.</li>
+<li><strong>Observation-level random effect (OLRE)</strong> - Add a separate random effect per observation. This effectively creates a normal random variate at the level of the linear predictor, increases variance on the responses.</li>
+<li>A <strong>GLM distribution with variable dispersion</strong>, for Poisson usually the negative binomial.</li>
+</ol>
+<p>The reason why we should prefer the 3rd option is that it allows better residual checks and to model the dispersion as a function of the predictors, see next section.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Overdispersion is often created by model misfit. Thus, before moving to a variable dispersion GLM, you should check for / correct model misfit.</p>
+</div>
+</div>
+<section id="recognizing-overdispersion" class="level4" data-number="8.3.2.1">
+<h4 data-number="8.3.2.1" class="anchored" data-anchor-id="recognizing-overdispersion"><span class="header-section-number">8.3.2.1</span> Recognizing overdispersion</h4>
+<p>To understand how to recognize overdispersion, let’s look at an example. We’ll use the Salamanders dataset from the package glmmTMB, staring with a simple Poisson glm:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined, <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Overdispersion will be automatically highlighted in the standard DHARMa plots</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You see the dispersion problem by:</p>
+<ul>
+<li><p>Dispersion test in the left plot significant</p></li>
+<li><p>QQ plot S-shaped</p></li>
+<li><p>Quantile lines in the right plots outside their expected quantiles</p></li>
+</ul>
+<p>You can get a more detailed output with the testDispersion function, which also displays the direction of the dispersion problem (over or underdispersion)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 3.9152, p-value &lt; 2.2e-16
+alternative hypothesis: two.sided</code></pre>
+</div>
+</div>
+<p>OK, often the dispersion problem is caused by structural problems. Let’s add a random effect for site, which makes sense.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glmer</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), </span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The standard dispersion test is OK</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>But when random effects are added, you should prefer to calcualte conditional residuals, because this test is more powerful. For lme4 models, we can switch via re.form = T</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let’s switch to a negative binomial model, using glmmTMB</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">data =</span> Salamanders)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m4, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Unfortunately, glmmTMB doesn’t allow to calculate conditional residuals, so we have to be satisfied with the fact that the unconditional residuals look great.</p>
+</section>
+</section>
+<section id="zero-inflation" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" class="anchored" data-anchor-id="zero-inflation"><span class="header-section-number">8.3.3</span> Zero-inflation</h3>
+<p>Another common problem in count data (Poisson / negative binomial), but also other GLMs (e.g.&nbsp;binomial, beta) is that the observed data has more zeros than expected by the fitted distribution. For the beta, 1-inflation, and for the k/n binomial, n-inflation is also common, and tested for / addressed in the same way.</p>
+<p>To deal with this <strong>zero-inflation</strong>, one usually adds an additional model component that controls how many zeros are produced. The default way to do this is assuming two separate processes which act after one another:</p>
+<ol type="1">
+<li>First, we have the normal GLM, predicting what values we would expect</li>
+<li>On top of that, we have a logistic regression, which decides whether the GLM prediction or a zero should be observed</li>
+</ol>
+<p>Note that the result of 1 can also be zero, so there are two explanations for a zero in the data. Zero-inflated GLMMs can, for example, be fit with glmmTMB, using the ziformula argument.</p>
+<section id="recognizing-zero-inflation" class="level4" data-number="8.3.3.1">
+<h4 data-number="8.3.3.1" class="anchored" data-anchor-id="recognizing-zero-inflation"><span class="header-section-number">8.3.3.1</span> Recognizing zero-inflation</h4>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Danger
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The fact that you have a lot of zeros in your data does not indicate zero-inflation. Zero-inflation is with respect to the fitted model. You can only check for zero-inflation after fitting a model.</p>
+</div>
+</div>
+<p>Let’s look at our last model - DHARMa has a special function to check for zero-inflation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk22-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa zero-inflation test via comparison to expected zeros with
+    simulation under H0 = fitted model
+
+data:  simulationOutput
+ratioObsSim = 1.0172, p-value = 0.744
+alternative hypothesis: two.sided</code></pre>
+</div>
+</div>
+<p>This shows no sign of zero-inflation. There are, however, two problems with this test:</p>
+<ol type="1">
+<li>glmmTMB models only allow unconditional residuals, which means that dispersion and zero-inflation tests are less powerfull</li>
+<li>When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.</li>
+</ol>
+<p>Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. You can compare a zero-inflation model via AIC or likelihood ratio test to your base model, or simply check if the ZIP term in glmmTMB is significant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">ziformula =</span> <span class="sc">~</span><span class="dv">1</span>,  <span class="at">data =</span> Salamanders)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          count ~ spp + mined + (1 | site)
+Zero inflation:         ~1
+Data: Salamanders
+
+     AIC      BIC   logLik deviance df.resid 
+  1674.4   1723.5   -826.2   1652.4      633 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ site   (Intercept) 0.2944   0.5426  
+Number of obs: 644, groups:  site, 23
+
+Dispersion parameter for nbinom2 family (): 0.942 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  -1.6832     0.2742  -6.140 8.28e-10 ***
+sppPR        -1.3197     0.2875  -4.591 4.42e-06 ***
+sppDM         0.3686     0.2235   1.649 0.099047 .  
+sppEC-A      -0.7098     0.2530  -2.806 0.005016 ** 
+sppEC-L       0.5714     0.2191   2.608 0.009105 ** 
+sppDES-L      0.7929     0.2166   3.660 0.000252 ***
+sppDF         0.3120     0.2329   1.340 0.180329    
+minedno       2.2633     0.2838   7.975 1.53e-15 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Zero-inflation model:
+            Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)   -16.41    4039.11  -0.004    0.997</code></pre>
+</div>
+</div>
+<p>In this case, we have no evidence for zero-inflation. To see an example where you can find zero-inflation, do the Owl case study below.</p>
+</section>
+</section>
+</section>
+<section id="interpreting-interactions-in-glms" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="interpreting-interactions-in-glms"><span class="header-section-number">8.4</span> Interpreting interactions in GLMs</h2>
+<p>A significant problem with interpreting GLMs is the interpretation of slopes in the presence of other variables, in particular interactions. To understand this problem, let’s first confirm to ourselves: if we simulate data under the model assumptions, parameters will be recovered as expected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>trt <span class="ot">=</span> <span class="fu">as.factor</span>(<span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">"ctrl"</span>, <span class="st">"trt"</span>), <span class="dv">5000</span>, <span class="at">replace=</span> T))</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>concentration <span class="ot">=</span>  <span class="fu">runif</span>(<span class="dv">5000</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fu">plogis</span>(<span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">*</span> (<span class="fu">as.numeric</span>(trt) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">*</span>concentration)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, <span class="at">prob =</span> response)</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = survival ~ trt * concentration, family = "binomial", 
+    data = dat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.0767  -1.2595   0.6357   0.8578   1.1457  
+
+Coefficients:
+                     Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)           0.07491    0.08240   0.909    0.363    
+trttrt                0.93393    0.12731   7.336 2.20e-13 ***
+concentration         0.89385    0.14728   6.069 1.29e-09 ***
+trttrt:concentration  0.13378    0.23675   0.565    0.572    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 5920.1  on 4999  degrees of freedom
+Residual deviance: 5622.9  on 4996  degrees of freedom
+AIC: 5630.9
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The problem with this, however, is the condition that we “simulate data under model assumptions”, which includes the nonlinear link function. Let’s have a look what happens if we simulate data differently: in this case, we just assume that treatment changes the overall probability of survival (from 45% to 90%), and the concentration increases the survival by up to 10% for each group. We may think that we don’t have an interaction in this case, but the model finds one</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fl">0.45</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(trt) <span class="sc">+</span> <span class="fl">0.1</span><span class="sc">*</span>concentration</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, response)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = survival ~ trt * concentration, family = "binomial", 
+    data = dat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.8600  -1.0714   0.2821   1.0405   1.3101  
+
+Coefficients:
+                     Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          -0.30719    0.08142  -3.773 0.000161 ***
+trttrt                2.46941    0.18030  13.696  &lt; 2e-16 ***
+concentration         0.64074    0.14149   4.529 5.94e-06 ***
+trttrt:concentration  1.37625    0.39167   3.514 0.000442 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 5848.4  on 4999  degrees of freedom
+Residual deviance: 4355.1  on 4996  degrees of freedom
+AIC: 4363.1
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It looks in the effect plots as if the slope is changing as well, but note that this because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.</p>
+<p>The reason is simple: if we plot the plogis function, it becomes obvious that at different base levels (which would be controlled by trt in our case), moving a unit in concentration has a different effect.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>If we turn this around, this means that if want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.</p>
+<p>Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn’t make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.</p>
+<p>Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. So, for example, we could fit the last model with a binomial distribution, but with an identity link</p>
+<div class="cell" data-warnings="false">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"identity"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds
+
+Warning: step size truncated: out of bounds</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: algorithm stopped at boundary value</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = survival ~ trt * concentration, family = binomial(link = "identity"), 
+    data = dat)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-3.2649  -1.0716   0.3023   1.0398   1.3103  
+
+Coefficients:
+                     Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)           0.42369    0.02010  21.079  &lt; 2e-16 ***
+trttrt                0.48388    0.02174  22.254  &lt; 2e-16 ***
+concentration         0.15935    0.03483   4.575 4.77e-06 ***
+trttrt:concentration -0.06690    0.03582  -1.868   0.0618 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 5848.4  on 4999  degrees of freedom
+Residual deviance: 4347.2  on 4996  degrees of freedom
+AIC: 4355.2
+
+Number of Fisher Scoring iterations: 12</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To solve this problem, there are a number of glm-specific solutions, for example for the logistic regression to prefer the so-called <strong>odds ratios</strong>. Another option is to look at the predicted effects at the response scale, e.g.&nbsp;via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.</p>
+</div>
+</div>
+</section>
+<section id="case-studies" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">8.5</span> Case Studies</h2>
+<p>Strategy for analysis:</p>
+<ol type="1">
+<li>Define formula via scientific questions + confounders.</li>
+<li>Define type of GLM (lm, logistic, Poisson).</li>
+<li>Blocks in data -&gt; Random effects, start with random intercept.</li>
+</ol>
+<p>Fit this base model, then do residual checks for</p>
+<ul>
+<li>Wrong functional form -&gt; Change fitted function.</li>
+<li>Wrong distribution-&gt; Transformation or GLM adjustment.</li>
+<li>(Over)dispersion -&gt; Variable dispersion GLM.</li>
+<li>Heteroskedasticity -&gt; Model dispersion.</li>
+<li>Zero-inflation -&gt; Add ZIP term.</li>
+<li>…</li>
+</ul>
+<p>And adjust the model accordingly.</p>
+<section id="hurricanes" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="hurricanes"><span class="header-section-number">8.5.1</span> Hurricanes</h3>
+<p>In <a href="https://www.pnas.org/content/111/24/8782" target="_blank" rel="noopener">https://www.pnas.org/content/111/24/8782</a>, Jung et al.&nbsp;claim that “Female hurricanes are deadlier than male hurricanes”.</p>
+<p>Specifically, they analyze the number of hurricane fatalities, and claim that there is an effect of the femininity of the name on the number of fatalities, correcting for several possible confounders. They interpret the result as causal (including mediators), claiming that giving only male names to hurricanes would considerably reduce death toll.</p>
+<p>The data is available in <code class="sourceCode r">DHARMa</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(hurricanes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [92 × 14] (S3: tbl_df/tbl/data.frame)
+ $ Year                    : num [1:92] 1950 1950 1952 1953 1953 ...
+ $ Name                    : chr [1:92] "Easy" "King" "Able" "Barbara" ...
+ $ MasFem                  : num [1:92] 6.78 1.39 3.83 9.83 8.33 ...
+ $ MinPressure_before      : num [1:92] 958 955 985 987 985 960 954 938 962 987 ...
+ $ Minpressure_Updated_2014: num [1:92] 960 955 985 987 985 960 954 938 962 987 ...
+ $ Gender_MF               : num [1:92] 1 0 0 1 1 1 1 1 1 1 ...
+ $ Category                : num [1:92] 3 3 1 1 1 3 3 4 3 1 ...
+ $ alldeaths               : num [1:92] 2 4 3 1 0 60 20 20 0 200 ...
+ $ NDAM                    : num [1:92] 1590 5350 150 58 15 ...
+ $ Elapsed_Yrs             : num [1:92] 63 63 61 60 60 59 59 59 58 58 ...
+ $ Source                  : chr [1:92] "MWR" "MWR" "MWR" "MWR" ...
+ $ ZMasFem                 : num [1:92] -0.000935 -1.670758 -0.913313 0.945871 0.481075 ...
+ $ ZMinPressure_A          : num [1:92] -0.356 -0.511 1.038 1.141 1.038 ...
+ $ ZNDAM                   : num [1:92] -0.439 -0.148 -0.55 -0.558 -0.561 ...</code></pre>
+</div>
+</div>
+<p>Some plots:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hurricanes<span class="sc">$</span>MasFem, hurricanes<span class="sc">$</span>NDAM, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">pch =</span> <span class="dv">5</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(hurricanes<span class="sc">$</span>MasFem, hurricanes<span class="sc">$</span>NDAM, <span class="at">cex =</span> hurricanes<span class="sc">$</span>alldeaths<span class="sc">/</span><span class="dv">20</span>,</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">col=</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_task_6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The original model from the paper fits a negative binomial, using <code>mgcv</code>.{R}.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">gam</span>(alldeaths <span class="sc">~</span> MasFem <span class="sc">*</span> (Minpressure_Updated_2014 <span class="sc">+</span> NDAM), </span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> hurricanes, <span class="at">family =</span> nb, <span class="at">na.action =</span> <span class="st">"na.fail"</span>)</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: Negative Binomial(0.736) 
+Link function: log 
+
+Formula:
+alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM)
+
+Parametric coefficients:
+                                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                      7.014e+01  2.003e+01   3.502 0.000462 ***
+MasFem                          -5.986e+00  2.529e+00  -2.367 0.017927 *  
+Minpressure_Updated_2014        -7.008e-02  2.060e-02  -3.402 0.000669 ***
+NDAM                            -3.845e-05  2.945e-05  -1.305 0.191735    
+MasFem:Minpressure_Updated_2014  6.124e-03  2.603e-03   2.352 0.018656 *  
+MasFem:NDAM                      1.593e-05  3.756e-06   4.242 2.21e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+R-sq.(adj) =  -3.61e+03   Deviance explained = 57.4%
+-REML = 357.56  Scale est. = 1         n = 92</code></pre>
+</div>
+</div>
+<p>Tasks:</p>
+<ul>
+<li>Confirm that you get the same results as in the paper.</li>
+<li>Have a look at the ?hurricanes to see a residual analysis of the model in the paper</li>
+<li>Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?</li>
+</ul>
+<p>::: {.callout-tip collapse=“true” appearance=“minimal” icon=“false”} #### Solution</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>?hurricanes</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="co"># this is the model fit by Jung et al., fith with glmmTMB</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> MasFem<span class="sc">*</span></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>                             (Minpressure_Updated_2014 <span class="sc">+</span> <span class="fu">scale</span>(NDAM)),</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          alldeaths ~ MasFem * (Minpressure_Updated_2014 + scale(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                 Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                     69.661590  23.425598   2.974 0.002942 ** 
+MasFem                          -5.855078   2.716589  -2.155 0.031138 *  
+Minpressure_Updated_2014        -0.069870   0.024251  -2.881 0.003964 ** 
+scale(NDAM)                     -0.494094   0.455968  -1.084 0.278536    
+MasFem:Minpressure_Updated_2014  0.006108   0.002813   2.171 0.029901 *  
+MasFem:scale(NDAM)               0.205418   0.061956   3.316 0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note that in the code that I gave you not all predictors were scaled,</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="co"># but for looking at the main effect we should scale </span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> <span class="fu">scale</span>(NDAM)),</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    scale(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                              Estimate Std. Error z value
+(Intercept)                                     2.5034     0.1231  20.341
+scale(MasFem)                                   0.1237     0.1210   1.022
+scale(Minpressure_Updated_2014)                -0.5425     0.1603  -3.384
+scale(NDAM)                                     0.8988     0.2190   4.105
+scale(MasFem):scale(Minpressure_Updated_2014)   0.3758     0.1731   2.171
+scale(MasFem):scale(NDAM)                       0.6629     0.1999   3.316
+                                              Pr(&gt;|z|)    
+(Intercept)                                    &lt; 2e-16 ***
+scale(MasFem)                                 0.306923    
+scale(Minpressure_Updated_2014)               0.000715 ***
+scale(NDAM)                                   4.05e-05 ***
+scale(MasFem):scale(Minpressure_Updated_2014) 0.029901 *  
+scale(MasFem):scale(NDAM)                     0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># now main effect is n.s.; it's a bit dodgy, but if you read in the main paper</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="co"># they actually argue mainly via ANOVA and significance at high values of NDAM</span></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                                                Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)                                  1.9495  1  0.1626364    
+scale(Minpressure_Updated_2014)                7.1285  1  0.0075868 ** 
+scale(NDAM)                                   14.6100  1  0.0001322 ***
+scale(MasFem):scale(Minpressure_Updated_2014)  4.7150  1  0.0299011 *  
+scale(MasFem):scale(NDAM)                     10.9929  1  0.0009146 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># in the ANOVA we see that MasFem still n.s. but interactions, and if you </span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="co"># would calculate effect of MasFem at high NDAM, it is significnat. Something</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="co"># like that is argued in the paper. We can emulate this by changing </span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="co"># NDAM centering to high NDAM</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>hurricanes<span class="sc">$</span>highcenteredNDAM <span class="ot">=</span> hurricanes<span class="sc">$</span>NDAM <span class="sc">-</span> <span class="fu">max</span>(hurricanes<span class="sc">$</span>NDAM)</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> highcenteredNDAM),</span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    highcenteredNDAM)
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                                Estimate Std. Error z value
+(Intercept)                                    7.210e+00  1.149e+00   6.275
+scale(MasFem)                                  3.595e+00  1.041e+00   3.455
+scale(Minpressure_Updated_2014)               -5.425e-01  1.603e-01  -3.384
+highcenteredNDAM                               6.949e-05  1.693e-05   4.105
+scale(MasFem):scale(Minpressure_Updated_2014)  3.758e-01  1.731e-01   2.171
+scale(MasFem):highcenteredNDAM                 5.125e-05  1.546e-05   3.316
+                                              Pr(&gt;|z|)    
+(Intercept)                                   3.50e-10 ***
+scale(MasFem)                                 0.000551 ***
+scale(Minpressure_Updated_2014)               0.000715 ***
+highcenteredNDAM                              4.05e-05 ***
+scale(MasFem):scale(Minpressure_Updated_2014) 0.029904 *  
+scale(MasFem):highcenteredNDAM                0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OK, let's look at the residuals</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="co"># no significant deviation in the general DHARMa plot</span></span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(originalModelGAM)</span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># but residuals ~ NDAM looks funny, which was pointed </span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="co"># out by Bob O'Hara in a blog post after publication of the paper</span></span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># correcting with a sqrt effect</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>correctedModel <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> <span class="fu">scale</span>(NDAM) <span class="sc">+</span> <span class="fu">sqrt</span>(NDAM)),</span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(correctedModel, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-26-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-26-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(correctedModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    scale(NDAM) + sqrt(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   634.9    657.6   -308.4    616.9       83 
+
+
+Dispersion parameter for nbinom2 family (): 1.12 
+
+Conditional model:
+                                               Estimate Std. Error z value
+(Intercept)                                    0.050105   0.416199   0.120
+scale(MasFem)                                 -0.292769   0.421372  -0.695
+scale(Minpressure_Updated_2014)               -0.142669   0.178176  -0.801
+scale(NDAM)                                   -1.111040   0.282769  -3.929
+sqrt(NDAM)                                     0.035901   0.006239   5.754
+scale(MasFem):scale(Minpressure_Updated_2014)  0.073706   0.196301   0.375
+scale(MasFem):scale(NDAM)                     -0.101584   0.273675  -0.371
+scale(MasFem):sqrt(NDAM)                       0.005614   0.006257   0.897
+                                              Pr(&gt;|z|)    
+(Intercept)                                      0.904    
+scale(MasFem)                                    0.487    
+scale(Minpressure_Updated_2014)                  0.423    
+scale(NDAM)                                   8.52e-05 ***
+sqrt(NDAM)                                    8.70e-09 ***
+scale(MasFem):scale(Minpressure_Updated_2014)    0.707    
+scale(MasFem):scale(NDAM)                        0.711    
+scale(MasFem):sqrt(NDAM)                         0.370    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(correctedModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                                                Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)                                  0.7138  1     0.3982    
+scale(Minpressure_Updated_2014)                0.5365  1     0.4639    
+scale(NDAM)                                   15.6461  1  7.637e-05 ***
+sqrt(NDAM)                                    41.4613  1  1.202e-10 ***
+scale(MasFem):scale(Minpressure_Updated_2014)  0.1410  1     0.7073    
+scale(MasFem):scale(NDAM)                      0.1378  1     0.7105    
+scale(MasFem):sqrt(NDAM)                       0.8051  1     0.3696    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co"># all gone, only Damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.</span></span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Moreover, question why they fitted this weird interactions in the first place. A initial model based on a causa analysis could be:</span></span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>newModel <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">+</span> Minpressure_Updated_2014 </span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>                           <span class="sc">+</span> NDAM <span class="sc">+</span> <span class="fu">sqrt</span>(NDAM) <span class="sc">+</span> Year,</span>
+<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(newModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) + Minpressure_Updated_2014 + NDAM +  
+    sqrt(NDAM) + Year
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   633.4    651.0   -309.7    619.4       85 
+
+
+Dispersion parameter for nbinom2 family (): 1.08 
+
+Conditional model:
+                           Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)              -2.666e+00  1.506e+01  -0.177    0.860    
+scale(MasFem)             1.008e-01  1.207e-01   0.835    0.404    
+Minpressure_Updated_2014 -2.431e-03  6.794e-03  -0.358    0.721    
+NDAM                     -9.132e-05  2.163e-05  -4.222 2.42e-05 ***
+sqrt(NDAM)                3.838e-02  5.567e-03   6.894 5.44e-12 ***
+Year                      2.812e-03  6.398e-03   0.440    0.660    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(newModel) <span class="co"># nothing regarding MasFem</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                           Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)             0.6973  1     0.4037    
+Minpressure_Updated_2014  0.1280  1     0.7205    
+NDAM                     17.8262  1   2.42e-05 ***
+sqrt(NDAM)               47.5217  1   5.44e-12 ***
+Year                      0.1932  1     0.6603    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="researchers-degrees-of-freedom-skin-color-and-red-cards" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="researchers-degrees-of-freedom-skin-color-and-red-cards"><span class="header-section-number">8.5.2</span> Researchers Degrees of Freedom — Skin Color and Red Cards</h3>
+<p>In 2018 Silberzahn et al.&nbsp;published a “meta analysis” in <em>Advances in Methods and Practices in Psychological Science</em>, where they had provided 29 teams with the same data set to answer one research question: “<em>[W]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees</em>”.</p>
+<p><strong>Spoiler</strong>: They found that the “[a]nalytic approaches varied widely across the teams, and the estimated effect sizes ranged from 0.89 to 2.93 (Mdn = 1.31) in odds-ratio units”, highlighting that different approaches in data analysis can yield significant variation in the results.</p>
+<p>You can find the paper “Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results” at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.</p>
+  <hr>
+  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br>
+<p>Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis.</p>
+<ul>
+<li><p>Download the data file “CrowdstormingDataJuly1st.csv” here: <a href="https://osf.io/fv8c3/" target="_blank" rel="noopener">https://osf.io/fv8c3/</a>.</p></li>
+<li><p>Variable explanations are provided in the README: <a href="https://osf.io/9yh4x/" target="_blank" rel="noopener">https://osf.io/9yh4x/</a>.</p></li>
+<li><p>Analyze the data. Given the research question, the selected variables are:</p>
+<ol type="1">
+<li>Response variable: ‘redCards’ (+‘yellowReds’?).</li>
+<li>Multiple variables, potentially accounting for confounding, offsetting, grouping, … are included in the data.</li>
+<li>primary predictors: ‘rater1’, ‘rater2’</li>
+</ol>
+<ul>
+<li>These variables reflect ratings of “two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin.</li>
+<li>Make sure that ‘rater1’ and ‘rater2’ are rescaled to the range 0 … 1 as described in the paper (“This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.”)</li>
+</ul></li>
+<li><p>Research the concept of <strong>odd ratios</strong> and convert your effect estimate into this format. Are your results within the range of estimates from the 29 teams in Silberzahn et al.&nbsp;(2018)?</p></li>
+<li><p>Have a look at the other modelling teams. Do you understand the models they fit?</p></li>
+</ul>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+</div>
+</section>
+<section id="ants" class="level3" data-number="8.5.3">
+<h3 data-number="8.5.3" class="anchored" data-anchor-id="ants"><span class="header-section-number">8.5.3</span> Ants</h3>
+<p>The paper available <a href="https://epub.uni-regensburg.de/44615/7/een.12995.pdf">here</a> uses a binomial GLMM to analyze the directional decision taken by ants in a Y-maze. Tasks:</p>
+<ul>
+<li>download the data in the paper</li>
+<li>re-implement the model, based on the description in the paper</li>
+<li>check model assumptions, residuals, and all that. Do you agree with the analysis?</li>
+</ul>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+</div>
+</section>
+<section id="owls" class="level3" data-number="8.5.4">
+<h3 data-number="8.5.4" class="anchored" data-anchor-id="owls"><span class="header-section-number">8.5.4</span> Owls</h3>
+<p>Look at the Owl data set in the <code>glmmTMB</code>.{R} package. The initial hypothesis is</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(SiblingNegotiation <span class="sc">~</span> FoodTreatment<span class="sc">*</span>SexParent <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(BroodSize)),</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> Owls , <span class="at">family =</span> poisson)</span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_task_3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The offset is a special command that can be used in all regression models. It means that we include an effect with effect size 1.</p>
+<p>The offset has a special importance in models with a log link function, because with these models, we have y = exp(x …), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) * exp(log(BroodSize)) = y = exp(x) * BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.</p>
+<p>Now, try to improve the model with everything we have discussed so far.</p>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> glmmTMB<span class="sc">::</span><span class="fu">glmmTMB</span>(SiblingNegotiation <span class="sc">~</span> FoodTreatment <span class="sc">*</span> SexParent </span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Nest) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(BroodSize)), <span class="at">data =</span> Owls , <span class="at">family =</span> nbinom1,</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">dispformula =</span> <span class="sc">~</span> FoodTreatment <span class="sc">+</span> SexParent,</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ziformula =</span> <span class="sc">~</span> FoodTreatment <span class="sc">+</span> SexParent)</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom1  ( log )
+Formula:          
+SiblingNegotiation ~ FoodTreatment * SexParent + (1 | Nest) +  
+    offset(log(BroodSize))
+Zero inflation:                      ~FoodTreatment + SexParent
+Dispersion:                          ~FoodTreatment + SexParent
+Data: Owls
+
+     AIC      BIC   logLik deviance df.resid 
+  3354.6   3402.9  -1666.3   3332.6      588 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Nest   (Intercept) 0.0876   0.296   
+Number of obs: 599, groups:  Nest, 27
+
+Conditional model:
+                                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          0.80028    0.09736   8.220  &lt; 2e-16 ***
+FoodTreatmentSatiated               -0.46893    0.16760  -2.798  0.00514 ** 
+SexParentMale                       -0.09127    0.09247  -0.987  0.32363    
+FoodTreatmentSatiated:SexParentMale  0.13087    0.19028   0.688  0.49158    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Zero-inflation model:
+                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)            -1.9132     0.3269  -5.853 4.84e-09 ***
+FoodTreatmentSatiated   1.0564     0.4072   2.594  0.00948 ** 
+SexParentMale          -0.4688     0.3659  -1.281  0.20012    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Dispersion model:
+                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)             1.2122     0.2214   5.475 4.37e-08 ***
+FoodTreatmentSatiated   0.7978     0.2732   2.920   0.0035 ** 
+SexParentMale          -0.1540     0.2399  -0.642   0.5209    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_task_4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_task_4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 0.78311, p-value = 0.104
+alternative hypothesis: two.sided</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/chunk_chapter5_task_4-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa zero-inflation test via comparison to expected zeros with
+    simulation under H0 = fitted model
+
+data:  simulationOutput
+ratioObsSim = 1.0465, p-value = 0.608
+alternative hypothesis: two.sided</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./3C-ModelSelection.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Model selection</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./4B-Heteroskedasticity.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Dispersion models</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

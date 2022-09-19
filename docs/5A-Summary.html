@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Advanced Regression Models with R - 1&nbsp; Getting Started</title>
+<title>Advanced Regression Models with R - 11&nbsp; Summary and concluding thoughts</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -88,8 +88,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./2A-LinearRegression.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./5B-References.html" rel="next">
+<link href="./4C-CorrelationStructures.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -119,9 +119,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<meta name="citation_title" content="[1]{.chapter-number}&nbsp; [Getting Started]{.chapter-title}">
-<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//1A-GettingStarted.html">
+<meta name="citation_title" content="[11]{.chapter-number}&nbsp; [Summary and concluding thoughts]{.chapter-title}">
+<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//5A-Summary.html">
 <meta name="citation_journal_title" content="undefined">
 <meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_journal_title=undefined;">
@@ -145,7 +146,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -199,7 +200,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
+  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -287,7 +288,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></a>
+  <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -326,19 +327,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#your-r-system" id="toc-your-r-system" class="nav-link active" data-scroll-target="#your-r-system"> <span class="header-section-number">1.1</span> Your R System</a></li>
-  <li><a href="#libraries-that-you-will-need" id="toc-libraries-that-you-will-need" class="nav-link" data-scroll-target="#libraries-that-you-will-need"> <span class="header-section-number">1.2</span> Libraries that you will need</a></li>
-  <li><a href="#assumed-r-knowledge" id="toc-assumed-r-knowledge" class="nav-link" data-scroll-target="#assumed-r-knowledge"> <span class="header-section-number">1.3</span> Assumed R knowledge</a></li>
-  <li><a href="#organization-of-this-book" id="toc-organization-of-this-book" class="nav-link" data-scroll-target="#organization-of-this-book"> <span class="header-section-number">1.4</span> Organization of this book</a></li>
+  <li><a href="#reminder-modelling-strategy" id="toc-reminder-modelling-strategy" class="nav-link active" data-scroll-target="#reminder-modelling-strategy"> <span class="header-section-number">11.1</span> Reminder: Modelling Strategy</a></li>
+  <li><a href="#thoughts-about-the-analysis-pipeline" id="toc-thoughts-about-the-analysis-pipeline" class="nav-link" data-scroll-target="#thoughts-about-the-analysis-pipeline"> <span class="header-section-number">11.2</span> Thoughts About the Analysis Pipeline</a></li>
+  <li><a href="#advanced-topics" id="toc-advanced-topics" class="nav-link" data-scroll-target="#advanced-topics"> <span class="header-section-number">11.3</span> Advanced topics</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/1A-GettingStarted.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/5A-Summary.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></h1>
 </div>
 
 
@@ -352,87 +352,128 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="your-r-system" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="your-r-system"><span class="header-section-number">1.1</span> Your R System</h2>
-<p>In this course, we work with the combination of R + RStudio.</p>
+<section id="reminder-modelling-strategy" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="reminder-modelling-strategy"><span class="header-section-number">11.1</span> Reminder: Modelling Strategy</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="images/reminder.jpg" class="img-fluid" width="930"></p>
+</div>
+</div>
+<p><strong><em>Things to note:</em></strong></p>
+<ol type="1">
+<li>For an lm, the link function is the identity function.</li>
+<li>Fixed effects <span class="math inline">\(\operatorname{f}(x)\)</span> can be either a polynomial <span class="math inline">\(\left( a \cdot x = b \right)\)</span> = linear regression, a nonlinear function = nonlinear regression, or a smooth spline = generalized additive model (GAM).</li>
+<li>Random effects assume normal distribution for groups.</li>
+<li>Random effects can also act on fixed effects (random slope).</li>
+<li>For an lm with correlation structure, C is integrated in Dist. For all other GLMMs, there is another distribution, plus the additional multivariate normal on the linear predictor.</li>
+</ol>
+<p><strong><em>Strategy for analysis:</em></strong></p>
+<ol type="1">
+<li>Define formula via scientific questions + confounders.</li>
+<li>Define type of GLM (lm, logistic, Poisson).</li>
+<li>Blocks in data -&gt; Random effects, start with random intercept.</li>
+</ol>
+<p>Fit this base model, then do residual checks for</p>
 <ul>
-<li>R is the calculation engine that performs the computations.</li>
-<li>RStudio is the editor that helps you sending inputs to R and collect outputs.</li>
+<li>Wrong functional form -&gt; Change fitted function.</li>
+<li>Wrong distribution-&gt; Transformation or GLM adjustment.</li>
+<li>(Over)dispersion -&gt; Variable dispersion GLM.</li>
+<li>Heteroskedasticity -&gt; Model dispersion.</li>
+<li>Zero-inflation -&gt; Add ZIP term.</li>
+<li>Correlation -&gt; Add correlation structure.</li>
 </ul>
-<p>Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good video introducing the basic system and how R and RStudio interact.</p>
+<p>And adjust the model accordingly.</p>
+<p>Packages:</p>
+<ul>
+<li><code>baseR</code>.{R}: <code>lm</code>.{R}, <code>glm</code>.{R}.</li>
+<li><code>lme4</code>.{R}: mixed models, <code>lmer</code>.{R}, <code>glmer</code>.{R}.</li>
+<li><code>mgcv</code>.{R}: GAM.</li>
+<li><code>nlme</code>.{R}: Variance and correlations structure modelling for linear (mixed) models, using <code>gls</code>.{R} + <code>lme</code>.{R}.</li>
+<li><code>glmmTMB</code>.{R}: Generalized linear mixed models with variance / correlation modelling and zip term.</li>
+</ul>
 </section>
-<section id="libraries-that-you-will-need" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="libraries-that-you-will-need"><span class="header-section-number">1.2</span> Libraries that you will need</h2>
-<p>The R engine comes with a number of base functions, but one of the great things about R is that you can extend these base functions by libraries that can be programmed by anyone. In principle, you can install libraries from any website or file. In practice, however, most commonly used libraries are distributed via two major repositories. For statistical methods, this is <strong>CRAN</strong>, and for bioinformatics, this is <strong>Bioconductor</strong>.</p>
-<div class="callout-tip callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Click to see more on installing libraries in R
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>To install a package from a library, use the command</p>
+<section id="thoughts-about-the-analysis-pipeline" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="thoughts-about-the-analysis-pipeline"><span class="header-section-number">11.2</span> Thoughts About the Analysis Pipeline</h2>
+<p>In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the protocol that I sketched in chapter @ref(protocol). What we should constantly ask ourselves: Is our pipeline good? By “good”, we typically mean: If 1000 analyses are run in that way:</p>
+<ul>
+<li>What is the typical error of the estimate?</li>
+<li>What is the Type I error (false positives)?</li>
+<li>Are the confidence intervals correctly calculated?</li>
+<li>…</li>
+</ul>
+<p>The way to check this is to run simulations. For example, the following function creates data that follows the assumptions of a linear regression with slope 0.5, then fits a linear regression, and returns the estimate</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(LIBRARY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>getEstimate <span class="ot">=</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">100</span>){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">runif</span>(n)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">=</span> <span class="fl">0.5</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">summary</span>(fit)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(x<span class="sc">$</span>coefficients[<span class="dv">2</span>, <span class="dv">1</span>])  <span class="co"># Get fitted x weight (should be ~0.5).</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Exchange “LIBRARY” with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install</p>
-<pre><code>build-essential
-gfortran
-libmagick++-dev
-r-base-dev
-cmake</code></pre>
-<p>If you are new to installing packages on Debian / Ubuntu, etc., type the following:</p>
-<pre><code>sudo apt update &amp;&amp; sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake</code></pre>
-</div>
-</div>
-</div>
-<p>In this book, we will often use data sets from the <code class="sourceCode r">EcoData</code> package, which is not on CRAN, but on a GitHub page. To install the package, if you don’t have the devtools package installed already, first install devtools from CRAN by running</p>
+<p>The replicate function allows us to execute this 1000 times:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">543210</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> <span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">getEstimate</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Then install the EcoData package via</p>
+<p>Plotting the result, we can check whether the linear regression is an unbiased estimator for the slope.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="at">repo =</span> <span class="st">"TheoreticalEcology/EcoData"</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dependencies =</span> T, <span class="at">build_vignettes =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(out, <span class="at">breaks =</span> <span class="dv">50</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fl">0.5</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="5A-Summary_files/figure-html/chunk_chapter7_chunk3-1.png" class="img-fluid" width="672"></p>
 </div>
-<p>For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set <code>dependencies = F, build_vignettes = F</code>.</p>
+</div>
+<p>“Unbiased” means that, while each single estimate will have some error, the mean of many estimates will spread around the true value.</p>
+<p><strong><em>Explicitly calculating these values</em></strong></p>
+<p><strong>Bias</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(out) <span class="sc">-</span> <span class="fl">0.5</span> <span class="co"># Should be ~0.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.001826401</code></pre>
+</div>
+</div>
+<p><strong>Variance / standard deviation of the estimator</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3587717</code></pre>
+</div>
+</div>
+<p>To check p-values, we could run:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>getEstimate <span class="ot">=</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">100</span>){  <span class="co"># Mind: Function has changed!</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">runif</span>(n)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">=</span> <span class="fu">rnorm</span>(n)  <span class="co"># No dependence of x! Identical: y = 0 * x + rnorm(100).</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">summary</span>(fit)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(x<span class="sc">$</span>coefficients[<span class="dv">2</span>, <span class="dv">4</span>])  <span class="co"># P-value for H0: Weight of x = 0.</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> <span class="fu">replicate</span>(<span class="dv">2000</span>, <span class="fu">getEstimate</span>())</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(out) <span class="co"># Expected: Uniformly distributed p-values. -&gt; Check.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="5A-Summary_files/figure-html/chunk_chapter7_chunk6-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(out <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="co"># Expected: ~0.05. But this is NO p-value... Check H0/H1!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0515</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explanation of syntax: Logical vectors are interpreted as vectors of 0s and 1s.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!</p>
 </section>
-<section id="assumed-r-knowledge" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="assumed-r-knowledge"><span class="header-section-number">1.3</span> Assumed R knowledge</h2>
-<p>As mentioned in the preface, this book assumes that you have basic knowledge about data manipulation (reading in data, removing or selecting columns or rows, calculating means per group etc.) and plotting in R. Note that for both purposes, there are currently two main schools in the R environment which do the same things, but with very different syntax:</p>
-<ol type="1">
-<li><strong>base R</strong>, which uses functions such as plot(), apply(), aggregate()</li>
-<li><strong>tidyverse</strong>, with packages such as <strong>dplyr</strong> and <strong>ggplot2</strong>, which provide functions such as mutate(), filter() and heavily rely on the %&gt;% pipe operator.</li>
-</ol>
-<p>There are many opinions about advantages and disadvantages of the two schools. I’m agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.</p>
-<p>For this course, however, all examples are prepared in base R. If you’re not familiar with the base R syntax for these purposes, have a look at the appendix, which covers the most common tasks in this area.</p>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don’t see it as general / mature enough to recommend it as a default for the statistical workflow.</p>
-</div>
-</div>
-</section>
-<section id="organization-of-this-book" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="organization-of-this-book"><span class="header-section-number">1.4</span> Organization of this book</h2>
-<p>This book is organized in three parts:</p>
-<ol type="1">
-<li>The first part of this book is focusing on using regression models to describe the mean response as a function of the one or several predictor variables. To that end, we will stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression, ANOVA and mixed models</li>
-<li>The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods</li>
-<li>The third part of the book is about modelling variance. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.</li>
-</ol>
+<section id="advanced-topics" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="advanced-topics"><span class="header-section-number">11.3</span> Advanced topics</h2>
+<p>Bayesian estimation as a good general platform</p>
+<ul>
+<li>shrinkage</li>
+<li>p-value / df problems less visible</li>
+</ul>
 
 
 </section>
@@ -537,13 +578,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="./4C-CorrelationStructures.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Correlation structures</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./2A-LinearRegression.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Linear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./5B-References.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Advanced Regression Models with R - 1&nbsp; Getting Started</title>
+<title>Advanced Regression Models with R - 5&nbsp; Missing data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -78,6 +78,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -88,8 +107,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./2A-LinearRegression.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./3B-CausalInference.html" rel="next">
+<link href="./2C-RandomEffects.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -120,8 +139,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 }</script>
 
 
-<meta name="citation_title" content="[1]{.chapter-number}&nbsp; [Getting Started]{.chapter-title}">
-<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//1A-GettingStarted.html">
+<meta name="citation_title" content="[5]{.chapter-number}&nbsp; [Missing data]{.chapter-title}">
+<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//3A-MissingData.html">
 <meta name="citation_journal_title" content="undefined">
 <meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_journal_title=undefined;">
@@ -145,7 +164,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -199,7 +218,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
+  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -237,7 +256,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3A-MissingData.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></a>
+  <a href="./3A-MissingData.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -326,19 +345,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#your-r-system" id="toc-your-r-system" class="nav-link active" data-scroll-target="#your-r-system"> <span class="header-section-number">1.1</span> Your R System</a></li>
-  <li><a href="#libraries-that-you-will-need" id="toc-libraries-that-you-will-need" class="nav-link" data-scroll-target="#libraries-that-you-will-need"> <span class="header-section-number">1.2</span> Libraries that you will need</a></li>
-  <li><a href="#assumed-r-knowledge" id="toc-assumed-r-knowledge" class="nav-link" data-scroll-target="#assumed-r-knowledge"> <span class="header-section-number">1.3</span> Assumed R knowledge</a></li>
-  <li><a href="#organization-of-this-book" id="toc-organization-of-this-book" class="nav-link" data-scroll-target="#organization-of-this-book"> <span class="header-section-number">1.4</span> Organization of this book</a></li>
+  <li><a href="#understanding-na.action" id="toc-understanding-na.action" class="nav-link active" data-scroll-target="#understanding-na.action"> <span class="header-section-number">5.0.1</span> Understanding na.action</a></li>
+  <li><a href="#summarizing-nas" id="toc-summarizing-nas" class="nav-link" data-scroll-target="#summarizing-nas"> <span class="header-section-number">5.0.2</span> Summarizing NAs</a></li>
+  <li><a href="#missing-at-random" id="toc-missing-at-random" class="nav-link" data-scroll-target="#missing-at-random"> <span class="header-section-number">5.0.3</span> Missing at random</a></li>
+  <li><a href="#dealing-with-nas" id="toc-dealing-with-nas" class="nav-link" data-scroll-target="#dealing-with-nas"> <span class="header-section-number">5.0.4</span> Dealing with NAs</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/1A-GettingStarted.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/3A-MissingData.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></h1>
 </div>
 
 
@@ -352,65 +371,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="your-r-system" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="your-r-system"><span class="header-section-number">1.1</span> Your R System</h2>
-<p>In this course, we work with the combination of R + RStudio.</p>
-<ul>
-<li>R is the calculation engine that performs the computations.</li>
-<li>RStudio is the editor that helps you sending inputs to R and collect outputs.</li>
-</ul>
-<p>Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good video introducing the basic system and how R and RStudio interact.</p>
-</section>
-<section id="libraries-that-you-will-need" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="libraries-that-you-will-need"><span class="header-section-number">1.2</span> Libraries that you will need</h2>
-<p>The R engine comes with a number of base functions, but one of the great things about R is that you can extend these base functions by libraries that can be programmed by anyone. In principle, you can install libraries from any website or file. In practice, however, most commonly used libraries are distributed via two major repositories. For statistical methods, this is <strong>CRAN</strong>, and for bioinformatics, this is <strong>Bioconductor</strong>.</p>
-<div class="callout-tip callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Click to see more on installing libraries in R
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>To install a package from a library, use the command</p>
+<section id="understanding-na.action" class="level3" data-number="5.0.1">
+<h3 data-number="5.0.1" class="anchored" data-anchor-id="understanding-na.action"><span class="header-section-number">5.0.1</span> Understanding na.action</h3>
+<p>One output of the summary() function that we didn’t look at in detail so far is the missing observations. Let’s take this regression for example:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(LIBRARY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Ozone ~ Wind + Temp, data = airquality)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-41.251 -13.695  -2.856  11.390 100.367 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -71.0332    23.5780  -3.013   0.0032 ** 
+Wind         -3.0555     0.6633  -4.607 1.08e-05 ***
+Temp          1.8402     0.2500   7.362 3.15e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 21.85 on 113 degrees of freedom
+  (37 observations deleted due to missingness)
+Multiple R-squared:  0.5687,    Adjusted R-squared:  0.5611 
+F-statistic:  74.5 on 2 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<p>Exchange “LIBRARY” with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install</p>
-<pre><code>build-essential
-gfortran
-libmagick++-dev
-r-base-dev
-cmake</code></pre>
-<p>If you are new to installing packages on Debian / Ubuntu, etc., type the following:</p>
-<pre><code>sudo apt update &amp;&amp; sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake</code></pre>
 </div>
-</div>
-</div>
-<p>In this book, we will often use data sets from the <code class="sourceCode r">EcoData</code> package, which is not on CRAN, but on a GitHub page. To install the package, if you don’t have the devtools package installed already, first install devtools from CRAN by running</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Then install the EcoData package via</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="at">repo =</span> <span class="st">"TheoreticalEcology/EcoData"</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dependencies =</span> T, <span class="at">build_vignettes =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set <code>dependencies = F, build_vignettes = F</code>.</p>
-</section>
-<section id="assumed-r-knowledge" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="assumed-r-knowledge"><span class="header-section-number">1.3</span> Assumed R knowledge</h2>
-<p>As mentioned in the preface, this book assumes that you have basic knowledge about data manipulation (reading in data, removing or selecting columns or rows, calculating means per group etc.) and plotting in R. Note that for both purposes, there are currently two main schools in the R environment which do the same things, but with very different syntax:</p>
-<ol type="1">
-<li><strong>base R</strong>, which uses functions such as plot(), apply(), aggregate()</li>
-<li><strong>tidyverse</strong>, with packages such as <strong>dplyr</strong> and <strong>ggplot2</strong>, which provide functions such as mutate(), filter() and heavily rely on the %&gt;% pipe operator.</li>
-</ol>
-<p>There are many opinions about advantages and disadvantages of the two schools. I’m agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.</p>
-<p>For this course, however, all examples are prepared in base R. If you’re not familiar with the base R syntax for these purposes, have a look at the appendix, which covers the most common tasks in this area.</p>
+<p>The summary() alerts us that “37 observations deleted due to missingness”. So, R has apparently removed observations from the data, but why?</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -421,20 +411,103 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don’t see it as general / mature enough to recommend it as a default for the statistical workflow.</p>
+<p>Missing values in R are coded with the special type <code>NA</code>. You can check whether a single variable entry is NA via <code>is.na()</code>. More convenient, however, is to use the summary() function to get an overview about the NAs in your dataset.</p>
 </div>
 </div>
-</section>
-<section id="organization-of-this-book" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="organization-of-this-book"><span class="header-section-number">1.4</span> Organization of this book</h2>
-<p>This book is organized in three parts:</p>
+<p>The answer is that a standard regression model cannot deal with a missing value in either the response or the predictors. Missing values are very common, however, and to avoid that regressions stop with an error all the time, there is the global R option na.action, which we can see via</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="st">"na.action"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$na.action
+[1] "na.omit"</code></pre>
+</div>
+</div>
+<p>We see that the default in R is “na.omit”, which means that if there is an missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality, <span class="at">na.action =</span> <span class="st">"na.fail"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>or also globally (careful)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">na.action =</span> <span class="st">"na.fail"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Why would you set na.action = “na.fail”? Because na.omit is not always a good idea, or at least you want to think about whether it’s a good idea in your case. Possible reasons are:</p>
 <ol type="1">
-<li>The first part of this book is focusing on using regression models to describe the mean response as a function of the one or several predictor variables. To that end, we will stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression, ANOVA and mixed models</li>
-<li>The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods</li>
-<li>The third part of the book is about modelling variance. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.</li>
+<li>If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)</li>
+<li>If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power</li>
+<li>If your NAs are not missing at random, you might actually have a bias in your model if you simply omit</li>
 </ol>
+<p>For all this reason, you should get a good overview about your NAs, and consider what to do with them.</p>
+</section>
+<section id="summarizing-nas" class="level3" data-number="5.0.2">
+<h3 data-number="5.0.2" class="anchored" data-anchor-id="summarizing-nas"><span class="header-section-number">5.0.2</span> Summarizing NAs</h3>
+<p>As mentioned, a quick way to get a summary about the NAs in your data is to run the summary() function, which will return the number of NAs per predictor. You can check this out via running:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The problem with the summary is that in regression models, an observation will be removed as soon as one of the predictors has an NA. It is therefore crucial in which combinations NAs occur - we need complete rows. Let’s visualize the position of NAs in the data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">image</span>(<span class="fu">is.na</span>(<span class="fu">t</span>(airquality)), <span class="at">axes =</span> F)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">3</span>, <span class="at">at =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="at">len =</span> <span class="dv">6</span>), <span class="at">labels =</span> <span class="fu">colnames</span>(airquality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="3A-MissingData_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We see that NAs are in Ozone and Solar.R, and sometimes they’re together, sometimes they are seperate. To check if you have a complete row, we can use the function complete.cases(), which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">complete.cases</span>(airquality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To create a dataset with all observations that contain NAs removed, use</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>airquality[<span class="fu">complete.cases</span>(airquality), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed.</p>
+</section>
+<section id="missing-at-random" class="level3" data-number="5.0.3">
+<h3 data-number="5.0.3" class="anchored" data-anchor-id="missing-at-random"><span class="header-section-number">5.0.3</span> Missing at random</h3>
+<p>After having an overview about the NAs in your data, as second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:</p>
+<ol type="1">
+<li>MCAR = missing completely at random</li>
+<li>MAR = missing at random</li>
+<li>MNAR = missing not at random</li>
+</ol>
+<p>While the difference between 1,2 and 3 is easy to explain, the difference between 1 and 2 is more complicated. Let’s start with the easy thing:</p>
+<p>The big problem is if your NAs are MNAR (= missing not at random). That would mean that</p>
+<p><span class="citation" data-cites="bhaskaran2014difference">(<a href="5B-References.html#ref-bhaskaran2014difference" role="doc-biblioref">Bhaskaran and Smeeth 2014</a>)</span></p>
+<p><span class="citation" data-cites="james2021">(<a href="5B-References.html#ref-james2021" role="doc-biblioref">James et al. 2021</a>)</span></p>
+<p>the missing and observed values will have similar distributions. Missing at random means there might be systematic differences between the missing and observed values, but these can be entirely explained by other observed variables.</p>
+</section>
+<section id="dealing-with-nas" class="level3" data-number="5.0.4">
+<h3 data-number="5.0.4" class="anchored" data-anchor-id="dealing-with-nas"><span class="header-section-number">5.0.4</span> Dealing with NAs</h3>
+<p>The main alternative to throwing out observations with NAs is filling them up. This process is known as (multiple) imputation. There are a number of packages that do that</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(missRanger)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>airqualityImp<span class="ot">&lt;-</span> <span class="fu">missRanger</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  airquality,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> . <span class="sc">~</span> .,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Missing value imputation by random forests
+
+  Variables to impute:      Ozone, Solar.R
+  Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
+iter 1: ..
+iter 2: ..
+iter 3: ..
+iter 4: ..</code></pre>
+</div>
+</div>
+<p>https://stefvanbuuren.name/fimd/</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-bhaskaran2014difference" class="csl-entry" role="doc-biblioentry">
+Bhaskaran, Krishnan, and Liam Smeeth. 2014. <span>“What Is the Difference Between Missing Completely at Random and Missing at Random?”</span> <em>International Journal of Epidemiology</em> 43 (4): 1336–39.
+</div>
+<div id="ref-james2021" class="csl-entry" role="doc-biblioentry">
+James, Gareth, Daniela Witten, Trevor Hastie, and Rob Tibshirani. 2021. <span>“<span class="nocase">ń</span>an Introduction to Statistical Learning.”</span>
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -537,13 +610,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="./2C-RandomEffects.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear mixed models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./2A-LinearRegression.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Linear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./3B-CausalInference.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Causal inference</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

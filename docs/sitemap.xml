@@ -2,62 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/index.html</loc>
-    <lastmod>2022-09-15T06:07:42.955Z</lastmod>
+    <lastmod>2022-09-19T14:57:34.304Z</lastmod>
   </url>
   <url>
     <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1A-GettingStarted.html</loc>
-    <lastmod>2022-09-15T06:07:42.955Z</lastmod>
+    <lastmod>2022-09-19T14:57:34.304Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1B-LinearRegression.html</loc>
-    <lastmod>2022-09-15T06:07:42.959Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/2A-LinearRegression.html</loc>
+    <lastmod>2022-09-19T14:57:34.309Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1E-ANOVA.html</loc>
-    <lastmod>2022-09-15T06:07:42.960Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/2B-ANOVA.html</loc>
+    <lastmod>2022-09-19T14:57:34.310Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1H-RandomEffects.html</loc>
-    <lastmod>2022-09-15T06:07:42.964Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/2C-RandomEffects.html</loc>
+    <lastmod>2022-09-19T14:57:34.314Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1K-MissingData.html</loc>
-    <lastmod>2022-09-15T06:07:42.965Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/3A-MissingData.html</loc>
+    <lastmod>2022-09-19T14:57:34.315Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1C-ModelChoice.html</loc>
-    <lastmod>2022-09-15T06:07:42.967Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/3B-CausalInference.html</loc>
+    <lastmod>2022-09-19T14:57:34.317Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1D-ModelSelection.html</loc>
-    <lastmod>2022-09-15T06:07:42.968Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/3C-ModelSelection.html</loc>
+    <lastmod>2022-09-19T14:57:34.319Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1J-Nonparametrics.html</loc>
-    <lastmod>2022-09-15T06:07:42.970Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/4A-GLMs.html</loc>
+    <lastmod>2022-09-19T14:57:34.322Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1F-GLMs.html</loc>
-    <lastmod>2022-09-15T06:07:42.972Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/4B-Heteroskedasticity.html</loc>
+    <lastmod>2022-09-19T14:57:34.325Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1G-Heteroskedasticity.html</loc>
-    <lastmod>2022-09-15T06:07:42.974Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/4C-CorrelationStructures.html</loc>
+    <lastmod>2022-09-19T14:57:34.328Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1I-CorrelationStructures.html</loc>
-    <lastmod>2022-09-15T06:07:42.976Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/5A-Summary.html</loc>
+    <lastmod>2022-09-19T14:57:34.329Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1K-Summary.html</loc>
-    <lastmod>2022-09-15T06:07:42.977Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/5B-References.html</loc>
+    <lastmod>2022-09-19T14:57:34.330Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1Y-References.html</loc>
-    <lastmod>2022-09-15T06:07:42.977Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/6A-RCrashCourse.html</loc>
+    <lastmod>2022-09-19T14:57:34.332Z</lastmod>
   </url>
   <url>
-    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/1Z-Appendix.html</loc>
-    <lastmod>2022-09-15T06:07:42.979Z</lastmod>
+    <loc>https://TheoreticalEcology.github.io/AdvancedRegressionModels/6B-CheatSheet.html</loc>
+    <lastmod>2022-09-19T14:57:34.332Z</lastmod>
   </url>
 </urlset>
