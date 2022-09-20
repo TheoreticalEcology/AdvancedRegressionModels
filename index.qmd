@@ -1,6 +1,6 @@
 # Preface {.unnumbered}
 
-```{r chunk_chapter1_0, eval=TRUE, include=FALSE}
+```{r, eval=TRUE, include=FALSE}
 # Automatically create a bib database for R packages.
 knitr::write_bib(c(.packages(), 'bookdown', 'knitr', 'rmarkdown'),
                  'packages.bib')

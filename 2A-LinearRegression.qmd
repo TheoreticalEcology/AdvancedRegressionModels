@@ -4,6 +4,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r, eval=TRUE, include=FALSE}
+set.seed(123)
+```
+
 # Linear Regression
 
 ## Fitting a simple linear regression
@@ -413,7 +417,7 @@ plot(model)
 
 Looks OK!
 
-***2. Including "growthform" ***
+***2. Including "growthform"***
 
 ```{r}
 model2 = lm(loght ~ growthform, data = plantHeight)
@@ -464,7 +468,7 @@ library(effects)
 plot(allEffects(fit, partial.residuals = T) )
 ```
 
-### The Effect of Collinearity
+## The Effect of Collinearity
 
 A common misunderstanding is that a multiple regression is just a convenient way to run several independent univariate regressions. This, however, is wrong. A multiple regression is doing a fundamentally different thing. Let's compare the results of the multiple regression above to the simple regression.
 
@@ -473,22 +477,30 @@ fit = lm(Ozone ~ Wind , data = airquality)
 summary(fit)
 ```
 
-The simple regression estimates an effect of Wind that is- 5.55, while in the multiple regression, we had -3.1. The reason is that a multiple regression estimates the effect of Wind, corrected for the effect of the other variables, while a univariate regression estimates the raw correlation of Ozone and Wind. And this can make a big difference if Wind has correlations with other variables(the technical term is **collinear**). We can see, e.g., that Wind and Temp are correlated by running
+The simple regression estimates an effect of Wind that is- 5.55, while in the multiple regression, we had -3.1.
+
+The reason is that a multiple regression estimates the effect of Wind, **corrected for the effect of the other variables**, while a univariate regression estimates the raw correlation of Ozone and Wind. And this can make a big difference if Wind has correlations with other variables(the technical term is **collinear**). We can see, e.g., that Wind and Temp are indeed correlated by running
 
 ```{r chunk_chapter3_chunk51, echo=TRUE, eval=TRUE}
 plot(Wind ~ Temp, data = airquality)
 ```
 
-In such a case, if Temp is not included in the regression, the effect of Temp will be absorbed in the Wind effect, as far as the two variables are correlated. As a simple example: Let's say
+In such a case, if Temp is not included in the regression, **the effect of Temp will be absorbed in the Wind effect to the extent to which both variables are collinear**. In other words, if one variable is missing, there will be a spillover of the effect of this variable to all collinear variables.
+
+::: callout-tip
+To give a simple example of this, let's say
 
 -   Wind has a positive effect of 1
 -   Temp has a negative effect of -1
 -   Wind and Temp are correlated 50%
 
-A multiple regression would estimate 1,-1. In a single regression of Wind against Temp, the collinear part (50%) of the Temp effect would be absorbed by wind, so we would estimate a Wind effect of 0.5. Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp. We will talk much more about this in the chapter on causal inference.
+A multiple regression would estimate 1,-1. In a single regression of Wind against Temp, the collinear part (50%) of the Temp effect would be absorbed by wind, so we would estimate a Wind effect of 0.5.
+:::
+
+Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp.
 
 ::: {.callout-tip collapse="true"}
-#### Understanding the collinearity effect in more detail
+#### Understanding collinearity spillover in more detail
 
 We can understand the problem of one variable influencing the effect of the other in more detail if we simulate some data. Let's create 2 positively collinear predictors:
 
