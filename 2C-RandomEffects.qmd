@@ -2,14 +2,14 @@
 
 ## Motivation
 
-Random effects are a very common addition to regression models that are used to account for grouping (categorical) variables such as subject, year, location. To explain the motivation for these models, as well as the basic syntax, we will use an example data set containing exam scores of 4,059 students from 65 schools in Inner London. This data set is located in the R package `mlmRev`.{R}.
+Random effects are a very common addition to regression models that are used to account for grouping (categorical) variables such as subject, year, location. To explain the motivation for these models, as well as the basic syntax, we will use an example data set containing exam scores of 4,059 students from 65 schools in Inner London. This data set is located in the R package `mlmRev`.
 
 -   Response: "normexam" (Normalized exam score).
 -   Predictor 1: "standLRT" (Standardised LR test score; Reading test taken when they were 11 years old).
 -   Predictor 2: "sex" of the student (F / M).
 -   Grouping factor: school
 
-If we analyze this with a simple lm, we see that reading ability and sex have the expected effects on the exam score.
+If we analyze this with a simple LM, we see that reading ability and sex have the expected effects on the exam score.
 
 ```{r chunk_chapter4_chunk24, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(mlmRev)
@@ -21,7 +21,7 @@ plot(allEffects(mod0))
 
 However, it is reasonable to assume that not all schools are equally good, which has two possible consequences:
 
--   If school identity correlates with sex or standLRT, school could be confounder
+-   If school identity correlates with sex or standLRT, school could be a confounder (more on this later)
 -   Residuals will be correlated in school, thus they are not iid (pseudo-replication)
 
 We could solve this problem by fitting a different mean per school
@@ -62,7 +62,7 @@ mod0b = lm(normexam ~ standLRT + sex + school , data = Exam)
 ```
 :::
 
-The random intercept model is practically identical to the model above, except that it assumes that the school effects come from a common normal distribution. The model can be estimated with lme4::lmer
+The random intercept model is practically identical to the model above, except that it assumes that the school effects come from a common normal distribution. The model can be estimated with `lme4::lmer`
 
 ```{r chunk_chapter4_chunk25, echo=TRUE, eval=TRUE}
 library(lme4)
@@ -70,13 +70,13 @@ mod1 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 summary(mod1)
 ```
 
-If we look at the outputs, you will probably note that the summary() function doesn't return p-values. More on this in the section on problems and solutions for mixed models. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools. However, you can obtain the individual school effects via
+If we look at the outputs, you will probably note that the `summary()` function doesn't return p-values. More on this in the section on problems and solutions for mixed models. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools. However, you can obtain the individual school effects via
 
 ```{r, eval=F}
 ranef(mod1)
 ```
 
-Moreover, unlike the outputs we have seen before, the model also returns a correlation between fixed effect estimates. This, however, is simply a choice of the programmers, it has nothing to do with the random effect models - you could calculate the same output for the lm() via the function vcov().
+Moreover, unlike the outputs we have seen before, the model also returns a correlation between fixed effect estimates. This, however, is simply a choice of the programmers, it has nothing to do with the random effect models - you could calculate the same output for the `lm()` via the function `vcov()`.
 
 Here is a visualization of the fitted effects for standLRT
 
@@ -97,6 +97,25 @@ We can see that there is the same slope, but a different intercept per school.
 The RE effectively "centers" the categorical predictor - unlike for the fixed effect model, where the intercept would be interpreted as the value for the first school, the intercept in the random effect model is the mean across all schools, and the REs measure the deviation of the individual school from the mean. It should be stressed, however, that this is a welcome consequence, but not the main motivation, for the RE structure.
 :::
 
+::: {.callout-tip collapse="true"}
+## Generate equation with the `equatiomatic` package
+
+We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random intercept model:
+
+```{r, eval=FALSE}
+library(equatiomatic)
+extract_eq(mod1)
+```
+
+$$
+\begin{aligned}
+  \operatorname{normexam}_{i}  &\sim N \left(\alpha_{j[i]} + \beta_{1}(\operatorname{standLRT}) + \beta_{2}(\operatorname{sex}_{\operatorname{M}}), \sigma^2 \right) \\
+    \alpha_{j}  &\sim N \left(\mu_{\alpha_{j}}, \sigma^2_{\alpha_{j}} \right)
+    \text{, for school j = 1,} \dots \text{,J}
+\end{aligned}
+$$
+:::
+
 ## The random slope model
 
 A second effect that we could imagine is that the effect of `standLRT`{.R} is different for each school. As a fixed effect model, we would express this, for example, as `lm(normexam ~ standLRT*school + sex)`{.R}
@@ -109,6 +128,53 @@ summary(mod2)
 ```
 
 Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes come from a normal distribution. The results is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
+
+
+
+::: {.callout-tip collapse="true"}
+## Generate equation with the `equatiomatic` package
+
+We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random slope model:
+
+```{r, eval=FALSE}
+library(equatiomatic)
+extract_eq(mod2)
+```
+
+$$
+\begin{aligned}
+  \operatorname{normexam}_{i}  &\sim N \left(\alpha_{j[i]} + \beta_{1j[i]}(\operatorname{standLRT}) + \beta_{2}(\operatorname{sex}_{\operatorname{M}}), \sigma^2 \right) \\    
+\left(
+  \begin{array}{c} 
+    \begin{aligned}
+      &\alpha_{j} \\
+      &\beta_{1j}
+    \end{aligned}
+  \end{array}
+\right)
+  &\sim N \left(
+\left(
+  \begin{array}{c} 
+    \begin{aligned}
+      &\mu_{\alpha_{j}} \\
+      &\mu_{\beta_{1j}}
+    \end{aligned}
+  \end{array}
+\right)
+, 
+\left(
+  \begin{array}{cc}
+     \sigma^2_{\alpha_{j}} & \rho_{\alpha_{j}\beta_{1j}} \\ 
+     \rho_{\beta_{1j}\alpha_{j}} & \sigma^2_{\beta_{1j}}
+  \end{array}
+\right)
+ \right)
+    \text{, for school j = 1,} \dots \text{,J}
+\end{aligned}
+$$
+:::
+
+
 
 Here a visualization of the results
 
@@ -123,6 +189,8 @@ with(Exam, {
     }
 })
 ```
+
+
 
 ::: {.callout-caution icon="false"}
 #### Excercise: a mixed model for plantHeight
@@ -169,7 +237,7 @@ summary(randomSlopeModel)
 
 There are a large number of packages to fit mixed models in R. The main packages that you use, because they are most user-friendly and stable, are lme4 and glmmTMB. They share more or less the same syntax for random effects.
 
--   Random intercept: \`(1 \| group).
+-   Random intercept: `(1 | group)`.
 -   ONLY random slope for a given fixed effect: `(0 + fixedEffect | group)`{.R}.
 -   Random slope + intercept + correlation (default): `(fixedEffect | group)`{.R}.
 -   Random slope + intercept without correlation: `(fixedEffect || group)`{.R}, identical to\
@@ -291,7 +359,7 @@ summary(mod1)
 
 ### Convergence
 
-If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by summary(). Here, we have no problems, but we'll see examples of this as we go on
+If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by `summary()`. Here, we have no problems, but we'll see examples of this as we go on
 
 ### Observation-level residual plots
 
@@ -340,7 +408,7 @@ Exam$normexam - predict(mod1, re.form = ~0)
 
 while the default in DHARMa is to calculate marginal predictions. Both has advantages and disadvantages:
 
-1.  Conditional predictions are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal errlr
+1.  Conditional predictions are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
 2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but uncoditional \~ pred does not. For that reason, if you use unconditional predictions, you should also check REs \~ pred (see below)
 :::
 
@@ -364,7 +432,7 @@ plot(x$school$`(Intercept)` ~ y$standLRT)
 
 ### Residual pattern per group
 
-lme4 has an excellent plot syntax to plot residuals per grouping factor. Check out the help of plot.merMod. The following plot shows residuals \~ fitted for each school
+lme4 has an excellent plot syntax to plot residuals per grouping factor. Check out the help of `plot.merMod`. The following plot shows residuals \~ fitted for each school
 
 ```{r}
 plot(mod1, resid(., scaled=TRUE) ~ standLRT | school, abline = 0)
@@ -446,7 +514,7 @@ Specifying mixed models is quite simple, however, there is a large list of (part
 Possibly the most central problem is: How many parameters does a random effect model have?
 
 ::: callout-note
-Why is it so important to know how many parameters a model has? The answer is that what seems like a very minor point is needed in all the mathematics for calculating p-values, AIC, LRTs and all that, so without knowing the complexity of the model, the mathematics that is used in lm() breaks down.
+Why is it so important to know how many parameters a model has? The answer is that what seems like a very minor point is needed in all the mathematics for calculating p-values, AIC, LRTs and all that, so without knowing the complexity of the model, the mathematics that is used in `lm()` breaks down.
 :::
 
 We can make some guesses about the complexity of an LMM by looking at its fixed effect version counterparts:
@@ -491,11 +559,16 @@ For the plantHeigt mixed models in the previous exercise, compare the p-values o
 #### Solution
 
 ```{r, eval = F}
-fixedInterceptModel <- lm(loght ~ temp + Family, data = plantHeight)
+fixedInterceptModel <- lm(loght ~ sTemp + Family, data = plantHeight)
+randomInterceptModel <- lmer(loght ~ sTemp + (1 | Family), data = plantHeight)
 summary(fixedInterceptModel)
+summary(randomInterceptModel)
 
-fixedSlopeInterceptModel <- lm(loght ~ temp * Family, data = plantHeight)
+fixedSlopeInterceptModel <- lm(loght ~ sTemp * Family, data = plantHeight)
+randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
+
 summary(fixedSlopeInterceptModel)
+summary(randomSlopeModel)
 ```
 
 So, for the model with a different intercept per Family, the p-value decreases, and for intercept + interaction, it even becomes n.s. (although it should be noted that we get a different p-values for each species here).
@@ -545,7 +618,7 @@ So, a model fitted with lme4 is of class lmerMod. If we want to get the help for
 ```
 :::
 
-A second issue with predictions is that, unlike for lm() and glm objects, lme4 again does not calculate a standard error on the predictions due to the degree of freedom problem. Unfortunately, the lmerTest package does not help us in this case either, so now we have to resort to the parametric bootstrap, which is implemented in lme4
+A second issue with predictions is that, unlike for lm and glm objects, lme4 again does not calculate a standard error on the predictions due to the degree of freedom problem. Unfortunately, the lmerTest package does not help us in this case either, so now we have to resort to the parametric bootstrap, which is implemented in lme4
 
 For this, we generate first a function that generates predictions
 
@@ -600,16 +673,16 @@ For model selection, the degrees of freedom problem means that normal model sele
 
 #### Selecting on fixed effects
 
-The easy part is the selection on the fixed effect structure - if we can assume that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use all standard model selection methods (with all their caveats) as before on the fixed effect structure. All I have said about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference.
+The easy part is the selection on the fixed effect structure - if we can assume that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use all standard model selection methods (with all their caveats) as before on the fixed effect structure. All I will say about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference (see later section).
 
 #### A prior selection on random effects
 
-When changing the RE structure, you should not use standard AIC or LRTs, because of the df problem. For that reason, I would generally recommend to fix the RE structure a priori and keep selection on REs to a minimum.
+When changing the RE structure, you should not use standard AIC or LRTs, because of the df problem. For that reason, I would generally recommend to fix the RE structure *a priori* and keep selection on REs to a minimum.
 
 What structure you should choose may depend on the experimental setting and scientific / biological expectations, but a base recipe for a limited number of data is:
 
 1.  add random intercept on all obvious grouping variables
-2.  check residuals per group (e.g. with the plot function below), or simualted LRT (see below) and add random slope if needed
+2.  check residuals per group (e.g. with the plot function below), or simulated LRT (see below) and add random slope if needed
 
 ```{r, eval = F}
 m1 <- lmer(y ~ x + (1|group))
@@ -619,17 +692,17 @@ plot(m1,
      abline = 0)
 ```
 
-I would deviate from this recipe and also add random slopes a priori when I have either sufficient power to support the random slopes without problems (see also section on model selection), or if there are good a priori reasons to expect random slopes.
+I would deviate from this recipe and also add random slopes *a priori* when I have either sufficient power to support the random slopes without problems (see also section on model selection), or if there are good *a priori* reasons to expect random slopes.
 
 #### Simulated LRTs
 
 If you want to formally select on the variance structure, the best way is to use a simulated likelihood-ratio test (LRT), based on the parametric bootstrap, which we introduced in the section on ANOVA. In such a test, we make the same assumptions as in a standard LRT, which is:
 
-1.  We want to compare 2 nested models M0, M1
-2.  H0: simpler model M0 is correct
-3.  Test statistic: M1/M0 or log(M1/M0) = log(M1) - log(M0)
+1.  We want to compare 2 nested models M~0~, M~1~
+2.  H~0~: simpler model M~0~ is correct
+3.  Test statistic: M~1~/M~0~ or log(M~1~/M~0~) = log(M~1~) - log(M~0~)
 
-However, unlike in the standard LRT, where we assumed that the test statistic is chi-2 distributed, we use the parametric bootstrap (see section on non-parametric methods) to generate new data under H0, fit M0 and M1 to this simulated data, and thus generate a null distribution of the LR for these two models. 
+However, unlike in the standard LRT, where we assumed that the test statistic is Chi^2^ distributed, we use the parametric bootstrap (see section on non-parametric methods) to generate new data under H~0~, fit M~0~ and M~1~ to this simulated data, and thus generate a null distribution of the LR for these two models.
 
 Simulated LRTs for mixed models are implemented in a number of packages. To my knowledge, one of the most general functions is DHARMa::simulateLRT. Here an example:
 
@@ -647,7 +720,6 @@ DHARMa::simulateLRT(m0, m1)
 If you want to understand the method in more detail, you can expand the hand-coded example of a simulated LRT below:
 
 ::: {.callout-tip collapse="true"}
-
 #### Hand-coded simulated LRT
 
 We use the models from the previous example - first, let's look at the observed LR
@@ -656,11 +728,11 @@ We use the models from the previous example - first, let's look at the observed 
 observedLR = logLik(m1) - logLik(m0)
 ```
 
-The log LR of m1 (the RE model) over m0 is 225, meaning that seing the observed data under m1 is exp(225) times more likely than under m0.
+The log LR of m1 (the RE model) over m0 is 225, meaning that seeing the observed data under m1 is exp(225) times more likely than under m0.
 
-As noted, the complex model will always fit better, so that the data is more likely under M1 is expected, but is the increase significant? In this case, the LR is actually so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we could 1 df for each RE group, this should be easily significant. Nervertheless, let's do the formal test, and this time by hand. 
+As noted, the complex model will always fit better, so that the data is more likely under M1 is expected, but is the increase significant? In this case, the LR is actually so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we could 1 df for each RE group, this should be easily significant. Nevertheless, let's do the formal test, and this time by hand.
 
-First, we write a function that creates new LRs under H0, by simulating new data from the fitted M0, and re-fitting M0/M1 to this data, and return the LR. 
+First, we write a function that creates new LRs under H~0~, by simulating new data from the fitted M~0~, and re-fitting M~0~/M~1~ to this data, and return the LR.
 
 ```{r, warning=F, message=F}
 resampledParameters = function(){
@@ -672,36 +744,35 @@ resampledParameters = function(){
 }
 ```
 
-Now, let's generate the null distribution. There will be a lot of warnings which you can usually ignore. The reason is that we simulate the data under H0, i.e. with no RE, and thus the mixed model estimates the RE variance to zero, which creates a warning. 
+Now, let's generate the null distribution. There will be a lot of warnings which you can usually ignore. The reason is that we simulate the data under H~0~, i.e. with no RE, and thus the mixed model estimates the RE variance to zero, which creates a warning.
 
 ```{r}
 nullDistribution = replicate(500, resampledParameters())
 ```
 
-If we plot the null distribution, we see that if the data would really not have an RE, we would expect an increase of likelihood for the more complicated model of not more than 4 or so. 
+If we plot the null distribution, we see that if the data would really not have an RE, we would expect an increase of likelihood for the more complicated model of not more than 4 or so.
 
 ```{r}
 hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))")
 ```
 
-However, what we actually observe is an increase of 225. I rescaled the x axis to make this visible. 
+However, what we actually observe is an increase of 225. I rescaled the x axis to make this visible.
 
 ```{r}
 hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))", xlim = c(-5,250))
 abline(v = observedLR, col = "red")
 ```
 
-The p-value is 0  obviously
+The p-value is 0 obviously
 
 ```{r}
 mean(nullDistribution > observedLR)
 ```
 :::
 
-
 ### Variance partitioning / ANOVA
 
-Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpretation above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn`.{R} package. With this, we can run
+Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpretation above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn` package. With this, we can run
 
 ```{r chunk_chapter4_chunk33, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(MuMIn)
@@ -711,8 +782,8 @@ r.squaredGLMM(m2)
 
 Interpretation
 
--   **R2m**: Marginal ${R}^{2}$ value associated with fixed effects.
--   **R2c**: Conditional ${R}^{2}$ value associated with fixed effects plus the random effects.
+-   **R2m**: Marginal R^2^ value associated with fixed effects.
+-   **R2c**: Conditional R^2^ value associated with fixed effects plus the random effects.
 
 It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R2 values under a cross-validation.
 
