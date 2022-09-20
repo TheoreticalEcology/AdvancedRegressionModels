@@ -4,6 +4,11 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r, include=FALSE}
+set.seed(42)
+```
+
+
 # Correlation structures {#correlation}
 
 ## General Idea
@@ -146,6 +151,55 @@ If you check the results, you can see that
 
 1.  Both models correctly estimate the AR1 parameter
 2.  The p-value for the intercept is in both models n.s., as expected
+
+::: callout-note
+## Trend and autocorrelation with glmmTMB
+
+As I mentioned earlier, first detrend and then add correlation structure if there is autocorrelation. After both steps we should no longer see any pattern in the conditional residuals. Unfortunately, checking the conditional residuals is a bit complicated because glmmTMB does not support conditional simulations, while lme4 does, but it does not support correlation structures. However, there is a workaround.
+
+Let's start with a small simulation with a time trend and autocorrelation:
+
+```{r}
+time = 1:1000/100
+y = time +2*(sin(time/0.4)) + rnorm(1000)
+data = 
+  data.frame(y = y, time = time, timeF = as.factor(1:1000), group = as.factor(1))
+plot(y ~time)
+
+```
+
+1.  **Detrend**
+
+```{r}
+fit1 = glmmTMB(y~time, data = data)
+res = simulateResiduals(fit1, plot = TRUE)
+testTemporalAutocorrelation(res, time = data$time)
+```
+
+Test for temporal autocorrelation is siginificant -\> add autoregressive structure
+
+2.  **Add autoregressive structure**
+
+```{r}
+fit2 = glmmTMB(y~time + ar1(0+timeF|group), data = data)
+res = simulateResiduals(fit2, plot = TRUE)
+```
+
+The residual plot did not change because `glmmTMB:::simulate.glmmTMB` does not generate conditional predictions. But we can generate them ourselves:
+
+3.  **Create conditional predictions and simulations**
+
+We can create a custom DHARMa object with our own simulations:
+
+```{r}
+pred = predict(fit2, re.form = NULL)
+simulations = sapply(1:250, function(i) rnorm(1000, pred, summary(fit2)$sigma))
+res = createDHARMa(simulations, data$y, pred)
+plot(res)
+```
+
+Voila, the residuals look good now!
+:::
 
 ::: {.callout-caution icon="false"}
 #### Excercise

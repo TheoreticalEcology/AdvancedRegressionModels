@@ -1,11 +1,12 @@
 ---
 output: html_document
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
-```{r, eval=TRUE, include=FALSE}
-set.seed(123)
+
+```{r, include=FALSE}
+set.seed(42)
 ```
 
 # Linear Regression
@@ -228,7 +229,7 @@ AIC comparison (lower = better)
 
 ```{r}
 AIC(fit1)
-AIC(fit2) 
+AIC(fit2)
 ```
 
 Likelihood ratio test (is there evidence for the more complex model?)
@@ -657,7 +658,7 @@ By default, the `scale(...)`{.R} function will scale and center. As discussed be
 
 ```{r}
 airquality$sTemp = scale(airquality$Temp)
-airquality$sWind = scale(airquality$Wind)  
+airquality$sWind = scale(airquality$Wind)
 airquality$sSolar.R = scale(airquality$Solar.R)
 ```
 
@@ -1008,8 +1009,8 @@ Next, we perform the parametric bootstrap
 
 ```{r}
 performBootstrap = function(){
-  sel = sample.int(n = nrow(airquality), replace = T) 
-  
+  sel = sample.int(n = nrow(airquality), replace = T)
+
   fitNew = lm(Ozone ~ Wind, data = airquality[sel,])
   return(getEstimate(fitNew))
 }
@@ -1059,12 +1060,12 @@ performBootstrapParametric = function(){
 
   newData = model.frame(fit)
   newData$Ozone = unlist(simulate(fit))
-  
+
   fitNew = lm(Ozone ~ Wind, data = newData)
   return(getEstimate(fitNew))
 }
 
-bootstrappedEstimateParametric = replicate(1000, 
+bootstrappedEstimateParametric = replicate(1000,
                                            performBootstrapParametric())
 ```
 
