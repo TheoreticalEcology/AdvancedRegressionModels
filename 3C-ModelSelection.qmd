@@ -94,7 +94,7 @@ AIC(m2)
 **Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just the note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
 Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or the other?
 :::
@@ -252,7 +252,7 @@ fullModel = lm(y~., data = dat)
 We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
 
 ::: callout-tip
-Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that start with the most simple (forward) or the most comples (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is MASS::StepAIC, for global selection MuMIn::dredge. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that start with the most simple (forward) or the most comples (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::StepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
 :::
 
 ```{r, echo=T, results='hide'}
@@ -280,7 +280,7 @@ There are methods to correct for the problem (keyword: post-selection inference)
 
 Cross-validation is the non-parametric alternative to AIC. Note that AIC is asymptotically equal to leave-one-out cross-validation.
 
-For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`.{R}, using the `cv.glm`{.R} function:
+For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`, using the `cv.glm`{.R} function:
 
 ```{r chunk_chapter7_chunk18, echo=TRUE, eval=TRUE}
 library(boot)
@@ -309,7 +309,6 @@ nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
 
 Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see Roberts, David R., et al. "Cross‐validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure." *Ecography* 40.8 (2017): 913-929., methods implemented in package `blockCV`{.R}, see <a href="https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html</a>.
 
-
 ## Case studies
 
 ### Exercise: Global Plant Trait Analysis #3
@@ -325,19 +324,19 @@ Which would be the appropriate model, if we want to get a predictive model for p
 fit <- lm((x1 + x2 + x3)^2)
 ```
 
-includes all possible 2nd-order interactions between the variables in your model. You can extend this to x\^3, x\^4 but I would not recommend it, your model will get too large.
+includes all possible 2nd-order interactions between the variables in your model. You can extend this to x^3^, x^4^ but I would not recommend it, your model will get too large.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE}
+```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE, collapse=TRUE}
 library(EcoData)
-plantHeight
+head(plantHeight)
 fullModel <- lm(loght ~ (growthform + Family + lat + long + alt + temp + NPP )^2, data = plantHeight)
 selectedModel = stepAIC(fullModel)
 summary(selectedModel)
 ```
 
-R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlation in the data, or if you use variables that are (indirectly) identical to your response.
+R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlations in the data, or if you use variables that are (indirectly) identical to your response.
 :::

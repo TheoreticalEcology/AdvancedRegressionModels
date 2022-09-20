@@ -97,8 +97,8 @@ We can see that there is the same slope, but a different intercept per school.
 The RE effectively "centers" the categorical predictor - unlike for the fixed effect model, where the intercept would be interpreted as the value for the first school, the intercept in the random effect model is the mean across all schools, and the REs measure the deviation of the individual school from the mean. It should be stressed, however, that this is a welcome consequence, but not the main motivation, for the RE structure.
 :::
 
-::: callout-tip
-## Generating equation with the `equatiomatic` package
+::: {.callout-tip collapse="true"}
+## Generate equation with the `equatiomatic` package
 
 We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random intercept model:
 
@@ -129,6 +129,53 @@ summary(mod2)
 
 Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes come from a normal distribution. The results is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
 
+
+
+::: {.callout-tip collapse="true"}
+## Generate equation with the `equatiomatic` package
+
+We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random slope model:
+
+```{r, eval=FALSE}
+library(equatiomatic)
+extract_eq(mod2)
+```
+
+$$
+\begin{aligned}
+  \operatorname{normexam}_{i}  &\sim N \left(\alpha_{j[i]} + \beta_{1j[i]}(\operatorname{standLRT}) + \beta_{2}(\operatorname{sex}_{\operatorname{M}}), \sigma^2 \right) \\    
+\left(
+  \begin{array}{c} 
+    \begin{aligned}
+      &\alpha_{j} \\
+      &\beta_{1j}
+    \end{aligned}
+  \end{array}
+\right)
+  &\sim N \left(
+\left(
+  \begin{array}{c} 
+    \begin{aligned}
+      &\mu_{\alpha_{j}} \\
+      &\mu_{\beta_{1j}}
+    \end{aligned}
+  \end{array}
+\right)
+, 
+\left(
+  \begin{array}{cc}
+     \sigma^2_{\alpha_{j}} & \rho_{\alpha_{j}\beta_{1j}} \\ 
+     \rho_{\beta_{1j}\alpha_{j}} & \sigma^2_{\beta_{1j}}
+  \end{array}
+\right)
+ \right)
+    \text{, for school j = 1,} \dots \text{,J}
+\end{aligned}
+$$
+:::
+
+
+
 Here a visualization of the results
 
 ```{r chunk_chapter4_chunk28, echo=TRUE, eval=TRUE}
@@ -142,6 +189,8 @@ with(Exam, {
     }
 })
 ```
+
+
 
 ::: {.callout-caution icon="false"}
 #### Excercise: a mixed model for plantHeight

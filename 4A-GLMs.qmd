@@ -16,7 +16,7 @@ Generalized linear models (GLMs) extend the linear model (LM) to other (i.e. non
 
 3.  Some families require a particular range of the predictions (e.g. binomial requires predictions between zero and one). To achieve this, we use a so-called link function to bring the results of the linear predictor to the desired range.
 
-In R, the distribution is specified via the family() function, which distinguishes the glm from the lm function. If you look at the help of family, you will see that the link function is an argument of family(). If no link is provided, the default link for the respective family is chosen.
+In R, the distribution is specified via the `family()` function, which distinguishes the glm from the lm function. If you look at the help of family, you will see that the link function is an argument of `family()`. If no link is provided, the default link for the respective family is chosen.
 
 ```{r}
 ?family
@@ -35,21 +35,21 @@ $$
 link(y) \sim x
 $$
 
-This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that log(y) = x, which actually means that we assume y = exp(x), i.e. the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.
+This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that $log(y) = x$, which actually means that we assume $y = exp(x)$, i.e. the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.
 :::
 
-The function f(x) itself can have all components that we discussed before, in particular
+The function $f(x)$ itself can have all components that we discussed before, in particular
 
--   You can add random effects as before (using functions lme4::glmer or glmmTMB::glmmTMB)
+-   You can add random effects as before (using functions `lme4::glmer` or `glmmTMB::glmmTMB`)
 
--   You can also use splines using mgcv::gam
+-   You can also use splines using `mgcv::gam`
 
 ## Important GLM variants
 
 The most important are
 
--   Logit link for Bernoulli / Binomial family = logistic regression
--   Log link for Poisson family = Poisson regression
+-   Bernoulli / Binomial family = logistic regression with logit link
+-   Poisson family = Poisson regression with log link
 -   Beta regresion for continous 0/1 data
 
 Of course, there are many additional distributions that you could consider for your response. Here an overview of the common choices:
@@ -65,7 +65,7 @@ knitr::include_graphics(c("images/linkFunctions.jpg"))
 
 The standard model for count data (1,2,3) is the Poisson regression, which implements
 
--   A log-link function -\> y = exp(ax + b)
+-   A log-link function -\> $y = exp(ax + b)$
 
 -   A Poisson distribution
 
@@ -77,18 +77,18 @@ library(EcoData)
 plot(feeding ~ attractiveness, data = birdfeeding)
 ```
 
-To fit a Poisson regression to this data, we use the glm() function, specifying family = "poisson". Note again that the log link function is the default (see ?family), so it does not have to be specified.
+To fit a Poisson regression to this data, we use the `glm()` function, specifying `family = "poisson"`. Note again that the log link function is the default (see `?family`), so it does not have to be specified.
 
 ```{r}
 fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the lm(), however, as the residuals are not any more assumed to scatter normally, all statistics based on R2 have been replaced by the deviance (deviance = - 2 log likelihood). So, we have
+The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = - 2 log likelihood). So, we have
 
 -   Deviance residuals on top
 
--   Instead of R2, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R2, e.g. McFadden, which is 1-\[LogL(M)/LogL(M0))\] -\> in this case 1-25.8/18.3
+-   Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~))\] -\> in this case 1-25.8/18.3
 
 ::: callout-note
 Unfortunately, the deviance is not used consistently in
@@ -100,7 +100,7 @@ If we want to calculate model predictions, we have to transform to the response 
 exp(1.47459 + 3 * 0.14794)
 ```
 
-Alternatively (and preferably), you can use the predict() function with type = "response"
+Alternatively (and preferably), you can use the predict() function with `type = "response"`
 
 ```{r}
 dat = data.frame(attractiveness = 3)
@@ -110,7 +110,7 @@ predict(fit, newdata = dat, type = "response") # response scale
 
 Effect plots work as before. Note that the effects package always transforms the y axis according to the link, so we have log scaling on the y axis, and the effect lines remain straight
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(effects)
 plot(allEffects(fit))
 ```
@@ -125,9 +125,9 @@ plot(allEffects(fit))
 fit = glm(y ~ x + offset(log(area)), family = "poisson")
 ```
 
-As the log-link connects the linear predictor as in y = exp(x), and exp(x + log(area)) = exp(x) \* area, this makes the expected counts proportional to area, or whatever variable is added as a log offset.
+As the log-link connects the linear predictor as in $y = exp(x)$, and $exp(x + log(area)) = exp(x) \cdot area$, this makes the expected counts proportional to area, or whatever variable is added as a log offset.
 
-**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.
+**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes on this below.
 
 ### 0/1 or k/n data - logistic regression
 
@@ -216,7 +216,7 @@ Let's look again at the titanic example
 m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
 ```
 
-How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check class(m1)), the standard residual plots still work
+How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check `class(m1)`), the standard residual plots still work
 
 ```{r chunk_chapter5_chunk10, echo=TRUE, eval=TRUE}
 par(mfrow = c(2, 2))
@@ -518,9 +518,7 @@ Tasks:
 -   Have a look at the ?hurricanes to see a residual analysis of the model in the paper
 -   Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
 
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"} \#### Solution
 
 ```{r}
 
@@ -622,10 +620,8 @@ Do a re-analysis of the data as if you were the 30th team to contribute the resu
 
 -   Have a look at the other modelling teams. Do you understand the models they fit?
 
-
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
 :::
 
 ### Ants
@@ -638,7 +634,6 @@ The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf)
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
 :::
 
 ### Owls
@@ -660,10 +655,8 @@ The offset has a special importance in models with a log link function, because 
 
 Now, try to improve the model with everything we have discussed so far.
 
-
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
 
 ```{r chunk_chapter5_task_4, message=FALSE, warning=FALSE}
 m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent 
@@ -677,5 +670,4 @@ res = simulateResiduals(m1, plot = T)
 testDispersion(m1)
 testZeroInflation(m1)
 ```
-
 :::
