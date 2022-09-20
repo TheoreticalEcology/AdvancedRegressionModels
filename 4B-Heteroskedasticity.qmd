@@ -62,7 +62,7 @@ summary(fit)
 We get 2 regression tables as outputs - one for the effects, and one for the dispersion (= residual variance). We see, as expected, that the dispersion is higher in groups B and C compared to A. An advantage over gls is that we get confidence intervals and p-values for these differences on top!
 
 ::: {.callout-caution icon="false"}
-#### Excercise variance modelling
+#### Exercise variance modelling
 
 Take this plot of Ozone \~ Solar.R using the airquality data. Clearly there is heteroskedasticity in the relationship:
 
@@ -94,7 +94,6 @@ We could of course consider other predictors, but let's say we want to fit this 
 m3 = lm(sqrt(Ozone) ~ Solar.R, data = airquality)
 ```
 
-
 2.  **GLS**
 
 ```{r}
@@ -106,7 +105,6 @@ m3 = nlme::gls(Ozone ~ Solar.R, weights = varPower(form = ~Solar.R), data = airq
 ```{r}
 m4 = glmmTMB(Ozone ~ Solar.R, dispformula = ~Solar.R, data = airquality)
 ```
-
 :::
 
 ## Heteroskedasticity in GLMMs

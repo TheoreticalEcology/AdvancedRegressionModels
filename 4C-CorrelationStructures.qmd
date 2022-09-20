@@ -51,7 +51,7 @@ To account for "real" autocorrelation of residuals, similar as for the variance 
 The following pages provide examples and further comments on how to do this.
 
 ::: callout-note
-Especially for spatial models, both nlme and glmmTMB are relatively slow. Therea are a large number of specialized packages that deal in particular with the problem of spatial models, including MASS::glmmPQL, BRMS, INLA, spaMM, and many more. To keep things simple and concentrate on the principles, however, we will stick with the packages you already know.
+Especially for spatial models, both nlme and glmmTMB are relatively slow. Therea are a large number of specialized packages that deal in particular with the problem of spatial models, including `MASS::glmmPQL`, BRMS, INLA, spaMM, and many more. To keep things simple and concentrate on the principles, however, we will stick with the packages you already know.
 :::
 
 ## Temporal Correlation Structures
@@ -148,8 +148,7 @@ If you check the results, you can see that
 2.  The p-value for the intercept is in both models n.s., as expected
 
 ::: {.callout-caution icon="false"}
-
-\#### Excercise
+#### Excercise
 
 Look at the hurricane study that we used before, which is, after all, temporal data. This data set is located in `DHARMa`{.R}.
 
@@ -168,7 +167,8 @@ res2 = recalculateResiduals(res, group = hurricanes$Year)
 testTemporalAutocorrelation(res2, time = unique(hurricanes$Year))
 ```
 
-Add an AR1 term to the moodel!
+Add an AR1 term to the model!
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -188,7 +188,7 @@ summary(fit)
 
 ## Spatial Correlation Structures
 
-Spatial models work very similar to the temporal models. This time, we start directly with an example, using a data set with the thickness of coal seams, that we try to predict with a spatial (soil) predictor. 
+Spatial models work very similar to the temporal models. This time, we start directly with an example, using a data set with the thickness of coal seams, that we try to predict with a spatial (soil) predictor.
 
 ```{r}
 library(EcoData)
@@ -249,7 +249,7 @@ fit2 = gls(thick ~ soil , correlation = corExp(form =~ east + north) , data = th
 summary(fit2)
 ```
 
-Second, for glmmTMB. Here, we again have to prepare the data first 
+Second, for glmmTMB. Here, we again have to prepare the data first
 
 ```{r}
 thickness$pos <- numFactor(thickness$east, 
@@ -265,12 +265,12 @@ The output of summary is a bit chunky, which is why I suppress it here
 summary(fit3)
 ```
 
-If you wonder why there is such a large correlation matrix displayed: both the AR1 and the exp(pos + 0 | group) structure impose a particular correlation structure on the random effects. Per default, glmmTMB shows correlations of random effects if they are estimated. In the case of the AR1 structure, the programmers apparently surpressed this, and just showed the stimate of the AR1 parameter. Here, however, they didn't implement this feature, so you see the entire correlation structure, which is, admittedly, less helpful and should be changed. 
+If you wonder why there is such a large correlation matrix displayed: both the AR1 and the exp(pos + 0 \| group) structure impose a particular correlation structure on the random effects. Per default, glmmTMB shows correlations of random effects if they are estimated. In the case of the AR1 structure, the programmers apparently surpressed this, and just showed the stimate of the AR1 parameter. Here, however, they didn't implement this feature, so you see the entire correlation structure, which is, admittedly, less helpful and should be changed.
 
 ::: {.callout-caution icon="false"}
 #### Plant counts in Regensburg
 
-Use the dataset EcoData::plantcounts. Our scientific question is if richness \~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of ?plantcounts.
+Use the dataset `EcoData::plantcounts`. Our scientific question is if richness \~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of `?plantcounts`.
 
 This is count data, so start with a Poisson or Neg Binom GLM. The quadrats are not all equally sized, so you should include an offest to account for area. Then, check for spatial autocorrelation.
 
@@ -474,7 +474,7 @@ geiger::name.check(reducedTree,dat)
 
 Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote\~Lnalt
 
-Bonus task: read the help of glmmTMB, vignette on correlation structures, to see how to implement phylogentic regressions with glmmTMB. 
+Bonus task: read the help of glmmTMB, vignette on correlation structures, to see how to implement phylogentic regressions with glmmTMB.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -532,7 +532,7 @@ fit0 <- gls(Lnote~ 1,
 anova(fit0, fit)
 ```
 
-which tells us that Lnalt has a significant effect, even though we can't reject that either the linear or the quadrart term is zero. 
+which tells us that Lnalt has a significant effect, even though we can't reject that either the linear or the quadrart term is zero.
 
 Addition: what would happen if we do the same with a misspecified model? Have a look at the p-values of the fitted models. Can you explain what's going on here?
 
@@ -560,12 +560,11 @@ The observation is that the PGLS effect estimate is significant while normal lm 
 
 In the recent years, multivariate GLMs, in particular the multivariate probit model, and latent variable versions thereof, have become popular for the analysis of community data. The keyword here is "joint species distribution models" (jSDMs).
 
-Briefly, what we want a jSDM to do is to fit a vector of responses (could be abundance or presence / absence data) as a function of environmental predictors and a covariance between the responses. The model is thus 
+Briefly, what we want a jSDM to do is to fit a vector of responses (could be abundance or presence / absence data) as a function of environmental predictors and a covariance between the responses. The model is thus
 
 $$
 y \sim f(x) + \Sigma
-$$
-where y is a response vector, f(x) is a matrix with effects, and $\Sigma$ is a covariance matrix that we want to estimate.
+$$ where y is a response vector, f(x) is a matrix with effects, and $\Sigma$ is a covariance matrix that we want to estimate.
 
 You can fit these models directly in lme4 or glmmTMB via implementing an RE per species
 
@@ -580,9 +579,9 @@ however, these so-called full-rank models have a lot of degrees of freedom and a
 glmmTMB(abundance ~ 0 + species + env:species + rr(Species + 0|id, d = 2))
 ```
 
-The parameter d controlls the number of latent variables. 
+The parameter d controlls the number of latent variables.
 
-Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to set this models in the general topic of correlations, and realize that we can fit them with the same methods and packages as for all other correlation structures. 
+Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to set this models in the general topic of correlations, and realize that we can fit them with the same methods and packages as for all other correlation structures.
 
 ## Additional case studies
 
