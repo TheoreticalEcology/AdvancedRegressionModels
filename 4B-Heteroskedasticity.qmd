@@ -1,3 +1,7 @@
+```{r, include=FALSE}
+set.seed(42)
+```
+
 # Dispersion models
 
 Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is know as heteroskedasticity.

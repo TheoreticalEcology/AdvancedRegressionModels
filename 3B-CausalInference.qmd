@@ -3,6 +3,9 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+```{r, include=FALSE}
+set.seed(42)
+```
 
 # Causal inference
 
