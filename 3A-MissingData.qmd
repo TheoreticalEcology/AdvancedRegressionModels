@@ -33,10 +33,10 @@ or also globally (careful)
 options(na.action = "na.fail")
 ```
 
-Why would you set na.action = "na.fail"? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
+Setting na.fail means that you will get an error if there are NAs in the data used for your regression. Why would we want this, if the lm conveniently removes all NA lines? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
 
 1.  If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
-2.  If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power
+2.  If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power. It may be better to perform an imputation (see below).
 3.  If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
 
 For all this reason, you should get a good overview about your NAs, and consider what to do with them.
@@ -78,26 +78,53 @@ After having an overview about the NAs in your data, as second step in the analy
 2.  MAR = missing at random
 3.  MNAR = missing not at random
 
-While the difference between 1,2 and 3 is easy to explain, the difference between 1 and 2 is more complicated. Let's start with the easy thing:
+The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly from other values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other variables. See also [@bhaskaran2014difference]. 
 
-The big problem is if your NAs are MNAR (= missing not at random). That would mean that
+### Imputation
 
-[@bhaskaran2014difference]
-
-[@james2021]
-
-the missing and observed values will have similar distributions. Missing at random means there might be systematic differences between the missing and observed values, but these can be entirely explained by other observed variables.
-
-### Dealing with NAs
-
-The main alternative to throwing out observations with NAs is filling them up. This process is known as (multiple) imputation. There are a number of packages that do that
+The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example missRanger
 
 ```{r}
 library(missRanger)
-airqualityImp<- missRanger(
-  airquality,
-  formula = . ~ .,
-)
+airqualityImp<- missRanger(airquality)
 ```
 
-https://stefvanbuuren.name/fimd/
+Let's fit the model to this imputed data:
+
+```{r}
+fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
+summary(fit)
+```
+
+The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation. 
+
+```{r}
+# run 20 imputations
+airqualityMImp <- replicate(20, missRanger(airquality), simplify = FALSE)
+# fit 20 models
+models <- lapply(airqualityMImp, function(x) lm(Ozone ~ Wind + Temp, x))
+
+# use mice package to compute corrected p-values
+require(mice)
+summary(pooled_fit <- pool(models)) 
+```
+
+More on missing data and imputation methods in Stef van Buuren's book ["Flexible Imputation of Missing Data"](https://stefvanbuuren.name/fimd/)
+
+
+
+
+
+
+```{r}
+library(mitools)
+
+data(smi)
+models<-with(smi, glm(drinkreg~wave*sex,family=binomial()))
+summary(MIcombine(models))
+```
+
+
+
+
+Some data analysis techniques are not robust to missingness, and require to "fill in", or impute the missing data. Rubin (1987) argued that repeating imputation even a few times (5 or less) enormously improves the quality of estimation.[2] For many practical purposes, 2 or 3 imputations capture most of the relative efficiency that could be captured with a larger number of imputations. However, a too-small number of imputations can lead to a substantial loss of statistical power, and some scholars now recommend 20 to 100 or more.[12] Any multiply-imputed data analysis must be repeated for each of the imputed data sets and, in some cases, the relevant statistics must be combined in a relatively complicated way.[2]
