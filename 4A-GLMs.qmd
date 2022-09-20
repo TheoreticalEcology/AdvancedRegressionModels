@@ -597,10 +597,10 @@ In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods an
 
 You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
 
-```{=html}
-  <hr/>
-  <strong><span style="color: #0011AA; font-size:25px;">Task</span></strong><br/>
-```
+
+::: {.callout-caution icon="false"}
+#### Tasks
+
 Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis.
 
 -   Download the data file "CrowdstormingDataJuly1st.csv" here: <a href="https://osf.io/fv8c3/" target="_blank" rel="noopener">https://osf.io/fv8c3/</a>.
@@ -620,25 +620,38 @@ Do a re-analysis of the data as if you were the 30th team to contribute the resu
 
 -   Have a look at the other modelling teams. Do you understand the models they fit?
 
+:::
+
+
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
 :::
 
 ### Ants
 
-The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf) uses a binomial GLMM to analyze the directional decision taken by ants in a Y-maze. Tasks:
+The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf) uses a binomial GLMM to analyze the directional decision taken by ants in a Y-maze.
+
+
+
+::: {.callout-caution icon="false"}
+#### Tasks
 
 -   download the data in the paper
 -   re-implement the model, based on the description in the paper
 -   check model assumptions, residuals, and all that. Do you agree with the analysis?
 
+:::
+
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+
 :::
 
 ### Owls
 
-Look at the Owl data set in the `glmmTMB`.{R} package. The initial hypothesis is
+Look at the Owl data set in the `glmmTMB` package. The initial hypothesis is
 
 ```{r chunk_chapter5_task_3, message=FALSE, warning=FALSE}
 library(glmmTMB)
@@ -649,11 +662,18 @@ res = simulateResiduals(m1)
 plot(res)
 ```
 
+
+::: {.callout-caution icon="false"}
+#### Tasks
+
 The offset is a special command that can be used in all regression models. It means that we include an effect with effect size 1.
 
 The offset has a special importance in models with a log link function, because with these models, we have y = exp(x ...), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) \* exp(log(BroodSize)) = y = exp(x) \* BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.
 
 Now, try to improve the model with everything we have discussed so far.
+
+:::
+
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution

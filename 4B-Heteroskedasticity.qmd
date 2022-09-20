@@ -33,7 +33,7 @@ One option is to search for a transformation of the response that improves the p
 
 The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow to model the dispersion
 
-The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In the gls function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the varIdent function, which allows to specify a different variance per treatment.
+The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In the `gls` function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the `varIdent` function, which allows to specify a different variance per treatment.
 
 ```{r chunk_chapter4_chunk10, echo=TRUE, eval=TRUE}
 library(nlme)
@@ -87,11 +87,31 @@ We could of course consider other predictors, but let's say we want to fit this 
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+1.  **Transformation**
+
+```{r}
+m3 = lm(sqrt(Ozone) ~ Solar.R, data = airquality)
+```
+
+
+2.  **GLS**
+
+```{r}
+m3 = nlme::gls(Ozone ~ Solar.R, weights = varPower(form = ~Solar.R), data = airquality[complete.cases(airquality),])
+```
+
+3.  **glmmTMB**
+
+```{r}
+m4 = glmmTMB(Ozone ~ Solar.R, dispformula = ~Solar.R, data = airquality)
+```
+
 :::
 
 ## Heteroskedasticity in GLMMs
 
-GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. In `glmmTMB`, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula`.{R} argument, in the same way as in `nlme`.{R} for the linear model.
+GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. In `glmmTMB`, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula` argument, in the same way as in `nlme` for the linear model.
 
 Variance problems would show up when plotting residuals against predicted and predictors. On the previous page, we saw some variance problems in the Salamander model. We could add a variable dispersion model via
 
@@ -168,4 +188,3 @@ dat = data.frame(growth = growth, concentration = concentration)
 fit = qgam(growth ~ concentration, data = dat, qu = 0.5) 
 summary(fit)
 ```
-
