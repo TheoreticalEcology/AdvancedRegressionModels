@@ -197,7 +197,7 @@ in this case, plot suggest to adjust for fireseverity, to isolate the direct eff
 So, the model we should fit is
 
 ```{r}
-fit = lm(rich ~ cover + hetero + distance, data = keeley)
+fit = lm(rich ~ cover + abiotic + elev + firesev + age, data = keeley)
 summary(fit)
 ```
 

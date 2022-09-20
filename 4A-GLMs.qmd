@@ -84,14 +84,51 @@ fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = - 2 log likelihood). So, we have
+The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = - 2 logL(saturated) - logL(fitted)). So, we have
 
 -   Deviance residuals on top
 
--   Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~))\] -\> in this case 1-25.8/18.3
+-   Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~))\]
 
 ::: callout-note
-Unfortunately, the deviance is not used consistently in
+As already mentioned, the deviance is a generalization of the sum of squares and plays, for example, a similar role as the residual sum of squares in ANOVA.
+
+The deviance of our model M~1~ is defined as $Deviance_{M_1} = 2 \cdot (logL(M_{saturated}) - logL(M_1))$
+
+**Example:**
+
+Deviance of M~1~
+
+```{r}
+fit1 = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
+summary(fit1)$deviance
+fitSat = glm(feeding ~ as.factor(1:nrow(birdfeeding)), data = birdfeeding, family = "poisson")
+2*(logLik(fitSat) - logLik(fit1))
+```
+
+Deviance of the null model (null model is for example needed to calculate the pseudo-R^2^ ):
+
+```{r}
+summary(fit1)$null.deviance
+fitNull = glm(feeding ~ 1, data = birdfeeding, family = "poisson")
+2*(logLik(fitSat) - logLik(fitNull))
+```
+
+**Calculation of Pseudo-R^2^** **with deviance or logL**
+
+Common pseudo-R^2^ such as McFadden or Nagelkerke use the the logL instead of the deviance, whereas the pseudo-R^2^ by Cohen uses the deviance. However, R^2^ calculated based on deviance or logL differs considerably, as the former is calculated in reference to the maximal achievable fit (saturated model) while the latter just compares the improvement of fit compared to the null model:
+
+```{r}
+# Based on logL
+McFadden = 1-(logLik(fit1))/(logLik(fitNull))
+print(McFadden)
+
+# Based on deviance
+Cohen = 1- (logLik(fitSat) - logLik(fit1)) / (logLik(fitSat) - logLik(fitNull))
+print(Cohen)
+```
+
+*Note: Unfortunately, there is some confusion about the exact definition, as deviance is sometimes defined (especially outside of the context of GL(M)Ms) simply as* $Deviance = -2LogL(M_1)$
 :::
 
 If we want to calculate model predictions, we have to transform to the response scale. Here we have a log link, i.e. we have to transform with exp(linear response).
@@ -597,7 +634,6 @@ In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods an
 
 You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
 
-
 ::: {.callout-caution icon="false"}
 #### Tasks
 
@@ -619,20 +655,15 @@ Do a re-analysis of the data as if you were the 30th team to contribute the resu
 -   Research the concept of **odd ratios** and convert your effect estimate into this format. Are your results within the range of estimates from the 29 teams in Silberzahn et al. (2018)?
 
 -   Have a look at the other modelling teams. Do you understand the models they fit?
-
 :::
-
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
 :::
 
 ### Ants
 
 The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf) uses a binomial GLMM to analyze the directional decision taken by ants in a Y-maze.
-
-
 
 ::: {.callout-caution icon="false"}
 #### Tasks
@@ -640,13 +671,10 @@ The paper available [here](https://epub.uni-regensburg.de/44615/7/een.12995.pdf)
 -   download the data in the paper
 -   re-implement the model, based on the description in the paper
 -   check model assumptions, residuals, and all that. Do you agree with the analysis?
-
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
-
-
 :::
 
 ### Owls
@@ -662,7 +690,6 @@ res = simulateResiduals(m1)
 plot(res)
 ```
 
-
 ::: {.callout-caution icon="false"}
 #### Tasks
 
@@ -671,9 +698,7 @@ The offset is a special command that can be used in all regression models. It me
 The offset has a special importance in models with a log link function, because with these models, we have y = exp(x ...), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) \* exp(log(BroodSize)) = y = exp(x) \* BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.
 
 Now, try to improve the model with everything we have discussed so far.
-
 :::
-
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
