@@ -1,3 +1,7 @@
+```{r, include=FALSE}
+set.seed(42)
+```
+
 ## Missing data
 
 ### Understanding na.action
@@ -78,7 +82,7 @@ After having an overview about the NAs in your data, as second step in the analy
 2.  MAR = missing at random
 3.  MNAR = missing not at random
 
-The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly from other values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other variables. See also [@bhaskaran2014difference]. 
+The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly from other values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other variables. See also [@bhaskaran2014difference].
 
 ### Imputation
 
@@ -96,7 +100,7 @@ fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
 summary(fit)
 ```
 
-The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation. 
+The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
 
 ```{r}
 # run 20 imputations
@@ -111,11 +115,6 @@ summary(pooled_fit <- pool(models))
 
 More on missing data and imputation methods in Stef van Buuren's book ["Flexible Imputation of Missing Data"](https://stefvanbuuren.name/fimd/)
 
-
-
-
-
-
 ```{r}
 library(mitools)
 
@@ -124,7 +123,4 @@ models<-with(smi, glm(drinkreg~wave*sex,family=binomial()))
 summary(MIcombine(models))
 ```
 
-
-
-
-Some data analysis techniques are not robust to missingness, and require to "fill in", or impute the missing data. Rubin (1987) argued that repeating imputation even a few times (5 or less) enormously improves the quality of estimation.[2] For many practical purposes, 2 or 3 imputations capture most of the relative efficiency that could be captured with a larger number of imputations. However, a too-small number of imputations can lead to a substantial loss of statistical power, and some scholars now recommend 20 to 100 or more.[12] Any multiply-imputed data analysis must be repeated for each of the imputed data sets and, in some cases, the relevant statistics must be combined in a relatively complicated way.[2]
+Some data analysis techniques are not robust to missingness, and require to "fill in", or impute the missing data. Rubin (1987) argued that repeating imputation even a few times (5 or less) enormously improves the quality of estimation.\[2\] For many practical purposes, 2 or 3 imputations capture most of the relative efficiency that could be captured with a larger number of imputations. However, a too-small number of imputations can lead to a substantial loss of statistical power, and some scholars now recommend 20 to 100 or more.\[12\] Any multiply-imputed data analysis must be repeated for each of the imputed data sets and, in some cases, the relevant statistics must be combined in a relatively complicated way.\[2\]

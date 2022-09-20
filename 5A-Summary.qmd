@@ -1,3 +1,8 @@
+```{r, include=FALSE}
+set.seed(42)
+```
+
+
 # Summary and concluding thoughts
 
 ## Reminder: Modelling Strategy
@@ -33,11 +38,11 @@ And adjust the model accordingly.
 
 Packages:
 
--   `baseR`.{R}: `lm`.{R}, `glm`.{R}.
--   `lme4`.{R}: mixed models, `lmer`.{R}, `glmer`.{R}.
--   `mgcv`.{R}: GAM.
--   `nlme`.{R}: Variance and correlations structure modelling for linear (mixed) models, using `gls`.{R} + `lme`.{R}.
--   `glmmTMB`.{R}: Generalized linear mixed models with variance / correlation modelling and zip term.
+-   `baseR`: `lm`, `glm`.
+-   `lme4`: mixed models, `lmer`, `glmer`.
+-   `mgcv`: GAM.
+-   `nlme`: Variance and correlations structure modelling for linear (mixed) models, using `gls` + `lme`.
+-   `glmmTMB`: Generalized linear mixed models with variance / correlation modelling and zip term.
 
 ## Thoughts About the Analysis Pipeline
 
@@ -114,17 +119,9 @@ mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
 
-## Advanced topics 
+## Advanced topics
 
-Bayesian estimation as a good general platform 
+Bayesian estimation as a good general platform
 
-- shrinkage
-- p-value / df problems less visible 
-
-
-
-
-
-
-
-
+-   shrinkage
+-   p-value / df problems less visible
