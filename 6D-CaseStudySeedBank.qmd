@@ -39,7 +39,7 @@ Technical tips:
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-### **Solution** for SBDensity (lmm)
+#### Solution for SBDensity (lmm)
 
 Prepare+scale data:
 
@@ -129,7 +129,7 @@ Residuals look worse because they are unconditioned
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-### \*\* Solution\*\* for SBPA (glmm)
+#### Solution for SBPA (glmm)
 
 Prepare+scale data:
 

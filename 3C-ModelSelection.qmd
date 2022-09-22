@@ -150,7 +150,7 @@ summary(ridgeGlmmTMB1)
 summary(ridgeGlmmTMB10)
 ```
 
-*Note: The `(…||…)` syntax tells glmmTMB to model the individual random slopes individually (and not to estimate covariances between them).*
+*Note: The `(…||…)` syntax will model the individual random slopes individually (the default is to fit a covariance matrix between the random effects).*
 
 We can use the `map` and the `start` arguments to a) mark the variances of the random slopes as constant and b) to set them so specific values (smaller values mean higher regularization).
 
@@ -197,7 +197,6 @@ ranef(m2)
 ```
 
 We still get a convergence issue, but this is related to the very small variance estimates of the other predictors (glmmTMB tries to calculate standard errors based on the hessian, however, the hessian has very small elements on its diagonal, which makes it impossible to calculate its inverse).
-
 :::
 
 ### P-hacking {#pHacking}

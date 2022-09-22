@@ -18,7 +18,7 @@ The dataset comes from a study from @rabone2019freshwater and includes informati
 The objective of @rabone2019freshwater was to model the total abundance of the snail species as well as the proporation of the infected individuals. The hypothesis is that the total abundance and the infection depends on environmental and on seasonal factors. Data were collected at 92 (20 localities) sites over a 6-year period (2011-2016).
 
 ::: {.callout-caution icon="false"}
-#### Exercise 
+#### Exercise
 
 @rabone2019freshwater found differences for the species. Start with one species (total abundance + infection rate) and if you have time go for other species.
 :::
@@ -27,7 +27,7 @@ The objective of @rabone2019freshwater was to model the total abundance of the s
 #### Tip
 
 | Effects        | Variables                                                                              |
-|------------------------|------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | Response       | Bulinus_tot, BP_tot, BF_tot, BT_tot total                                              |
 | Fixed effects  | Temp_Water, pH, water_speed_ms, water_depth, Cond, wmo_prec, locality, site_type, year |
 | Random effects | Locality, site_irn, coll_date                                                          |
@@ -41,7 +41,7 @@ Technical tips:
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-### **Solution** for total Abundance of *Bulinus* (glmm)
+#### Solution for total Abundance of *Bulinus* (glmm)
 
 Prepare+scale data:
 
@@ -114,8 +114,8 @@ Let's also check for temporal and spatial autocorrelation (we detrended year and
 
 ```{r}
 ## Spatial
-res2 = recalculateResiduals(res, group = droplevels(data$site_irn),)
-groupLocations = aggregate(cbind(data$sLat, data$sLon ), list(droplevels( data$site_irn)), mean)
+res2 = recalculateResiduals(res, group = c(data$site_irn))
+groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
 testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
 
 
@@ -136,10 +136,11 @@ Summa summarum, switch to glmmTMB because:
 
 ```{r}
 numFac = numFactor(data$sLat, data$sLon)
+group = factor(rep(1, nrow(data)))
 model2 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|site_irn), 
+                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|group), 
               data = data,  family = nbinom2)
 summary(model2)
 plot(simulateResiduals(model2))
@@ -154,16 +155,23 @@ res = createDHARMa(simulations, model.frame(model2)[,1], pred)
 plot(res)
 ```
 
-better but still not perfect, there is still underdisperson:
+better but still not perfect:
 
 ```{r}
 testDispersion(res, alternative = "less")
 testDispersion(res, alternative = "greater")
 ```
+
+If you want, you could try now the `dispformula` to make the dispersion dependent on covariates.
+
 :::
 
+
+
+
+
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-### **Solution** for prevalence of *Bulinus* (glmm)
+#### Solution for prevalence of *Bulinus* (glmm)
 
 Prepare+scale data:
 
@@ -187,10 +195,11 @@ data = data[rows, ]
 
 ```{r}
 numFac = numFactor(data$sLat, data$sLon)
+group = factor(rep(1, nrow(data)))
 model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot)~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|site_irn), 
+                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|group), 
               data = data,  family = binomial)
 summary(model1)
 plot(simulateResiduals(model1))
