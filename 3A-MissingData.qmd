@@ -47,7 +47,7 @@ For all this reason, you should get a good overview about your NAs, and consider
 
 ### Summarizing NAs
 
-As mentioned, a quick way to get a summary about the NAs in your data is to run the summary() function, which will return the number of NAs per predictor. You can check this out via running:
+As mentioned, a quick way to get a summary about the NAs in your data is to run the `summary()` function, which will return the number of NAs per predictor. You can check this out via running:
 
 ```{r, eval = F}
 summary(airquality)
@@ -60,7 +60,7 @@ image(is.na(t(airquality)), axes = F)
 axis(3, at = seq(0,1, len = 6), labels = colnames(airquality))
 ```
 
-We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are seperate. To check if you have a complete row, we can use the function complete.cases(), which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
+We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are seperate. To check if you have a complete row, we can use the function `complete.cases()`, which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
 
 ```{r, eval = F}
 sum(complete.cases(airquality))
@@ -86,9 +86,9 @@ The easiest cases is arguably MCAR = missing completely at random - in this case
 
 ### Imputation
 
-The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example missRanger
+The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example `missRanger`
 
-```{r}
+```{r, warning=F, message=F}
 library(missRanger)
 airqualityImp<- missRanger(airquality)
 ```
@@ -102,7 +102,7 @@ summary(fit)
 
 The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
 
-```{r}
+```{r, warning=F, message=F}
 # run 20 imputations
 airqualityMImp <- replicate(20, missRanger(airquality), simplify = FALSE)
 # fit 20 models
