@@ -127,6 +127,78 @@ plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
               lambda = seq(0, 200, 0.1) ) )
 ```
 
+::: callout-tip
+#### (Adaptive) Shrinking with glmmTMB
+
+We can use glmmTMB for shrinkage estimation by changing the slopes into random slopes with only one level in a dummy grouping variable:
+
+1.  **Constant shrinkage**
+
+```{r}
+library(glmmTMB)
+airquality$group = as.factor(rep(1, nrow(airquality)))
+ridgeGlmmTMB1 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ), 
+                       data = airquality,
+                       start = list(theta = rep(1e-5, 3)),
+                       map = list(theta = factor(c(NA, NA, NA))))
+
+ridgeGlmmTMB10 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ), 
+                       data = airquality,
+                       start = list(theta = rep(10, 3)),
+                       map = list(theta = factor(c(NA, NA, NA))))
+summary(ridgeGlmmTMB1)
+summary(ridgeGlmmTMB10)
+```
+
+*Note: The `(…||…)` syntax will model the individual random slopes individually (the default is to fit a covariance matrix between the random effects).*
+
+We can use the `map` and the `start` arguments to a) mark the variances of the random slopes as constant and b) to set them so specific values (smaller values mean higher regularization).
+
+Random effects are now our slopes:
+
+```{r}
+ranef(ridgeGlmmTMB1)[[1]]$g
+ranef(ridgeGlmmTMB10)[[1]]$g
+```
+
+For higher variances they are stronger biased to 0.
+
+1.  **Adaptive shrinkage**
+
+The next obvious step would be to let the model and the data decide on the variance estimate (the amount of shrinkage), which is called adaptive shrinkage.
+
+Small simulation example:
+
+```{r}
+n = 25
+p = 10
+X = matrix(runif(p*n), n, p)
+head(X)
+Y = 4*X[,1] + rnorm(n)
+```
+
+10 observations, 20 predictors, and only X1 has an effect on Y, let's start with a fixed-effect model:
+
+```{r}
+m1 = glmmTMB(Y~X)
+summary(m1)
+```
+
+Not surprising, we get many warnings about convergence issues and NAs because p == n. Also the effects are not even close to zero.
+
+Let's try adaptive shrinkage:
+
+```{r}
+data = data.frame(Y = Y, X, group = as.factor(rep(1, n)))
+form = paste0("Y~ 0+ (0+",paste0(paste0(  "X", 1:p ),  collapse = "+"),"||group)" )
+print(form)
+m2 = glmmTMB(as.formula(form), data = data)
+ranef(m2)
+```
+
+We still get a convergence issue, but this is related to the very small variance estimates of the other predictors (glmmTMB tries to calculate standard errors based on the hessian, however, the hessian has very small elements on its diagonal, which makes it impossible to calculate its inverse).
+:::
+
 ### P-hacking {#pHacking}
 
 The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercises is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:

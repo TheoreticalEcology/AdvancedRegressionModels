@@ -1,0 +1,176 @@
+```{r, include=FALSE}
+set.seed(42)
+```
+
+# Case study - Seed bank
+
+```{r, warning=FALSE,message=FALSE}
+library(EcoData)
+library(glmmTMB)
+library(lme4)
+library(DHARMa)
+library(tidyverse)
+?EcoData::seedBank
+```
+
+The dataset comes from a study from @rosbakh2022inferring and includes information about plant species, their vegetative and seed traits, environmental factors, and their ability to form natural seed banks.
+
+The objective of this dataset is to identify which traits and environmental factors are responsible if species can naturally produce a seed bank. The ability to form seed banks is encoded as presence-absence and as a density. Data was collected at 17 sites for 286 species.
+
+::: {.callout-caution icon="false"}
+#### Exercise
+
+Which environmental factors and traits are explain the density or occurrence of a seed bank?
+:::
+
+::: {.callout-tip collapse="true"}
+#### Tip
+
+| Effects        | Variables                                                                         |
+|-------------------------|-----------------------------------------------|
+| Response       | SBPA, SBDensity                                                                   |
+| Fixed effects  | Altitude, SeedMass, SeedShape, SeedN, SeedPr, DormRank, Temp, Hum, Nitro, Grazing |
+| Random effects | Site, species                                                                     |
+
+Technical tips:
+
+-   start with lme4 (model checks are easier because of conditional simulations and the plotting option for residuals \~ random effects to identify random slopes (`plot(model, fitted(.)~sAltitude | Site))`)
+-   Use `dispformula`in glmmTMB if there is heteroskedasticity
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution for SBDensity (lmm)
+
+Prepare+scale data:
+
+```{r}
+data = as.data.frame(EcoData::seedBank)
+data$sAltitude = scale(data$Altitude)
+data$sSeedMass = scale(data$SeedMass)
+data$sSeedShape = scale(data$SeedShape)
+data$sSeedN = scale(data$SeedN)
+data$sSeedPr = scale(data$SeedPr)
+data$sDormRank = scale(data$DormRank)
+data$sTemp = scale(data$Temp)
+data$sHum = scale(data$Humidity)
+data$sNitro = scale(data$Nitrogen)
+data$sGrazing = scale(data$Grazing)
+
+# Let's remove NAs beforehand:
+rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+                               sGrazing + Site + Species, data = data))
+data = data[rows, ]
+
+```
+
+```{r}
+
+model1 = lmer(log(SBDensity+1)~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
+                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                (1|Site) + (1|Species),
+              data = data, control = lmerControl(optimizer = "bobyqa"))
+summary(model1)
+```
+
+**Residual checks:**
+
+```{r, fig.width=9, fig.height=12}
+plot(simulateResiduals(model1, re.form=NULL))
+```
+
+Check for missing random slopes:
+
+```{r}
+plot(model1, resid(.) ~ sAltitude | Species, abline = 1)
+```
+
+Add random slope for sAltitude (but without a correlation between the two random effects):
+
+```{r}
+
+model2 = lmer(log(SBDensity+1)~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
+                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                (1|Site) + (sAltitude||Species),
+              data = data, control = lmerControl(optimizer = "bobyqa"))
+summary(model2)
+
+```
+
+Check residuals:
+
+```{r}
+res = simulateResiduals(model2, re.form=NULL, plot=TRUE)
+```
+
+Residuals do not look perfect, variance is not constant:
+
+```{r}
+plotResiduals(res, data$sAltitude)
+plotResiduals(res, data$sSeedMass)
+```
+
+2.  **Modeling variance with glmmTMB**
+
+```{r}
+model3 = glmmTMB(log(SBDensity+1)~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
+                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                (1|Site) + (sAltitude||Species),
+              dispformula = ~sAltitude + sSeedMass + sSeedShape,
+              data = data)
+summary(model3)
+plot(simulateResiduals(model3))
+```
+
+Residuals look worse because they are unconditioned
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution for SBPA (glmm)
+
+Prepare+scale data:
+
+```{r}
+data = as.data.frame(EcoData::seedBank)
+data$sAltitude = scale(data$Altitude)
+data$sSeedMass = scale(data$SeedMass)
+data$sSeedShape = scale(data$SeedShape)
+data$sSeedN = scale(data$SeedN)
+data$sSeedPr = scale(data$SeedPr)
+data$sDormRank = scale(data$DormRank)
+data$sTemp = scale(data$Temp)
+data$sHum = scale(data$Humidity)
+data$sNitro = scale(data$Nitrogen)
+data$sGrazing = scale(data$Grazing)
+
+# Let's remove NAs beforehand:
+rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+                               sGrazing + Site + Species, data = data))
+data = data[rows, ]
+
+```
+
+```{r}
+
+model1 = glmer(SBPA~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
+                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                (1|Site) + (sAltitude||Species),
+              data = data, family = binomial(), control = glmerControl(optimizer = "bobyqa"))
+summary(model1)
+```
+
+**Residual checks:**
+
+Check residuals:
+
+```{r}
+res = simulateResiduals(model1, re.form=NULL, plot=TRUE)
+```
+
+Residuals look fine!
+:::

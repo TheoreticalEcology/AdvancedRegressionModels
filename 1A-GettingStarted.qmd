@@ -54,14 +54,14 @@ devtools::install_github(repo = "TheoreticalEcology/EcoData",
                          dependencies = T, build_vignettes = T)
 ```
 
-For your convenience, the EcoData installation also forces the installation of most of the packges needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set `dependencies = F, build_vignettes = F`.
+For your convenience, the EcoData installation also forces the installation of most of the packages needed in this book, so this may take a while. If you want to load only the EcoData package, or if you encounter problems during the install, set `dependencies = F, build_vignettes = F`.
 
 ## Assumed R knowledge
 
 As mentioned in the preface, this book assumes that you have basic knowledge about data manipulation (reading in data, removing or selecting columns or rows, calculating means per group etc.) and plotting in R. Note that for both purposes, there are currently two main schools in the R environment which do the same things, but with very different syntax:
 
-1.  **base R**, which uses functions such as plot(), apply(), aggregate()
-2.  **tidyverse**, with packages such as **dplyr** and **ggplot2**, which provide functions such as mutate(), filter() and heavily rely on the %\>% pipe operator.
+1.  **base R**, which uses functions such as `plot()`, `apply()`, `aggregate()`
+2.  **tidyverse**, with packages such as **dplyr** and **ggplot2**, which provide functions such as `mutate()`, `filter()` and heavily rely on the `%>%` pipe operator.
 
 There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.
 
