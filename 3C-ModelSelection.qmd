@@ -170,8 +170,8 @@ The next obvious step would be to let the model and the data decide on the varia
 Small simulation example:
 
 ```{r}
-n = 10
-p = 20
+n = 25
+p = 10
 X = matrix(runif(p*n), n, p)
 head(X)
 Y = 4*X[,1] + rnorm(n)

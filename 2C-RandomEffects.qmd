@@ -133,8 +133,6 @@ summary(mod2)
 
 Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes come from a normal distribution. The results is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
 
-
-
 ::: {.callout-tip collapse="true"}
 ## Generate equation with the `equatiomatic` package
 
@@ -178,8 +176,6 @@ $$
 $$
 :::
 
-
-
 Here a visualization of the results
 
 ```{r chunk_chapter4_chunk28, echo=TRUE, eval=TRUE}
@@ -193,8 +189,6 @@ with(Exam, {
     }
 })
 ```
-
-
 
 ::: {.callout-caution icon="false"}
 #### Excercise: a mixed model for plantHeight
@@ -710,7 +704,7 @@ However, unlike in the standard LRT, where we assumed that the test statistic is
 
 Simulated LRTs for mixed models are implemented in a number of packages. To my knowledge, one of the most general functions is DHARMa::simulateLRT. Here an example:
 
-```{r}
+```{r, warning=F, message=F}
 set.seed(123)
 dat <- DHARMa::createData(sampleSize = 200, randomEffectVariance = 1)
 
@@ -750,7 +744,7 @@ resampledParameters = function(){
 
 Now, let's generate the null distribution. There will be a lot of warnings which you can usually ignore. The reason is that we simulate the data under H~0~, i.e. with no RE, and thus the mixed model estimates the RE variance to zero, which creates a warning.
 
-```{r}
+```{r, warning=F, message=F}
 nullDistribution = replicate(500, resampledParameters())
 ```
 
@@ -786,10 +780,10 @@ r.squaredGLMM(m2)
 
 Interpretation
 
--   **R2m**: Marginal R^2^ value associated with fixed effects.
--   **R2c**: Conditional R^2^ value associated with fixed effects plus the random effects.
+-   **R^2^m**: Marginal R^2^ value associated with fixed effects.
+-   **R^2^c**: Conditional R^2^ value associated with fixed effects plus the random effects.
 
-It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R2 values under a cross-validation.
+It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R^2^ values under a cross-validation.
 
 ## Case studies
 

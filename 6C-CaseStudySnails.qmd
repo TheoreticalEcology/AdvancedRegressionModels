@@ -20,7 +20,7 @@ The objective of @rabone2019freshwater was to model the total abundance of the s
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-@rabone2019freshwater found differences for the species. Start with one species (total abundance + infection rate) and if you have time go for other species.
+@rabone2019freshwater found differences for the species. Start with one species (total abundance + infection rate) and if you have time, go for other species.
 :::
 
 ::: {.callout-tip collapse="true"}
@@ -70,37 +70,32 @@ First model, glmm with `family = poisson`, random intercepts (site_irn nested wi
 ```{r}
 
 model1 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + 
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
                  sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
                  (1|locality/site_irn) +  (1|coll_date), 
               data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
-plot(simulateResiduals(model1, re.form=NULL))
 ```
 
 **Residual checks:**
 
-Check for missing random slopes:
-
-```{r, fig.width=8, fig.height=12}
-plot(model1, resid(.) ~ sTemp_Water | coll_date, abline = 1)
-```
 
 Check residuals:
 
 ```{r}
-res = simulateResiduals(model1, plot = TRUE)
+res = simulateResiduals(model1, plot = TRUE, re.form = NULL)
 ```
 
 Does not look great -\> dispersion problems:
 
-Overdispersion can be caused by missing predictors.
+Overdispersion can be caused by misfit.
+
 
 ```{r}
 testDispersion(res, alternative = "greater")
 ```
 
-n.s.
+s.
 
 Underdispersion:
 
@@ -108,9 +103,88 @@ Underdispersion:
 testDispersion(res, alternative = "less")
 ```
 
-almost s.
+n.s
 
-Let's also check for temporal and spatial autocorrelation (we detrended year and set a random intercept on sites):
+Check for missing random slopes:
+
+```{r, fig.width=8, fig.height=12}
+plot(model1, resid(.) ~ swater_depth | coll_date, abline = 1)
+```
+
+
+```{r}
+
+model2 = glmer(Bulinus_tot~
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
+                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
+              data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
+summary(model2)
+simulateResiduals(model2, plot = TRUE, re.form = NULL)
+```
+Switch to negative binomial
+
+
+2.  **NegBinom-glmm**
+
+
+```{r}
+model3 = glmmTMB(Bulinus_tot~
+                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
+                 swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+              data = data,  family = nbinom2())
+summary(model3)
+plot(simulateResiduals(model3))
+```
+Residuals look better but they are unconditioned!
+
+Check conditional residuals:
+
+
+```{r}
+pred = predict(model3, re.form = NULL, type = "response")
+simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = summary(model3)$sigma, mu =  pred))
+res = createDHARMa(simulations, model.frame(model3)[,1], pred)
+plot(res)
+```
+Better!
+
+
+```{r}
+testDispersion(res, alternative = "less")
+testDispersion(res, alternative = "greater")
+```
+
+There is underdispersion.
+
+Use the `dispformula` to make the dispersion depend on the covariates:
+
+```{r}
+model4 = glmmTMB(Bulinus_tot~
+                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
+                 swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+                 dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
+                 swmo_prec + swater_speed_ms + swater_depth + syear,
+              data = data,  family = nbinom2)
+summary(model4)
+```
+
+
+Check conditional residuals:
+
+```{r}
+pred = predict(model4, re.form = NULL, type = "response")
+pred_dispersion = predict(model4, re.form = NULL, type = "disp")
+simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
+res = createDHARMa(simulations, model.frame(model4)[,1], pred)
+plot(res)
+```
+
+Better.
+
+Check for temporal and spatial autocorrelation (we detrended both by using year and random intercept for sites):
 
 ```{r}
 ## Spatial
@@ -120,49 +194,32 @@ testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
 
 
 ## Temporal
-res2 = recalculateResiduals(res, group = as.factor(data$year),)
-testTemporalAutocorrelation(res2, time = unique(as.factor(data$year)))
+res2 = recalculateResiduals(res, group = as.factor(data$month),)
+testTemporalAutocorrelation(res2, time = unique(as.factor(data$month)))
 
 ```
 
-Spatial autocorrelation significant.
+Both n.s.
 
-Summa summarum, switch to glmmTMB because:
+3.  **Bonus: NegBinom-glmm with spatial and temporal autocorrelation**
 
--   negative binomial distribution instead of poisson -\> for underdispersion
--   spatial CAR -\> spatial autocorrelation
+Both are n.s. But let's account for spatial and temporal autocorrelation anyway (just for fun):
 
-2.  **glmmTMB with correlation structures and negative binomial**
 
 ```{r}
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
-model2 = glmmTMB(Bulinus_tot~
+data$fmonth = as.factor(data$month)
+model5 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|group), 
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date) +
+                 exp(0+numFac|group) + ar1(0+fmonth|site_irn), 
+                 dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
+                 swmo_prec + swater_speed_ms + swater_depth + syear,
               data = data,  family = nbinom2)
-summary(model2)
-plot(simulateResiduals(model2))
 ```
 
-Check conditional residuals:
-
-```{r}
-pred = predict(model2, re.form = NULL, type = "response")
-simulations = sapply(1:250, function(i) rnbinom(length(pred),size = summary(model2)$sigma, mu =  pred))
-res = createDHARMa(simulations, model.frame(model2)[,1], pred)
-plot(res)
-```
-
-better but still not perfect:
-
-```{r}
-testDispersion(res, alternative = "less")
-testDispersion(res, alternative = "greater")
-```
-
-If you want, you could try now the `dispformula` to make the dispersion dependent on covariates.
 
 :::
 
@@ -194,14 +251,14 @@ data = data[rows, ]
 ```
 
 ```{r}
-numFac = numFactor(data$sLat, data$sLon)
-group = factor(rep(1, nrow(data)))
-model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot)~
-                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
+model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot)~
+                 site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (1|coll_date) + exp(0+numFac|group), 
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
               data = data,  family = binomial)
 summary(model1)
-plot(simulateResiduals(model1))
+plot(simulateResiduals(model1, res.form=NULL))
 ```
+
+
 :::
