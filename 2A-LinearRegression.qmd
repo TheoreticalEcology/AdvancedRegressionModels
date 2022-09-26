@@ -453,7 +453,7 @@ To give a simple example of this spillover, let's say
 A multiple regression would estimate 1,-1. In a single regression of Wind against Temp, the collinear part (50%) of the Temp effect would be absorbed by wind, so we would estimate a Wind effect of 0.5.
 :::
 
-Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp. 
+Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp.
 
 Also, note that collinearity is not fundamentally a problem for the regression - regression estimates stay unbiased and p-values and CIs calibrated under arbitrary high collinearity. However, the more collinearity we have, the more uncertain regression estimates will become (with associated large p-values). Here an example, where we simulate data under the assumption that x1 and x2 have each an effect of 1
 
@@ -471,9 +471,6 @@ We see that the multiple regression is not terribly wrong, but very uncertain ab
 ```{r}
 summary(lm(y ~ x1))
 ```
-
-
-
 
 ::: {.callout-tip collapse="true"}
 #### Understanding collinearity spillover in more detail
@@ -905,7 +902,7 @@ getEstimate <- function(model){
 getEstimate(fit)
 ```
 
-Next, we perform the parametric bootstrap
+Next, we perform the non-parametric bootstrap
 
 ```{r}
 performBootstrap = function(){
@@ -927,7 +924,7 @@ abline(v = getEstimate(fit), col = "red", lwd = 2, lty = 2)
 sd(bootstrappedEstimate)
 ```
 
-We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by summary.lm()
+We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by `summary.lm()`
 
 ```{r}
 summary(fit)
@@ -953,7 +950,7 @@ b1
 
 ### Parametric bootstrap
 
-The non-parametric bootstrap does the same thing, but the data is not re-sampled, but generated from the fitted model. This can be done conveniently in R as long as the regression package implements a simulate() function that works on the fitted model.
+The non-parametric bootstrap does the same thing, but the data is not re-sampled, but generated from the fitted model. This can be done conveniently in R as long as the regression package implements a `simulate()` function that works on the fitted model.
 
 ```{r}
 performBootstrapParametric = function(){
@@ -1057,7 +1054,7 @@ model2 = lm(loght ~ growthform2, data = plantHeight)
 summary(model2)
 ```
 
-It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests. 
+It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests.
 :::
 
 ### Mulitple Regression
@@ -1077,7 +1074,6 @@ Use (separate) multiple regressions to test if:
 1.  If temp or NPP (net primary productivity) is a more important predictor.
 2.  If growth forms (variable growthform) differ in their temperature effects.
 3.  If the effect of temp remains significant if we include latitude and an interaction of latitude with temp. If not, why? Tip: plot temp \~ lat.
-
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -1135,5 +1131,3 @@ cor(plantHeight$temp, plantHeight$lat)
 
 In principle, the regression model should be able to still separate them, but the higher the collinearity, the more difficult it becomes for the regression to infer if the effect is caused by one or the other predictor.
 :::
-
-
