@@ -47,7 +47,7 @@ points(hurricanes$MasFem, hurricanes$NDAM, cex = hurricanes$alldeaths/20,
 The original model from the paper fits a negative binomial, using `mgcv`.{R}.
 
 ```{r chunk_chapter5_task_7, eval=TRUE, message=FALSE, warning=FALSE}
-originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM), 
+originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM),
     data = hurricanes, family = nb, na.action = "na.fail")
 summary(originalModelGAM)
 ```
@@ -76,7 +76,7 @@ originalModelGAM = glmmTMB(alldeaths ~ MasFem*
 summary(originalModelGAM)
 
 # note that in the code that I gave you not all predictors were scaled,
-# but for looking at the main effect we should scale 
+# but for looking at the main effect we should scale
 
 originalModelGAM = glmmTMB(alldeaths ~ scale(MasFem) *
                              (scale(Minpressure_Updated_2014) + scale(NDAM)),
@@ -88,9 +88,9 @@ summary(originalModelGAM)
 
 car::Anova(originalModelGAM)
 
-# in the ANOVA we see that MasFem still n.s. but interactions, and if you 
+# in the ANOVA we see that MasFem still n.s. but interactions, and if you
 # would calculate effect of MasFem at high NDAM, it is significnat. Something
-# like that is argued in the paper. We can emulate this by changing 
+# like that is argued in the paper. We can emulate this by changing
 # NDAM centering to high NDAM
 
 hurricanes$highcenteredNDAM = hurricanes$NDAM - max(hurricanes$NDAM)
@@ -106,7 +106,7 @@ summary(originalModelGAM)
 res <- simulateResiduals(originalModelGAM)
 plot(res)
 
-# but residuals ~ NDAM looks funny, which was pointed 
+# but residuals ~ NDAM looks funny, which was pointed
 # out by Bob O'Hara in a blog post after publication of the paper
 plotResiduals(res, hurricanes$NDAM)
 
@@ -124,7 +124,7 @@ car::Anova(correctedModel)
 
 # Moreover, question why they fitted this weird interactions in the first place. A initial model based on a causa analysis could be:
 
-newModel = glmmTMB(alldeaths ~ scale(MasFem) + Minpressure_Updated_2014 
+newModel = glmmTMB(alldeaths ~ scale(MasFem) + Minpressure_Updated_2014
                            + NDAM + sqrt(NDAM) + Year,
                            data = hurricanes, family = nbinom2)
 summary(newModel)
@@ -199,7 +199,7 @@ Now, try to improve the model with everything we have discussed so far.
 #### Solution
 
 ```{r chunk_chapter5_task_4, message=FALSE, warning=FALSE}
-m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent 
+m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent
   + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
   dispformula = ~ FoodTreatment + SexParent,
   ziformula = ~ FoodTreatment + SexParent)
@@ -244,7 +244,7 @@ Prepare+scale data:
 library(lme4)
 library(glmmTMB)
 library(DHARMa)
-data = EcoData::snails 
+data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
 data$swater_speed_ms = scale(data$water_speed_ms)
@@ -267,9 +267,9 @@ First model, glmm with `family = poisson`, random intercepts (site_irn nested wi
 
 ```{r}
 model1 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
-                 (1|locality/site_irn) +  (1|coll_date), 
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) +  (1|coll_date),
               data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
 ```
@@ -290,7 +290,7 @@ Overdispersion can be caused by misfit.
 testDispersion(res, alternative = "greater")
 ```
 
-s.  
+s.
 
 Underdispersion:
 
@@ -309,9 +309,9 @@ plot(model1, resid(.) ~ swater_depth | coll_date, abline = 1)
 ```{r}
 
 model2 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
               data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
 summary(model2)
 simulateResiduals(model2, plot = TRUE, re.form = NULL)
@@ -325,7 +325,7 @@ Switch to negative binomial
 model3 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
               data = data,  family = nbinom2())
 summary(model3)
 plot(simulateResiduals(model3))
@@ -357,7 +357,7 @@ Use the `dispformula` to make the dispersion depend on the covariates:
 model4 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
                  dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear,
               data = data,  family = nbinom2)
@@ -405,7 +405,7 @@ model5 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
                  (1|locality/site_irn) + (spH + swater_depth||coll_date) +
-                 exp(0+numFac|group) + ar1(0+fmonth|site_irn), 
+                 exp(0+numFac|group) + ar1(0+fmonth|site_irn),
                  dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear,
               data = data,  family = nbinom2)
@@ -418,7 +418,7 @@ model5 = glmmTMB(Bulinus_tot~
 Prepare+scale data:
 
 ```{r}
-data = EcoData::snails 
+data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
 data$swater_speed_ms = scale(data$water_speed_ms)
@@ -439,7 +439,7 @@ data = data[rows, ]
 model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~
                  site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
               data = data,  family = binomial)
 summary(model1)
 plot(simulateResiduals(model1, res.form=NULL))
@@ -451,7 +451,7 @@ plot(simulateResiduals(model1, res.form=NULL))
 
 ```{r}
 library(tidyverse)
-data = EcoData::snails 
+data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
 data$swater_speed_ms = scale(data$water_speed_ms)
@@ -466,21 +466,21 @@ data$sLon = scale(data$Longitude)
 rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
-data = 
-  data %>% pivot_longer(cols = c("BP_tot", "BF_tot", "BT_tot"), 
-                      names_to = "Species", 
+data =
+  data %>% pivot_longer(cols = c("BP_tot", "BF_tot", "BT_tot"),
+                      names_to = "Species",
                       values_to = "Abundance" )
 
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
 data$fmonth = as.factor(data$month)
 
-modelJoint = glmmTMB(Abundance ~ 0 + 
-                 offset(log(duration)) + Species + Species:(site_type + 
-                    sTemp_Water + seas_wmo+ spH + sCond + swmo_prec + 
-                      swater_speed_ms + swater_depth + syear) + 
-                    exp(0+numFac|group:Species) + ar1(0+fmonth|site_irn:Species) + 
-                     (spH + swater_depth||coll_date:Species) + 
+modelJoint = glmmTMB(Abundance ~ 0 +
+                 offset(log(duration)) + Species + Species:(site_type +
+                    sTemp_Water + seas_wmo+ spH + sCond + swmo_prec +
+                      swater_speed_ms + swater_depth + syear) +
+                    exp(0+numFac|group:Species) + ar1(0+fmonth|site_irn:Species) +
+                     (spH + swater_depth||coll_date:Species) +
                  rr(Species + 0|locality:site_irn, d = 2), # Multivariate structure
                  dispformula = ~0+Species+Species:(sTemp_Water + spH + syear),
               data = data,  family = nbinom2())
@@ -546,15 +546,15 @@ data$sGrazing = scale(data$Grazing)
 
 # Let's remove NAs beforehand:
 rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
                                sGrazing + Site + Species, data = data))
 data = data[rows, ]
 ```
 
 ```{r}
 model1 = lmer(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (1|Species),
               data = data, control = lmerControl(optimizer = "bobyqa"))
 summary(model1)
@@ -577,8 +577,8 @@ Add random slope for sAltitude (but without a correlation between the two random
 ```{r}
 
 model2 = lmer(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
               data = data, control = lmerControl(optimizer = "bobyqa"))
 summary(model2)
@@ -602,8 +602,8 @@ plotResiduals(res, data$sSeedMass)
 
 ```{r}
 model3 = glmmTMB(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
               dispformula = ~sAltitude + sSeedMass + sSeedShape +
                 sDormRank + sAltitude + sHum + sNitro + sGrazing,
@@ -628,7 +628,7 @@ species_df = data.frame(Species = species)
 rownames(species_df) = species
 obj = name.check(plantPhylo, species_df)
 
-# drop rest of the species 
+# drop rest of the species
 phyl.upd = drop.tip(plantPhylo, obj$tree_not_data)
 summary(phyl.upd)
 
@@ -643,7 +643,7 @@ nlme:
 ```{r}
 library(nlme)
 model4 = gls(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
                 sDormRank + sAltitude + sHum + sNitro + sGrazing,
              correlation = corBrownian(phy = phyl.upd2, form =~ Species),
              data = data)
@@ -675,8 +675,8 @@ corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
 data$dummy = factor(rep(0, nrow(data)))
 nsp = length(unique(data$Species))
 model5 = glmmTMB(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (0+sAltitude||Species) +
                 (1+Species|dummy),
               dispformula = ~sAltitude + sSeedMass + sSeedShape,
@@ -708,7 +708,7 @@ data$sGrazing = scale(data$Grazing)
 
 # Let's remove NAs beforehand:
 rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
                                sGrazing + Site + Species, data = data))
 data = data[rows, ]
 
@@ -717,8 +717,8 @@ data = data[rows, ]
 ```{r}
 
 model1 = glmer(SBPA~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
               data = data, family = binomial(), control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
@@ -758,8 +758,8 @@ corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
 data$dummy = factor(rep(0, nrow(data)))
 nsp = length(unique(data$Species))
 model6 = glmmTMB(SBPA~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (0+sAltitude||Species) +
                 (1+Species|dummy),
               map=list(theta=factor(c(0,0, rep(1,nsp),rep(NA,length(corrs))) )),
