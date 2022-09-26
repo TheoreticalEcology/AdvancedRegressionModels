@@ -479,70 +479,6 @@ plot(mod1, resid(., scaled=TRUE) ~ standLRT | school, abline = 0)
 
 Looks still good to me, but if we think we see a pattern here, we should introduce a random slope.
 
-::: {.callout-caution icon="false"}
-## Case Study 1: College Student Performance Over Time
-
-***Background and data structure***
-
-The GPA (college grade point average) data is a **longitudinal** data set (also named **panel data**, German: "Längsschnittstudie". A study repeated at several different moments in time, compared to a **cross-sectional study** (German: "Querschnittstudie") which has several participants at *one time*). In this data set, 200 college students and their GPA have been followed 6 consecutive semesters. Look at the GPA data set, which can be found in the `EcoData`{.R} package:
-
-```{r chunk_chapter4_chunk29, echo=TRUE, eval=F}
-library(EcoData)
-str(gpa)
-```
-
-In this data set, there are GPA measures on 6 consecutive **occasions**, with a **job** status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: The **sex** (1 = male, 2 = female) and the high school **gpa**. There is also a dichotomous student-level outcome variable, which indicates whether a student has been **admitted** to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each **student** and each **year** of observation have an id.
-
-***Task***
-
-Analyze if GPA improves over time (**occasion**)! Here a few hints to look at:
-
--   Consider which fixed effect structure you want to fit. For example, you might be interested if males and femals differ in their temporal trend
--   Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
--   For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
--   After having specified the mixed model, have a look at residuals. You can model dispersion problems in mixed models with glmmTMB, same syntax for REs as lme4
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
-
-```{r chunk_chapter4_task_2, eval = F}
-library(lme4)
-library(glmmTMB)
-library(EcoData)
-# initial model with a random intercept and fixed effect structure based on
-# causal assumptions
-
-gpa$sOccasion = scale(gpa$occasion)
-gpa$nJob = as.numeric(gpa$job)
-
-fit <- lmer(gpa ~ sOccasion*sex + nJob + (1|student), data = gpa)
-summary(fit)
-
-# plot seems to show a lot of differences still, so add random slope
-plot(fit, 
-     resid(., scaled=TRUE) ~ fitted(.) | student, 
-     abline = 0)
-
-# slope + intercept model
-fit <- lmer(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa)
-
-# checking residuals - 
-plot(fit)
-
-
-# I'm using here glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with all variance modelling options that we discussed for gls, but random effect specification is different than here
-fit <- glmmTMB(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa, dispformula = ~ sOccasion)
-summary(fit)
-
-# unfortunately, the dispersion in this model cannot be reliably checked, because the functions for this are not (yet) implemented in glmmTMB
-plot(residuals(fit, type = "pearson") ~ predict(fit)) # not implemented
-library(DHARMa)
-simulateResiduals(fit, plot = T) 
-
-# still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model
-```
-:::
 
 ## Problems With Mixed Models
 
@@ -829,7 +765,7 @@ It is important to note that this is a description of the fitted model, not nece
 ## Case studies
 
 ::: {.callout-caution icon="false"}
-#### Case Study 2 - Honeybee Data
+#### Honeybee Data
 
 We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease.
 
@@ -856,5 +792,70 @@ summary(fit)
 plot(fit, 
      resid(., scaled=TRUE) ~ fitted(.) | Hive, 
      abline = 0)
+```
+:::
+
+
+::: {.callout-caution icon="false"}
+## College Student Performance Over Time
+
+***Background and data structure***
+
+The GPA (college grade point average) data is a **longitudinal** data set (also named **panel data**, German: "Längsschnittstudie". A study repeated at several different moments in time, compared to a **cross-sectional study** (German: "Querschnittstudie") which has several participants at *one time*). In this data set, 200 college students and their GPA have been followed 6 consecutive semesters. Look at the GPA data set, which can be found in the `EcoData`{.R} package:
+
+```{r chunk_chapter4_chunk29, echo=TRUE, eval=F}
+library(EcoData)
+str(gpa)
+```
+
+In this data set, there are GPA measures on 6 consecutive **occasions**, with a **job** status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: The **sex** (1 = male, 2 = female) and the high school **gpa**. There is also a dichotomous student-level outcome variable, which indicates whether a student has been **admitted** to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each **student** and each **year** of observation have an id.
+
+***Task***
+
+Analyze if GPA improves over time (**occasion**)! Here a few hints to look at:
+
+-   Consider which fixed effect structure you want to fit. For example, you might be interested if males and females differ in their temporal trend
+-   Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
+-   For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
+-   After having specified the mixed model, have a look at residuals. You can model dispersion problems in mixed models with glmmTMB, same syntax for REs as lme4
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+## Solution
+
+```{r chunk_chapter4_task_2, eval = F}
+library(lme4)
+library(glmmTMB)
+library(EcoData)
+# initial model with a random intercept and fixed effect structure based on
+# causal assumptions
+
+gpa$sOccasion = scale(gpa$occasion)
+gpa$nJob = as.numeric(gpa$job)
+
+fit <- lmer(gpa ~ sOccasion*sex + nJob + (1|student), data = gpa)
+summary(fit)
+
+# plot seems to show a lot of differences still, so add random slope
+plot(fit, 
+     resid(., scaled=TRUE) ~ fitted(.) | student, 
+     abline = 0)
+
+# slope + intercept model
+fit <- lmer(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa)
+
+# checking residuals - heteroskedasticity 
+plot(fit)
+
+
+# We only learn later how to specify a variable, dispersion, but as a teaser - I'm modelling this using glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with all variance modelling options that we discussed for gls, but random effect specification is different than here
+fit <- glmmTMB(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa, dispformula = ~ sOccasion)
+summary(fit)
+
+# unfortunately, the dispersion in this model cannot be reliably checked, because the functions for this are not (yet) implemented in glmmTMB
+plot(residuals(fit, type = "pearson") ~ predict(fit)) # not implemented
+library(DHARMa)
+simulateResiduals(fit, plot = T) 
+# still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model
 ```
 :::

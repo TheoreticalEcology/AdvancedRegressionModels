@@ -236,12 +236,19 @@ The objective of @rabone2019freshwater was to model the total abundance of the s
 ::: {.callout-tip collapse="true"}
 #### Tip
 
-| Effects        | Variables                                                                              |
-|-------------------------|-----------------------------------------------|
-| Response       | Bulinus_tot, BP_tot, BF_tot, BT_tot total                                              |
-| Fixed effects  | Temp_Water, pH, water_speed_ms, water_depth, Cond, wmo_prec, locality, site_type, year |
-| Random effects | Locality, site_irn, coll_date                                                          |
-| offset         | duration                                                                               |
++-----------------------+----------------------------------------------------------------------------------------+
+| Effects               | Variables                                                                              |
++=======================+========================================================================================+
+| Response              | Bulinus_tot (all species)                                                              |
+|                       |                                                                                        |
+|                       | BP_tot, BF_tot, BT_tot                                                                 |
++-----------------------+----------------------------------------------------------------------------------------+
+| Fixed effects         | Temp_Water, pH, water_speed_ms, water_depth, Cond, wmo_prec, locality, site_type, year |
++-----------------------+----------------------------------------------------------------------------------------+
+| Random effects        | Locality, site_irn, coll_date                                                          |
++-----------------------+----------------------------------------------------------------------------------------+
+| offset                | duration                                                                               |
++-----------------------+----------------------------------------------------------------------------------------+
 
 Technical tips:
 
@@ -449,7 +456,7 @@ data = data[rows, ]
 ```
 
 ```{r}
-model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot)~
+model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot)~
                  site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
                  (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
@@ -474,11 +481,15 @@ The dataset comes from a study from @rosbakh2022inferring and includes informati
 
 The objective of this dataset is to identify which traits and environmental factors are responsible if species can naturally produce a seed bank. The ability to form seed banks is encoded as presence-absence and as a density. Data was collected at 17 sites for 286 species. Here an overview about the data structure
 
-| Potential type | Variables                                                                         |
-|-------------------------|-----------------------------------------------|
-| Response       | SBPA, SBDensity                                                                   |
-| Predictors     | Altitude, SeedMass, SeedShape, SeedN, SeedPr, DormRank, Temp, Hum, Nitro, Grazing |
-| Random effects | Site, species                                                                     |
++-----------------------+-----------------------------------------------------------------------------------+
+| Potential type        | Variables                                                                         |
++=======================+===================================================================================+
+| Response              | SBPA, SBDensity                                                                   |
++-----------------------+-----------------------------------------------------------------------------------+
+| Predictors            | Altitude, SeedMass, SeedShape, SeedN, SeedPr, DormRank, Temp, Hum, Nitro, Grazing |
++-----------------------+-----------------------------------------------------------------------------------+
+| Random effects        | Site, species                                                                     |
++-----------------------+-----------------------------------------------------------------------------------+
 
 Note that predictors and REs are "potential predictors" - it is not necessarily optimal to use them all.
 

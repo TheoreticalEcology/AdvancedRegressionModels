@@ -72,7 +72,13 @@ To create a dataset with all observations that contain NAs removed, use
 airquality[complete.cases(airquality), ]
 ```
 
-Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed.
+Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax 
+
+```{r, results='hide'}
+rows = rownames(model.matrix(Ozone ~ Wind + Temp, data = airquality))
+airquality = airquality[rows, ]
+```
+
 
 ### Missing at random
 

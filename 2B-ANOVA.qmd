@@ -135,6 +135,35 @@ Here is an overview of the situation for 2 predictors A and B and their interact
 knitr::include_graphics(c("images/ANOVA.jpg"))
 ```
 
+Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it depends on what you want to know" and "there is a lot of discussion about this topic". I would say the following:
+
+-   If you have an orthogonal, balanced design, it doesn't matter.
+
+-   If not, type I is really only appropriate if you explicitly want to have the order-dependence. There may be some rare cases for this, e.g. if you want to say my regression should first explain everything it can by variable A, and then I only want to see if variable B adds something.
+
+-   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, it also depends on the purpose of what you want to do: do you want to partition R2 between model components, test significance of factors, ...
+
+::: callout-caution
+Note that for categorical predictors, apart from collinearity and balance, also the choice of contrasts (see section on contrasts) will influence the amount of shared variation, in particular regarding the variance component shared between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables.
+
+```{r}
+airquality$fMonth = as.factor(airquality$Month)
+fit1 = lm(Ozone ~ Temp * fMonth , data = airquality)
+fit2 = lm(Ozone ~ Temp * fMonth , data = airquality,
+          contrasts = list(fMonth = "contr.helmert"))
+
+car::Anova(fit1, type = "III")
+car::Anova(fit2, type = "III")
+```
+
+Note that the Helmert contrasts match much better with the results of the model without interaction. 
+
+```{r}
+fit1 = lm(Ozone ~ Temp + fMonth , data = airquality)
+car::Anova(fit1, type = "III")
+```
+:::
+
 ::: {.callout-caution icon="false"}
 ###### Excercise
 
@@ -193,3 +222,37 @@ In general, reliably adjusting R^2^ components for complexity in an ANOVA is ver
 -   If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance
 
 -   Alternatively, if the true variance is really crucial for your study, you can adjust R^2^ by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H~0~, this will be a conservative estimate.
+
+## Case studies
+
+### Plant Height
+
+Let's look at our plant height case study from the previous chapter. Which type of ANOVA should you run to analyze the model? Compare results to "less appropriate" alternatives.
+
+```{r}
+library(EcoData)
+fit = lm(loght ~ temp * lat, data = plantHeight)
+summary(fit)
+```
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+We have correlations between variables and an interaction, so the conservative approach would be to run a type III ANOVA.
+
+```{r}
+print(car::Anova(fit, type = "III"))
+```
+
+An alternative, in which main effects are treated as in type III (shared variance discarded),but interactions is treated as in type I (added on top) is type II.
+
+```{r}
+print(car::Anova(fit, type = "II"))
+```
+
+Arguably not appropriate (because order dependent, and here we have strong collinearity) is a type I ANOVA:
+
+```{r}
+summary(aov(fit))
+```
+:::

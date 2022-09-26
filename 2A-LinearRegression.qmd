@@ -284,7 +284,7 @@ The `lm()`{.R} function can handle both numerical and categorical variables. To 
 boxplot(weight ~ group, data = PlantGrowth)
 ```
 
-### R models fit treatment contrasts
+### Understanding contrasts
 
 Let's fit an `lm()`{.R} now with the categorical explanatory variable group. They syntax is the same as before
 
@@ -328,7 +328,7 @@ fit = lm(weight ~ group3, data = PlantGrowth)
 summary(fit)
 ```
 
-What we are using here is Helmert contrasts, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see [this paper](https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x).
+What we are using here is Helmert contrasts, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see chapter 10 in Stéphanie M. van den Berg's [book "Analysing Data using Linear Models"](https://bookdown.org/pingapang9/linear_models_bookdown/contrasts.html#introduction-2) and also [this paper](https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x).
 :::
 
 ### ANOVA
@@ -1087,6 +1087,9 @@ Use (separate) multiple regressions to test if:
 plantHeight$sTemp = scale(plantHeight$temp)
 plantHeight$sLat = scale(plantHeight$lat)
 plantHeight$sNPP = scale(plantHeight$NPP)
+
+# relevel 
+plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
 ```
 
 1)  **NPP or Temp?**
@@ -1101,8 +1104,9 @@ NPP is slightly more important
 2)  **Interaction with growth form**
 
 ```{r}
-fit = lm(loght ~ growthform *  sTemp , data = plantHeight)
+fit = lm(loght ~ growthform2 *  sTemp , data = plantHeight)
 summary(fit)
+
 ```
 
 Yes, because (some) interactions are significant.
