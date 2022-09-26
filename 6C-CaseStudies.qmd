@@ -47,7 +47,7 @@ points(hurricanes$MasFem, hurricanes$NDAM, cex = hurricanes$alldeaths/20,
 The original model from the paper fits a negative binomial, using `mgcv`.{R}.
 
 ```{r chunk_chapter5_task_7, eval=TRUE, message=FALSE, warning=FALSE}
-originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM), 
+originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM),
     data = hurricanes, family = nb, na.action = "na.fail")
 summary(originalModelGAM)
 ```
@@ -76,7 +76,7 @@ originalModelGAM = glmmTMB(alldeaths ~ MasFem*
 summary(originalModelGAM)
 
 # note that in the code that I gave you not all predictors were scaled,
-# but for looking at the main effect we should scale 
+# but for looking at the main effect we should scale
 
 originalModelGAM = glmmTMB(alldeaths ~ scale(MasFem) *
                              (scale(Minpressure_Updated_2014) + scale(NDAM)),
@@ -88,9 +88,9 @@ summary(originalModelGAM)
 
 car::Anova(originalModelGAM)
 
-# in the ANOVA we see that MasFem still n.s. but interactions, and if you 
+# in the ANOVA we see that MasFem still n.s. but interactions, and if you
 # would calculate effect of MasFem at high NDAM, it is significnat. Something
-# like that is argued in the paper. We can emulate this by changing 
+# like that is argued in the paper. We can emulate this by changing
 # NDAM centering to high NDAM
 
 hurricanes$highcenteredNDAM = hurricanes$NDAM - max(hurricanes$NDAM)
@@ -106,7 +106,7 @@ summary(originalModelGAM)
 res <- simulateResiduals(originalModelGAM)
 plot(res)
 
-# but residuals ~ NDAM looks funny, which was pointed 
+# but residuals ~ NDAM looks funny, which was pointed
 # out by Bob O'Hara in a blog post after publication of the paper
 plotResiduals(res, hurricanes$NDAM)
 
@@ -124,7 +124,7 @@ car::Anova(correctedModel)
 
 # Moreover, question why they fitted this weird interactions in the first place. A initial model based on a causa analysis could be:
 
-newModel = glmmTMB(alldeaths ~ scale(MasFem) + Minpressure_Updated_2014 
+newModel = glmmTMB(alldeaths ~ scale(MasFem) + Minpressure_Updated_2014
                            + NDAM + sqrt(NDAM) + Year,
                            data = hurricanes, family = nbinom2)
 summary(newModel)
@@ -199,7 +199,7 @@ Now, try to improve the model with everything we have discussed so far.
 #### Solution
 
 ```{r chunk_chapter5_task_4, message=FALSE, warning=FALSE}
-m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent 
+m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent
   + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
   dispformula = ~ FoodTreatment + SexParent,
   ziformula = ~ FoodTreatment + SexParent)
@@ -223,39 +223,17 @@ library(tidyverse)
 ?EcoData::snails
 ```
 
-The dataset comes from a study from @rabone2019freshwater and includes information about the distribution of three snail species (healthy and infected) in the Niger River Valley. Freshwater snails are known to be intermediate hosts of schistosomiasis (a parasit).
+Look at the Snails data set in the `EcoData` package, and find out which environmental and/or seasonal predictors i) explain the total abundance and ii) the infection rate of the three species.
 
-The objective of @rabone2019freshwater was to model the total abundance of the snail species as well as the proporation of the infected individuals. The hypothesis is that the total abundance and the infection depends on environmental and on seasonal factors. Data were collected at 92 (20 localities) sites over a 6-year period (2011-2016).
+Tasks:
 
-::: {.callout-caution icon="false"}
-#### Exercise
+1.  Model the summed total abundance of the three species (Bulinus_tot)
 
-@rabone2019freshwater found differences for the species. Start with one species (total abundance + infection rate) and if you have time, go for other species.
-:::
+2.  Model the infection rate of all three species (Bulinuts_pos_tot)
 
-::: {.callout-tip collapse="true"}
-#### Tip
+3.  Optional: Model the species individually (BP_tot, BF_tot, BT_tot)
 
-+-----------------------+----------------------------------------------------------------------------------------+
-| Effects               | Variables                                                                              |
-+=======================+========================================================================================+
-| Response              | Bulinus_tot (all species)                                                              |
-|                       |                                                                                        |
-|                       | BP_tot, BF_tot, BT_tot                                                                 |
-+-----------------------+----------------------------------------------------------------------------------------+
-| Fixed effects         | Temp_Water, pH, water_speed_ms, water_depth, Cond, wmo_prec, locality, site_type, year |
-+-----------------------+----------------------------------------------------------------------------------------+
-| Random effects        | Locality, site_irn, coll_date                                                          |
-+-----------------------+----------------------------------------------------------------------------------------+
-| offset                | duration                                                                               |
-+-----------------------+----------------------------------------------------------------------------------------+
-
-Technical tips:
-
--   start with lme4 (model checks are easier because of conditional simulations and the plotting option for residuals \~ random effects to identify random slopes (`plot(model, fitted(.)~sTemp_Water | coll_date))`)
--   check for underdispersion
--   check for temporal or spatial trends/autocorrelation
-:::
+4.  Optional: Fit a multivariate (joint) species distribution model
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution for total Abundance of *Bulinus* (glmm)
@@ -263,7 +241,10 @@ Technical tips:
 Prepare+scale data:
 
 ```{r}
-data = EcoData::snails 
+library(lme4)
+library(glmmTMB)
+library(DHARMa)
+data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
 data$swater_speed_ms = scale(data$water_speed_ms)
@@ -275,7 +256,7 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
 ```
@@ -285,11 +266,10 @@ data = data[rows, ]
 First model, glmm with `family = poisson`, random intercepts (site_irn nested within locality), and an offset:
 
 ```{r}
-
 model1 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
-                 (1|locality/site_irn) +  (1|coll_date), 
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) +  (1|coll_date),
               data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
 ```
@@ -310,7 +290,7 @@ Overdispersion can be caused by misfit.
 testDispersion(res, alternative = "greater")
 ```
 
-s.  
+s.
 
 Underdispersion:
 
@@ -329,9 +309,9 @@ plot(model1, resid(.) ~ swater_depth | coll_date, abline = 1)
 ```{r}
 
 model2 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH + 
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear + 
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
+                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
               data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
 summary(model2)
 simulateResiduals(model2, plot = TRUE, re.form = NULL)
@@ -345,7 +325,7 @@ Switch to negative binomial
 model3 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
               data = data,  family = nbinom2())
 summary(model3)
 plot(simulateResiduals(model3))
@@ -377,7 +357,7 @@ Use the `dispformula` to make the dispersion depend on the covariates:
 model4 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
                  dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear,
               data = data,  family = nbinom2)
@@ -425,7 +405,7 @@ model5 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
                  (1|locality/site_irn) + (spH + swater_depth||coll_date) +
-                 exp(0+numFac|group) + ar1(0+fmonth|site_irn), 
+                 exp(0+numFac|group) + ar1(0+fmonth|site_irn),
                  dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear,
               data = data,  family = nbinom2)
@@ -438,7 +418,7 @@ model5 = glmmTMB(Bulinus_tot~
 Prepare+scale data:
 
 ```{r}
-data = EcoData::snails 
+data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
 data$swater_speed_ms = scale(data$water_speed_ms)
@@ -450,19 +430,78 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
 ```
 
 ```{r}
-model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot)~
+model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~
                  site_type + sTemp_Water + seas_wmo+ spH + sCond +
                  swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date), 
+                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
               data = data,  family = binomial)
 summary(model1)
 plot(simulateResiduals(model1, res.form=NULL))
+```
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution of multivariate (joint) species distribution model
+
+```{r}
+library(tidyverse)
+data = EcoData::snails
+data$sTemp_Water = scale(data$Temp_Water)
+data$spH = scale(data$pH)
+data$swater_speed_ms = scale(data$water_speed_ms)
+data$swater_depth = scale(data$water_depth)
+data$sCond = scale(data$Cond)
+data$swmo_prec = scale(data$wmo_prec)
+data$syear = scale(data$year)
+data$sLat = scale(data$Latitude)
+data$sLon = scale(data$Longitude)
+
+# Let's remove NAs beforehand:
+rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+data = data[rows, ]
+
+data =
+  data %>% pivot_longer(cols = c("BP_tot", "BF_tot", "BT_tot"),
+                      names_to = "Species",
+                      values_to = "Abundance" )
+
+numFac = numFactor(data$sLat, data$sLon)
+group = factor(rep(1, nrow(data)))
+data$fmonth = as.factor(data$month)
+
+modelJoint = glmmTMB(Abundance ~ 0 +
+                 offset(log(duration)) + Species + Species:(site_type +
+                    sTemp_Water + seas_wmo+ spH + sCond + swmo_prec +
+                      swater_speed_ms + swater_depth + syear) +
+                    exp(0+numFac|group:Species) + ar1(0+fmonth|site_irn:Species) +
+                     (spH + swater_depth||coll_date:Species) +
+                 rr(Species + 0|locality:site_irn, d = 2), # Multivariate structure
+                 dispformula = ~0+Species+Species:(sTemp_Water + spH + syear),
+              data = data,  family = nbinom2())
+
+
+```
+
+Conditional residuals:
+
+```{r}
+pred = predict(modelJoint, re.form = NULL, type = "response")
+pred_dispersion = predict(modelJoint, re.form = NULL, type = "disp")
+simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
+res = createDHARMa(simulations, model.frame(modelJoint)[,1], pred)
+plot(res)
+```
+
+Unconditional residuals:
+
+```{r}
+plot(simulateResiduals(modelJoint))
 ```
 :::
 
@@ -477,29 +516,17 @@ library(tidyverse)
 ?EcoData::seedBank
 ```
 
-The dataset comes from a study from @rosbakh2022inferring and includes information about plant species, their vegetative and seed traits, environmental factors, and their ability to form natural seed banks.
+Look at the seedBank data set in the EcoData package, and find out which of the environmental variables, vegetative traits, and seed traits explain i) the density (SBDensity -\> lm) and the ii) presence-absence (SBPA -\> glm) of a seed bank.
 
-The objective of this dataset is to identify which traits and environmental factors are responsible if species can naturally produce a seed bank. The ability to form seed banks is encoded as presence-absence and as a density. Data was collected at 17 sites for 286 species. Here an overview about the data structure
+Tasks:
 
-+-----------------------+-----------------------------------------------------------------------------------+
-| Potential type        | Variables                                                                         |
-+=======================+===================================================================================+
-| Response              | SBPA, SBDensity                                                                   |
-+-----------------------+-----------------------------------------------------------------------------------+
-| Predictors            | Altitude, SeedMass, SeedShape, SeedN, SeedPr, DormRank, Temp, Hum, Nitro, Grazing |
-+-----------------------+-----------------------------------------------------------------------------------+
-| Random effects        | Site, species                                                                     |
-+-----------------------+-----------------------------------------------------------------------------------+
+1.  Fit a lm/lmm with SBDensity as response
 
-Note that predictors and REs are "potential predictors" - it is not necessarily optimal to use them all.
+2.  Add phylogenetic correlation structure
+
+3.  Fit a glm/glmm with SBPA as response and with phylogenetic correlation structure
 
 ::: {.callout-caution icon="false"}
-#### Exercise
-
-Which environmental factors and traits explain the density or occurrence of a seed bank? Decide in the beginning if you want to perform a predictive or a causal analysis, and build the model appropriately.
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution for SBDensity (lmm)
 
 Prepare+scale data:
@@ -518,16 +545,16 @@ data$sNitro = scale(data$Nitrogen)
 data$sGrazing = scale(data$Grazing)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
                                sGrazing + Site + Species, data = data))
 data = data[rows, ]
 ```
 
 ```{r}
 model1 = lmer(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (1|Species),
               data = data, control = lmerControl(optimizer = "bobyqa"))
 summary(model1)
@@ -550,8 +577,8 @@ Add random slope for sAltitude (but without a correlation between the two random
 ```{r}
 
 model2 = lmer(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
               data = data, control = lmerControl(optimizer = "bobyqa"))
 summary(model2)
@@ -575,16 +602,90 @@ plotResiduals(res, data$sSeedMass)
 
 ```{r}
 model3 = glmmTMB(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
-              dispformula = ~sAltitude + sSeedMass + sSeedShape,
+              dispformula = ~sAltitude + sSeedMass + sSeedShape +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing,
               data = data)
 summary(model3)
 plot(simulateResiduals(model3))
 ```
 
-Residuals look worse because they are unconditioned
+Residuals look worse but they are unconditioned
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution for SBDensity (lmm) with phylogenetic correlation structure
+
+Prepare phylogeny:
+
+```{r}
+library(ape)
+library(geiger)
+species = unique(data$Species)
+species_df = data.frame(Species = species)
+rownames(species_df) = species
+obj = name.check(plantPhylo, species_df)
+
+# drop rest of the species
+phyl.upd = drop.tip(plantPhylo, obj$tree_not_data)
+summary(phyl.upd)
+
+# check the names in the tree and in the data set
+name.check(phyl.upd, species_df)
+
+phyl.upd2 = multi2di(phyl.upd)
+```
+
+nlme:
+
+```{r}
+library(nlme)
+model4 = gls(log(SBDensity+1)~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing,
+             correlation = corBrownian(phy = phyl.upd2, form =~ Species),
+             data = data)
+summary(model4)
+
+```
+
+glmmTMB (not perfect because lack of support of specific phylogenetic correlation structures):
+
+```{r}
+dist_phylo = ape::cophenetic.phylo(phyl.upd2) # create distance matrix
+correlation_matrix = vcv(phyl.upd2)[unique(data$Species), unique(data$Species)]
+
+###
+#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd
+as.theta.vcov <- function(Sigma,corrs.only=FALSE) {
+    logsd <- log(diag(Sigma))/2
+    cr <- cov2cor(Sigma)
+    cc <- chol(cr)
+    cc <- cc %*% diag(1 / diag(cc))
+    corrs <- cc[upper.tri(cc)]
+    if (corrs.only) return(corrs)
+    ret <- c(logsd,corrs)
+    return(ret)
+}
+corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
+#####
+
+data$dummy = factor(rep(0, nrow(data)))
+nsp = length(unique(data$Species))
+model5 = glmmTMB(log(SBDensity+1)~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
+                (1|Site) + (0+sAltitude||Species) +
+                (1+Species|dummy),
+              dispformula = ~sAltitude + sSeedMass + sSeedShape,
+              map=list(theta=factor(c(0,0, rep(1,nsp),rep(NA,length(corrs))) )),
+              start=list(theta=c(0,0, rep(0,nsp),corrs)),
+              data = data)
+summary(model5)
+simulateResiduals(model5, plot = TRUE) # Unconditional simulations
+```
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -607,7 +708,7 @@ data$sGrazing = scale(data$Grazing)
 
 # Let's remove NAs beforehand:
 rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro + 
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
                                sGrazing + Site + Species, data = data))
 data = data[rows, ]
 
@@ -616,8 +717,8 @@ data = data[rows, ]
 ```{r}
 
 model1 = glmer(SBPA~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr + 
-                sDormRank + sAltitude + sHum + sNitro + sGrazing + 
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (sAltitude||Species),
               data = data, family = binomial(), control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
@@ -632,6 +733,50 @@ res = simulateResiduals(model1, re.form=NULL, plot=TRUE)
 ```
 
 Residuals look fine!
+
+**With phylogenetic correlation structure:**
+
+```{r}
+dist_phylo = ape::cophenetic.phylo(phyl.upd2) # create distance matrix
+correlation_matrix = vcv(phyl.upd2)[unique(data$Species), unique(data$Species)]
+
+###
+#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd
+as.theta.vcov <- function(Sigma,corrs.only=FALSE) {
+    logsd <- log(diag(Sigma))/2
+    cr <- cov2cor(Sigma)
+    cc <- chol(cr)
+    cc <- cc %*% diag(1 / diag(cc))
+    corrs <- cc[upper.tri(cc)]
+    if (corrs.only) return(corrs)
+    ret <- c(logsd,corrs)
+    return(ret)
+}
+corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
+#####
+
+data$dummy = factor(rep(0, nrow(data)))
+nsp = length(unique(data$Species))
+model6 = glmmTMB(SBPA~
+                sSeedMass + sSeedShape + sSeedN + sSeedPr +
+                sDormRank + sAltitude + sHum + sNitro + sGrazing +
+                (1|Site) + (0+sAltitude||Species) +
+                (1+Species|dummy),
+              map=list(theta=factor(c(0,0, rep(1,nsp),rep(NA,length(corrs))) )),
+              start=list(theta=c(0,0, rep(0,nsp),corrs)),
+              family = binomial,
+              data = data)
+simulateResiduals(model6, plot = TRUE)
+```
+
+Conditional simulations:
+
+```{r}
+pred = predict(model6, re.form = NULL, type = "response")
+simulations = sapply(1:1000, function(i) rbinom(length(pred),1, pred))
+res = createDHARMa(simulations, model.frame(model6)[,1], pred)
+plot(res)
+```
 :::
 
 ## Snouter

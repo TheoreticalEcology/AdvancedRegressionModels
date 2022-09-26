@@ -87,7 +87,7 @@ The test used in our example before is an F-test. The F-test is used for models 
 
 1.  H~0~ = M~0~ is true
 2.  Test statistic = likelihood ratio -2 \[MLE(M~0~)/MLE(H~1~)\]
-3.  Then, under relatively broad conditions, the test static will be chi^2^ distributed, with df = difference residual df (parameters) of the models M~1~, M~0~
+3.  Then, under relatively broad conditions, the test static will be chi-squared distributed, with df = difference residual df (parameters) of the models M~1~, M~0~
 
 This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:
 
@@ -209,7 +209,7 @@ m = lm(Ozone ~ as.factor(Day) , data = airquality)
 summary(aov(m))
 ```
 
-The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the `summary.lm()` function reports a raw and an adjusted R2 for each model. The adjusted R^2^ tries to correct the R^2^ for the complexity of the model.
+The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the `summary.lm()` function reports a raw and an adjusted R^2^ for each model. The adjusted R^2^ tries to correct the R^2^ for the complexity of the model.
 
 ```{r}
 summary(m)
