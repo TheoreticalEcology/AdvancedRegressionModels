@@ -38,8 +38,7 @@ book:
   appendices:
     - 6A-RCrashCourse.qmd
     - 6B-CheatSheet.qmd
-    - 6C-CaseStudySnails.qmd
-    - 6D-CaseStudySeedBank.qmd
+    - 6C-CaseStudies.qmd
   engine: knitr
   
 bibliography: literature.bib

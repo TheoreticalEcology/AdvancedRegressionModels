@@ -137,6 +137,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_publication_date=2014;,citation_journal_title=Implementing reproducible computational research;">
 <meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;,citation_publication_date=2018;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
+<meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -315,6 +317,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6C-CaseStudies.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Case studies</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -367,7 +374,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Modern explanation: ANOVA is not a statistical model, but a hypothesis test that can be performed on top of any regression model. What this test is doing is to measure how much model fit improves when a predictor is added, and if this improvement is significant.</p>
 <section id="an-example" class="level3" data-number="3.1.1">
 <h3 data-number="3.1.1" class="anchored" data-anchor-id="an-example"><span class="header-section-number">3.1.1</span> An example</h3>
-<p>As an example, here is a ANOVA (function aof(() performed on the fit of a linear model</p>
+<p>As an example, here is a ANOVA (function <code>aov()</code>) performed on the fit of a linear model</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -412,7 +419,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> <span class="fu">I</span>(Wind<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Temp <span class="sc">+</span> <span class="fu">I</span>(Temp<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Maybe, we would like to ask how much variance is explained by Wind + Wind^2, and how much by Temp + Temp^2. In this case, we can perform custom ANOVA, using the anova() function that we already introduced in the section on model selection via LRTs.</p>
+<p>Maybe, we would like to ask how much variance is explained by Wind + Wind^2, and how much by Temp + Temp^2. In this case, we can perform custom ANOVA, using the <code>anova()</code> function that we already introduced in the section on model selection via likelihood ratio tests (LRTs).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>m0 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> airquality)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> <span class="fu">I</span>(Wind<span class="sc">^</span><span class="dv">2</span>) , <span class="at">data =</span> airquality)</span>
@@ -447,23 +454,23 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <section id="measuring-model-fit" class="level3" data-number="3.2.1">
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="measuring-model-fit"><span class="header-section-number">3.2.1</span> Measuring model fit</h3>
 <p>The definition of model fit via sum of squares makes sense as long as we work with linear models.</p>
-<p>For GLMs, this definition doesn’t make sense any more. A number of so-called pseudo-R2 metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R2 for the linear model.</p>
-<p>A common metrics is McFadden pseudo-R2, which is defined as 1-[LogL(M)/LogL(M0))], where M is our model, and M0 is an intercept only model.</p>
+<p>For GLMs, this definition doesn’t make sense any more. A number of so-called pseudo-R<sup>2</sup> metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R<sup>2</sup> for the linear model.</p>
+<p>A common metrics is McFadden pseudo-R<sup>2</sup>, which is defined as 1-[LogL(M)/LogL(M<sub>0</sub>))], where M is our model, and M0 is an intercept only model.</p>
 </section>
 <section id="testing-if-the-improvement-is-significant" class="level3" data-number="3.2.2">
 <h3 data-number="3.2.2" class="anchored" data-anchor-id="testing-if-the-improvement-is-significant"><span class="header-section-number">3.2.2</span> Testing if the improvement is significant</h3>
 <p>The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT), which we already used in the chapter on model selection. An LRT can be used on two nested models, with M0 being the simpler model, and makes the following assumptions:</p>
 <ol type="1">
-<li>H0 = M0 is true</li>
-<li>Test statistic = likelihood ratio -2 [MLE(M0)/MLE(H1)]</li>
-<li>Then, under relatively broad conditions, the test static will be chi-2 distributed, with df = difference residual df (parameters) of the models M1, M0</li>
+<li>H<sub>0</sub> = M<sub>0</sub> is true</li>
+<li>Test statistic = likelihood ratio -2 [MLE(M<sub>0</sub>)/MLE(H<sub>1</sub>)]</li>
+<li>Then, under relatively broad conditions, the test static will be chi<sup>2</sup> distributed, with df = difference residual df (parameters) of the models M<sub>1</sub>, M<sub>0</sub></li>
 </ol>
 <p>This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:</p>
 <p>The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:</p>
 <ol type="1">
-<li>Simulate data from H0 (= the fitted model M0)</li>
-<li>Re-fit M0 and M1, and calculate likelihood ratios</li>
-<li>Repeat n times to get an idea about the expected increase in likelihood when moving to M1 under the assumption that M0 is correct</li>
+<li>Simulate data from H<sub>0</sub> (= the fitted model M<sub>0</sub>)</li>
+<li>Re-fit M<sub>0</sub> and M<sub>1</sub>, and calculate likelihood ratios</li>
+<li>Repeat n times to get an idea about the expected increase in likelihood when moving to M<sub>1</sub> under the assumption that M<sub>0</sub> is correct</li>
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -474,7 +481,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateLRT</span>(m0, m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2B-ANOVA_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="2B-ANOVA_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -578,44 +585,102 @@ Solution
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
+<p>Let’s use the model with Wind, Temp, Solar.R, and their interactions. Wind and Temp, and Solar.R and Temp are collinear.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">=</span> <span class="fu">runif</span>(<span class="dv">100</span>, <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">=</span> <span class="sc">-</span>x1 <span class="sc">+</span> <span class="fl">0.2</span><span class="sc">*</span><span class="fu">runif</span>(<span class="dv">100</span>, <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">*</span>x1 <span class="sc">+</span> <span class="dv">1</span><span class="sc">*</span>x2 <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x1, x2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.9832</code></pre>
+<pre><code>
+Call:
+lm(formula = Ozone ~ (Wind + Temp + Solar.R)^2, data = airquality)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-38.685 -11.727  -2.169   7.360  91.244 
+
+Coefficients:
+               Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)  -1.408e+02  6.419e+01  -2.193  0.03056 * 
+Wind          1.055e+01  4.290e+00   2.460  0.01555 * 
+Temp          2.322e+00  8.330e-01   2.788  0.00631 **
+Solar.R      -2.260e-01  2.107e-01  -1.073  0.28591   
+Wind:Temp    -1.613e-01  5.896e-02  -2.735  0.00733 **
+Wind:Solar.R -7.231e-03  6.688e-03  -1.081  0.28212   
+Temp:Solar.R  5.061e-03  2.445e-03   2.070  0.04089 * 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 19.17 on 104 degrees of freedom
+  (42 observations deleted due to missingness)
+Multiple R-squared:  0.6863,    Adjusted R-squared:  0.6682 
+F-statistic: 37.93 on 6 and 104 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Difference type I and II ANOVA:</strong></p>
+<div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>(Intercept)          x1 
-0.022436247 0.007218902 </code></pre>
+<pre><code>              Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+Wind           1  45694   45694 124.386  &lt; 2e-16 ***
+Temp           1  25119   25119  68.376 4.74e-13 ***
+Solar.R        1   2986    2986   8.129  0.00526 ** 
+Wind:Temp      1   7227    7227  19.673 2.29e-05 ***
+Wind:Solar.R   1    996     996   2.710  0.10271    
+Temp:Solar.R   1   1575    1575   4.287  0.04089 *  
+Residuals    104  38205     367                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+42 observations deleted due to missingness</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>(Intercept)          x2 
- 0.01553769  0.03552031 </code></pre>
+<pre><code>Anova Table (Type II tests)
+
+Response: Ozone
+             Sum Sq  Df F value    Pr(&gt;F)    
+Wind          11680   1 31.7934 1.483e-07 ***
+Temp          18996   1 51.7098 1.021e-10 ***
+Solar.R        3618   1  9.8497  0.002211 ** 
+Wind:Temp      2748   1  7.4810  0.007332 ** 
+Wind:Solar.R    429   1  1.1689  0.282122    
+Temp:Solar.R   1575   1  4.2867  0.040889 *  
+Residuals     38205 104                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x1, y, <span class="at">main =</span> <span class="st">"x1 effect"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">12</span>, <span class="dv">12</span>))</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x1))</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="fu">c</span>(<span class="st">"fitted"</span>, <span class="st">"true"</span>), <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>))</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x2, y, <span class="at">main =</span> <span class="st">"x2 effect"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">12</span>, <span class="dv">12</span>))</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x2))</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="fu">c</span>(<span class="st">"fitted"</span>, <span class="st">"true"</span>), <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="2B-ANOVA_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x1 <span class="sc">+</span> x2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Only the Temp:Solar.R interaction is not affected!</p>
+<p><strong>Difference type II and III ANOVA:</strong></p>
+<div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code> (Intercept)           x1           x2 
--0.007012398  1.278991069  1.276306619 </code></pre>
+<pre><code>Anova Table (Type II tests)
+
+Response: Ozone
+             Sum Sq  Df F value    Pr(&gt;F)    
+Wind          11680   1 31.7934 1.483e-07 ***
+Temp          18996   1 51.7098 1.021e-10 ***
+Solar.R        3618   1  9.8497  0.002211 ** 
+Wind:Temp      2748   1  7.4810  0.007332 ** 
+Wind:Solar.R    429   1  1.1689  0.282122    
+Temp:Solar.R   1575   1  4.2867  0.040889 *  
+Residuals     38205 104                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Anova Table (Type III tests)
+
+Response: Ozone
+             Sum Sq  Df F value   Pr(&gt;F)   
+(Intercept)    1766   1  4.8080 0.030557 * 
+Wind           2223   1  6.0508 0.015549 * 
+Temp           2855   1  7.7719 0.006310 **
+Solar.R         423   1  1.1506 0.285908   
+Wind:Temp      2748   1  7.4810 0.007332 **
+Wind:Solar.R    429   1  1.1689 0.282122   
+Temp:Solar.R   1575   1  4.2867 0.040889 * 
+Residuals     38205 104                    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p><em>Both effects cancel out</em>.</p>
+<p>Only the main effects are now affected, the interactions remain the same.</p>
 </div>
 </div>
 </div>
@@ -624,8 +689,8 @@ Solution
 <h3 data-number="3.2.4" class="anchored" data-anchor-id="correcting-partitions-for-complexity"><span class="header-section-number">3.2.4</span> Correcting partitions for complexity</h3>
 <p>A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">as.factor</span>(Day) , <span class="at">data =</span> airquality)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(m))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">as.factor</span>(Day) , <span class="at">data =</span> airquality)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(m))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               Df Sum Sq Mean Sq F value Pr(&gt;F)
 as.factor(Day) 30  41931    1398   1.428  0.104
@@ -633,9 +698,9 @@ Residuals      85  83212     979
 37 observations deleted due to missingness</code></pre>
 </div>
 </div>
-<p>The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the summary.lm() function reports a raw and an adjusted R2 for each model. The adjusted R2 tries to correct the R2 for the complexity of the model.</p>
+<p>The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the <code>summary.lm()</code> function reports a raw and an adjusted R2 for each model. The adjusted R<sup>2</sup> tries to correct the R<sup>2</sup> for the complexity of the model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -687,11 +752,11 @@ Multiple R-squared:  0.3351,    Adjusted R-squared:  0.1004
 F-statistic: 1.428 on 30 and 85 DF,  p-value: 0.1039</code></pre>
 </div>
 </div>
-<p>Here, we see that the adjusted R2 is considerably lower than the raw R2, even though not zero.</p>
-<p>In general, reliably adjusting R2 components for complexity in an ANOVA is very complicated. I would recommend that</p>
+<p>Here, we see that the adjusted R<sup>2</sup> is considerably lower than the raw R<sup>2</sup>, even though not zero.</p>
+<p>In general, reliably adjusting R<sup>2</sup> components for complexity in an ANOVA is very complicated. I would recommend that</p>
 <ul>
 <li><p>If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance</p></li>
-<li><p>Alternatively, if the true variance is really crucial for your study, you can adjust R2 by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H0, this will be a conservative estimate.</p></li>
+<li><p>Alternatively, if the true variance is really crucial for your study, you can adjust R<sup>2</sup> by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H<sub>0</sub>, this will be a conservative estimate.</p></li>
 </ul>
 
 

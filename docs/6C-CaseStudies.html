@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Advanced Regression Models with R - Appendix C — Case studies</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./6B-CheatSheet.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<meta name="citation_title" content="Appendix C — Case studies">
+<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//6C-CaseStudies.html">
+<meta name="citation_journal_title" content="undefined">
+<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;">
+<meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_journal_title=Vignette for lme4;">
+<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_fulltext_html_url=https://www.R-project.org/;,citation_publication_date=2021;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;,citation_publication_date=2016;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2015;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_publication_date=2014;,citation_journal_title=Implementing reproducible computational research;">
+<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;,citation_publication_date=2018;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
+<meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
+<meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Appendix C — Case studies</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Advanced Regression Models with R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="" title="Share" id="sidebar-tool-dropdown-0" class="sidebar-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-share"></i></a>
+    <ul class="dropdown-menu" aria-labelledby="sidebar-tool-dropdown-0">
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+            <i class="bi bi-bi-twitter pe-1"></i>
+          Twitter
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+            <i class="bi bi-bi-facebook pe-1"></i>
+          Facebook
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+            <i class="bi bi-bi-linkedin pe-1"></i>
+          LinkedIn
+          </a>
+        </li>
+    </ul>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1A-GettingStarted.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Modelling the mean</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2A-LinearRegression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Linear Regression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2C-RandomEffects.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear mixed models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Model Choice</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3A-MissingData.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Missing data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3B-CausalInference.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Causal inference</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3C-ModelSelection.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Model selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">Modelling the distribution</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4A-GLMs.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">GL(M)Ms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4B-Heteroskedasticity.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Dispersion models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4C-CorrelationStructures.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Correlation structures</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">Summary and references</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5B-References.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">Appendices</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6A-RCrashCourse.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">A crashcourse in R</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6C-CaseStudies.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Case studies</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#hurricanes" id="toc-hurricanes" class="nav-link active" data-scroll-target="#hurricanes"> <span class="header-section-number">C.1</span> Hurricanes</a></li>
+  <li><a href="#researchers-degrees-of-freedom-skin-color-and-red-cards" id="toc-researchers-degrees-of-freedom-skin-color-and-red-cards" class="nav-link" data-scroll-target="#researchers-degrees-of-freedom-skin-color-and-red-cards"> <span class="header-section-number">C.2</span> Researchers Degrees of Freedom — Skin Color and Red Cards</a></li>
+  <li><a href="#scouting-ants" id="toc-scouting-ants" class="nav-link" data-scroll-target="#scouting-ants"> <span class="header-section-number">C.3</span> Scouting Ants</a></li>
+  <li><a href="#owls" id="toc-owls" class="nav-link" data-scroll-target="#owls"> <span class="header-section-number">C.4</span> Owls</a></li>
+  <li><a href="#snails" id="toc-snails" class="nav-link" data-scroll-target="#snails"> <span class="header-section-number">C.5</span> Snails</a></li>
+  <li><a href="#seed-bank" id="toc-seed-bank" class="nav-link" data-scroll-target="#seed-bank"> <span class="header-section-number">C.6</span> Seed bank</a></li>
+  <li><a href="#snouter" id="toc-snouter" class="nav-link" data-scroll-target="#snouter"> <span class="header-section-number">C.7</span> Snouter</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6C-CaseStudies.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Appendix C — Case studies</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>General strategy for analysis:</p>
+<ol type="1">
+<li>Define formula via scientific questions + confounders.</li>
+<li>Define type of GLM (lm, logistic, Poisson).</li>
+<li>Blocks in data -&gt; Random effects, start with random intercept.</li>
+</ol>
+<p>Fit this base model, then do residual checks for</p>
+<ul>
+<li>Wrong functional form -&gt; Change fitted function.</li>
+<li>Wrong distribution-&gt; Transformation or GLM adjustment.</li>
+<li>(Over)dispersion -&gt; Variable dispersion GLM.</li>
+<li>Heteroskedasticity -&gt; Model dispersion.</li>
+<li>Zero-inflation -&gt; Add ZIP term.</li>
+<li>…</li>
+</ul>
+<p>And adjust the model accordingly.</p>
+<section id="hurricanes" class="level2" data-number="C.1">
+<h2 data-number="C.1" class="anchored" data-anchor-id="hurricanes"><span class="header-section-number">C.1</span> Hurricanes</h2>
+<p>In <a href="https://www.pnas.org/content/111/24/8782" target="_blank" rel="noopener">https://www.pnas.org/content/111/24/8782</a>, Jung et al.&nbsp;claim that “Female hurricanes are deadlier than male hurricanes”.</p>
+<p>Specifically, they analyze the number of hurricane fatalities, and claim that there is an effect of the femininity of the name on the number of fatalities, correcting for several possible confounders. They interpret the result as causal (including mediators), claiming that giving only male names to hurricanes would considerably reduce death toll.</p>
+<p>The data is available in <code class="sourceCode r">DHARMa</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(hurricanes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Classes 'tbl_df', 'tbl' and 'data.frame':   92 obs. of  14 variables:
+ $ Year                    : num  1950 1950 1952 1953 1953 ...
+ $ Name                    : chr  "Easy" "King" "Able" "Barbara" ...
+ $ MasFem                  : num  6.78 1.39 3.83 9.83 8.33 ...
+ $ MinPressure_before      : num  958 955 985 987 985 960 954 938 962 987 ...
+ $ Minpressure_Updated_2014: num  960 955 985 987 985 960 954 938 962 987 ...
+ $ Gender_MF               : num  1 0 0 1 1 1 1 1 1 1 ...
+ $ Category                : num  3 3 1 1 1 3 3 4 3 1 ...
+ $ alldeaths               : num  2 4 3 1 0 60 20 20 0 200 ...
+ $ NDAM                    : num  1590 5350 150 58 15 ...
+ $ Elapsed_Yrs             : num  63 63 61 60 60 59 59 59 58 58 ...
+ $ Source                  : chr  "MWR" "MWR" "MWR" "MWR" ...
+ $ ZMasFem                 : num  -0.000935 -1.670758 -0.913313 0.945871 0.481075 ...
+ $ ZMinPressure_A          : num  -0.356 -0.511 1.038 1.141 1.038 ...
+ $ ZNDAM                   : num  -0.439 -0.148 -0.55 -0.558 -0.561 ...</code></pre>
+</div>
+</div>
+<p>Some plots:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hurricanes<span class="sc">$</span>MasFem, hurricanes<span class="sc">$</span>NDAM, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">pch =</span> <span class="dv">5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(hurricanes<span class="sc">$</span>MasFem, hurricanes<span class="sc">$</span>NDAM, <span class="at">cex =</span> hurricanes<span class="sc">$</span>alldeaths<span class="sc">/</span><span class="dv">20</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">col=</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The original model from the paper fits a negative binomial, using <code>mgcv</code>.{R}.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">gam</span>(alldeaths <span class="sc">~</span> MasFem <span class="sc">*</span> (Minpressure_Updated_2014 <span class="sc">+</span> NDAM), </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> hurricanes, <span class="at">family =</span> nb, <span class="at">na.action =</span> <span class="st">"na.fail"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: Negative Binomial(0.736) 
+Link function: log 
+
+Formula:
+alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM)
+
+Parametric coefficients:
+                                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                      7.014e+01  2.003e+01   3.502 0.000462 ***
+MasFem                          -5.986e+00  2.529e+00  -2.367 0.017927 *  
+Minpressure_Updated_2014        -7.008e-02  2.060e-02  -3.402 0.000669 ***
+NDAM                            -3.845e-05  2.945e-05  -1.305 0.191735    
+MasFem:Minpressure_Updated_2014  6.124e-03  2.603e-03   2.352 0.018656 *  
+MasFem:NDAM                      1.593e-05  3.756e-06   4.242 2.21e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+R-sq.(adj) =  -3.61e+03   Deviance explained = 57.4%
+-REML = 357.56  Scale est. = 1         n = 92</code></pre>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Danger
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tasks:</p>
+<ul>
+<li>Confirm that you get the same results as in the paper.</li>
+<li>Have a look at the ?hurricanes to see a residual analysis of the model in the paper</li>
+<li>Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?</li>
+</ul>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>?hurricanes</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># this is the model fit by Jung et al., fith with glmmTMB</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> MasFem<span class="sc">*</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                             (Minpressure_Updated_2014 <span class="sc">+</span> <span class="fu">scale</span>(NDAM)),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          alldeaths ~ MasFem * (Minpressure_Updated_2014 + scale(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                 Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                     69.661590  23.425598   2.974 0.002942 ** 
+MasFem                          -5.855078   2.716589  -2.155 0.031138 *  
+Minpressure_Updated_2014        -0.069870   0.024251  -2.881 0.003964 ** 
+scale(NDAM)                     -0.494094   0.455968  -1.084 0.278536    
+MasFem:Minpressure_Updated_2014  0.006108   0.002813   2.171 0.029901 *  
+MasFem:scale(NDAM)               0.205418   0.061956   3.316 0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note that in the code that I gave you not all predictors were scaled,</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># but for looking at the main effect we should scale </span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> <span class="fu">scale</span>(NDAM)),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    scale(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                              Estimate Std. Error z value
+(Intercept)                                     2.5034     0.1231  20.341
+scale(MasFem)                                   0.1237     0.1210   1.022
+scale(Minpressure_Updated_2014)                -0.5425     0.1603  -3.384
+scale(NDAM)                                     0.8988     0.2190   4.105
+scale(MasFem):scale(Minpressure_Updated_2014)   0.3758     0.1731   2.171
+scale(MasFem):scale(NDAM)                       0.6629     0.1999   3.316
+                                              Pr(&gt;|z|)    
+(Intercept)                                    &lt; 2e-16 ***
+scale(MasFem)                                 0.306923    
+scale(Minpressure_Updated_2014)               0.000715 ***
+scale(NDAM)                                   4.05e-05 ***
+scale(MasFem):scale(Minpressure_Updated_2014) 0.029901 *  
+scale(MasFem):scale(NDAM)                     0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># now main effect is n.s.; it's a bit dodgy, but if you read in the main paper</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># they actually argue mainly via ANOVA and significance at high values of NDAM</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                                                Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)                                  1.9495  1  0.1626364    
+scale(Minpressure_Updated_2014)                7.1285  1  0.0075868 ** 
+scale(NDAM)                                   14.6100  1  0.0001322 ***
+scale(MasFem):scale(Minpressure_Updated_2014)  4.7150  1  0.0299011 *  
+scale(MasFem):scale(NDAM)                     10.9929  1  0.0009146 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># in the ANOVA we see that MasFem still n.s. but interactions, and if you </span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># would calculate effect of MasFem at high NDAM, it is significnat. Something</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># like that is argued in the paper. We can emulate this by changing </span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># NDAM centering to high NDAM</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>hurricanes<span class="sc">$</span>highcenteredNDAM <span class="ot">=</span> hurricanes<span class="sc">$</span>NDAM <span class="sc">-</span> <span class="fu">max</span>(hurricanes<span class="sc">$</span>NDAM)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>originalModelGAM <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> highcenteredNDAM),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(originalModelGAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    highcenteredNDAM)
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   660.7    678.4   -323.4    646.7       85 
+
+
+Dispersion parameter for nbinom2 family (): 0.787 
+
+Conditional model:
+                                                Estimate Std. Error z value
+(Intercept)                                    7.210e+00  1.149e+00   6.275
+scale(MasFem)                                  3.595e+00  1.041e+00   3.455
+scale(Minpressure_Updated_2014)               -5.425e-01  1.603e-01  -3.384
+highcenteredNDAM                               6.949e-05  1.693e-05   4.105
+scale(MasFem):scale(Minpressure_Updated_2014)  3.758e-01  1.731e-01   2.171
+scale(MasFem):highcenteredNDAM                 5.125e-05  1.546e-05   3.316
+                                              Pr(&gt;|z|)    
+(Intercept)                                   3.50e-10 ***
+scale(MasFem)                                 0.000551 ***
+scale(Minpressure_Updated_2014)               0.000715 ***
+highcenteredNDAM                              4.05e-05 ***
+scale(MasFem):scale(Minpressure_Updated_2014) 0.029904 *  
+scale(MasFem):highcenteredNDAM                0.000915 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OK, let's look at the residuals</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># no significant deviation in the general DHARMa plot</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(originalModelGAM)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># but residuals ~ NDAM looks funny, which was pointed </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># out by Bob O'Hara in a blog post after publication of the paper</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># correcting with a sqrt effect</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>correctedModel <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">*</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                             (<span class="fu">scale</span>(Minpressure_Updated_2014) <span class="sc">+</span> <span class="fu">scale</span>(NDAM) <span class="sc">+</span> <span class="fu">sqrt</span>(NDAM)),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(correctedModel, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-2-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(correctedModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) * (scale(Minpressure_Updated_2014) +  
+    scale(NDAM) + sqrt(NDAM))
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   634.9    657.6   -308.4    616.9       83 
+
+
+Dispersion parameter for nbinom2 family (): 1.12 
+
+Conditional model:
+                                               Estimate Std. Error z value
+(Intercept)                                    0.050105   0.416199   0.120
+scale(MasFem)                                 -0.292769   0.421372  -0.695
+scale(Minpressure_Updated_2014)               -0.142669   0.178176  -0.801
+scale(NDAM)                                   -1.111040   0.282769  -3.929
+sqrt(NDAM)                                     0.035901   0.006239   5.754
+scale(MasFem):scale(Minpressure_Updated_2014)  0.073706   0.196301   0.375
+scale(MasFem):scale(NDAM)                     -0.101584   0.273675  -0.371
+scale(MasFem):sqrt(NDAM)                       0.005614   0.006257   0.897
+                                              Pr(&gt;|z|)    
+(Intercept)                                      0.904    
+scale(MasFem)                                    0.487    
+scale(Minpressure_Updated_2014)                  0.423    
+scale(NDAM)                                   8.52e-05 ***
+sqrt(NDAM)                                    8.70e-09 ***
+scale(MasFem):scale(Minpressure_Updated_2014)    0.707    
+scale(MasFem):scale(NDAM)                        0.711    
+scale(MasFem):sqrt(NDAM)                         0.370    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(correctedModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                                                Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)                                  0.7138  1     0.3982    
+scale(Minpressure_Updated_2014)                0.5365  1     0.4639    
+scale(NDAM)                                   15.6461  1  7.637e-05 ***
+sqrt(NDAM)                                    41.4613  1  1.202e-10 ***
+scale(MasFem):scale(Minpressure_Updated_2014)  0.1410  1     0.7073    
+scale(MasFem):scale(NDAM)                      0.1378  1     0.7105    
+scale(MasFem):sqrt(NDAM)                       0.8051  1     0.3696    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># all gone, only Damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Moreover, question why they fitted this weird interactions in the first place. A initial model based on a causa analysis could be:</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>newModel <span class="ot">=</span> <span class="fu">glmmTMB</span>(alldeaths <span class="sc">~</span> <span class="fu">scale</span>(MasFem) <span class="sc">+</span> Minpressure_Updated_2014 </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                           <span class="sc">+</span> NDAM <span class="sc">+</span> <span class="fu">sqrt</span>(NDAM) <span class="sc">+</span> Year,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> hurricanes, <span class="at">family =</span> nbinom2)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(newModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+alldeaths ~ scale(MasFem) + Minpressure_Updated_2014 + NDAM +  
+    sqrt(NDAM) + Year
+Data: hurricanes
+
+     AIC      BIC   logLik deviance df.resid 
+   633.4    651.0   -309.7    619.4       85 
+
+
+Dispersion parameter for nbinom2 family (): 1.08 
+
+Conditional model:
+                           Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)              -2.666e+00  1.506e+01  -0.177    0.860    
+scale(MasFem)             1.008e-01  1.207e-01   0.835    0.404    
+Minpressure_Updated_2014 -2.431e-03  6.794e-03  -0.358    0.721    
+NDAM                     -9.132e-05  2.163e-05  -4.222 2.42e-05 ***
+sqrt(NDAM)                3.838e-02  5.567e-03   6.894 5.44e-12 ***
+Year                      2.812e-03  6.398e-03   0.440    0.660    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(newModel) <span class="co"># nothing regarding MasFem</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: alldeaths
+                           Chisq Df Pr(&gt;Chisq)    
+scale(MasFem)             0.6973  1     0.4037    
+Minpressure_Updated_2014  0.1280  1     0.7205    
+NDAM                     17.8262  1   2.42e-05 ***
+sqrt(NDAM)               47.5217  1   5.44e-12 ***
+Year                      0.1932  1     0.6603    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="researchers-degrees-of-freedom-skin-color-and-red-cards" class="level2" data-number="C.2">
+<h2 data-number="C.2" class="anchored" data-anchor-id="researchers-degrees-of-freedom-skin-color-and-red-cards"><span class="header-section-number">C.2</span> Researchers Degrees of Freedom — Skin Color and Red Cards</h2>
+<p>In 2018 Silberzahn et al.&nbsp;published a “meta analysis” in <em>Advances in Methods and Practices in Psychological Science</em>, where they had provided 29 teams with the same data set to answer one research question: “<em>[W]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees</em>”.</p>
+<p><strong>Spoiler</strong>: They found that the “[a]nalytic approaches varied widely across the teams, and the estimated effect sizes ranged from 0.89 to 2.93 (Mdn = 1.31) in odds-ratio units”, highlighting that different approaches in data analysis can yield significant variation in the results.</p>
+<p>You can find the paper “Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results” at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.</p>
+<p>Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis.</p>
+<ul>
+<li><p>Download the data file “CrowdstormingDataJuly1st.csv” here: <a href="https://osf.io/fv8c3/" target="_blank" rel="noopener">https://osf.io/fv8c3/</a>.</p></li>
+<li><p>Variable explanations are provided in the README: <a href="https://osf.io/9yh4x/" target="_blank" rel="noopener">https://osf.io/9yh4x/</a>.</p></li>
+<li><p>Analyze the data. Given the research question, the selected variables are:</p>
+<ol type="1">
+<li>Response variable: ‘redCards’ (+‘yellowReds’?).</li>
+<li>Multiple variables, potentially accounting for confounding, offsetting, grouping, … are included in the data.</li>
+<li>primary predictors: ‘rater1’, ‘rater2’</li>
+</ol>
+<ul>
+<li>These variables reflect ratings of “two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin.</li>
+<li>Make sure that ‘rater1’ and ‘rater2’ are rescaled to the range 0 … 1 as described in the paper (“This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.”)</li>
+</ul></li>
+<li><p>Research the concept of <strong>odd ratios</strong> and convert your effect estimate into this format. Are your results within the range of estimates from the 29 teams in Silberzahn et al.&nbsp;(2018)?</p></li>
+<li><p>Have a look at the other modelling teams. Do you understand the models they fit?</p></li>
+</ul>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+</div>
+</section>
+<section id="scouting-ants" class="level2" data-number="C.3">
+<h2 data-number="C.3" class="anchored" data-anchor-id="scouting-ants"><span class="header-section-number">C.3</span> Scouting Ants</h2>
+<p>Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting Ants in Lasius Niger.</p>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+</div>
+</section>
+<section id="owls" class="level2" data-number="C.4">
+<h2 data-number="C.4" class="anchored" data-anchor-id="owls"><span class="header-section-number">C.4</span> Owls</h2>
+<p>Look at the Owl data set in the <code>glmmTMB</code> package. The initial hypothesis is</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(SiblingNegotiation <span class="sc">~</span> FoodTreatment<span class="sc">*</span>SexParent <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(BroodSize)),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> Owls , <span class="at">family =</span> poisson)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tasks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The offset is a special command that can be used in all regression models. It means that we include an effect with effect size 1.</p>
+<p>The offset has a special importance in models with a log link function, because with these models, we have y = exp(x …), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) * exp(log(BroodSize)) = y = exp(x) * BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.</p>
+<p>Now, try to improve the model with everything we have discussed so far.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> glmmTMB<span class="sc">::</span><span class="fu">glmmTMB</span>(SiblingNegotiation <span class="sc">~</span> FoodTreatment <span class="sc">*</span> SexParent </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Nest) <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(BroodSize)), <span class="at">data =</span> Owls , <span class="at">family =</span> nbinom1,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">dispformula =</span> <span class="sc">~</span> FoodTreatment <span class="sc">+</span> SexParent,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ziformula =</span> <span class="sc">~</span> FoodTreatment <span class="sc">+</span> SexParent)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom1  ( log )
+Formula:          
+SiblingNegotiation ~ FoodTreatment * SexParent + (1 | Nest) +  
+    offset(log(BroodSize))
+Zero inflation:                      ~FoodTreatment + SexParent
+Dispersion:                          ~FoodTreatment + SexParent
+Data: Owls
+
+     AIC      BIC   logLik deviance df.resid 
+  3354.6   3402.9  -1666.3   3332.6      588 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance Std.Dev.
+ Nest   (Intercept) 0.0876   0.296   
+Number of obs: 599, groups:  Nest, 27
+
+Conditional model:
+                                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          0.80028    0.09736   8.220  &lt; 2e-16 ***
+FoodTreatmentSatiated               -0.46893    0.16760  -2.798  0.00514 ** 
+SexParentMale                       -0.09127    0.09247  -0.987  0.32363    
+FoodTreatmentSatiated:SexParentMale  0.13087    0.19028   0.688  0.49158    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Zero-inflation model:
+                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)            -1.9132     0.3269  -5.853 4.84e-09 ***
+FoodTreatmentSatiated   1.0564     0.4072   2.594  0.00948 ** 
+SexParentMale          -0.4688     0.3659  -1.281  0.20012    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Dispersion model:
+                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)             1.2122     0.2214   5.475 4.37e-08 ***
+FoodTreatmentSatiated   0.7978     0.2732   2.920   0.0035 ** 
+SexParentMale          -0.1540     0.2399  -0.642   0.5209    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 0.78311, p-value = 0.104
+alternative hypothesis: two.sided</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_4-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa zero-inflation test via comparison to expected zeros with
+    simulation under H0 = fitted model
+
+data:  simulationOutput
+ratioObsSim = 1.0465, p-value = 0.608
+alternative hypothesis: two.sided</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="snails" class="level2" data-number="C.5">
+<h2 data-number="C.5" class="anchored" data-anchor-id="snails"><span class="header-section-number">C.5</span> Snails</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>?EcoData<span class="sc">::</span>snails</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The dataset comes from a study from <span class="citation" data-cites="rabone2019freshwater">Rabone et al. (<a href="5B-References.html#ref-rabone2019freshwater" role="doc-biblioref">2019</a>)</span> and includes information about the distribution of three snail species (healthy and infected) in the Niger River Valley. Freshwater snails are known to be intermediate hosts of schistosomiasis (a parasit).</p>
+<p>The objective of <span class="citation" data-cites="rabone2019freshwater">Rabone et al. (<a href="5B-References.html#ref-rabone2019freshwater" role="doc-biblioref">2019</a>)</span> was to model the total abundance of the snail species as well as the proporation of the infected individuals. The hypothesis is that the total abundance and the infection depends on environmental and on seasonal factors. Data were collected at 92 (20 localities) sites over a 6-year period (2011-2016).</p>
+<div class="callout-caution callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="citation" data-cites="rabone2019freshwater">Rabone et al. (<a href="5B-References.html#ref-rabone2019freshwater" role="doc-biblioref">2019</a>)</span> found differences for the species. Start with one species (total abundance + infection rate) and if you have time, go for other species.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Effects</th>
+<th>Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Response</td>
+<td>Bulinus_tot, BP_tot, BF_tot, BT_tot total</td>
+</tr>
+<tr class="even">
+<td>Fixed effects</td>
+<td>Temp_Water, pH, water_speed_ms, water_depth, Cond, wmo_prec, locality, site_type, year</td>
+</tr>
+<tr class="odd">
+<td>Random effects</td>
+<td>Locality, site_irn, coll_date</td>
+</tr>
+<tr class="even">
+<td>offset</td>
+<td>duration</td>
+</tr>
+</tbody>
+</table>
+<p>Technical tips:</p>
+<ul>
+<li>start with lme4 (model checks are easier because of conditional simulations and the plotting option for residuals ~ random effects to identify random slopes (<code>plot(model, fitted(.)~sTemp_Water | coll_date))</code>)</li>
+<li>check for underdispersion</li>
+<li>check for temporal or spatial trends/autocorrelation</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution for total Abundance of <em>Bulinus</em> (glmm)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Prepare+scale data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> EcoData<span class="sc">::</span>snails </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp_Water <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp_Water)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>spH <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>pH)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_speed_ms <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_speed_ms)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_depth <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_depth)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sCond <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Cond)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swmo_prec <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>wmo_prec)</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>syear <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>year)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Latitude)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLon <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Longitude)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sTemp_Water <span class="sc">+</span> spH <span class="sc">+</span> sLat <span class="sc">+</span> sLon <span class="sc">+</span> sCond <span class="sc">+</span> seas_wmo<span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span> duration <span class="sc">+</span> locality <span class="sc">+</span> site_irn <span class="sc">+</span> coll_date, <span class="at">data =</span> data))</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><strong>Poisson-glmm</strong></li>
+</ol>
+<p>First model, glmm with <code>family = poisson</code>, random intercepts (site_irn nested within locality), and an offset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(Bulinus_tot<span class="sc">~</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">offset</span>(<span class="fu">log</span>(duration)) <span class="sc">+</span> site_type  <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                 sCond <span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span> </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span>  (<span class="dv">1</span><span class="sc">|</span>coll_date), </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> poisson, <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: poisson  ( log )
+Formula: Bulinus_tot ~ offset(log(duration)) + site_type + sTemp_Water +  
+    seas_wmo + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +  
+    syear + (1 | locality/site_irn) + (1 | coll_date)
+   Data: data
+Control: glmerControl(optimizer = "bobyqa")
+
+     AIC      BIC   logLik deviance df.resid 
+ 56833.4  56934.8 -28398.7  56797.4     2057 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-11.513  -2.700  -1.196   1.149  44.502 
+
+Random effects:
+ Groups            Name        Variance Std.Dev.
+ coll_date         (Intercept) 1.5679   1.2522  
+ site_irn:locality (Intercept) 0.6495   0.8059  
+ locality          (Intercept) 0.8137   0.9020  
+Number of obs: 2075, groups:  
+coll_date, 191; site_irn:locality, 89; locality, 20
+
+Fixed effects:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -1.031722   0.309724  -3.331 0.000865 ***
+site_typecanal.3  -0.205266   0.226317  -0.907 0.364416    
+site_typepond      0.156691   0.393708   0.398 0.690640    
+site_typerice.p   -0.786923   0.326437  -2.411 0.015924 *  
+site_typeriver    -0.641742   0.404540  -1.586 0.112659    
+site_typerivulet  -0.509072   0.533378  -0.954 0.339866    
+site_typespillway -0.468021   0.532693  -0.879 0.379621    
+sTemp_Water       -0.225161   0.015431 -14.591  &lt; 2e-16 ***
+seas_wmowet        0.059272   0.193757   0.306 0.759675    
+spH               -0.005891   0.008319  -0.708 0.478830    
+sCond              0.006585   0.008171   0.806 0.420295    
+swmo_prec         -0.181568   0.094092  -1.930 0.053646 .  
+swater_speed_ms   -0.143699   0.008596 -16.717  &lt; 2e-16 ***
+swater_depth      -0.156496   0.007412 -21.113  &lt; 2e-16 ***
+syear             -0.387073   0.088448  -4.376 1.21e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Correlation matrix not shown by default, as p = 15 &gt; 12.
+Use print(x, correlation=TRUE)  or
+    vcov(x)        if you need it</code></pre>
+</div>
+</div>
+<p><strong>Residual checks:</strong></p>
+<p>Check residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Does not look great -&gt; dispersion problems:</p>
+<p>Overdispersion can be caused by misfit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 1.8006, p-value &lt; 2.2e-16
+alternative hypothesis: greater</code></pre>
+</div>
+</div>
+<ol start="19" type="a">
+<li></li>
+</ol>
+<p>Underdispersion:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res, <span class="at">alternative =</span> <span class="st">"less"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 1.8006, p-value = 1
+alternative hypothesis: less</code></pre>
+</div>
+</div>
+<p>n.s</p>
+<p>Check for missing random slopes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1, <span class="fu">resid</span>(.) <span class="sc">~</span> swater_depth <span class="sc">|</span> coll_date, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">glmer</span>(Bulinus_tot<span class="sc">~</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">offset</span>(<span class="fu">log</span>(duration)) <span class="sc">+</span> site_type  <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>                 sCond <span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span> </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span>  (spH <span class="sc">+</span> swater_depth<span class="sc">||</span>coll_date), </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> poisson, <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: poisson  ( log )
+Formula: Bulinus_tot ~ offset(log(duration)) + site_type + sTemp_Water +  
+    seas_wmo + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +  
+    syear + (1 | locality/site_irn) + (spH + swater_depth ||      coll_date)
+   Data: data
+Control: glmerControl(optimizer = "bobyqa")
+
+     AIC      BIC   logLik deviance df.resid 
+ 42412.7  42525.5 -21186.4  42372.7     2055 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-12.197  -2.165  -0.788   1.219  45.007 
+
+Random effects:
+ Groups            Name         Variance Std.Dev.
+ coll_date         swater_depth 1.4706   1.2127  
+ coll_date.1       spH          7.8308   2.7983  
+ coll_date.2       (Intercept)  3.9798   1.9949  
+ site_irn.locality (Intercept)  0.8631   0.9291  
+ locality          (Intercept)  0.4697   0.6853  
+Number of obs: 2075, groups:  
+coll_date, 191; site_irn:locality, 89; locality, 20
+
+Fixed effects:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -0.99499    0.34753  -2.863  0.00420 ** 
+site_typecanal.3  -0.24008    0.25951  -0.925  0.35489    
+site_typepond      0.18659    0.43541   0.429  0.66826    
+site_typerice.p   -1.11452    0.37660  -2.959  0.00308 ** 
+site_typeriver    -0.65118    0.44214  -1.473  0.14081    
+site_typerivulet  -0.73440    0.55938  -1.313  0.18922    
+site_typespillway -0.74758    0.60473  -1.236  0.21638    
+sTemp_Water       -0.03676    0.02019  -1.820  0.06874 .  
+seas_wmowet       -0.61860    0.31529  -1.962  0.04976 *  
+spH               -0.39659    0.20874  -1.900  0.05745 .  
+sCond             -0.01242    0.01082  -1.148  0.25111    
+swmo_prec         -0.12174    0.15226  -0.800  0.42396    
+swater_speed_ms   -0.20337    0.01090 -18.666  &lt; 2e-16 ***
+swater_depth      -0.24271    0.09212  -2.635  0.00842 ** 
+syear             -0.42128    0.14418  -2.922  0.00348 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Correlation matrix not shown by default, as p = 15 &gt; 12.
+Use print(x, correlation=TRUE)  or
+    vcov(x)        if you need it</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model2, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
+ 
+Scaled residual values: 0.1909211 0.03589286 0 1 0.4019977 0.6602687 0.03064584 0.1053231 0.9775134 0.09230707 0.09697149 0.04106495 0.6157243 0 1 0.1397603 1 1 0 0.2772921 ...</code></pre>
+</div>
+</div>
+<p>Switch to negative binomial</p>
+<ol start="2" type="1">
+<li><strong>NegBinom-glmm</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">=</span> <span class="fu">glmmTMB</span>(Bulinus_tot<span class="sc">~</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">offset</span>(<span class="fu">log</span>(duration)) <span class="sc">+</span> site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span> (spH <span class="sc">+</span> swater_depth<span class="sc">||</span>coll_date), </span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> <span class="fu">nbinom2</span>())</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+Bulinus_tot ~ offset(log(duration)) + site_type + sTemp_Water +  
+    seas_wmo + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +  
+    syear + (1 | locality/site_irn) + (spH + swater_depth ||      coll_date)
+Data: data
+
+     AIC      BIC   logLik deviance df.resid 
+ 14138.8  14257.2  -7048.4  14096.8     2054 
+
+Random effects:
+
+Conditional model:
+ Groups            Name         Variance Std.Dev. Corr      
+ site_irn:locality (Intercept)  0.59053  0.7685             
+ locality          (Intercept)  0.46628  0.6828             
+ coll_date         (Intercept)  0.61317  0.7831             
+                   spH          0.11204  0.3347   0.00      
+                   swater_depth 0.02733  0.1653   0.00 0.00 
+Number of obs: 2075, groups:  
+site_irn:locality, 89; locality, 20; coll_date, 191
+
+Dispersion parameter for nbinom2 family (): 0.443 
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -0.872201   0.272149  -3.205 0.001351 ** 
+site_typecanal.3  -0.138271   0.243072  -0.569 0.569459    
+site_typepond      0.054931   0.425925   0.129 0.897382    
+site_typerice.p   -0.926607   0.361764  -2.561 0.010426 *  
+site_typeriver    -0.803328   0.418358  -1.920 0.054834 .  
+site_typerivulet  -0.934609   0.531234  -1.759 0.078523 .  
+site_typespillway -0.421310   0.567038  -0.743 0.457481    
+sTemp_Water       -0.129997   0.073071  -1.779 0.075232 .  
+seas_wmowet        0.001754   0.173303   0.010 0.991925    
+spH               -0.103522   0.065179  -1.588 0.112227    
+sCond              0.150119   0.058990   2.545 0.010934 *  
+swmo_prec         -0.113821   0.078013  -1.459 0.144562    
+swater_speed_ms   -0.123916   0.033002  -3.755 0.000174 ***
+swater_depth      -0.191527   0.053982  -3.548 0.000388 ***
+syear             -0.524006   0.076636  -6.838 8.06e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Residuals look better but they are unconditioned!</p>
+<p>Check conditional residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model3, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rnbinom</span>(<span class="fu">length</span>(pred),<span class="at">size =</span> <span class="fu">summary</span>(model3)<span class="sc">$</span>sigma, <span class="at">mu =</span>  pred))</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model3)[,<span class="dv">1</span>], pred)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Better!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res, <span class="at">alternative =</span> <span class="st">"less"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 0.42676, p-value = 0.001
+alternative hypothesis: less</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 0.42676, p-value = 0.999
+alternative hypothesis: greater</code></pre>
+</div>
+</div>
+<p>There is underdispersion.</p>
+<p>Use the <code>dispformula</code> to make the dispersion depend on the covariates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">=</span> <span class="fu">glmmTMB</span>(Bulinus_tot<span class="sc">~</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">offset</span>(<span class="fu">log</span>(duration)) <span class="sc">+</span> site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span> (spH <span class="sc">+</span> swater_depth<span class="sc">||</span>coll_date), </span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">dispformula =</span> <span class="sc">~</span>site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear,</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> nbinom2)</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: nbinom2  ( log )
+Formula:          
+Bulinus_tot ~ offset(log(duration)) + site_type + sTemp_Water +  
+    seas_wmo + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +  
+    syear + (1 | locality/site_irn) + (spH + swater_depth ||      coll_date)
+Dispersion:                   
+~site_type + sTemp_Water + seas_wmo + spH + sCond + swmo_prec + 
+    swater_speed_ms + swater_depth + syear
+Data: data
+
+     AIC      BIC   logLik deviance df.resid 
+ 14020.4  14217.7  -6975.2  13950.4     2040 
+
+Random effects:
+
+Conditional model:
+ Groups            Name         Variance Std.Dev. Corr      
+ site_irn:locality (Intercept)  0.47988  0.6927             
+ locality          (Intercept)  0.39154  0.6257             
+ coll_date         (Intercept)  0.52485  0.7245             
+                   spH          0.15325  0.3915   0.00      
+                   swater_depth 0.02172  0.1474   0.00 0.00 
+Number of obs: 2075, groups:  
+site_irn:locality, 89; locality, 20; coll_date, 191
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -0.737067   0.254882  -2.892  0.00383 ** 
+site_typecanal.3  -0.239036   0.224900  -1.063  0.28785    
+site_typepond     -0.176936   0.393312  -0.450  0.65281    
+site_typerice.p   -0.879264   0.347073  -2.533  0.01130 *  
+site_typeriver    -0.588394   0.417274  -1.410  0.15851    
+site_typerivulet  -0.959804   0.495850  -1.936  0.05291 .  
+site_typespillway -0.405021   0.566270  -0.715  0.47446    
+sTemp_Water       -0.105159   0.070462  -1.492  0.13559    
+seas_wmowet       -0.003326   0.166829  -0.020  0.98409    
+spH               -0.117901   0.067440  -1.748  0.08042 .  
+sCond              0.157760   0.060597   2.603  0.00923 ** 
+swmo_prec         -0.078596   0.089042  -0.883  0.37741    
+swater_speed_ms   -0.139860   0.047614  -2.937  0.00331 ** 
+swater_depth      -0.163537   0.054114  -3.022  0.00251 ** 
+syear             -0.387283   0.072009  -5.378 7.52e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Dispersion model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -0.848611   0.088101  -9.632  &lt; 2e-16 ***
+site_typecanal.3  -0.052763   0.096667  -0.546 0.585183    
+site_typepond     -0.049055   0.172213  -0.285 0.775758    
+site_typerice.p   -0.393717   0.170569  -2.308 0.020985 *  
+site_typeriver    -0.669994   0.175436  -3.819 0.000134 ***
+site_typerivulet  -0.144858   0.226625  -0.639 0.522693    
+site_typespillway -0.603709   0.247318  -2.441 0.014646 *  
+sTemp_Water       -0.061262   0.049269  -1.243 0.213714    
+seas_wmowet        0.007559   0.102572   0.074 0.941254    
+spH                0.123208   0.045502   2.708 0.006774 ** 
+sCond              0.045915   0.040004   1.148 0.251058    
+swmo_prec         -0.100611   0.053120  -1.894 0.058222 .  
+swater_speed_ms   -0.131378   0.045631  -2.879 0.003987 ** 
+swater_depth      -0.053932   0.044287  -1.218 0.223313    
+syear             -0.381666   0.044033  -8.668  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Check conditional residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model4, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>pred_dispersion <span class="ot">=</span> <span class="fu">predict</span>(model4, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"disp"</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rnbinom</span>(<span class="fu">length</span>(pred),<span class="at">size =</span> pred_dispersion, <span class="at">mu =</span>  pred))</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model4)[,<span class="dv">1</span>], pred)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Better.</p>
+<p>Check for temporal and spatial autocorrelation (we detrended both by using year and random intercept for sites):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Spatial</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">=</span> <span class="fu">recalculateResiduals</span>(res, <span class="at">group =</span> <span class="fu">c</span>(data<span class="sc">$</span>site_irn))</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>groupLocations <span class="ot">=</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(data<span class="sc">$</span>sLat, data<span class="sc">$</span>sLon ), <span class="fu">list</span>( data<span class="sc">$</span>site_irn), mean)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="fu">testSpatialAutocorrelation</span>(res2, <span class="at">x =</span> groupLocations<span class="sc">$</span>V1, <span class="at">y =</span> groupLocations<span class="sc">$</span>V2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa Moran's I test for distance-based autocorrelation
+
+data:  res2
+observed = -0.082611, expected = -0.011364, sd = 0.066653, p-value =
+0.2851
+alternative hypothesis: Distance-based autocorrelation</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Temporal</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">=</span> <span class="fu">recalculateResiduals</span>(res, <span class="at">group =</span> <span class="fu">as.factor</span>(data<span class="sc">$</span>month),)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">testTemporalAutocorrelation</span>(res2, <span class="at">time =</span> <span class="fu">unique</span>(<span class="fu">as.factor</span>(data<span class="sc">$</span>month)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Durbin-Watson test
+
+data:  simulationOutput$scaledResiduals ~ 1
+DW = 1.702, p-value = 0.5922
+alternative hypothesis: true autocorrelation is not 0</code></pre>
+</div>
+</div>
+<p>Both n.s.</p>
+<ol start="3" type="1">
+<li><strong>Bonus: NegBinom-glmm with spatial and temporal autocorrelation</strong></li>
+</ol>
+<p>Both are n.s. But let’s account for spatial and temporal autocorrelation anyway (just for fun):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>numFac <span class="ot">=</span> <span class="fu">numFactor</span>(data<span class="sc">$</span>sLat, data<span class="sc">$</span>sLon)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>fmonth <span class="ot">=</span> <span class="fu">as.factor</span>(data<span class="sc">$</span>month)</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(Bulinus_tot<span class="sc">~</span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">offset</span>(<span class="fu">log</span>(duration)) <span class="sc">+</span> site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span></span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span> (spH <span class="sc">+</span> swater_depth<span class="sc">||</span>coll_date) <span class="sc">+</span></span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">exp</span>(<span class="dv">0</span><span class="sc">+</span>numFac<span class="sc">|</span>group) <span class="sc">+</span> <span class="fu">ar1</span>(<span class="dv">0</span><span class="sc">+</span>fmonth<span class="sc">|</span>site_irn), </span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">dispformula =</span> <span class="sc">~</span>site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear,</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> nbinom2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution for prevalence of <em>Bulinus</em> (glmm)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Prepare+scale data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> EcoData<span class="sc">::</span>snails </span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp_Water <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp_Water)</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>spH <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>pH)</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_speed_ms <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_speed_ms)</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_depth <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_depth)</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sCond <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Cond)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swmo_prec <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>wmo_prec)</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>syear <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>year)</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Latitude)</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLon <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Longitude)</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sTemp_Water <span class="sc">+</span> spH <span class="sc">+</span> sLat <span class="sc">+</span> sLon <span class="sc">+</span> sCond <span class="sc">+</span> seas_wmo<span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span> duration <span class="sc">+</span> locality <span class="sc">+</span> site_irn <span class="sc">+</span> coll_date, <span class="at">data =</span> data))</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(<span class="fu">cbind</span>(Bulinus_pos_tot, Bulinus_tot)<span class="sc">~</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>                 site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> seas_wmo<span class="sc">+</span> spH <span class="sc">+</span> sCond <span class="sc">+</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>                 swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span> syear <span class="sc">+</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span>  (spH <span class="sc">+</span> swater_depth<span class="sc">||</span>coll_date), </span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> binomial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+Model failed to converge with max|grad| = 0.0646318 (tol = 0.002, component 1)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: cbind(Bulinus_pos_tot, Bulinus_tot) ~ site_type + sTemp_Water +  
+    seas_wmo + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +  
+    syear + (1 | locality/site_irn) + (spH + swater_depth ||      coll_date)
+   Data: data
+
+     AIC      BIC   logLik deviance df.resid 
+  1264.9   1377.7   -612.5   1224.9     2055 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.9474 -0.2093 -0.0666  0.0000 16.6301 
+
+Random effects:
+ Groups            Name         Variance Std.Dev.
+ coll_date         swater_depth 0.09725  0.3119  
+ coll_date.1       spH          0.21926  0.4682  
+ coll_date.2       (Intercept)  0.51422  0.7171  
+ site_irn.locality (Intercept)  1.44732  1.2030  
+ locality          (Intercept)  0.70709  0.8409  
+Number of obs: 2075, groups:  
+coll_date, 191; site_irn:locality, 89; locality, 20
+
+Fixed effects:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -6.488093   0.454428 -14.277  &lt; 2e-16 ***
+site_typecanal.3  -0.254546   0.480292  -0.530  0.59612    
+site_typepond      2.167339   0.736757   2.942  0.00326 ** 
+site_typerice.p   -0.316581   0.777316  -0.407  0.68381    
+site_typeriver     0.133888   0.901466   0.149  0.88193    
+site_typerivulet   1.203162   0.951800   1.264  0.20620    
+site_typespillway  0.263277   1.305918   0.202  0.84023    
+sTemp_Water       -0.170608   0.107008  -1.594  0.11086    
+seas_wmowet       -0.034947   0.256906  -0.136  0.89180    
+spH               -0.235923   0.141045  -1.673  0.09439 .  
+sCond             -0.272034   0.092925  -2.927  0.00342 ** 
+swmo_prec         -0.535873   0.305083  -1.756  0.07901 .  
+swater_speed_ms    0.111627   0.062937   1.774  0.07612 .  
+swater_depth      -0.002781   0.102412  -0.027  0.97834    
+syear             -0.096637   0.108832  -0.888  0.37457    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Correlation matrix not shown by default, as p = 15 &gt; 12.
+Use print(x, correlation=TRUE)  or
+    vcov(x)        if you need it</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>optimizer (Nelder_Mead) convergence code: 0 (OK)
+Model failed to converge with max|grad| = 0.0646318 (tol = 0.002, component 1)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model1, <span class="at">res.form=</span><span class="cn">NULL</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in lme4::.simulateFun(object = object, nsim = nsim, res.form = ..1):
+unused arguments ignored</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="seed-bank" class="level2" data-number="C.6">
+<h2 data-number="C.6" class="anchored" data-anchor-id="seed-bank"><span class="header-section-number">C.6</span> Seed bank</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>?EcoData<span class="sc">::</span>seedBank</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The dataset comes from a study from <span class="citation" data-cites="rosbakh2022inferring">Rosbakh et al. (<a href="5B-References.html#ref-rosbakh2022inferring" role="doc-biblioref">2022</a>)</span> and includes information about plant species, their vegetative and seed traits, environmental factors, and their ability to form natural seed banks.</p>
+<p>The objective of this dataset is to identify which traits and environmental factors are responsible if species can naturally produce a seed bank. The ability to form seed banks is encoded as presence-absence and as a density. Data was collected at 17 sites for 286 species. Here an overview about the data structure</p>
+<table class="table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Potential type</th>
+<th>Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Response</td>
+<td>SBPA, SBDensity</td>
+</tr>
+<tr class="even">
+<td>Predictors</td>
+<td>Altitude, SeedMass, SeedShape, SeedN, SeedPr, DormRank, Temp, Hum, Nitro, Grazing</td>
+</tr>
+<tr class="odd">
+<td>Random effects</td>
+<td>Site, species</td>
+</tr>
+</tbody>
+</table>
+<p>Note that predictors and REs are “potential predictors” - it is not necessarily optimal to use them all.</p>
+<div class="callout-caution callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Which environmental factors and traits explain the density or occurrence of a seed bank? Decide in the beginning if you want to perform a predictive or a causal analysis, and build the model appropriately.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution for SBDensity (lmm)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Prepare+scale data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> </span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>                               sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">lmer</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span> </span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span> </span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Species),</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +  
+    sDormRank + sAltitude + sHum + sNitro + sGrazing + (1 | Site) +  
+    (1 | Species)
+   Data: data
+Control: lmerControl(optimizer = "bobyqa")
+
+REML criterion at convergence: 7518.2
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6542 -0.5034 -0.0725  0.4370  3.1978 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Species  (Intercept) 3.0560   1.7481  
+ Site     (Intercept) 0.0844   0.2905  
+ Residual             3.6820   1.9188  
+Number of obs: 1729, groups:  Species, 152; Site, 17
+
+Fixed effects:
+             Estimate Std. Error t value
+(Intercept)  1.658057   0.170042   9.751
+sSeedMass   -0.270898   0.145183  -1.866
+sSeedShape  -0.266724   0.164661  -1.620
+sSeedN      -0.172359   0.128990  -1.336
+sSeedPr     -0.136367   0.156356  -0.872
+sDormRank    0.048372   0.157980   0.306
+sAltitude   -0.542500   0.137277  -3.952
+sHum         0.152510   0.139524   1.093
+sNitro      -0.009696   0.143957  -0.067
+sGrazing     0.032975   0.113062   0.292
+
+Correlation of Fixed Effects:
+           (Intr) sSdMss sSdShp sSeedN sSedPr sDrmRn sAlttd sHum   sNitro
+sSeedMass  -0.025                                                        
+sSeedShape -0.029  0.284                                                 
+sSeedN     -0.037  0.073  0.094                                          
+sSeedPr    -0.040 -0.482 -0.318 -0.080                                   
+sDormRank  -0.010 -0.066  0.135 -0.021  0.042                            
+sAltitude  -0.048  0.007 -0.010 -0.005  0.000 -0.023                     
+sHum       -0.015  0.004 -0.002  0.001 -0.021 -0.008  0.080              
+sNitro      0.020 -0.009  0.001  0.003  0.023  0.005  0.352 -0.666       
+sGrazing   -0.007 -0.006 -0.007 -0.005  0.018 -0.009  0.582 -0.138  0.244</code></pre>
+</div>
+</div>
+<p><strong>Residual checks:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="864"></p>
+</div>
+</div>
+<p>Check for missing random slopes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1, <span class="fu">resid</span>(.) <span class="sc">~</span> sAltitude <span class="sc">|</span> Species, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Add random slope for sAltitude (but without a correlation between the two random effects):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">lmer</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span> </span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span> </span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +  
+    sDormRank + sAltitude + sHum + sNitro + sGrazing + (1 | Site) +  
+    ((1 | Species) + (0 + sAltitude | Species))
+   Data: data
+Control: lmerControl(optimizer = "bobyqa")
+
+REML criterion at convergence: 7237.9
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.85102 -0.43029 -0.07058  0.23755  3.00951 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ Species   sAltitude   1.35886  1.1657  
+ Species.1 (Intercept) 2.66014  1.6310  
+ Site      (Intercept) 0.08619  0.2936  
+ Residual              2.79053  1.6705  
+Number of obs: 1729, groups:  Species, 152; Site, 17
+
+Fixed effects:
+             Estimate Std. Error t value
+(Intercept)  1.548277   0.169725   9.122
+sSeedMass   -0.298316   0.152986  -1.950
+sSeedShape  -0.308888   0.162907  -1.896
+sSeedN      -0.164412   0.121206  -1.356
+sSeedPr     -0.099554   0.158349  -0.629
+sDormRank    0.034997   0.156146   0.224
+sAltitude   -0.535660   0.173463  -3.088
+sHum        -0.009909   0.136515  -0.073
+sNitro       0.161437   0.141643   1.140
+sGrazing     0.110401   0.110261   1.001
+
+Correlation of Fixed Effects:
+           (Intr) sSdMss sSdShp sSeedN sSedPr sDrmRn sAlttd sHum   sNitro
+sSeedMass  -0.021                                                        
+sSeedShape -0.042  0.288                                                 
+sSeedN     -0.042  0.078  0.105                                          
+sSeedPr    -0.040 -0.490 -0.328 -0.089                                   
+sDormRank  -0.012 -0.044  0.122 -0.016  0.033                            
+sAltitude  -0.045  0.041 -0.016 -0.012 -0.020 -0.026                     
+sHum        0.016 -0.002 -0.006  0.001 -0.015 -0.005  0.049              
+sNitro     -0.010 -0.002  0.004  0.001  0.014  0.003  0.293 -0.668       
+sGrazing   -0.027 -0.002 -0.006 -0.002  0.016 -0.004  0.447 -0.145  0.249</code></pre>
+</div>
+</div>
+<p>Check residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Residuals do not look perfect, variance is not constant:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sAltitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sSeedMass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-27-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>Modeling variance with glmmTMB</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">=</span> <span class="fu">glmmTMB</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span> </span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span> </span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape,</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian  ( identity )
+Formula:          
+log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +  
+    sDormRank + sAltitude + sHum + sNitro + sGrazing + (1 | Site) +  
+    (sAltitude || Species)
+Dispersion:                          ~sAltitude + sSeedMass + sSeedShape
+Data: data
+
+     AIC      BIC   logLik deviance df.resid 
+  7141.1   7233.8  -3553.5   7107.1     1712 
+
+Random effects:
+
+Conditional model:
+ Groups   Name        Variance  Std.Dev.  Corr 
+ Site     (Intercept) 1.008e-09 3.176e-05      
+ Species  (Intercept) 2.437e+00 1.561e+00      
+          sAltitude   1.228e+00 1.108e+00 0.00 
+ Residual                    NA        NA      
+Number of obs: 1729, groups:  Site, 17; Species, 152
+
+Conditional model:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  1.572873   0.147583  10.658  &lt; 2e-16 ***
+sSeedMass   -0.212674   0.120807  -1.760   0.0783 .  
+sSeedShape  -0.280177   0.157937  -1.774   0.0761 .  
+sSeedN      -0.158668   0.117421  -1.351   0.1766    
+sSeedPr     -0.143979   0.143008  -1.007   0.3140    
+sDormRank    0.026975   0.149924   0.180   0.8572    
+sAltitude   -0.679274   0.119447  -5.687 1.29e-08 ***
+sHum        -0.015362   0.029998  -0.512   0.6086    
+sNitro       0.025526   0.029631   0.861   0.3890    
+sGrazing     0.006572   0.023568   0.279   0.7804    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Dispersion model:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  0.99128    0.03707  26.743  &lt; 2e-16 ***
+sAltitude   -0.20967    0.04050  -5.177 2.25e-07 ***
+sSeedMass   -0.89909    0.09462  -9.502  &lt; 2e-16 ***
+sSeedShape   0.12752    0.03843   3.318 0.000906 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Residuals look worse because they are unconditioned</p>
+</div>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution for SBPA (glmm)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Prepare+scale data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
+<span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
+<span id="cb91-9"><a href="#cb91-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
+<span id="cb91-10"><a href="#cb91-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
+<span id="cb91-11"><a href="#cb91-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
+<span id="cb91-12"><a href="#cb91-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-13"><a href="#cb91-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb91-14"><a href="#cb91-14" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
+<span id="cb91-15"><a href="#cb91-15" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> </span>
+<span id="cb91-16"><a href="#cb91-16" aria-hidden="true" tabindex="-1"></a>                               sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
+<span id="cb91-17"><a href="#cb91-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span> </span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span> </span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: SBPA ~ sSeedMass + sSeedShape + sSeedN + sSeedPr + sDormRank +  
+    sAltitude + sHum + sNitro + sGrazing + (1 | Site) + (sAltitude ||  
+    Species)
+   Data: data
+Control: glmerControl(optimizer = "bobyqa")
+
+     AIC      BIC   logLik deviance df.resid 
+  1366.6   1437.6   -670.3   1340.6     1716 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.8935 -0.2555 -0.0929  0.1949  3.5687 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ Species   sAltitude   4.63909  2.1539  
+ Species.1 (Intercept) 8.50208  2.9158  
+ Site      (Intercept) 0.01354  0.1164  
+Number of obs: 1729, groups:  Species, 152; Site, 17
+
+Fixed effects:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.72252    0.40772  -6.677 2.43e-11 ***
+sSeedMass   -1.35696    0.86670  -1.566  0.11743    
+sSeedShape  -0.61054    0.34005  -1.795  0.07258 .  
+sSeedN      -2.05012    1.32044  -1.553  0.12052    
+sSeedPr     -0.07716    0.50730  -0.152  0.87910    
+sDormRank   -0.07731    0.31815  -0.243  0.80801    
+sAltitude   -1.35080    0.30172  -4.477 7.57e-06 ***
+sHum        -0.47469    0.16480  -2.880  0.00397 ** 
+sNitro       0.56556    0.19097   2.962  0.00306 ** 
+sGrazing     0.12711    0.12332   1.031  0.30266    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+           (Intr) sSdMss sSdShp sSeedN sSedPr sDrmRn sAlttd sHum   sNitro
+sSeedMass   0.214                                                        
+sSeedShape  0.049  0.286                                                 
+sSeedN      0.346  0.047 -0.060                                          
+sSeedPr    -0.082 -0.676 -0.361  0.010                                   
+sDormRank  -0.005 -0.055  0.099 -0.054  0.093                            
+sAltitude   0.152  0.078  0.004  0.056 -0.001 -0.028                     
+sHum        0.108  0.028  0.006  0.003 -0.003 -0.017  0.072              
+sNitro     -0.124 -0.041 -0.015 -0.011  0.011  0.012  0.106 -0.743       
+sGrazing   -0.050 -0.009 -0.021  0.004  0.015 -0.003  0.265 -0.211  0.314</code></pre>
+</div>
+</div>
+<p><strong>Residual checks:</strong></p>
+<p>Check residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Residuals look fine!</p>
+</div>
+</div>
+</div>
+</section>
+<section id="snouter" class="level2" data-number="C.7">
+<h2 data-number="C.7" class="anchored" data-anchor-id="snouter"><span class="header-section-number">C.7</span> Snouter</h2>
+<p>Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set’s help for details on the variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(snouter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-rabone2019freshwater" class="csl-entry" role="doc-biblioentry">
+Rabone, Muriel, Joris Hendrik Wiethase, Fiona Allan, Anouk Nathalie Gouvras, Tom Pennance, Amina Amadou Hamidou, Bonnie Lee Webster, et al. 2019. <span>“Freshwater Snails of Biomedical Importance in the Niger River Valley: Evidence of Temporal and Spatial Patterns in Abundance, Distribution and Infection with Schistosoma Spp.”</span> <em>Parasites &amp; Vectors</em> 12 (1): 1–20.
+</div>
+<div id="ref-rosbakh2022inferring" class="csl-entry" role="doc-biblioentry">
+Rosbakh, Sergey, Loı̈c Chalmandrier, Shyam Phartyal, and Peter Poschlod. 2022. <span>“Inferring Community Assembly Processes from Functional Seed Trait Variation Along Elevation Gradient.”</span> <em>Journal of Ecology</em>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./6B-CheatSheet.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

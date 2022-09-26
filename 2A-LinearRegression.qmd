@@ -284,6 +284,8 @@ The `lm()`{.R} function can handle both numerical and categorical variables. To 
 boxplot(weight ~ group, data = PlantGrowth)
 ```
 
+### R models fit treatment contrasts
+
 Let's fit an `lm()`{.R} now with the categorical explanatory variable group. They syntax is the same as before
 
 ```{r chunk_chapter3_chunk28, echo=TRUE, eval=TRUE}
@@ -307,7 +309,9 @@ Note that in this case, the effects package depicts the CI by purple error bars.
 
 So, in our example, the intercept estimates the mean weight in the ctr group (with a p-value tested against zero, usually not interesting), and the effects of trt1 and trt2 are the differences of weight compared to the control, with a p-value for a test against an effect size of zero.
 
-::: callout-tip
+::: {.callout-tip collapse="true"}
+#### More details on contrasts
+
 Treatment contrasts are not the only option to deal with categorical variables. There are many other options to set up contrasts, which may be appropriate in certain situations. A simple way to change contrasts is the following syntax
 
 ```{r}
@@ -387,54 +391,6 @@ The cld gives a new letter for each group of factor levels that are statisticall
 plot(tuk.cld)
 ```
 
-::: {.callout-caution icon="false"}
-#### Plantheight
-
-Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log(height).
-
-```{r chunk_chapter3_chunk42, echo=TRUE, eval=TRUE}
-library(EcoData)
-
-model = lm(loght ~ temp, data = plantHeight)
-summary(model)
-```
-
-The model suggests a significant global trend of plant height increasing with temperature.
-
-1.  Perform residual checks and modify the model if you think it is necessary.
-2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
-
-***1. Residual checks***
-
-```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
-par(mfrow = c(2, 2))
-plot(model)
-```
-
-Looks OK!
-
-***2. Including "growthform"***
-
-```{r}
-model2 = lm(loght ~ growthform, data = plantHeight)
-summary(model2)
-```
-
-There is an effect of growth form, however, note that the comparisons are against the growth form fern (intercept), which has only one observation (`table(plantHeight$growthform`)), so it may make sense to re-order the factor in the regression so that you compare, e.g., against Herb (will yield more significant comparisons).
-
-```{r}
-plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
-model2 = lm(loght ~ growthform2, data = plantHeight)
-summary(model2)
-```
-
-It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests. We will do that in the chapter ANOVA.
-:::
-
 ## Specifying a multiple regression
 
 Multiple (linear) regression means that we consider more than 1 predictor in the same model. The syntax is very easy: Just add your predictors (numerical or categorical) to your regression formula, as in the following example for the airquality dataset. To be able to also add a factor, I created a new variable fMonth to have month as a factor (categorical):
@@ -488,7 +444,7 @@ plot(Wind ~ Temp, data = airquality)
 In such a case, if Temp is not included in the regression, **the effect of Temp will be absorbed in the Wind effect to the extent to which both variables are collinear**. In other words, if one variable is missing, there will be a spillover of the effect of this variable to all collinear variables.
 
 ::: callout-tip
-To give a simple example of this, let's say
+To give a simple example of this spillover, let's say
 
 -   Wind has a positive effect of 1
 -   Temp has a negative effect of -1
@@ -497,7 +453,27 @@ To give a simple example of this, let's say
 A multiple regression would estimate 1,-1. In a single regression of Wind against Temp, the collinear part (50%) of the Temp effect would be absorbed by wind, so we would estimate a Wind effect of 0.5.
 :::
 
-Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp.
+Note that the same happens in univariate plots of the correlation, i.e. this is not a problem of the linear regression, but rather of looking at the univariate correlation of Ozone \~ Wind without correcting for the effect of Temp. 
+
+Also, note that collinearity is not fundamentally a problem for the regression - regression estimates stay unbiased and p-values and CIs calibrated under arbitrary high collinearity. However, the more collinearity we have, the more uncertain regression estimates will become (with associated large p-values). Here an example, where we simulate data under the assumption that x1 and x2 have each an effect of 1
+
+```{r}
+set.seed(123)
+x1 = runif(100)
+x2 = 0.95 *x1 + 0.05 * runif(100)
+y = x1 + x2 + rnorm(100)
+
+summary(lm(y ~ x1 + x2))
+```
+
+We see that the multiple regression is not terribly wrong, but very uncertain about the true values. Some authors therefore advice to remove collinear predictions. This can sometimes be useful, in particular for predictions (see section on model selection); however, note that the effect of removed predictor will then be absorbed by the remaining predictor(s). In our case, the univariate regression would be very sure that there is an effect, note that the CI does not cover the true effect of x1 (which was 1).
+
+```{r}
+summary(lm(y ~ x1))
+```
+
+
+
 
 ::: {.callout-tip collapse="true"}
 #### Understanding collinearity spillover in more detail
@@ -828,81 +804,6 @@ fit = gam(Ozone ~ te(Wind, Temp) , data = airquality)
 plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.9, cex = 0.4)
 ```
 
-::: {.callout-caution icon="false"}
-#### Plant Height revisited
-
-Revisit exercise our previous analysis of EcoData::plantHeight
-
-```{r}
-library(EcoData)
-model = lm(loght ~ temp, data = plantHeight)
-```
-
-Use (seperate) multiple regressions to test if:
-
-1.  If temp or NPP (net primary productivity) is a more important predictor.
-2.  If growth forms (variable growthform) differ in their temperature effects.
-3.  If the effect of temp remains significant if we include latitude and an interaction of latitude with temp. If not, why? Plot temp \~ lat.
-
-Ask me to comment on case 3!
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r}
-plantHeight$sTemp = scale(plantHeight$temp)
-plantHeight$sLat = scale(plantHeight$lat)
-plantHeight$sNPP = scale(plantHeight$NPP)
-```
-
-1)  **NPP or Temp?**
-
-```{r}
-fit = lm(loght ~ sTemp + sNPP, data = plantHeight)
-summary(fit)
-```
-
-NPP is slightly more important
-
-2)  **Interaction with growth form**
-
-```{r}
-fit = lm(loght ~ growthform *  sTemp , data = plantHeight)
-summary(fit)
-```
-
-Yes, because (some) interactions are significant.
-
-Note that the n.s. effect of sTemp is the first growth form (Ferns), for which we had only one observation. In a standard multiple regression, you don't have p-values for the significance of the temperature effect against 0 for the other growth forms, because you test against the reference. What one usually does is to run an ANOVA (see chapter on ANOVA) to see if temp is overall significant.
-
-```{r}
-anova(lm(loght ~ growthform *  sTemp , data = plantHeight))
-```
-
-Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either extract the p-value from a multiple regression (a bit complicated) or just run a univariate regression for this growth form
-
-```{r}
-fit = lm(loght ~ sTemp + 0, data = plantHeight[plantHeight$growthform == "Tree",])
-summary(fit)
-```
-
-3)  **Interaction with lat**
-
-```{r}
-fit = lm(loght ~ sTemp * sLat, data = plantHeight)
-summary(fit)
-```
-
-All is n.s. ... how did this happen? If we check the correlation between temp and lat, we see that the two predictors are highly collinear.
-
-```{r}
-cor(plantHeight$temp, plantHeight$lat)
-```
-
-In principle, the regression model should be able to still separate them, but the higher the collinearity, the more difficult it becomes for the regression to infer if the effect is caused by one or the other predictor.
-:::
-
 ## Predictions
 
 To predict with a fitted model
@@ -1106,3 +1007,133 @@ b2 = boot(airquality, getBoot, R = 1000, sim = "parametric", ran.gen = rgen, mle
 b2
 ```
 :::
+
+## Case studies
+
+### Univariate Regression
+
+::: {.callout-caution icon="false"}
+#### Plantheight
+
+Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log(height).
+
+```{r echo=T, eval=TRUE, results='hide'}
+library(EcoData)
+
+model = lm(loght ~ temp, data = plantHeight)
+summary(model)
+```
+
+The model suggests a significant global trend of plant height increasing with temperature.
+
+1.  Perform residual checks and modify the model if you think it is necessary.
+2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+***1. Residual checks***
+
+```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(model)
+```
+
+Looks OK!
+
+***2. Including "growthform"***
+
+```{r}
+model2 = lm(loght ~ growthform, data = plantHeight)
+summary(model2)
+```
+
+There is an effect of growth form, however, note that the comparisons are against the growth form fern (intercept), which has only one observation (`table(plantHeight$growthform`)), so it may make sense to re-order the factor in the regression so that you compare, e.g., against Herb (will yield more significant comparisons).
+
+```{r}
+plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
+model2 = lm(loght ~ growthform2, data = plantHeight)
+summary(model2)
+```
+
+It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests. 
+:::
+
+### Mulitple Regression
+
+::: {.callout-caution icon="false"}
+#### Plant Height revisited
+
+Revisit exercise our previous analysis of EcoData::plantHeight
+
+```{r}
+library(EcoData)
+model = lm(loght ~ temp, data = plantHeight)
+```
+
+Use (separate) multiple regressions to test if:
+
+1.  If temp or NPP (net primary productivity) is a more important predictor.
+2.  If growth forms (variable growthform) differ in their temperature effects.
+3.  If the effect of temp remains significant if we include latitude and an interaction of latitude with temp. If not, why? Tip: plot temp \~ lat.
+
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r}
+plantHeight$sTemp = scale(plantHeight$temp)
+plantHeight$sLat = scale(plantHeight$lat)
+plantHeight$sNPP = scale(plantHeight$NPP)
+```
+
+1)  **NPP or Temp?**
+
+```{r}
+fit = lm(loght ~ sTemp + sNPP, data = plantHeight)
+summary(fit)
+```
+
+NPP is slightly more important
+
+2)  **Interaction with growth form**
+
+```{r}
+fit = lm(loght ~ growthform *  sTemp , data = plantHeight)
+summary(fit)
+```
+
+Yes, because (some) interactions are significant.
+
+Note that the n.s. effect of sTemp is the first growth form (Ferns), for which we had only one observation. In a standard multiple regression, you don't have p-values for the significance of the temperature effect against 0 for the other growth forms, because you test against the reference. What one usually does is to run an ANOVA (see chapter on ANOVA) to see if temp is overall significant.
+
+```{r}
+anova(lm(loght ~ growthform *  sTemp , data = plantHeight))
+```
+
+Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either extract the p-value from a multiple regression (a bit complicated) or just run a univariate regression for this growth form
+
+```{r}
+fit = lm(loght ~ sTemp + 0, data = plantHeight[plantHeight$growthform == "Tree",])
+summary(fit)
+```
+
+3)  **Interaction with lat**
+
+```{r}
+fit = lm(loght ~ sTemp * sLat, data = plantHeight)
+summary(fit)
+```
+
+All is n.s. ... how did this happen? If we check the correlation between temp and lat, we see that the two predictors are highly collinear.
+
+```{r}
+cor(plantHeight$temp, plantHeight$lat)
+```
+
+In principle, the regression model should be able to still separate them, but the higher the collinearity, the more difficult it becomes for the regression to infer if the effect is caused by one or the other predictor.
+:::
+
+

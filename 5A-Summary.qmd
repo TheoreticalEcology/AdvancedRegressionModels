@@ -36,13 +36,16 @@ Fit this base model, then do residual checks for
 
 And adjust the model accordingly.
 
-Packages:
+Packages to fit thes models (see Apppedix: syntax cheat sheet):
 
 -   `baseR`: `lm`, `glm`.
 -   `lme4`: mixed models, `lmer`, `glmer`.
 -   `mgcv`: GAM.
 -   `nlme`: Variance and correlations structure modelling for linear (mixed) models, using `gls` + `lme`.
 -   `glmmTMB`: Generalized linear mixed models with variance / correlation modelling and zip term.
+
+Alternatively, you could move to Bayesian estimates with `brms`, which allows all that, easier inclusion of shrinkage, and p-value / df problems less visible
+
 
 ## Thoughts About the Analysis Pipeline
 
@@ -118,10 +121,3 @@ mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
 ```
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
-
-## Advanced topics
-
-Bayesian estimation as a good general platform
-
--   shrinkage
--   p-value / df problems less visible

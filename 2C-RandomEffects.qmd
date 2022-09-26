@@ -70,7 +70,7 @@ The random intercept model is practically identical to the model above, except t
 
 ```{r chunk_chapter4_chunk25, echo=TRUE, eval=TRUE}
 library(lme4)
-mod1 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
+mod1 = lmer(normexam ~ standLRT + sex +  (1 | school/student), data = Exam)
 summary(mod1)
 ```
 
@@ -243,6 +243,47 @@ There are a large number of packages to fit mixed models in R. The main packages
 -   Nested random effects: `(1 | group / subgroup)`{.R}. If groups are labeled A, B, C, ... and subgroups 1, 2, 3, ..., this will create labels A1, A2 ,B1, B2, so that you effectively group in subgroups. Useful for the many experimental people that do not label subgroups uniquely, but otherwise no statistical difference to a normal (crossed) random effect.
 -   Crossed random effects: You can add random effects independently, as in\
     `(1 | group1) + (1 | group2)`{.R}.
+
+::: {.callout-tip collapse="true"}
+
+#### More on crossed vs. nested REs
+
+There is often confusion about the behavior and meaning of crossed vs. nested REs. From the statistical / mathematical side, there is no difference between them, there are just REs. Crossed vs. nested is a shorthand to tell you how the data was coded.
+
+Let's look at the Exam data, for example. If you run
+
+```{r, eval = F}
+table(Exam$student, Exam$school)
+```
+
+you will see that the student ID = 1 appears in many schools. Clearly, this cannot be the same student, the reason is that each school uses their own ID. If you would fit a crossed RE, as in
+
+```{r, eval = F}
+m1 = lmer(normexam ~ standLRT + sex +  (1 | school) + (1 |student), data = Exam)
+summary(m1)
+```
+
+you would fit a common effect for each student with ID = 1. This, however, doesn't make sense, there is no connection between these students. Thus, you should fit
+
+```{r, eval = F}
+m2 = lmer(normexam ~ standLRT + sex +  (1 | school/student), data = Exam)
+summary(m2)
+```
+
+Compare the number of RE groups in the summary: in m1, you have 650 students. In m2, you have 4055 student:school levels for the RE. Thus, the nested syntax makes sure each individual student gets his/her own estimated value.
+
+You could fit the same mod by changing the coding of student. To do this, we create a new variable, combining school and student into a unique ID
+
+```{r, eval= F}
+Exam$uniqueStudent = as.factor(paste(Exam$school, "-", Exam$student))
+
+m3 = lmer(normexam ~ standLRT + sex +  (1 | school) + (1|uniqueStudent), data = Exam)
+summary(m3)
+
+```
+
+If you check the summary of m3, now we also have 4055 levels for uniqueStudent, and the results are identical to the nested model version. 
+:::
 
 ### nlme
 

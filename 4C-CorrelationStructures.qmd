@@ -153,7 +153,7 @@ If you check the results, you can see that
 2.  The p-value for the intercept is in both models n.s., as expected
 
 ::: callout-note
-## Trend and autocorrelation with glmmTMB
+#### Trend and autocorrelation with glmmTMB
 
 As I mentioned earlier, first detrend and then add correlation structure if there is autocorrelation. After both steps we should no longer see any pattern in the conditional residuals. Unfortunately, checking the conditional residuals is a bit complicated because glmmTMB does not support conditional simulations, while lme4 does, but it does not support correlation structures. However, there is a workaround.
 
@@ -636,22 +636,3 @@ glmmTMB(abundance ~ 0 + species + env:species + rr(Species + 0|id, d = 2))
 The parameter d controlls the number of latent variables.
 
 Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to set this models in the general topic of correlations, and realize that we can fit them with the same methods and packages as for all other correlation structures.
-
-## Additional case studies
-
-### Snouter
-
-::: {.callout-caution icon="false"}
-#### The snouter data
-
-Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r chunk_chapter6_task_0, message=FALSE, warning=FALSE}
-library(EcoData)
-str(snouter)
-```
-:::
