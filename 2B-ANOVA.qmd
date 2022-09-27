@@ -195,7 +195,7 @@ Try out the difference between type I, II, III ANOVA for the airquality data set
 Let's use the model with Wind, Temp, Solar.R, and their interactions. Wind and Temp, and Solar.R and Temp are collinear.
 
 ```{r chunk_chapter3_68, echo=FALSE}
-fit = lm(Ozone ~ (Wind + Temp + Solar.R)^2 , data = airquality)
+fit = lm(Ozone ~ (scale(Wind) + scale(Temp) + scale(Solar.R))^2 , data = airquality)
 summary(fit)
 
 ```
@@ -212,11 +212,10 @@ Only the Temp:Solar.R interaction is not affected!
 **Difference type II and III ANOVA:**
 
 ```{r chunk_chapter3_70, echo=FALSE}
-print(car::Anova(fit, type = "II"))
 print(car::Anova(fit, type = "III"))
 ```
 
-Only the main effects are now affected, the interactions remain the same.
+Identical when variables are scaled. 
 :::
 
 ### Correcting partitions for complexity
