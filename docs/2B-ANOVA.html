@@ -859,24 +859,9 @@ Solution
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>We have correlations between variables and an interaction, so the conservative approach would be to run a type III ANOVA.</p>
+<p>We have correlations between variables and an interaction, so should run a type II or III Anova, for III you should center predictors. For convenience, I will run a type II:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"III"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Anova Table (Type III tests)
-
-Response: loght
-            Sum Sq  Df F value Pr(&gt;F)
-(Intercept)  0.127   1  0.2696 0.6043
-temp         0.764   1  1.6198 0.2048
-lat          0.401   1  0.8490 0.3581
-temp:lat     0.030   1  0.0639 0.8007
-Residuals   82.089 174               </code></pre>
-</div>
-</div>
-<p>An alternative, in which main effects are treated as in type III (shared variance discarded),but interactions is treated as in type I (added on top) is type II.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"II"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"II"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Anova Table (Type II tests)
 
@@ -892,7 +877,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <p>Arguably not appropriate (because order dependent, and here we have strong collinearity) is a type I ANOVA:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
 temp          1  26.97  26.967  57.160 2.21e-12 ***

@@ -424,6 +424,11 @@ library(effects)
 plot(allEffects(fit, partial.residuals = T) )
 ```
 
+::: callout-tip
+Note that for the multiple regression, that scatter around the regression line displayed by the effects package is not the raw data, but the so-called partial residuals. Essentially, what this means is that we plot the fitted line for the respective predictor, and then we calculate the residual for the full model (including the other predictors) and add them on the regression line. The advantage is that this subtracts the effect of other predictors, and removes possible spurious correlatins that occur due to collinearity between predictors (see next section).
+:::
+
+
 ## The Effect of Collinearity
 
 A common misunderstanding is that a multiple regression is just a convenient way to run several independent univariate regressions. This, however, is wrong. A multiple regression is doing a fundamentally different thing. Let's compare the results of the multiple regression above to the simple regression.

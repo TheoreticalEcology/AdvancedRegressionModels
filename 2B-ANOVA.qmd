@@ -256,13 +256,7 @@ summary(fit)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-We have correlations between variables and an interaction, so the conservative approach would be to run a type III ANOVA.
-
-```{r}
-print(car::Anova(fit, type = "III"))
-```
-
-An alternative, in which main effects are treated as in type III (shared variance discarded),but interactions is treated as in type I (added on top) is type II.
+We have correlations between variables and an interaction, so should run a type II or III Anova, for III you should center predictors. For convenience, I will run a type II:
 
 ```{r}
 print(car::Anova(fit, type = "II"))

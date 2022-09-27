@@ -89,6 +89,18 @@ abline(fit2, col = "red")
 legend("topleft", c("simple regression", "multiple regression"), col = c(1,2), lwd = 1)
 ```
 
+::: callout-tip
+GAMs are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone \~ Wind, account for the other variables, a good strategy might be:
+
+```{r, echo=TRUE, eval=TRUE}
+library(mgcv)
+fit = gam(Ozone ~ Wind + s(Temp) + s(Solar.R) , data = airquality)
+summary(fit)
+```
+
+In this way, you still get a nicely interpretable linear effect for Wind, but you don't have to worry about the functional form of the other predictors.
+:::
+
 ## A framework for causal analysis
 
 What we have just seen is an example of a causal analysis. The goal of a causal analysis is to control for other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict.
@@ -231,11 +243,9 @@ plot(mod)
 
 ## Case studies
 
-::: {.callout-caution icon="false"}
-#### Case study: Swiss fertility
+### Case study: Swiss fertility
 
 Perform a causal, a predictive and an exploratory analysis of the Swiss fertility data set called "swiss", available in the standard R data sets. Target for the causal analysis is to estimate the causal (separate direct and indirect effects) of education on fertility, i.e. `lm(Fertility ~ Education, data = swiss)`{.R}.
-:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -246,20 +256,7 @@ Perform a causal, a predictive and an exploratory analysis of the Swiss fertilit
 For all mediators: remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included.
 :::
 
-::: callout-tip
-GAMs are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone \~ Wind, account for the other variables, a good strategy might be:
-
-```{r, echo=TRUE, eval=TRUE}
-library(mgcv)
-fit = gam(Ozone ~ Wind + s(Temp) + s(Solar.R) , data = airquality)
-summary(fit)
-```
-
-In this way, you still get a nicely interpretable linear effect for Wind, but you don't have to worry about the functional form of the other predictors.
-:::
-
-::: {.callout-caution icon="false"}
-#### Case study: Life satisfaction
+### Case study: Life satisfaction
 
 The following data set contains information about life satisfaction (lebensz_org) in Germany, based on the socio-economic panel.
 
@@ -269,7 +266,6 @@ library(EcoData)
 ```
 
 Perform a causal analysis of the effect of income on life satisfaction, considering possible confounding / mediation / colliders.
-:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution

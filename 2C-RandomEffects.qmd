@@ -357,13 +357,24 @@ The plot shows that random effect estimates are biased towards the grand mean, i
 The shrinkage imposed by the RE is equivalent to an L2 (ridge) regression (see section on model selection), or a normally distributed Bayesian prior. You can see this by considering that the log likelihood of a normal distribution is equivalent to a quadratic penalty for deviations from the mean. The difference is that the strength of the penalty, controlled by the RE sd, is estimated. For that reason, the RE shrinkage is also referred to as an example of "adaptive shrinkage".
 :::
 
-This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit
+This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit. Consider the plantHeight case study we did in the section on linear regression. We saw that, even after re-leveling the predictor, not all interactions could be estimated, because some factor levels had only one observation. 
 
-```{r chunk_chapter4_chunk30, echo=TRUE, eval=FALSE, purl=FALSE}
-mortality ~ density + (density | species)
+```{r, results='hide'}
+library(EcoData)
+plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
+plantHeight$sTemp = scale(plantHeight$temp)
+fit <- lm(loght ~ sTemp * growthform2 , data = plantHeight)
+summary(fit)
 ```
 
-In such a model, we have the mean density effect across all species, and rare species with few data will be constrained by this effect, while common species with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope.
+If you run the same thing as a random slope model, you will see that we can estimate a random intercept and slope for each species, even those that have only one observation
+
+```{r}
+fit <- lmer(loght ~ sTemp + (sTemp | growthform2) , data = plantHeight)
+ranef(fit)
+```
+
+The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimatest that is a cost that you have to take into account. 
 
 ### When to use what?
 
@@ -412,9 +423,10 @@ For a qqplot, you have to calculate the residuals by hand
 
 ```{r}
 qqnorm(residuals(mod1))
+qqline(residuals(mod1))
 ```
 
-You can also use the DHARMa plots
+Of course, any time you do a qqnorm plot, you could also run a shapiro.test to get a p-value for the deviation from normality. You can also use the DHARMa plots
 
 ```{r}
 library(DHARMa)
@@ -453,7 +465,7 @@ while the default in DHARMa is to calculate marginal predictions. Both has advan
 
 ### Normality of REs
 
-I prefer to look at this visually. You can run a shapiro.test() but if you have more REs, this will always be significant, so I find a qqplot more informative
+I prefer to look at this visually. You can also run a shapiro.test() to check if you should consider the pattern at all.
 
 ```{r}
 x = ranef(mod1)
@@ -764,8 +776,7 @@ It is important to note that this is a description of the fitted model, not nece
 
 ## Case studies
 
-::: {.callout-caution icon="false"}
-#### Honeybee Data
+### Honeybee Data
 
 We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. The study measured spores of the bacterium "Paenibacillus larvae" (variable Spobee) that infect honeybee larvae, as well as the degree of the infection of the colony (integer: 0 (none), 1 (minor), 2 (moderate), 3 (major)).
 
@@ -779,7 +790,6 @@ str(bees)
 ```
 
 Perform the data analysis, according to the hypothesis discussed in the course.
-:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -829,14 +839,9 @@ plot(fit,
      resid(., scaled=TRUE) ~ fitted(.) | Hive, 
      abline = 0)
 ```
-
 :::
 
-
-::: {.callout-caution icon="false"}
-#### College Student Performance Over Time
-
-***Background and data structure***
+### College Student Performance 
 
 The GPA (college grade point average) data is a **longitudinal** data set (also named **panel data**, German: "Längsschnittstudie". A study repeated at several different moments in time, compared to a **cross-sectional study** (German: "Querschnittstudie") which has several participants at *one time*). In this data set, 200 college students and their GPA have been followed 6 consecutive semesters. Look at the GPA data set, which can be found in the `EcoData`{.R} package:
 
@@ -855,7 +860,6 @@ Analyze if the student's GPA improves over time (**occasion**)! Here a few hints
 -   Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
 -   For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
 -   After having specified the mixed model, have a look at residuals. 
-:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
