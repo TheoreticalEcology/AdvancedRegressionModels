@@ -767,7 +767,11 @@ It is important to note that this is a description of the fitted model, not nece
 ::: {.callout-caution icon="false"}
 #### Honeybee Data
 
-We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease.
+We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. The study measured spores of the bacterium "Paenibacillus larvae" (variable Spobee) that infect honeybee larvae, as well as the degree of the infection of the colony (integer: 0 (none), 1 (minor), 2 (moderate), 3 (major)).
+
+The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive. (integer, 1 - 24).)
+
+Task: fit an appropriate linear mixed model on this data. 
 
 ```{r chunk_chapter4_task_3, message=FALSE, warning=FALSE, eval = TRUE, purl=FALSE}
 library(EcoData)
@@ -780,24 +784,57 @@ Perform the data analysis, according to the hypothesis discussed in the course.
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
-# adding BeesN as a possible confounder
+* Because of the skewed distribution of Spobee, it is better to use log(Spobee + 1) or something similar as response (else you will not get nice residuals)
+* I decided to add BeesN in the regression because it could be a confounder (more on confounding in section on causal inference)
+* It is natural to model hive as a random intercept (1|Hive). I don't expect that the infection ~ spores relationship should be different between hives, but can test for this after fitting the model
 
+
+```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 library(lme4)
 fit <- lmer(log(Spobee + 1) ~ Infection + BeesN + (1|Hive), data = bees)
 summary(fit)
+```
 
-# residual plot shows that hives are either infected or not, thus 
-# doesn't make sense to add a random slope
+Standard residual plots look fine, possible minor evidence for heteroskedasticity
+
+```{r}
+plot(fit)
+```
+
+Let's have a look at the random effects
+
+```{r}
+x = ranef(fit)
+qqnorm(x$Hive$`(Intercept)`)
+qqline(x$Hive$`(Intercept)`)
+shapiro.test(x$Hive$`(Intercept)`)
+```
+
+Looks good. Could also check with DHARMa. The default plot calculates residuals, i.e. residuals based on random effect and residual variation together. This leads to more noise, which, however, I would disregard in this case. 
+
+```{r}
+simulateResiduals(fit, plot = T)
+```
+
+With lme4, you can switch to conditinal residuals by using the re.form syntax of lme4
+
+```{r}
+simulateResiduals(fit, plot = T, re.form = NULL)
+```
+
+Residual plot to check for evidence of a random slope shows that hives are either infected or not, thus doesn't make sense to add a random slope
+
+```{r}
 plot(fit, 
      resid(., scaled=TRUE) ~ fitted(.) | Hive, 
      abline = 0)
 ```
+
 :::
 
 
 ::: {.callout-caution icon="false"}
-## College Student Performance Over Time
+#### College Student Performance Over Time
 
 ***Background and data structure***
 
@@ -812,16 +849,16 @@ In this data set, there are GPA measures on 6 consecutive **occasions**, with a 
 
 ***Task***
 
-Analyze if GPA improves over time (**occasion**)! Here a few hints to look at:
+Analyze if the student's GPA improves over time (**occasion**)! Here a few hints to look at:
 
 -   Consider which fixed effect structure you want to fit. For example, you might be interested if males and females differ in their temporal trend
 -   Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
 -   For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
--   After having specified the mixed model, have a look at residuals. You can model dispersion problems in mixed models with glmmTMB, same syntax for REs as lme4
+-   After having specified the mixed model, have a look at residuals. 
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Solution
+#### Solution
 
 ```{r chunk_chapter4_task_2, eval = F}
 library(lme4)
@@ -846,7 +883,6 @@ fit <- lmer(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa)
 
 # checking residuals - heteroskedasticity 
 plot(fit)
-
 
 # We only learn later how to specify a variable, dispersion, but as a teaser - I'm modelling this using glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with all variance modelling options that we discussed for gls, but random effect specification is different than here
 fit <- glmmTMB(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa, dispformula = ~ sOccasion)

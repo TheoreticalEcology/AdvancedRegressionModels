@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: temp
+  output-dir: docs
 
 book:
   title: "Advanced Regression Models with R"

@@ -78,6 +78,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -139,6 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -345,6 +365,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#partitioning-variance-if-order-matters" id="toc-partitioning-variance-if-order-matters" class="nav-link" data-scroll-target="#partitioning-variance-if-order-matters"> <span class="header-section-number">3.2.3</span> Partitioning variance if order matters</a></li>
   <li><a href="#correcting-partitions-for-complexity" id="toc-correcting-partitions-for-complexity" class="nav-link" data-scroll-target="#correcting-partitions-for-complexity"> <span class="header-section-number">3.2.4</span> Correcting partitions for complexity</a></li>
   </ul></li>
+  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"> <span class="header-section-number">3.3</span> Case studies</a>
+  <ul class="collapse">
+  <li><a href="#plant-height" id="toc-plant-height" class="nav-link" data-scroll-target="#plant-height"> <span class="header-section-number">3.3.1</span> Plant Height</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/2B-ANOVA.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -463,7 +487,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <ol type="1">
 <li>H<sub>0</sub> = M<sub>0</sub> is true</li>
 <li>Test statistic = likelihood ratio -2 [MLE(M<sub>0</sub>)/MLE(H<sub>1</sub>)]</li>
-<li>Then, under relatively broad conditions, the test static will be chi<sup>2</sup> distributed, with df = difference residual df (parameters) of the models M<sub>1</sub>, M<sub>0</sub></li>
+<li>Then, under relatively broad conditions, the test static will be chi-squared distributed, with df = difference residual df (parameters) of the models M<sub>1</sub>, M<sub>0</sub></li>
 </ol>
 <p>This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:</p>
 <p>The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:</p>
@@ -538,7 +562,7 @@ Residuals  53973 113
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>There is also type III, which is as type II, but avoids a similar problem for interactions. This is usually the most conservative setting:</p>
+<p>There is also type III, which is as type II, but avoids a similar problem for interactions, i.e.&nbsp;it discards the variance that is shared between main effects and interactions. Note that numeric variables should be centered and categorical variables should have orthogonal contrast when running a type III ANOVA (see below).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"III"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -560,6 +584,53 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><img src="images/ANOVA.jpg" class="img-fluid" width="1240"></p>
 </div>
 </div>
+<p>Which type of ANOVA is most appropriate? Unfortunately, the answer is both “it depends on what you want to know” and “there is a lot of discussion about this topic”. I would say the following:</p>
+<ul>
+<li><p>If you have an orthogonal, balanced design, it doesn’t matter.</p></li>
+<li><p>If not, type I is really only appropriate if you explicitly want to have the order-dependence. There may be some rare cases for this, e.g.&nbsp;if you want to say my regression should first explain everything it can by variable A, and then I only want to see if variable B adds something.</p></li>
+<li><p>If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. <span class="citation" data-cites="hector2010analysis">(<a href="5B-References.html#ref-hector2010analysis" role="doc-biblioref">Hector, Von Felten, and Schmid 2010</a>)</span>. As you will see when reading this, most of these discussion evolve around your exact definition of the “R2 of an interaction” and what exactly you want to test.</p></li>
+</ul>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Danger
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has a equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.</p>
+<p>For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">scale</span>(Temp) <span class="sc">*</span> <span class="fu">scale</span>(Wind), <span class="at">data =</span> airquality)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Temp <span class="sc">*</span> Wind, <span class="at">data =</span> airquality)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"II"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit2, <span class="at">type =</span> <span class="st">"II"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"III"</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit2, <span class="at">type =</span> <span class="st">"III"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For categorical variables, the same thing can happen - the choice of contrasts (see section on contrasts) will influence the amount of shared variation between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized, because the interaction cannot explain . Let’s do a small example, where we compare a regression with treatment contrasts (which are not orthogonal) to Helmert contrasts (which are orthogonal):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>airquality<span class="sc">$</span>fMonth <span class="ot">=</span> <span class="fu">as.factor</span>(airquality<span class="sc">$</span>Month)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Temp <span class="sc">*</span> fMonth , <span class="at">data =</span> airquality)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Temp <span class="sc">*</span> fMonth , <span class="at">data =</span> airquality,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">contrasts =</span> <span class="fu">list</span>(<span class="at">fMonth =</span> <span class="st">"contr.helmert"</span>))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit1, <span class="at">type =</span> <span class="st">"III"</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit2, <span class="at">type =</span> <span class="st">"III"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s compare the results to an ANOVA without an interaction (note that in this case, type II / III) are identical for all sensible contrasts.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Temp <span class="sc">+</span> fMonth , <span class="at">data =</span> airquality)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(fit1, <span class="at">type =</span> <span class="st">"III"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you run this, you will see that the Helmert contrasts (any other orthogonal contrasts would do as well) match much better with the results of the model without interaction, because they de-correlate the variance explained by the main effects and the interactions. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables.</p>
+</div>
+</div>
 <div class="callout-caution callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -574,7 +645,7 @@ Excercise
 </div>
 </div>
 <div class="callout-tip callout callout-style-simple no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -583,7 +654,7 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Let’s use the model with Wind, Temp, Solar.R, and their interactions. Wind and Temp, and Solar.R and Temp are collinear.</p>
 <div class="cell">
@@ -689,8 +760,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <h3 data-number="3.2.4" class="anchored" data-anchor-id="correcting-partitions-for-complexity"><span class="header-section-number">3.2.4</span> Correcting partitions for complexity</h3>
 <p>A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">as.factor</span>(Day) , <span class="at">data =</span> airquality)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(m))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">as.factor</span>(Day) , <span class="at">data =</span> airquality)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(m))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               Df Sum Sq Mean Sq F value Pr(&gt;F)
 as.factor(Day) 30  41931    1398   1.428  0.104
@@ -698,9 +769,9 @@ Residuals      85  83212     979
 37 observations deleted due to missingness</code></pre>
 </div>
 </div>
-<p>The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the <code>summary.lm()</code> function reports a raw and an adjusted R2 for each model. The adjusted R<sup>2</sup> tries to correct the R<sup>2</sup> for the complexity of the model.</p>
+<p>The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the <code>summary.lm()</code> function reports a raw and an adjusted R<sup>2</sup> for each model. The adjusted R<sup>2</sup> tries to correct the R<sup>2</sup> for the complexity of the model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -758,8 +829,104 @@ F-statistic: 1.428 on 30 and 85 DF,  p-value: 0.1039</code></pre>
 <li><p>If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance</p></li>
 <li><p>Alternatively, if the true variance is really crucial for your study, you can adjust R<sup>2</sup> by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H<sub>0</sub>, this will be a conservative estimate.</p></li>
 </ul>
+</section>
+</section>
+<section id="case-studies" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">3.3</span> Case studies</h2>
+<section id="plant-height" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="plant-height"><span class="header-section-number">3.3.1</span> Plant Height</h3>
+<p>Let’s look at our plant height case study from the previous chapter. Which type of ANOVA should you run to analyze the model? Compare results to “less appropriate” alternatives.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> temp <span class="sc">*</span> lat, <span class="at">data =</span> plantHeight)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = loght ~ temp * lat, data = plantHeight)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.97905 -0.45112  0.01062  0.42852  1.74054 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  2.917e-01  5.617e-01   0.519    0.604
+temp         2.596e-02  2.040e-02   1.273    0.205
+lat         -8.948e-03  9.711e-03  -0.921    0.358
+temp:lat     7.738e-05  3.061e-04   0.253    0.801
+
+Residual standard error: 0.6869 on 174 degrees of freedom
+Multiple R-squared:  0.2504,    Adjusted R-squared:  0.2375 
+F-statistic: 19.37 on 3 and 174 DF,  p-value: 6.95e-11</code></pre>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We have correlations between variables and an interaction, so the conservative approach would be to run a type III ANOVA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"III"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Anova Table (Type III tests)
+
+Response: loght
+            Sum Sq  Df F value Pr(&gt;F)
+(Intercept)  0.127   1  0.2696 0.6043
+temp         0.764   1  1.6198 0.2048
+lat          0.401   1  0.8490 0.3581
+temp:lat     0.030   1  0.0639 0.8007
+Residuals   82.089 174               </code></pre>
+</div>
+</div>
+<p>An alternative, in which main effects are treated as in type III (shared variance discarded),but interactions is treated as in type I (added on top) is type II.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit, <span class="at">type =</span> <span class="st">"II"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Anova Table (Type II tests)
+
+Response: loght
+          Sum Sq  Df F value  Pr(&gt;F)  
+temp       1.888   1  4.0014 0.04702 *
+lat        0.421   1  0.8922 0.34620  
+temp:lat   0.030   1  0.0639 0.80074  
+Residuals 82.089 174                  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Arguably not appropriate (because order dependent, and here we have strong collinearity) is a type I ANOVA:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+temp          1  26.97  26.967  57.160 2.21e-12 ***
+lat           1   0.42   0.421   0.892    0.346    
+temp:lat      1   0.03   0.030   0.064    0.801    
+Residuals   174  82.09   0.472                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-hector2010analysis" class="csl-entry" role="doc-biblioentry">
+Hector, Andy, Stefanie Von Felten, and Bernhard Schmid. 2010. <span>“Analysis of Variance with Unbalanced Data: An Update for Ecology &amp; Evolution.”</span> <em>Journal of Animal Ecology</em> 79 (2): 308–16.
+</div>
+</div>
 </section>
 </section>
 

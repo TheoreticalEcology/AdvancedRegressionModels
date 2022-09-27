@@ -140,6 +140,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -350,7 +351,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#categorical-predictors" id="toc-categorical-predictors" class="nav-link" data-scroll-target="#categorical-predictors"> <span class="header-section-number">2.6</span> Categorical Predictors</a>
   <ul class="collapse">
-  <li><a href="#r-models-fit-treatment-contrasts" id="toc-r-models-fit-treatment-contrasts" class="nav-link" data-scroll-target="#r-models-fit-treatment-contrasts"> <span class="header-section-number">2.6.1</span> R models fit treatment contrasts</a></li>
+  <li><a href="#understanding-contrasts" id="toc-understanding-contrasts" class="nav-link" data-scroll-target="#understanding-contrasts"> <span class="header-section-number">2.6.1</span> Understanding contrasts</a></li>
   <li><a href="#anova" id="toc-anova" class="nav-link" data-scroll-target="#anova"> <span class="header-section-number">2.6.2</span> ANOVA</a></li>
   <li><a href="#post-hoc-tests" id="toc-post-hoc-tests" class="nav-link" data-scroll-target="#post-hoc-tests"> <span class="header-section-number">2.6.3</span> Post-Hoc Tests</a></li>
   <li><a href="#compact-letter-display" id="toc-compact-letter-display" class="nav-link" data-scroll-target="#compact-letter-display"> <span class="header-section-number">2.6.4</span> Compact Letter Display</a></li>
@@ -849,8 +850,8 @@ F-statistic: 108.5 on 1 and 114 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><img src="2A-LinearRegression_files/figure-html/chunk_chapter3_chunk27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<section id="r-models-fit-treatment-contrasts" class="level3" data-number="2.6.1">
-<h3 data-number="2.6.1" class="anchored" data-anchor-id="r-models-fit-treatment-contrasts"><span class="header-section-number">2.6.1</span> R models fit treatment contrasts</h3>
+<section id="understanding-contrasts" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="understanding-contrasts"><span class="header-section-number">2.6.1</span> Understanding contrasts</h3>
 <p>Let’s fit an <code class="sourceCode r"><span class="fu">lm</span>()</code> now with the categorical explanatory variable group. They syntax is the same as before</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(weight <span class="sc">~</span> group, <span class="at">data =</span> PlantGrowth)</span>
@@ -966,7 +967,7 @@ Multiple R-squared:  0.2641,    Adjusted R-squared:  0.2096
 F-statistic: 4.846 on 2 and 27 DF,  p-value: 0.01591</code></pre>
 </div>
 </div>
-<p>What we are using here is Helmert contrasts, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see <a href="https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x">this paper</a>.</p>
+<p>What we are using here is Helmert contrasts, which contrast the second level with the first, the third with the average of the first two, and so on. Which contrasts make most sense depends on the question. For more details, see chapter 10 in Stéphanie M. van den Berg’s <a href="https://bookdown.org/pingapang9/linear_models_bookdown/contrasts.html#introduction-2">book “Analysing Data using Linear Models”</a> and also <a href="https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2010.00012.x">this paper</a>.</p>
 </div>
 </div>
 </div>
@@ -2007,7 +2008,7 @@ Excursion: randomization null models
 -5.550923 </code></pre>
 </div>
 </div>
-<p>Next, we perform the parametric bootstrap</p>
+<p>Next, we perform the non-parametric bootstrap</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>performBootstrap <span class="ot">=</span> <span class="cf">function</span>(){</span>
 <span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>  sel <span class="ot">=</span> <span class="fu">sample.int</span>(<span class="at">n =</span> <span class="fu">nrow</span>(airquality), <span class="at">replace =</span> T)</span>
@@ -2031,7 +2032,7 @@ Excursion: randomization null models
 <pre><code>[1] 0.8314342</code></pre>
 </div>
 </div>
-<p>We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by summary.lm()</p>
+<p>We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by <code>summary.lm()</code></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -2108,7 +2109,7 @@ t1* -5.550923 -0.04177248   0.8113522</code></pre>
 </section>
 <section id="parametric-bootstrap" class="level3" data-number="2.12.2">
 <h3 data-number="2.12.2" class="anchored" data-anchor-id="parametric-bootstrap"><span class="header-section-number">2.12.2</span> Parametric bootstrap</h3>
-<p>The non-parametric bootstrap does the same thing, but the data is not re-sampled, but generated from the fitted model. This can be done conveniently in R as long as the regression package implements a simulate() function that works on the fitted model.</p>
+<p>The non-parametric bootstrap does the same thing, but the data is not re-sampled, but generated from the fitted model. This can be done conveniently in R as long as the regression package implements a <code>simulate()</code> function that works on the fitted model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>performBootstrapParametric <span class="ot">=</span> <span class="cf">function</span>(){</span>
 <span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -2359,7 +2360,10 @@ Solution
 <div class="cell">
 <div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>temp)</span>
 <span id="cb152-2"><a href="#cb152-2" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>lat)</span>
-<span id="cb152-3"><a href="#cb152-3" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sNPP <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>NPP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb152-3"><a href="#cb152-3" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sNPP <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>NPP)</span>
+<span id="cb152-4"><a href="#cb152-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb152-5"><a href="#cb152-5" aria-hidden="true" tabindex="-1"></a><span class="co"># relevel </span></span>
+<span id="cb152-6"><a href="#cb152-6" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>growthform2 <span class="ot">=</span> <span class="fu">relevel</span>(<span class="fu">as.factor</span>(plantHeight<span class="sc">$</span>growthform), <span class="st">"Herb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol type="1">
 <li><strong>NPP or Temp?</strong></li>
@@ -2395,31 +2399,31 @@ F-statistic:  33.5 on 2 and 169 DF,  p-value: 5.553e-13</code></pre>
 <li><strong>Interaction with growth form</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> growthform <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight)</span>
+<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> growthform2 <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight)</span>
 <span id="cb155-2"><a href="#cb155-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = loght ~ growthform * sTemp, data = plantHeight)
+lm(formula = loght ~ growthform2 * sTemp, data = plantHeight)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
 -1.19634 -0.21217 -0.00997  0.22750  1.62398 
 
 Coefficients: (2 not defined because of singularities)
-                            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)                 0.243690   0.371618   0.656  0.51294    
-growthformHerb             -0.554438   0.376780  -1.472  0.14314    
-growthformHerb/Shrub       -0.061534   0.525627  -0.117  0.90696    
-growthformShrub             0.008361   0.375690   0.022  0.98227    
-growthformShrub/Tree        0.402650   0.609318   0.661  0.50969    
-growthformTree              1.031568   0.376037   2.743  0.00679 ** 
-sTemp                      -0.040601   0.056548  -0.718  0.47382    
-growthformHerb:sTemp        0.244410   0.077661   3.147  0.00197 ** 
-growthformHerb/Shrub:sTemp        NA         NA      NA       NA    
-growthformShrub:sTemp       0.347767   0.079194   4.391 2.05e-05 ***
-growthformShrub/Tree:sTemp  0.239796   0.527212   0.455  0.64985    
-growthformTree:sTemp              NA         NA      NA       NA    
+                             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                 -0.310748   0.062150  -5.000 1.51e-06 ***
+growthform2Fern              0.624160   0.375650   1.662 0.098586 .  
+growthform2Herb/Shrub        0.456394   0.377088   1.210 0.227967    
+growthform2Shrub             0.562799   0.083100   6.773 2.36e-10 ***
+growthform2Shrub/Tree        0.957088   0.486858   1.966 0.051069 .  
+growthform2Tree              1.586005   0.080756  19.640  &lt; 2e-16 ***
+sTemp                        0.203808   0.053231   3.829 0.000185 ***
+growthform2Fern:sTemp              NA         NA      NA       NA    
+growthform2Herb/Shrub:sTemp        NA         NA      NA       NA    
+growthform2Shrub:sTemp       0.103357   0.076860   1.345 0.180636    
+growthform2Shrub/Tree:sTemp -0.004614   0.526866  -0.009 0.993024    
+growthform2Tree:sTemp       -0.244410   0.077661  -3.147 0.001971 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 

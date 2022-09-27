@@ -123,7 +123,7 @@ There are other types of ANOVA that avoid this problem. The so-called type II AN
 car::Anova(fit, type = "II")
 ```
 
-There is also type III, which is as type II, but avoids a similar problem for interactions. This is usually the most conservative setting:
+There is also type III, which is as type II, but avoids a similar problem for interactions, i.e. it discards the variance that is shared between main effects and interactions. Note that numeric variables should be centered and categorical variables should have orthogonal contrast when running a type III ANOVA (see below). 
 
 ```{r chunk_chapter3_chunk66, echo=TRUE, eval=TRUE}
 car::Anova(fit, type = "III")
@@ -141,12 +141,28 @@ Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it d
 
 -   If not, type I is really only appropriate if you explicitly want to have the order-dependence. There may be some rare cases for this, e.g. if you want to say my regression should first explain everything it can by variable A, and then I only want to see if variable B adds something.
 
--   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, it also depends on the purpose of what you want to do: do you want to partition R2 between model components, test significance of factors, ...
+-   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test. 
 
 ::: callout-caution
-Note that for categorical predictors, apart from collinearity and balance, also the choice of contrasts (see section on contrasts) will influence the amount of shared variation, in particular regarding the variance component shared between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables.
+Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has a equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone. 
 
-```{r}
+For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:
+
+```{r, results='hide'}
+fit = lm(Ozone ~ scale(Temp) * scale(Wind), data = airquality)
+fit2 = lm(Ozone ~ Temp * Wind, data = airquality)
+
+car::Anova(fit, type = "II")
+car::Anova(fit2, type = "II")
+
+
+car::Anova(fit, type = "III")
+car::Anova(fit2, type = "III")
+```
+
+For categorical variables, the same thing can happen - the choice of contrasts (see section on contrasts) will influence the amount of shared variation between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized, because the interaction cannot explain . Let's do a small example, where we compare a regression with treatment contrasts (which are not orthogonal) to Helmert contrasts (which are orthogonal):
+
+```{r, results='hide'}
 airquality$fMonth = as.factor(airquality$Month)
 fit1 = lm(Ozone ~ Temp * fMonth , data = airquality)
 fit2 = lm(Ozone ~ Temp * fMonth , data = airquality,
@@ -156,13 +172,16 @@ car::Anova(fit1, type = "III")
 car::Anova(fit2, type = "III")
 ```
 
-Note that the Helmert contrasts match much better with the results of the model without interaction. 
+Let's compare the results to an ANOVA without an interaction (note that in this case, type II / III) are identical for all sensible contrasts. 
 
-```{r}
+```{r, results='hide'}
 fit1 = lm(Ozone ~ Temp + fMonth , data = airquality)
 car::Anova(fit1, type = "III")
 ```
+
+If you run this, you will see that the Helmert contrasts (any other orthogonal contrasts would do as well) match much better with the results of the model without interaction, because they de-correlate the variance explained by the main effects and the interactions. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables. 
 :::
+
 
 ::: {.callout-caution icon="false"}
 ###### Excercise

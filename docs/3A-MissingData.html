@@ -158,6 +158,7 @@ div.csl-indent {
 <meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -467,7 +468,11 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>airquality[<span class="fu">complete.cases</span>(airquality), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed.</p>
+<p>Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>airquality <span class="ot">=</span> airquality[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="missing-at-random" class="level3" data-number="5.0.3">
 <h3 data-number="5.0.3" class="anchored" data-anchor-id="missing-at-random"><span class="header-section-number">5.0.3</span> Missing at random</h3>
@@ -483,23 +488,25 @@ Note
 <h3 data-number="5.0.4" class="anchored" data-anchor-id="imputation"><span class="header-section-number">5.0.4</span> Imputation</h3>
 <p>The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example <code>missRanger</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(missRanger)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>airqualityImp<span class="ot">&lt;-</span> <span class="fu">missRanger</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(missRanger)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>airqualityImp<span class="ot">&lt;-</span> <span class="fu">missRanger</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..</code></pre>
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
+iter 5: .</code></pre>
 </div>
 </div>
 <p>Let’s fit the model to this imputed data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airqualityImp)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airqualityImp)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -507,219 +514,221 @@ lm(formula = Ozone ~ Wind + Temp, data = airqualityImp)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--40.082 -11.826  -3.890   9.857 102.237 
+-41.251 -13.695  -2.856  11.390 100.367 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) -64.7867    18.1401  -3.571 0.000478 ***
-Wind         -2.8531     0.5207  -5.479 1.76e-07 ***
-Temp          1.7315     0.1938   8.934 1.38e-15 ***
+(Intercept) -71.0332    23.5780  -3.013   0.0032 ** 
+Wind         -3.0555     0.6633  -4.607 1.08e-05 ***
+Temp          1.8402     0.2500   7.362 3.15e-11 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 20.11 on 150 degrees of freedom
-Multiple R-squared:  0.5661,    Adjusted R-squared:  0.5603 
-F-statistic: 97.86 on 2 and 150 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 21.85 on 113 degrees of freedom
+Multiple R-squared:  0.5687,    Adjusted R-squared:  0.5611 
+F-statistic:  74.5 on 2 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
-iter 5: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
+iter 5: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
+iter 5: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
+iter 5: .
+iter 6: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
-iter 5: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
+iter 5: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..
+iter 1: .
+iter 2: .
+iter 3: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
+iter 1: .
+iter 2: .
+iter 3: .
+iter 4: .
 
 Missing value imputation by random forests
 
-  Variables to impute:      Ozone, Solar.R
+  Variables to impute:      Solar.R
   Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: ..
-iter 2: ..
-iter 3: ..
-iter 4: ..</code></pre>
+iter 1: .
+iter 2: .
+iter 3: .</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit 20 models</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(airqualityMImp, <span class="cf">function</span>(x) <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, x))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use mice package to compute corrected p-values</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(mice)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pooled_fit <span class="ot">&lt;-</span> <span class="fu">pool</span>(models)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit 20 models</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(airqualityMImp, <span class="cf">function</span>(x) <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, x))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use mice package to compute corrected p-values</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(mice)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pooled_fit <span class="ot">&lt;-</span> <span class="fu">pool</span>(models)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         term   estimate  std.error statistic       df      p.value
-1 (Intercept) -66.424133 18.1751044 -3.654677 147.4853 3.573255e-04
-2        Wind  -2.821291  0.5218299 -5.406533 147.4209 2.531607e-07
-3        Temp   1.748688  0.1941289  9.007873 147.5775 8.881784e-16</code></pre>
+1 (Intercept) -71.033218 23.5779922 -3.012692 111.0406 3.207552e-03
+2        Wind  -3.055491  0.6632503 -4.606844 111.0406 1.096691e-05
+3        Temp   1.840179  0.2499634  7.361793 111.0406 3.377387e-11</code></pre>
 </div>
 </div>
 <p>More on missing data and imputation methods in Stef van Buuren’s book <a href="https://stefvanbuuren.name/fimd/">“Flexible Imputation of Missing Data”</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mitools)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(smi)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>models<span class="ot">&lt;-</span><span class="fu">with</span>(smi, <span class="fu">glm</span>(drinkreg<span class="sc">~</span>wave<span class="sc">*</span>sex,<span class="at">family=</span><span class="fu">binomial</span>()))</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">MIcombine</span>(models))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mitools)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(smi)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>models<span class="ot">&lt;-</span><span class="fu">with</span>(smi, <span class="fu">glm</span>(drinkreg<span class="sc">~</span>wave<span class="sc">*</span>sex,<span class="at">family=</span><span class="fu">binomial</span>()))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">MIcombine</span>(models))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Multiple imputation results:
       with(smi, glm(drinkreg ~ wave * sex, family = binomial()))
