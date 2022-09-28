@@ -290,7 +290,7 @@ Overdispersion can be caused by misfit.
 testDispersion(res, alternative = "greater")
 ```
 
-s.
+s.  
 
 Underdispersion:
 
@@ -521,16 +521,15 @@ The seedBank data set in the EcoData package includes observation on seed bank p
 
 The scientific question is if the ability of plants to build a seed bank depends on their seed traits (see help).
 
-The data also contains data on environmental factors and plant traits. You should consider if it is useful to add them to the analysis. 
-
+The data also contains data on environmental factors and plant traits. You should consider if it is useful to add them to the analysis.
 
 Tasks:
 
 1.  Fit a lm/lmm with SBDensity as response
 
-2.  Add phylogenetic correlation structure
+2.  Bonus: Add phylogenetic correlation structure
 
-3.  Fit a glm/glmm with SBPA as response and with phylogenetic correlation structure
+3.  Fit a glm/glmm with SBPA as response (Bonus: add phylogenetic correlation structure)
 
 ::: {.callout-caution icon="false"}
 #### Solution for SBDensity (lmm)
@@ -549,96 +548,118 @@ data$sTemp = scale(data$Temp)
 data$sHum = scale(data$Humidity)
 data$sNitro = scale(data$Nitrogen)
 data$sGrazing = scale(data$Grazing)
+data$sMGT = scale(data$MGT)
+data$sJwidth = scale(data$Jwidth)
+data$sEpiStein = scale(data$EpiStein)
+data$sMGR = scale(data$MGR)
+data$sT95 = scale(data$T95)
 
 # Let's remove NAs beforehand:
 rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
-                               sGrazing + Site + Species, data = data))
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
+                               sMGR + sEpiStein + sT95 +
+                               sJwidth + sGrazing + Site + Species, data = data))
 data = data[rows, ]
 ```
 
-
 The response is highly skewed, so it makes sense to log-transform:
-
 
 ```{r}
 hist(data$SBDensity)
 data$logSBDensity = log(data$SBDensity + 1)
 ```
 
-Let's fit a base model
+Let's fit a base model with with our hypothesis that logSBDensity \~ sSeedMass (Seed Mass) + sSeedShape + sSeedN (Number of Seeds).
 
-* added seed traits
-* added environment as possible confounders
+We set random intercepts on species and sites because we assume that there are species and site specific variations:
 
 ```{r}
 
 model1 = lmer(logSBDensity~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
+                sSeedMass + sSeedShape + sSeedN + 
                 (1|Site) + (1|Species),
               data = data)
 
 summary(model1)
 ```
 
-**Residual checks:**
+Environmental factors can be potential confounders, let's add them to the model:
 
-```{r, fig.width=9, fig.height=12}
-plot(simulateResiduals(model1, re.form=NULL))
+```{r}
+
+model2 = lmer(logSBDensity~
+                sSeedMass + sSeedShape + sSeedN +
+                 sAltitude + sHum + 
+                (1|Site) + (1|Species),
+              data = data)
+
+summary(model2)
 ```
+
+sSeedShape and sSeedN are now statistically significant!
+
+**Question**:
+
+What about the germination temperatures, T50/T95?
+
+**Answer:**
+
+They could be mediators, Seed Shape -\> T95 -\> SBDensity, so it is up to if you want to include them or not!
+
+**Residual checks:**
 
 Check for missing random slopes:
 
-```{r}
-plot(model1, resid(.) ~ sAltitude | Species, abline = 1)
+```{r, fig.width=10, fig.height=15}
+plot(model2, resid(., rescale=TRUE) ~ fitted(.) | Species, abline = 1)
 ```
 
-Add random slope for sAltitude (but without a correlation between the two random effects):
+There seems to be a pattern!
+
+```{r, fig.width=10, fig.height=15}
+plot(model2, resid(., rescale=TRUE) ~ sAltitude | Species, abline = 1)
+```
+
+The pattern seems to be caused by sAltitude (check `plot(model2, resid(., rescale=TRUE) ~ sSeedMass | Species, abline = 1)` )
+
+**Random slope model**
+
+Let's add a random slope on sAlitude:
 
 ```{r}
 
-model2 = lmer(logSBDensity ~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (sAltitude + sSeedN |Species),
+model3 = lmer(logSBDensity~
+                sSeedMass + sSeedShape + sSeedN +
+                sAltitude + sHum + 
+                (1|Site) + (sAltitude|Species),
               data = data)
-summary(model2)
 
-```
-
-Check residuals:
-
-```{r}
-res = simulateResiduals(model2, re.form=NULL, plot=TRUE)
-```
-
-Residuals do not look perfect, variance is not constant:
-
-```{r}
-plotResiduals(res, data$sAltitude)
-plotResiduals(res, data$sSeedMass)
-```
-
-2.  **Modeling variance with glmmTMB**
-
-```{r}
-model3 = glmmTMB(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (sAltitude||Species),
-              dispformula = ~sAltitude + sSeedMass + sSeedShape +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing,
-              data = data)
 summary(model3)
-plot(simulateResiduals(model3))
 ```
 
-Residuals look worse but they are unconditioned
+**Residual checks:**
+
+```{r}
+plot(simulateResiduals(model3, re.form=NULL))
+```
+
+There seems to be dispersion problem.
+
+**Bonus: Modeling variance with glmmTMB**
+
+```{r}
+model4 = glmmTMB(logSBDensity~
+                sSeedMass + sSeedShape + sSeedN +
+                sAltitude + sHum + 
+                (1|Site) + (sAltitude|Species),
+              dispformula = ~sAltitude + sHum,
+              data = data)
+summary(model4)
+```
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution for SBDensity (lmm) with phylogenetic correlation structure
+#### Bonus: Solution for SBDensity (lmm) with phylogenetic correlation structure
 
 Prepare phylogeny:
 
@@ -664,9 +685,9 @@ nlme:
 
 ```{r}
 library(nlme)
-model4 = gls(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing,
+model4 = gls(logSBDensity ~
+              sSeedMass + sSeedShape + sSeedN +
+                 sAltitude + sHum,
              correlation = corBrownian(phy = phyl.upd2, form =~ Species),
              data = data)
 summary(model4)
@@ -696,14 +717,14 @@ corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
 
 data$dummy = factor(rep(0, nrow(data)))
 nsp = length(unique(data$Species))
-model5 = glmmTMB(log(SBDensity+1)~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (0+sAltitude||Species) +
+model5 = glmmTMB(logSBDensity~
+                sSeedMass + sSeedShape + sSeedN + 
+                sAltitude + sHum +
+                (1|Site) + (sAltitude|Species) +
                 (1+Species|dummy),
-              dispformula = ~sAltitude + sSeedMass + sSeedShape,
-              map=list(theta=factor(c(0,0, rep(1,nsp),rep(NA,length(corrs))) )),
-              start=list(theta=c(0,0, rep(0,nsp),corrs)),
+              dispformula = ~sAltitude + sHum,
+              map=list(theta=factor(c(rep(0, 4), rep(1,nsp),rep(NA,length(corrs))) )),
+              start=list(theta=c(rep(0, 4), rep(0,nsp),corrs)),
               data = data)
 summary(model5)
 simulateResiduals(model5, plot = TRUE) # Unconditional simulations
@@ -727,11 +748,17 @@ data$sTemp = scale(data$Temp)
 data$sHum = scale(data$Humidity)
 data$sNitro = scale(data$Nitrogen)
 data$sGrazing = scale(data$Grazing)
+data$sMGT = scale(data$MGT)
+data$sJwidth = scale(data$Jwidth)
+data$sEpiStein = scale(data$EpiStein)
+data$sMGR = scale(data$MGR)
+data$sT95 = scale(data$T95)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro +
-                               sGrazing + Site + Species, data = data))
+rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
+                               sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
+                               sMGR + sEpiStein + sT95 +
+                               sJwidth + sGrazing + Site + Species, data = data))
 data = data[rows, ]
 
 ```
@@ -739,12 +766,26 @@ data = data[rows, ]
 ```{r}
 
 model1 = glmer(SBPA~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (sAltitude||Species),
-              data = data, family = binomial(), control = glmerControl(optimizer = "bobyqa"))
+                sSeedMass + sSeedShape + sSeedN + 
+                 sAltitude + sHum +
+                (1|Site) + (sAltitude|Species),
+              data = data, family = binomial())
 summary(model1)
 ```
+
+Model did not converge, but there is a trick which often helps. The default optimizer in lme4 is not the best optimizer, changing it to 'bobyqa' often helps with convergence issues
+
+```{r}
+model1 = glmer(SBPA~
+                sSeedMass + sSeedShape + sSeedN + 
+                sAltitude + sHum +
+                (1|Site) + (sAltitude|Species),
+              data = data, family = binomial(),
+              control = glmerControl('bobyqa'))
+summary(model1)
+```
+
+Success, it converged!
 
 **Residual checks:**
 
@@ -754,9 +795,9 @@ Check residuals:
 res = simulateResiduals(model1, re.form=NULL, plot=TRUE)
 ```
 
-Residuals look fine!
+Residuals look good!
 
-**With phylogenetic correlation structure:**
+**Bonus: With phylogenetic correlation structure:**
 
 ```{r}
 dist_phylo = ape::cophenetic.phylo(phyl.upd2) # create distance matrix
@@ -780,12 +821,12 @@ corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
 data$dummy = factor(rep(0, nrow(data)))
 nsp = length(unique(data$Species))
 model6 = glmmTMB(SBPA~
-                sSeedMass + sSeedShape + sSeedN + sSeedPr +
-                sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (0+sAltitude||Species) +
+                sSeedMass + sSeedShape + sSeedN + 
+                sAltitude + sHum +
+                (1|Site) + (sAltitude|Species) +
                 (1+Species|dummy),
-              map=list(theta=factor(c(0,0, rep(1,nsp),rep(NA,length(corrs))) )),
-              start=list(theta=c(0,0, rep(0,nsp),corrs)),
+              map=list(theta=factor(c(rep(0, 4), rep(1,nsp),rep(NA,length(corrs))) )),
+              start=list(theta=c(rep(0, 4), rep(0,nsp),corrs)),
               family = binomial,
               data = data)
 simulateResiduals(model6, plot = TRUE)
