@@ -952,7 +952,13 @@ sexM     -0.337  0.061</code></pre>
 </div>
 <section id="convergence" class="level3" data-number="4.6.1">
 <h3 data-number="4.6.1" class="anchored" data-anchor-id="convergence"><span class="header-section-number">4.6.1</span> Convergence</h3>
-<p>If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by <code>summary()</code>. Here, we have no problems, but we’ll see examples of this as we go on</p>
+<p>If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by <code>summary()</code>. Here, we have no problems, but we’ll see examples of this as we go on.</p>
+<p>There are different types of convergence problems that you can encounter:</p>
+<ul>
+<li>Warnings about scaling and centering -&gt; just do it, it doesn’t cost you!</li>
+<li>The warning “boundary (singular) fit: see help(‘isSingular’)” (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -&gt; often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. In random slope models, it often helps to move from | to || (supressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect</li>
+<li>Optimizer / convergence warnings: use glmerControl() to change the optimizer to bobyqa and possibly increase the number of iterations.</li>
+</ul>
 </section>
 <section id="observation-level-residual-plots" class="level3" data-number="4.6.2">
 <h3 data-number="4.6.2" class="anchored" data-anchor-id="observation-level-residual-plots"><span class="header-section-number">4.6.2</span> Observation-level residual plots</h3>

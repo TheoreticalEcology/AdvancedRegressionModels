@@ -348,6 +348,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#zero-inflation" id="toc-zero-inflation" class="nav-link" data-scroll-target="#zero-inflation"> <span class="header-section-number">8.3.3</span> Zero-inflation</a></li>
   </ul></li>
   <li><a href="#interpreting-interactions-in-glms" id="toc-interpreting-interactions-in-glms" class="nav-link" data-scroll-target="#interpreting-interactions-in-glms"> <span class="header-section-number">8.4</span> Interpreting interactions in GLMs</a></li>
+  <li><a href="#new-considerations-for-glmms" id="toc-new-considerations-for-glmms" class="nav-link" data-scroll-target="#new-considerations-for-glmms"> <span class="header-section-number">8.5</span> New considerations for GLMMs</a>
+  <ul class="collapse">
+  <li><a href="#unconditinal-vs.-marginal-predictions" id="toc-unconditinal-vs.-marginal-predictions" class="nav-link" data-scroll-target="#unconditinal-vs.-marginal-predictions"> <span class="header-section-number">8.5.1</span> Unconditinal vs.&nbsp;marginal predictions</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/4A-GLMs.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -901,7 +905,7 @@ dispersion = 3.9152, p-value &lt; 2.2e-16
 alternative hypothesis: two.sided</code></pre>
 </div>
 </div>
-<p>OK, often the dispersion problem is caused by structural problems. Let’s add a random effect for site, which makes sense.</p>
+<p>OK, often the dispersion problem is caused by structural problems. Let’s add a random effect for site, which makes sense. We can do so using the function lme4::glmer, which adds the same extensions to glm as lmer adds to lm. This means we can use the usual random effect syntax we have used before.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glmer</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), </span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -926,7 +930,7 @@ alternative hypothesis: two.sided</code></pre>
 <p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let’s switch to a negative binomial model, using glmmTMB</p>
+<p>This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let’s switch to a negative binomial model. This could be fit with lme4, but it is more convenient to use the package glmmTMB, which has the same syntax as lme4, but more advanced options.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">data =</span> Salamanders)</span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m4, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1206,8 +1210,36 @@ Note
 <p>If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.</p>
 </div>
 </div>
+</section>
+<section id="new-considerations-for-glmms" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="new-considerations-for-glmms"><span class="header-section-number">8.5</span> New considerations for GLMMs</h2>
+<p>As we saw, in principle, random effects can be added to GLMs very much in the same way as before. Note, however, that there is a conceptual difference:</p>
+<ol type="1">
+<li><p>In an LMM, we had y = f(x) + RE + residual, where both RE and residual error were normal distributions</p></li>
+<li><p>In a GLMM, we have y = dist &lt;- link^-2 &lt;- f(x) + RE, so the normally distributed RE goes into another distribution via the link function</p></li>
+</ol>
+<p>This has a number of consequences that may be unexpected if you don’t think about it.</p>
+<section id="unconditinal-vs.-marginal-predictions" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="unconditinal-vs.-marginal-predictions"><span class="header-section-number">8.5.1</span> Unconditinal vs.&nbsp;marginal predictions</h3>
+<p>One of those is that, if you have a nonlinear link function, predictions based on the fixed effects (unconditional) will not correspond to the mean of your data, or the average of the model predictions including the random effect (marginal predictions). To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7310586</code></pre>
+</div>
+</div>
+<p>Now, let’s try to see what the average (marginal) prediction over all random effects is. We add a random effect with 20 groups, sd = 1. In this case, there will be additional variation around the random intercept.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">plogis</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">20</span>, <span class="at">sd =</span> <span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6966425</code></pre>
+</div>
+</div>
+<p>The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data.</p>
+<p>Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

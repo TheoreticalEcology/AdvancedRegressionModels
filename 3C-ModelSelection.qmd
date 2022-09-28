@@ -408,9 +408,10 @@ includes all possible 2nd-order interactions between the variables in your model
 
 ```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE, collapse=TRUE}
 library(EcoData)
+library(MASS)
 head(plantHeight)
 fullModel <- lm(loght ~ (growthform + Family + lat + long + alt + temp + NPP )^2, data = plantHeight)
-selectedModel = stepAIC(fullModel)
+selectedModel = stepAIC(fullModel, trace = 0)
 summary(selectedModel)
 ```
 

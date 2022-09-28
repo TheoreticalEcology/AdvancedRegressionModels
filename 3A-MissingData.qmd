@@ -72,13 +72,12 @@ To create a dataset with all observations that contain NAs removed, use
 airquality[complete.cases(airquality), ]
 ```
 
-Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax 
+Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax
 
 ```{r, results='hide'}
 rows = rownames(model.matrix(Ozone ~ Wind + Temp, data = airquality))
 airquality = airquality[rows, ]
 ```
-
 
 ### Missing at random
 
@@ -94,7 +93,7 @@ The easiest cases is arguably MCAR = missing completely at random - in this case
 
 The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example `missRanger`
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=F, results='hide'}
 library(missRanger)
 airqualityImp<- missRanger(airquality)
 ```
@@ -106,7 +105,7 @@ fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
 summary(fit)
 ```
 
-The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
+The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.ze
 
 ```{r, warning=F, message=F}
 # run 20 imputations
@@ -128,5 +127,3 @@ data(smi)
 models<-with(smi, glm(drinkreg~wave*sex,family=binomial()))
 summary(MIcombine(models))
 ```
-
-Some data analysis techniques are not robust to missingness, and require to "fill in", or impute the missing data. Rubin (1987) argued that repeating imputation even a few times (5 or less) enormously improves the quality of estimation.\[2\] For many practical purposes, 2 or 3 imputations capture most of the relative efficiency that could be captured with a larger number of imputations. However, a too-small number of imputations can lead to a substantial loss of statistical power, and some scholars now recommend 20 to 100 or more.\[12\] Any multiply-imputed data analysis must be repeated for each of the imputed data sets and, in some cases, the relevant statistics must be combined in a relatively complicated way.\[2\]

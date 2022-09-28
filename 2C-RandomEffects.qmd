@@ -245,7 +245,6 @@ There are a large number of packages to fit mixed models in R. The main packages
     `(1 | group1) + (1 | group2)`{.R}.
 
 ::: {.callout-tip collapse="true"}
-
 #### More on crossed vs. nested REs
 
 There is often confusion about the behavior and meaning of crossed vs. nested REs. From the statistical / mathematical side, there is no difference between them, there are just REs. Crossed vs. nested is a shorthand to tell you how the data was coded.
@@ -282,7 +281,7 @@ summary(m3)
 
 ```
 
-If you check the summary of m3, now we also have 4055 levels for uniqueStudent, and the results are identical to the nested model version. 
+If you check the summary of m3, now we also have 4055 levels for uniqueStudent, and the results are identical to the nested model version.
 :::
 
 ### nlme
@@ -357,7 +356,7 @@ The plot shows that random effect estimates are biased towards the grand mean, i
 The shrinkage imposed by the RE is equivalent to an L2 (ridge) regression (see section on model selection), or a normally distributed Bayesian prior. You can see this by considering that the log likelihood of a normal distribution is equivalent to a quadratic penalty for deviations from the mean. The difference is that the strength of the penalty, controlled by the RE sd, is estimated. For that reason, the RE shrinkage is also referred to as an example of "adaptive shrinkage".
 :::
 
-This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit. Consider the plantHeight case study we did in the section on linear regression. We saw that, even after re-leveling the predictor, not all interactions could be estimated, because some factor levels had only one observation. 
+This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit. Consider the plantHeight case study we did in the section on linear regression. We saw that, even after re-leveling the predictor, not all interactions could be estimated, because some factor levels had only one observation.
 
 ```{r, results='hide'}
 library(EcoData)
@@ -374,7 +373,7 @@ fit <- lmer(loght ~ sTemp + (sTemp | growthform2) , data = plantHeight)
 ranef(fit)
 ```
 
-The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimatest that is a cost that you have to take into account. 
+The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimatest that is a cost that you have to take into account.
 
 ### When to use what?
 
@@ -409,7 +408,13 @@ summary(mod1)
 
 ### Convergence
 
-If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by `summary()`. Here, we have no problems, but we'll see examples of this as we go on
+If there is a convergence problem, you should usually get a warning. Other signs of convergence problems may be RE estimates that are zero, CIs that are extremely large, or strong correlations in the correlation matrix of the predictors that is reported by `summary()`. Here, we have no problems, but we'll see examples of this as we go on. 
+
+There are different types of convergence problems that you can encounter:
+
+* Warnings about scaling and centering -> just do it, it doesn't cost you!
+* The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. In random slope models, it often helps to move from | to || (supressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
+* Optimizer / convergence warnings: use glmerControl() to change the optimizer to bobyqa and possibly increase the number of iterations. 
 
 ### Observation-level residual plots
 
@@ -490,7 +495,6 @@ plot(mod1, resid(., scaled=TRUE) ~ standLRT | school, abline = 0)
 ```
 
 Looks still good to me, but if we think we see a pattern here, we should introduce a random slope.
-
 
 ## Problems With Mixed Models
 
@@ -782,7 +786,7 @@ We use a dataset on bee colonies infected by the American Foulbrood (AFB) diseas
 
 The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive. (integer, 1 - 24).)
 
-Task: fit an appropriate linear mixed model on this data. 
+Task: fit an appropriate linear mixed model on this data.
 
 ```{r chunk_chapter4_task_3, message=FALSE, warning=FALSE, eval = TRUE, purl=FALSE}
 library(EcoData)
@@ -794,10 +798,9 @@ Perform the data analysis, according to the hypothesis discussed in the course.
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-* Because of the skewed distribution of Spobee, it is better to use log(Spobee + 1) or something similar as response (else you will not get nice residuals)
-* I decided to add BeesN in the regression because it could be a confounder (more on confounding in section on causal inference)
-* It is natural to model hive as a random intercept (1|Hive). I don't expect that the infection ~ spores relationship should be different between hives, but can test for this after fitting the model
-
+-   Because of the skewed distribution of Spobee, it is better to use log(Spobee + 1) or something similar as response (else you will not get nice residuals)
+-   I decided to add BeesN in the regression because it could be a confounder (more on confounding in section on causal inference)
+-   It is natural to model hive as a random intercept (1\|Hive). I don't expect that the infection \~ spores relationship should be different between hives, but can test for this after fitting the model
 
 ```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 library(lme4)
@@ -820,7 +823,7 @@ qqline(x$Hive$`(Intercept)`)
 shapiro.test(x$Hive$`(Intercept)`)
 ```
 
-Looks good. Could also check with DHARMa. The default plot calculates residuals, i.e. residuals based on random effect and residual variation together. This leads to more noise, which, however, I would disregard in this case. 
+Looks good. Could also check with DHARMa. The default plot calculates residuals, i.e. residuals based on random effect and residual variation together. This leads to more noise, which, however, I would disregard in this case.
 
 ```{r}
 simulateResiduals(fit, plot = T)
@@ -841,7 +844,7 @@ plot(fit,
 ```
 :::
 
-### College Student Performance 
+### College Student Performance
 
 The GPA (college grade point average) data is a **longitudinal** data set (also named **panel data**, German: "Längsschnittstudie". A study repeated at several different moments in time, compared to a **cross-sectional study** (German: "Querschnittstudie") which has several participants at *one time*). In this data set, 200 college students and their GPA have been followed 6 consecutive semesters. Look at the GPA data set, which can be found in the `EcoData`{.R} package:
 
@@ -859,7 +862,7 @@ Analyze if the student's GPA improves over time (**occasion**)! Here a few hints
 -   Consider which fixed effect structure you want to fit. For example, you might be interested if males and females differ in their temporal trend
 -   Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
 -   For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
--   After having specified the mixed model, have a look at residuals. 
+-   After having specified the mixed model, have a look at residuals.
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution

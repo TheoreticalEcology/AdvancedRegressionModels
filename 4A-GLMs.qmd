@@ -369,7 +369,7 @@ You can get a more detailed output with the testDispersion function, which also 
 testDispersion(res)
 ```
 
-OK, often the dispersion problem is caused by structural problems. Let's add a random effect for site, which makes sense.
+OK, often the dispersion problem is caused by structural problems. Let's add a random effect for site, which makes sense. We can do so using the function lme4::glmer, which adds the same extensions to glm as lmer adds to lm. This means we can use the usual random effect syntax we have used before.
 
 ```{r}
 m2 = glmer(count ~ spp + mined + (1|site), 
@@ -388,7 +388,7 @@ But when random effects are added, you should prefer to calcualte conditional re
 res = simulateResiduals(m2, plot = T, re.form = NULL)
 ```
 
-This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let's switch to a negative binomial model, using glmmTMB
+This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let's switch to a negative binomial model. This could be fit with lme4, but it is more convenient to use the package glmmTMB, which has the same syntax as lme4, but more advanced options.
 
 ```{r}
 m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamanders)
@@ -502,3 +502,41 @@ To solve this problem, there are a number of glm-specific solutions, for example
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
 :::
+
+## New considerations for GLMMs
+
+As we saw, in principle, random effects can be added to GLMs very much in the same way as before. Note, however, that there is a conceptual difference: 
+
+1. In an LMM, we had y = f(x) + RE + residual, where both RE and residual error were normal distributions
+
+2. In a GLMM, we have y = dist <- link^-2 <- f(x) + RE, so the normally distributed RE goes into another distribution via the link function
+
+This has a number of consequences that may be unexpected if you don't think about it. 
+
+### Unconditinal vs. marginal predictions
+
+One of those is that, if you have a nonlinear link function, predictions based on the fixed effects (unconditional) will not correspond to the mean of your data, or the average of the model predictions including the random effect (marginal predictions). To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale
+
+```{r}
+plogis(1)
+```
+
+Now, let's try to see what the average (marginal) prediction over all random effects is. We add a random effect with 20 groups, sd = 1. In this case, there will be additional variation around the random intercept. 
+
+```{r}
+mean(plogis(1 + rnorm(20, sd = 1)))
+```
+
+The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data. 
+
+Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.  
+
+
+
+
+
+
+
+
+
+

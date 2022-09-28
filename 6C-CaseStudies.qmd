@@ -511,12 +511,18 @@ plot(simulateResiduals(modelJoint))
 library(EcoData)
 library(glmmTMB)
 library(lme4)
+library(lmerTest)
 library(DHARMa)
 library(tidyverse)
 ?EcoData::seedBank
 ```
 
-Look at the seedBank data set in the EcoData package, and find out which of the environmental variables, vegetative traits, and seed traits explain i) the density (SBDensity -\> lm) and the ii) presence-absence (SBPA -\> glm) of a seed bank.
+The seedBank data set in the EcoData package includes observation on seed bank presence and size in different vegetaition plots.
+
+The scientific question is if the ability of plants to build a seed bank depends on their seed traits (see help).
+
+The data also contains data on environmental factors and plant traits. You should consider if it is useful to add them to the analysis. 
+
 
 Tasks:
 
@@ -551,12 +557,28 @@ rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSee
 data = data[rows, ]
 ```
 
+
+The response is highly skewed, so it makes sense to log-transform:
+
+
 ```{r}
-model1 = lmer(log(SBDensity+1)~
+hist(data$SBDensity)
+data$logSBDensity = log(data$SBDensity + 1)
+```
+
+Let's fit a base model
+
+* added seed traits
+* added environment as possible confounders
+
+```{r}
+
+model1 = lmer(logSBDensity~
                 sSeedMass + sSeedShape + sSeedN + sSeedPr +
                 sDormRank + sAltitude + sHum + sNitro + sGrazing +
                 (1|Site) + (1|Species),
-              data = data, control = lmerControl(optimizer = "bobyqa"))
+              data = data)
+
 summary(model1)
 ```
 
@@ -576,11 +598,11 @@ Add random slope for sAltitude (but without a correlation between the two random
 
 ```{r}
 
-model2 = lmer(log(SBDensity+1)~
+model2 = lmer(logSBDensity ~
                 sSeedMass + sSeedShape + sSeedN + sSeedPr +
                 sDormRank + sAltitude + sHum + sNitro + sGrazing +
-                (1|Site) + (sAltitude||Species),
-              data = data, control = lmerControl(optimizer = "bobyqa"))
+                (1|Site) + (sAltitude + sSeedN |Species),
+              data = data)
 summary(model2)
 
 ```

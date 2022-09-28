@@ -1595,11 +1595,14 @@ Solution of multivariate (joint) species distribution model
 <div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
 <span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
 <span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
-<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>?EcoData<span class="sc">::</span>seedBank</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>?EcoData<span class="sc">::</span>seedBank</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Look at the seedBank data set in the EcoData package, and find out which of the environmental variables, vegetative traits, and seed traits explain i) the density (SBDensity -&gt; lm) and the ii) presence-absence (SBPA -&gt; glm) of a seed bank.</p>
+<p>The seedBank data set in the EcoData package includes observation on seed bank presence and size in different vegetaition plots.</p>
+<p>The scientific question is if the ability of plants to build a seed bank depends on their seed traits (see help).</p>
+<p>The data also contains data on environmental factors and plant traits. You should consider if it is useful to add them to the analysis.</p>
 <p>Tasks:</p>
 <ol type="1">
 <li><p>Fit a lm/lmm with SBDensity as response</p></li>
@@ -1636,20 +1639,34 @@ Solution for SBDensity (lmm)
 <span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>                               sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
 <span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>The response is highly skewed, so it makes sense to log-transform:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">lmer</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Species),</span>
-<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
-<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(data<span class="sc">$</span>SBDensity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>logSBDensity <span class="ot">=</span> <span class="fu">log</span>(data<span class="sc">$</span>SBDensity <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s fit a base model</p>
+<ul>
+<li>added seed traits</li>
+<li>added environment as possible confounders</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">lmer</span>(logSBDensity<span class="sc">~</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Species),</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +  
-    sDormRank + sAltitude + sHum + sNitro + sGrazing + (1 | Site) +  
-    (1 | Species)
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: 
+logSBDensity ~ sSeedMass + sSeedShape + sSeedN + sSeedPr + sDormRank +  
+    sAltitude + sHum + sNitro + sGrazing + (1 | Site) + (1 |      Species)
    Data: data
-Control: lmerControl(optimizer = "bobyqa")
 
 REML criterion at convergence: 7518.2
 
@@ -1665,17 +1682,19 @@ Random effects:
 Number of obs: 1729, groups:  Species, 152; Site, 17
 
 Fixed effects:
-             Estimate Std. Error t value
-(Intercept)  1.658057   0.170042   9.751
-sSeedMass   -0.270898   0.145183  -1.866
-sSeedShape  -0.266724   0.164661  -1.620
-sSeedN      -0.172359   0.128990  -1.336
-sSeedPr     -0.136367   0.156356  -0.872
-sDormRank    0.048372   0.157980   0.306
-sAltitude   -0.542500   0.137277  -3.952
-sHum         0.152510   0.139524   1.093
-sNitro      -0.009696   0.143957  -0.067
-sGrazing     0.032975   0.113062   0.292
+              Estimate Std. Error         df t value Pr(&gt;|t|)    
+(Intercept)   1.658057   0.170042  97.308245   9.751 4.49e-16 ***
+sSeedMass    -0.270898   0.145183 176.369125  -1.866  0.06371 .  
+sSeedShape   -0.266724   0.164661 152.234330  -1.620  0.10734    
+sSeedN       -0.172359   0.128990 163.783546  -1.336  0.18333    
+sSeedPr      -0.136367   0.156356 183.207705  -0.872  0.38427    
+sDormRank     0.048372   0.157980 149.354221   0.306  0.75989    
+sAltitude    -0.542500   0.137277  13.580785  -3.952  0.00153 ** 
+sHum          0.152510   0.139524  14.397450   1.093  0.29231    
+sNitro       -0.009696   0.143957  16.424913  -0.067  0.94711    
+sGrazing      0.032975   0.113062  12.798208   0.292  0.77522    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Correlation of Fixed Effects:
            (Intr) sSdMss sSdShp sSeedN sSedPr sDrmRn sAlttd sHum   sNitro
@@ -1692,104 +1711,113 @@ sGrazing   -0.007 -0.006 -0.007 -0.005  0.018 -0.009  0.582 -0.138  0.244</code>
 </div>
 <p><strong>Residual checks:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="864"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="864"></p>
 </div>
 </div>
 <p>Check for missing random slopes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1, <span class="fu">resid</span>(.) <span class="sc">~</span> sAltitude <span class="sc">|</span> Species, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1, <span class="fu">resid</span>(.) <span class="sc">~</span> sAltitude <span class="sc">|</span> Species, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Add random slope for sAltitude (but without a correlation between the two random effects):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">lmer</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
-<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
-<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
-<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">lmer</span>(logSBDensity <span class="sc">~</span></span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude <span class="sc">+</span> sSeedN <span class="sc">|</span>Species),</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +  
-    sDormRank + sAltitude + sHum + sNitro + sGrazing + (1 | Site) +  
-    ((1 | Species) + (0 + sAltitude | Species))
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: 
+logSBDensity ~ sSeedMass + sSeedShape + sSeedN + sSeedPr + sDormRank +  
+    sAltitude + sHum + sNitro + sGrazing + (1 | Site) + (sAltitude +  
+    sSeedN | Species)
    Data: data
-Control: lmerControl(optimizer = "bobyqa")
 
-REML criterion at convergence: 7237.9
+REML criterion at convergence: 7219.7
 
 Scaled residuals: 
      Min       1Q   Median       3Q      Max 
--2.85102 -0.43029 -0.07058  0.23755  3.00951 
+-2.80940 -0.39643 -0.07608  0.22843  3.04833 
 
 Random effects:
- Groups    Name        Variance Std.Dev.
- Species   sAltitude   1.35886  1.1657  
- Species.1 (Intercept) 2.66014  1.6310  
- Site      (Intercept) 0.08619  0.2936  
- Residual              2.79053  1.6705  
+ Groups   Name        Variance Std.Dev. Corr       
+ Species  (Intercept) 2.58762  1.6086              
+          sAltitude   1.32671  1.1518   -0.44      
+          sSeedN      0.23823  0.4881   -0.53 -0.53
+ Site     (Intercept) 0.08944  0.2991              
+ Residual             2.79340  1.6713              
 Number of obs: 1729, groups:  Species, 152; Site, 17
 
 Fixed effects:
-             Estimate Std. Error t value
-(Intercept)  1.548277   0.169725   9.122
-sSeedMass   -0.298316   0.152986  -1.950
-sSeedShape  -0.308888   0.162907  -1.896
-sSeedN      -0.164412   0.121206  -1.356
-sSeedPr     -0.099554   0.158349  -0.629
-sDormRank    0.034997   0.156146   0.224
-sAltitude   -0.535660   0.173463  -3.088
-sHum        -0.009909   0.136515  -0.073
-sNitro       0.161437   0.141643   1.140
-sGrazing     0.110401   0.110261   1.001
+             Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept)   1.50765    0.16899  99.62269   8.921 2.34e-14 ***
+sSeedMass    -0.26501    0.16181 172.05844  -1.638  0.10329    
+sSeedShape   -0.23333    0.15241 144.58536  -1.531  0.12798    
+sSeedN       -0.26431    0.17269   2.63741  -1.530  0.23542    
+sSeedPr      -0.03570    0.12723  28.93148  -0.281  0.78100    
+sDormRank     0.03977    0.14608 145.52747   0.272  0.78581    
+sAltitude    -0.47571    0.17405  33.78923  -2.733  0.00991 ** 
+sHum         -0.01683    0.13768  14.15717  -0.122  0.90443    
+sNitro        0.17669    0.14233  16.31152   1.241  0.23200    
+sGrazing      0.11544    0.11162  12.57778   1.034  0.32051    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Correlation of Fixed Effects:
            (Intr) sSdMss sSdShp sSeedN sSedPr sDrmRn sAlttd sHum   sNitro
-sSeedMass  -0.021                                                        
-sSeedShape -0.042  0.288                                                 
-sSeedN     -0.042  0.078  0.105                                          
-sSeedPr    -0.040 -0.490 -0.328 -0.089                                   
-sDormRank  -0.012 -0.044  0.122 -0.016  0.033                            
-sAltitude  -0.045  0.041 -0.016 -0.012 -0.020 -0.026                     
-sHum        0.016 -0.002 -0.006  0.001 -0.015 -0.005  0.049              
-sNitro     -0.010 -0.002  0.004  0.001  0.014  0.003  0.293 -0.668       
-sGrazing   -0.027 -0.002 -0.006 -0.002  0.016 -0.004  0.447 -0.145  0.249</code></pre>
+sSeedMass  -0.018                                                        
+sSeedShape -0.041  0.282                                                 
+sSeedN     -0.084  0.106  0.076                                          
+sSeedPr    -0.037 -0.524 -0.378 -0.191                                   
+sDormRank  -0.026 -0.004  0.122 -0.191 -0.025                            
+sAltitude  -0.270  0.046 -0.010 -0.071 -0.024 -0.022                     
+sHum        0.018 -0.007 -0.005 -0.010 -0.010 -0.008  0.044              
+sNitro     -0.010  0.008  0.002  0.023  0.001  0.007  0.304 -0.664       
+sGrazing   -0.025  0.001 -0.006  0.007  0.016 -0.003  0.454 -0.145  0.249
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
 </div>
 </div>
 <p>Check residuals:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Residuals do not look perfect, variance is not constant:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sAltitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sAltitude)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sSeedMass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, data<span class="sc">$</span>sSeedMass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-30-2.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-31-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <ol start="2" type="1">
 <li><strong>Modeling variance with glmmTMB</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">=</span> <span class="fu">glmmTMB</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
-<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
-<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span></span>
-<span id="cb93-6"><a href="#cb93-6" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing,</span>
-<span id="cb93-7"><a href="#cb93-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
-<span id="cb93-8"><a href="#cb93-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">=</span> <span class="fu">glmmTMB</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span></span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing,</span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian  ( identity )
 Formula:          
@@ -1842,9 +1870,9 @@ sGrazing     0.09153    0.05656   1.618  0.10562
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Residuals look worse but they are unconditioned</p>
@@ -1864,16 +1892,16 @@ Solution for SBDensity (lmm) with phylogenetic correlation structure
 <div class="callout-body-container callout-body">
 <p>Prepare phylogeny:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geiger)</span>
-<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>species <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>Species)</span>
-<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>species_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Species =</span> species)</span>
-<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(species_df) <span class="ot">=</span> species</span>
-<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">=</span> <span class="fu">name.check</span>(plantPhylo, species_df)</span>
-<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a><span class="co"># drop rest of the species</span></span>
-<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a>phyl.upd <span class="ot">=</span> <span class="fu">drop.tip</span>(plantPhylo, obj<span class="sc">$</span>tree_not_data)</span>
-<span id="cb96-10"><a href="#cb96-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geiger)</span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>species <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>Species)</span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>species_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Species =</span> species)</span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(species_df) <span class="ot">=</span> species</span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">=</span> <span class="fu">name.check</span>(plantPhylo, species_df)</span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a><span class="co"># drop rest of the species</span></span>
+<span id="cb100-9"><a href="#cb100-9" aria-hidden="true" tabindex="-1"></a>phyl.upd <span class="ot">=</span> <span class="fu">drop.tip</span>(plantPhylo, obj<span class="sc">$</span>tree_not_data)</span>
+<span id="cb100-10"><a href="#cb100-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Phylogenetic tree: phyl.upd 
@@ -1908,22 +1936,22 @@ Phylogenetic tree: phyl.upd
                          Juncaceae
                          Luzula</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the names in the tree and in the data set</span></span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name.check</span>(phyl.upd, species_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the names in the tree and in the data set</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name.check</span>(phyl.upd, species_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "OK"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>phyl.upd2 <span class="ot">=</span> <span class="fu">multi2di</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>phyl.upd2 <span class="ot">=</span> <span class="fu">multi2di</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>nlme:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
-<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">=</span> <span class="fu">gls</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
-<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing,</span>
-<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corBrownian</span>(<span class="at">phy =</span> phyl.upd2, <span class="at">form =</span><span class="sc">~</span> Species),</span>
-<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data)</span>
-<span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">=</span> <span class="fu">gls</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing,</span>
+<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corBrownian</span>(<span class="at">phy =</span> phyl.upd2, <span class="at">form =</span><span class="sc">~</span> Species),</span>
+<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data)</span>
+<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generalized least squares fit by REML
   Model: log(SBDensity + 1) ~ sSeedMass + sSeedShape + sSeedN + sSeedPr +      sDormRank + sAltitude + sHum + sNitro + sGrazing 
@@ -1971,36 +1999,36 @@ Degrees of freedom: 1729 total; 1719 residual</code></pre>
 </div>
 <p>glmmTMB (not perfect because lack of support of specific phylogenetic correlation structures):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb103-8"><a href="#cb103-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
-<span id="cb103-9"><a href="#cb103-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
-<span id="cb103-10"><a href="#cb103-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
-<span id="cb103-11"><a href="#cb103-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
-<span id="cb103-12"><a href="#cb103-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
-<span id="cb103-13"><a href="#cb103-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
-<span id="cb103-14"><a href="#cb103-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
-<span id="cb103-15"><a href="#cb103-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb103-16"><a href="#cb103-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb103-17"><a href="#cb103-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb103-18"><a href="#cb103-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-19"><a href="#cb103-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
-<span id="cb103-20"><a href="#cb103-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
-<span id="cb103-21"><a href="#cb103-21" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
-<span id="cb103-22"><a href="#cb103-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb103-23"><a href="#cb103-23" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb103-24"><a href="#cb103-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">0</span><span class="sc">+</span>sAltitude<span class="sc">||</span>Species) <span class="sc">+</span></span>
-<span id="cb103-25"><a href="#cb103-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
-<span id="cb103-26"><a href="#cb103-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape,</span>
-<span id="cb103-27"><a href="#cb103-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
-<span id="cb103-28"><a href="#cb103-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
-<span id="cb103-29"><a href="#cb103-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
-<span id="cb103-30"><a href="#cb103-30" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
+<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
+<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
+<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
+<span id="cb107-12"><a href="#cb107-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
+<span id="cb107-13"><a href="#cb107-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
+<span id="cb107-14"><a href="#cb107-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
+<span id="cb107-15"><a href="#cb107-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb107-16"><a href="#cb107-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb107-17"><a href="#cb107-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb107-18"><a href="#cb107-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-19"><a href="#cb107-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb107-20"><a href="#cb107-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
+<span id="cb107-21"><a href="#cb107-21" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(<span class="fu">log</span>(SBDensity<span class="sc">+</span><span class="dv">1</span>)<span class="sc">~</span></span>
+<span id="cb107-22"><a href="#cb107-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb107-23"><a href="#cb107-23" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb107-24"><a href="#cb107-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">0</span><span class="sc">+</span>sAltitude<span class="sc">||</span>Species) <span class="sc">+</span></span>
+<span id="cb107-25"><a href="#cb107-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
+<span id="cb107-26"><a href="#cb107-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape,</span>
+<span id="cb107-27"><a href="#cb107-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
+<span id="cb107-28"><a href="#cb107-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
+<span id="cb107-29"><a href="#cb107-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb107-30"><a href="#cb107-30" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian  ( identity )
 Formula:          
@@ -3758,9 +3786,9 @@ sSeedShape   0.10519    0.03806   2.764  0.00572 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>) <span class="co"># Unconditional simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>) <span class="co"># Unconditional simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -3785,31 +3813,31 @@ Solution for SBPA (glmm)
 <div class="callout-body-container callout-body">
 <p>Prepare+scale data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
-<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
-<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
-<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
-<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
-<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
-<span id="cb107-12"><a href="#cb107-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-13"><a href="#cb107-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
-<span id="cb107-14"><a href="#cb107-14" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
-<span id="cb107-15"><a href="#cb107-15" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span></span>
-<span id="cb107-16"><a href="#cb107-16" aria-hidden="true" tabindex="-1"></a>                               sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
-<span id="cb107-17"><a href="#cb107-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
+<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
+<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
+<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
+<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
+<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
+<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
+<span id="cb111-10"><a href="#cb111-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
+<span id="cb111-11"><a href="#cb111-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
+<span id="cb111-12"><a href="#cb111-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-13"><a href="#cb111-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb111-14"><a href="#cb111-14" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
+<span id="cb111-15"><a href="#cb111-15" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span></span>
+<span id="cb111-16"><a href="#cb111-16" aria-hidden="true" tabindex="-1"></a>                               sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
+<span id="cb111-17"><a href="#cb111-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
-<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
-<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">||</span>Species),</span>
+<span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="at">optimizer =</span> <span class="st">"bobyqa"</span>))</span>
+<span id="cb112-6"><a href="#cb112-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
   Approximation) [glmerMod]
@@ -3865,46 +3893,46 @@ sGrazing   -0.050 -0.009 -0.021  0.004  0.015 -0.003  0.265 -0.211  0.314</code>
 <p><strong>Residual checks:</strong></p>
 <p>Check residuals:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Residuals look fine!</p>
 <p><strong>With phylogenetic correlation structure:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
-<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
-<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
-<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
-<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
-<span id="cb111-10"><a href="#cb111-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
-<span id="cb111-11"><a href="#cb111-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
-<span id="cb111-12"><a href="#cb111-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
-<span id="cb111-13"><a href="#cb111-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
-<span id="cb111-14"><a href="#cb111-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
-<span id="cb111-15"><a href="#cb111-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb111-16"><a href="#cb111-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb111-17"><a href="#cb111-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb111-18"><a href="#cb111-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-19"><a href="#cb111-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
-<span id="cb111-20"><a href="#cb111-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
-<span id="cb111-21"><a href="#cb111-21" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">=</span> <span class="fu">glmmTMB</span>(SBPA<span class="sc">~</span></span>
-<span id="cb111-22"><a href="#cb111-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
-<span id="cb111-23"><a href="#cb111-23" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
-<span id="cb111-24"><a href="#cb111-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">0</span><span class="sc">+</span>sAltitude<span class="sc">||</span>Species) <span class="sc">+</span></span>
-<span id="cb111-25"><a href="#cb111-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
-<span id="cb111-26"><a href="#cb111-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
-<span id="cb111-27"><a href="#cb111-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
-<span id="cb111-28"><a href="#cb111-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> binomial,</span>
-<span id="cb111-29"><a href="#cb111-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
-<span id="cb111-30"><a href="#cb111-30" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model6, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
+<span id="cb115-5"><a href="#cb115-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
+<span id="cb115-6"><a href="#cb115-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
+<span id="cb115-7"><a href="#cb115-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb115-8"><a href="#cb115-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
+<span id="cb115-9"><a href="#cb115-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
+<span id="cb115-10"><a href="#cb115-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
+<span id="cb115-11"><a href="#cb115-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
+<span id="cb115-12"><a href="#cb115-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
+<span id="cb115-13"><a href="#cb115-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
+<span id="cb115-14"><a href="#cb115-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
+<span id="cb115-15"><a href="#cb115-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb115-16"><a href="#cb115-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb115-17"><a href="#cb115-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb115-18"><a href="#cb115-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-19"><a href="#cb115-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb115-20"><a href="#cb115-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
+<span id="cb115-21"><a href="#cb115-21" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">=</span> <span class="fu">glmmTMB</span>(SBPA<span class="sc">~</span></span>
+<span id="cb115-22"><a href="#cb115-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> sSeedPr <span class="sc">+</span></span>
+<span id="cb115-23"><a href="#cb115-23" aria-hidden="true" tabindex="-1"></a>                sDormRank <span class="sc">+</span> sAltitude <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sGrazing <span class="sc">+</span></span>
+<span id="cb115-24"><a href="#cb115-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (<span class="dv">0</span><span class="sc">+</span>sAltitude<span class="sc">||</span>Species) <span class="sc">+</span></span>
+<span id="cb115-25"><a href="#cb115-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
+<span id="cb115-26"><a href="#cb115-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
+<span id="cb115-27"><a href="#cb115-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
+<span id="cb115-28"><a href="#cb115-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> binomial,</span>
+<span id="cb115-29"><a href="#cb115-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb115-30"><a href="#cb115-30" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model6, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -3914,12 +3942,12 @@ Scaled residual values: 0.9219457 0.880484 0.9236853 0.7771681 0.7069123 0.56220
 </div>
 <p>Conditional simulations:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model6, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rbinom</span>(<span class="fu">length</span>(pred),<span class="dv">1</span>, pred))</span>
-<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model6)[,<span class="dv">1</span>], pred)</span>
-<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model6, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rbinom</span>(<span class="fu">length</span>(pred),<span class="dv">1</span>, pred))</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model6)[,<span class="dv">1</span>], pred)</span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -3930,8 +3958,8 @@ Scaled residual values: 0.9219457 0.880484 0.9236853 0.7771681 0.7069123 0.56220
 <h2 data-number="C.7" class="anchored" data-anchor-id="snouter"><span class="header-section-number">C.7</span> Snouter</h2>
 <p>Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set’s help for details on the variables.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(snouter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(snouter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-tip callout callout-style-simple no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">

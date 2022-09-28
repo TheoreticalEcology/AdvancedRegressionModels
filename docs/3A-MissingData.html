@@ -490,23 +490,11 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(missRanger)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>airqualityImp<span class="ot">&lt;-</span> <span class="fu">missRanger</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Missing value imputation by random forests
-
-  Variables to impute:      Solar.R
-  Variables used to impute: Ozone, Solar.R, Wind, Temp, Month, Day
-iter 1: .
-iter 2: .
-iter 3: .
-iter 4: .
-iter 5: .</code></pre>
-</div>
 </div>
 <p>Let’s fit the model to this imputed data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airqualityImp)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airqualityImp)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -529,10 +517,10 @@ Multiple R-squared:  0.5687,    Adjusted R-squared:  0.5611
 F-statistic:  74.5 on 2 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.</p>
+<p>The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.ze</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Missing value imputation by random forests
@@ -709,12 +697,12 @@ iter 1: .
 iter 2: .
 iter 3: .</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit 20 models</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(airqualityMImp, <span class="cf">function</span>(x) <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, x))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use mice package to compute corrected p-values</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(mice)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pooled_fit <span class="ot">&lt;-</span> <span class="fu">pool</span>(models)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit 20 models</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(airqualityMImp, <span class="cf">function</span>(x) <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, x))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use mice package to compute corrected p-values</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(mice)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pooled_fit <span class="ot">&lt;-</span> <span class="fu">pool</span>(models)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         term   estimate  std.error statistic       df      p.value
 1 (Intercept) -71.033218 23.5779922 -3.012692 111.0406 3.207552e-03
@@ -724,11 +712,11 @@ iter 3: .</code></pre>
 </div>
 <p>More on missing data and imputation methods in Stef van Buuren’s book <a href="https://stefvanbuuren.name/fimd/">“Flexible Imputation of Missing Data”</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mitools)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(smi)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>models<span class="ot">&lt;-</span><span class="fu">with</span>(smi, <span class="fu">glm</span>(drinkreg<span class="sc">~</span>wave<span class="sc">*</span>sex,<span class="at">family=</span><span class="fu">binomial</span>()))</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">MIcombine</span>(models))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mitools)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(smi)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>models<span class="ot">&lt;-</span><span class="fu">with</span>(smi, <span class="fu">glm</span>(drinkreg<span class="sc">~</span>wave<span class="sc">*</span>sex,<span class="at">family=</span><span class="fu">binomial</span>()))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">MIcombine</span>(models))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Multiple imputation results:
       with(smi, glm(drinkreg ~ wave * sex, family = binomial()))
@@ -740,7 +728,6 @@ sex          0.64905222 0.34919264 -0.03537187  1.3334763      1 %
 wave:sex    -0.03725422 0.08609199 -0.20623121  0.1317228      7 %</code></pre>
 </div>
 </div>
-<p>Some data analysis techniques are not robust to missingness, and require to “fill in”, or impute the missing data. Rubin (1987) argued that repeating imputation even a few times (5 or less) enormously improves the quality of estimation.[2] For many practical purposes, 2 or 3 imputations capture most of the relative efficiency that could be captured with a larger number of imputations. However, a too-small number of imputations can lead to a substantial loss of statistical power, and some scholars now recommend 20 to 100 or more.[12] Any multiply-imputed data analysis must be repeated for each of the imputed data sets and, in some cases, the relevant statistics must be combined in a relatively complicated way.[2]</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
