@@ -141,24 +141,15 @@ In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods an
 
 You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
 
-Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis.
+Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis. You can find the data in the ecodata package, dataset redCards. 
 
--   Download the data file "CrowdstormingDataJuly1st.csv" here: <a href="https://osf.io/fv8c3/" target="_blank" rel="noopener">https://osf.io/fv8c3/</a>.
+1.  Response variable: 'redCards' (+'yellowReds'?).
+2.  primary predictors: 'rater1', 'rater2'
+3.  Multiple variables, potentially accounting for confounding, offsetting, grouping, ... are included in the data.
 
--   Variable explanations are provided in the README: <a href="https://osf.io/9yh4x/" target="_blank" rel="noopener">https://osf.io/9yh4x/</a>.
+The rater variable contains ratings of "two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin. Make sure that 'rater1' and 'rater2' are rescaled to the range 0 ... 1 as described in the paper ("This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.")
 
--   Analyze the data. Given the research question, the selected variables are:
-
-    1.  Response variable: 'redCards' (+'yellowReds'?).
-    2.  Multiple variables, potentially accounting for confounding, offsetting, grouping, ... are included in the data.
-    3.  primary predictors: 'rater1', 'rater2'
-
-    -   These variables reflect ratings of "two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin.
-    -   Make sure that 'rater1' and 'rater2' are rescaled to the range 0 ... 1 as described in the paper ("This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.")
-
--   Research the concept of **odd ratios** and convert your effect estimate into this format. Are your results within the range of estimates from the 29 teams in Silberzahn et al. (2018)?
-
--   Have a look at the other modelling teams. Do you understand the models they fit?
+When you're done, have a look at the other modelling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odd ratios**. Are your results within the range of estimates from the 29 teams in Silberzahn et al. (2018)?
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
