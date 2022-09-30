@@ -374,7 +374,7 @@ glmmTMB does not support conditional simulations but we can create conditional s
 pred = predict(model5, re.form = NULL, type = "response")
 pred_dispersion = predict(model5, re.form = NULL, type = "disp")
 simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
-res = createDHARMa(simulations, model.frame(model4)[,1], pred)
+res = createDHARMa(simulations, model.frame(model5)[,1], pred)
 plot(res)
 ```
 
@@ -414,7 +414,7 @@ Let's start directly with all potential confounders (see previous solution):
 model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
                  offset(log(duration)) + site_type + sTemp_Water + spH +
                  sCond + swmo_prec + swater_speed_ms + swater_depth +
-                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date)
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date),
               data = data,  family = binomial)
 summary(model1)
 
