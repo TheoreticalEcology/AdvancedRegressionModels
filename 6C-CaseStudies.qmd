@@ -421,7 +421,7 @@ model1 = glm(Bulinus_tot~
 summary(model1)
 ```
 
-As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders can be collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
+As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders are collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
 
 ```{r}
 model2 = glmer(Bulinus_tot~
@@ -518,7 +518,7 @@ glmmTMB does not support conditional simulations but we can create conditional s
 pred = predict(model5, re.form = NULL, type = "response")
 pred_dispersion = predict(model5, re.form = NULL, type = "disp")
 simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
-res = createDHARMa(simulations, model.frame(model4)[,1], pred)
+res = createDHARMa(simulations, model.frame(model5)[,1], pred)
 plot(res)
 ```
 
@@ -558,7 +558,7 @@ Let's start directly with all potential confounders (see previous solution):
 model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
                  offset(log(duration)) + site_type + sTemp_Water + spH +
                  sCond + swmo_prec + swater_speed_ms + swater_depth +
-                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date)
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date),
               data = data,  family = binomial)
 summary(model1)
 
@@ -603,7 +603,14 @@ They look good now!
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution of multivariate (joint) species distribution model
 
+The species models are connected by their response to latent variable (unobserved environment). For that, we will transform our dataset with respect to species from wide (sp1, sp2, sp3) to long format (species abundances in one column and a second column telling us the group (species)). In the model then, we will separate the species and their responses by using \~0+Species + Species:(predictors).
+
+The latent variable structure is set by the `rr(…)` object in the formula:
+
 ```{r}
+library(lme4)
+library(glmmTMB)
+library(DHARMa)
 library(tidyverse)
 data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
@@ -615,10 +622,12 @@ data$swmo_prec = scale(data$wmo_prec)
 data$syear = scale(data$year)
 data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
+data$sTemp_Air = scale(data$Temp_Air)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
+
 
 data =
   data %>% pivot_longer(cols = c("BP_tot", "BF_tot", "BT_tot"),
@@ -627,19 +636,25 @@ data =
 
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
+
+numFac = numFactor(data$sLat, data$sLon)
+group = factor(rep(1, nrow(data)))
 data$fmonth = as.factor(data$month)
-
-modelJoint = glmmTMB(Abundance ~ 0 +
-                 offset(log(duration)) + Species + Species:(site_type +
-                    sTemp_Water + seas_wmo+ spH + sCond + swmo_prec +
-                      swater_speed_ms + swater_depth + syear) +
-                    exp(0+numFac|group:Species) + ar1(0+fmonth|site_irn:Species) +
-                     (spH + swater_depth||coll_date:Species) +
-                 rr(Species + 0|locality:site_irn, d = 2), # Multivariate structure
-                 dispformula = ~0+Species+Species:(sTemp_Water + spH + syear),
-              data = data,  family = nbinom2())
+modelJoint = glmmTMB(Abundance~ 0 +
+                 offset(log(duration)) + Species + Species:(site_type + 
+                  sTemp_Water + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo) + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date:Species) + exp(0+numFac|group) + rr(Species + 0|locality:site_irn, d = 2),
+                 dispformula = ~0+Species+Species:(swater_speed_ms + swater_depth+sCond),
+              data = data,  family = nbinom2)
 
 
+
+```
+
+Unconditional residuals:
+
+```{r}
+plot(simulateResiduals(modelJoint))
 ```
 
 Conditional residuals:
@@ -652,11 +667,7 @@ res = createDHARMa(simulations, model.frame(modelJoint)[,1], pred)
 plot(res)
 ```
 
-Unconditional residuals:
 
-```{r}
-plot(simulateResiduals(modelJoint))
-```
 :::
 
 ## Seed bank
