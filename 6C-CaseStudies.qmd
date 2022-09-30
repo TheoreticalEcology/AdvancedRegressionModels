@@ -141,7 +141,7 @@ In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods an
 
 You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
 
-Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis. You can find the data in the ecodata package, dataset redCards. 
+Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis. You can find the data in the ecodata package, dataset redCards.
 
 1.  Response variable: 'redCards' (+'yellowReds'?).
 2.  primary predictors: 'rater1', 'rater2'
@@ -216,11 +216,25 @@ library(tidyverse)
 
 Look at the Snails data set in the `EcoData` package, and find out which environmental and/or seasonal predictors i) explain the total abundance and ii) the infection rate of the three species.
 
+The snails data set in the EcoData package includes observations on the distribution of freshwater snails and their infection rates ( schistosomiasis (a parasit)).
+
+The first scientific question is that their adbundance depends on the water conditions. The second scientific question is that their infection rate depends on the water conditions and seasonsal factors
+
+The data also contains data on other environmental (and seasonal factors). You should consider if it is useful to add them to the analysis.
+
+Species: BP_tot, BF_tot, BT_tot
+
+Number of infected individuals: BP_pos_tot, BF_pos_tot, BT_pos_tot
+
+Total abundances of BP species: Bulinus_tot
+
+Total number of infected in BP species: Bulinus_pos_tot
+
 Tasks:
 
 1.  Model the summed total abundance of the three species (Bulinus_tot)
 
-2.  Model the infection rate of all three species (Bulinuts_pos_tot)
+2.  Model the infection rate of all three species (Bulinuts_pos_tot) (k/n binomial)
 
 3.  Optional: Model the species individually (BP_tot, BF_tot, BT_tot)
 
@@ -245,129 +259,87 @@ data$swmo_prec = scale(data$wmo_prec)
 data$syear = scale(data$year)
 data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
+data$sTemp_Air = scale(data$Temp_Air)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
 ```
 
-1.  **Poisson-glmm**
-
-First model, glmm with `family = poisson`, random intercepts (site_irn nested within locality), and an offset:
+Our hypothesis is that the abundance of Bulinus species depends on the water characteristics, e.g. site_type, Temp_water, pH, Cond, swmo_prec, water_speed_ms, and water_depth. We will set the length of the collection duration as an offset.
 
 ```{r}
-model1 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (1|coll_date),
-              data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
+model1 = glm(Bulinus_tot~
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth,
+              data = data,  family = poisson)
 summary(model1)
 ```
 
-**Residual checks:**
+As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders can be collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
+
+```{r}
+model2 = glmer(Bulinus_tot~
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date),
+              data = data,  family = poisson)
+summary(model2)
+```
 
 Check residuals:
 
 ```{r}
-res = simulateResiduals(model1, plot = TRUE, re.form = NULL)
+res = simulateResiduals(model2, plot = TRUE, re.form = NULL)
 ```
 
-Does not look great -\> dispersion problems:
-
-Overdispersion can be caused by misfit.
-
-```{r}
-testDispersion(res, alternative = "greater")
-```
-
-s.  
-
-Underdispersion:
-
-```{r}
-testDispersion(res, alternative = "less")
-```
-
-n.s
-
-Check for missing random slopes:
-
-```{r, fig.width=8, fig.height=12}
-plot(model1, resid(.) ~ swater_depth | coll_date, abline = 1)
-```
+Does not look great -\> dispersion problems -\> switch to -\> negative binomial distribution:
 
 ```{r}
 
-model2 = glmer(Bulinus_tot~
-                 offset(log(duration)) + site_type  + sTemp_Water + seas_wmo+ spH +
-                 sCond + swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
-              data = data,  family = poisson, control = glmerControl(optimizer = "bobyqa"))
-summary(model2)
-simulateResiduals(model2, plot = TRUE, re.form = NULL)
-```
-
-Switch to negative binomial
-
-2.  **NegBinom-glmm**
-
-```{r}
 model3 = glmmTMB(Bulinus_tot~
-                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
-              data = data,  family = nbinom2())
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date),
+              data = data,  family = nbinom2)
 summary(model3)
-plot(simulateResiduals(model3))
 ```
 
-Residuals look better but they are unconditioned!
-
-Check conditional residuals:
+Check residuals:
 
 ```{r}
-pred = predict(model3, re.form = NULL, type = "response")
-simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = summary(model3)$sigma, mu =  pred))
-res = createDHARMa(simulations, model.frame(model3)[,1], pred)
-plot(res)
+res = simulateResiduals(model3, plot = TRUE)
 ```
 
-Better!
+Residuals look better but there is still a dispersion problem.
 
-```{r}
-testDispersion(res, alternative = "less")
-testDispersion(res, alternative = "greater")
-```
-
-There is underdispersion.
-
-Use the `dispformula` to make the dispersion depend on the covariates:
+Let's use the dispformula:
 
 ```{r}
 model4 = glmmTMB(Bulinus_tot~
-                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date),
-                 dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear,
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date),
+                 dispformula = ~swater_speed_ms + swater_depth+sCond,
               data = data,  family = nbinom2)
 summary(model4)
 ```
 
-Check conditional residuals:
+Dispformula is significant. Residuals:
 
 ```{r}
-pred = predict(model4, re.form = NULL, type = "response")
-pred_dispersion = predict(model4, re.form = NULL, type = "disp")
-simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
-res = createDHARMa(simulations, model.frame(model4)[,1], pred)
-plot(res)
+res = simulateResiduals(model4, plot = TRUE)
 ```
 
-Better.
+Dispersion tests are n.s.:
 
-Check for temporal and spatial autocorrelation (we detrended both by using year and random intercept for sites):
+```{r}
+testDispersion(res)
+testZeroInflation(res)
+```
+
+We detrended space there could be spatial autocorrelation, let's check for it:
 
 ```{r}
 ## Spatial
@@ -375,32 +347,38 @@ res2 = recalculateResiduals(res, group = c(data$site_irn))
 groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
 testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
 
-
-## Temporal
-res2 = recalculateResiduals(res, group = as.factor(data$month),)
-testTemporalAutocorrelation(res2, time = unique(as.factor(data$month)))
-
 ```
 
-Both n.s.
-
-3.  **Bonus: NegBinom-glmm with spatial and temporal autocorrelation**
-
-Both are n.s. But let's account for spatial and temporal autocorrelation anyway (just for fun):
+Significant! Let's add a spatial correlation structure:
 
 ```{r}
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
 data$fmonth = as.factor(data$month)
+
 model5 = glmmTMB(Bulinus_tot~
-                 offset(log(duration)) + site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) + (spH + swater_depth||coll_date) +
-                 exp(0+numFac|group) + ar1(0+fmonth|site_irn),
-                 dispformula = ~site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear,
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) + exp(0+numFac|group),
+                 dispformula = ~swater_speed_ms + swater_depth+sCond,
               data = data,  family = nbinom2)
 ```
+
+```{r}
+res = simulateResiduals(model5, plot = TRUE)
+```
+
+glmmTMB does not support conditional simulations but we can create conditional simulations on our own:
+
+```{r}
+pred = predict(model5, re.form = NULL, type = "response")
+pred_dispersion = predict(model5, re.form = NULL, type = "disp")
+simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
+res = createDHARMa(simulations, model.frame(model4)[,1], pred)
+plot(res)
+```
+
+Residuals do not look perfect but I would say that we can stop here now.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -409,6 +387,9 @@ model5 = glmmTMB(Bulinus_tot~
 Prepare+scale data:
 
 ```{r}
+library(lme4)
+library(glmmTMB)
+library(DHARMa)
 data = EcoData::snails
 data$sTemp_Water = scale(data$Temp_Water)
 data$spH = scale(data$pH)
@@ -419,22 +400,60 @@ data$swmo_prec = scale(data$wmo_prec)
 data$syear = scale(data$year)
 data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
+data$sTemp_Air = scale(data$Temp_Air)
 
 # Let's remove NAs beforehand:
-rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth + syear + duration + locality + site_irn + coll_date, data = data))
+rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
 ```
 
+Let's start directly with all potential confounders (see previous solution):
+
 ```{r}
-model1 = glmer(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~
-                 site_type + sTemp_Water + seas_wmo+ spH + sCond +
-                 swmo_prec + swater_speed_ms + swater_depth + syear +
-                 (1|locality/site_irn) +  (spH + swater_depth||coll_date),
+model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date)
               data = data,  family = binomial)
 summary(model1)
-plot(simulateResiduals(model1, res.form=NULL))
+
 ```
+
+```{r}
+res = simulateResiduals(model1, plot=TRUE)
+```
+
+We have dispersion problems, but we cannot model the dispersion for binomial models.
+
+Check for spatial autocorrelation:
+
+```{r}
+## Spatial
+res2 = recalculateResiduals(res, group = c(data$site_irn))
+groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
+testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
+
+```
+
+Significant! Let's correct for spatial autocorrelation with a correlation structure:
+
+```{r}
+numFac = numFactor(data$sLat, data$sLon)
+group = factor(rep(1, nrow(data)))
+data$fmonth = as.factor(data$month)
+model2 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
+                 offset(log(duration)) + site_type + sTemp_Water + spH +
+                 sCond + swmo_prec + swater_speed_ms + swater_depth +
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) + exp(0+numFac|group),
+              data = data,  family = binomial)
+```
+
+```{r}
+res = simulateResiduals(model2, plot = TRUE)
+```
+
+They look good now!
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
