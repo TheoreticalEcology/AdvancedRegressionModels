@@ -390,7 +390,7 @@ model1 = glm(Bulinus_tot~
 summary(model1)
 ```
 
-As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders can be collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
+As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders are collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
 
 ```{r}
 model2 = glmer(Bulinus_tot~
