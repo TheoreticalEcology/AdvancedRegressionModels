@@ -302,7 +302,7 @@ ul.task-list{list-style: none;}
 <h2 data-number="B.1" class="anchored" data-anchor-id="formula-syntax"><span class="header-section-number">B.1</span> Formula syntax</h2>
 <table class="table">
 <colgroup>
-<col style="width: 24%">
+<col style="width: 25%">
 <col style="width: 75%">
 </colgroup>
 <thead>
@@ -356,6 +356,14 @@ ul.task-list{list-style: none;}
 <td><code>y ~ te(x1, x2)</code></td>
 <td>tesnsor spline (works only for mgcv)</td>
 </tr>
+<tr class="even">
+<td><code>y ~.</code></td>
+<td>include all variables as main effects</td>
+</tr>
+<tr class="odd">
+<td><code>y~.^2</code></td>
+<td>include all variables as main effects and their 2nd order interactions</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -407,7 +415,7 @@ ul.task-list{list-style: none;}
 <p>glmmTMB supports several correlation structures but we will show here only two common representatives. See also the <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html">glmmTMB vignette</a> about correlation structures.</p>
 <table class="table">
 <colgroup>
-<col style="width: 7%">
+<col style="width: 8%">
 <col style="width: 33%">
 <col style="width: 58%">
 </colgroup>
@@ -444,7 +452,7 @@ ul.task-list{list-style: none;}
 <h4 data-number="B.2.1.3" class="anchored" data-anchor-id="nlmegls"><span class="header-section-number">B.2.1.3</span> nlme::gls</h4>
 <table class="table">
 <colgroup>
-<col style="width: 5%">
+<col style="width: 6%">
 <col style="width: 43%">
 <col style="width: 50%">
 </colgroup>
