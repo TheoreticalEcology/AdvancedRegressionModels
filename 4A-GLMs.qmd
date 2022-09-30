@@ -223,6 +223,24 @@ library(effects)
 plot(allEffects(m1))
 ```
 
+If you do an ANOVA on a glm, you should take care that you perform a Chisq and not an F-test. You notice that you have the right one if the ANOVA doesn't supply SumSq statistics, but deviance. In the anova function, we have to set this by hand
+
+```{r}
+anova(m1, test = "Chisq")
+```
+
+note that anova works for glm and glmmTMB, but not for lme4::glmer. 
+
+The function car::Anova works for all models and uses a ChiSq test automatically. Given that you probably want to use a type II or III Anova anyway, you should prefer it. 
+
+```{r}
+car::Anova(m1)
+```
+
+Of course, when using this with random effects, the caveats that we discussed when introducing random effects apply: this function does not account for changes in the degrees of freedom created by changing the fixed effect structure. Something like the lmerTest package which uses a df approximation does not exist for GLMMs. Thus, the values that you obtain here are calculated under the assumption that the RE structure is the same.
+
+If you see large changes in your RE structure, or if you want to select on the REs, you can move to a simulated LRT. 
+
 #### Notes on the logistic regression
 
 **Offset:** there is no exact solution for making 0/1 data dependent on a scaling factor via an offset, which is often desirable, for example in the context of survival analysis with different exposure times. An approximate solution is to use an offset together with the log-log link (instead of logit).
