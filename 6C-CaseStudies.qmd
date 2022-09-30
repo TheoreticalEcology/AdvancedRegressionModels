@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 ```{r, include=FALSE}
 set.seed(42)
 ```
@@ -32,7 +37,7 @@ The data is available in `DHARMa`{.R}.
 ```{r chunk_chapter5_task_5, eval=TRUE, message=FALSE, warning=FALSE}
 library(DHARMa)
 library(mgcv)
-
+?hurricanes
 str(hurricanes)
 ```
 
@@ -44,7 +49,7 @@ points(hurricanes$MasFem, hurricanes$NDAM, cex = hurricanes$alldeaths/20,
        pch = 4, col= "red")
 ```
 
-The original model from the paper fits a negative binomial, using `mgcv`.{R}.
+The original model from the paper fits a negative binomial, using `mgcv`.{R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular mass::glm.nb and lme4::glmer.nb often had convergence problems. 
 
 ```{r chunk_chapter5_task_7, eval=TRUE, message=FALSE, warning=FALSE}
 originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM),
@@ -55,64 +60,77 @@ summary(originalModelGAM)
 ::: {.callout-caution icon="false"}
 Tasks:
 
--   Confirm that you get the same results as in the paper.
--   Have a look at the ?hurricanes to see a residual analysis of the model in the paper
+-   Confirm that you get the same results as in the paper. It makes sense to translate their model to glmmTMB. Note that the nb parameterization of mgcv corresponds to nbinom2 in glmmTMB. You will get different results when choosing nbinom1 
+-   Inspect the fitted model for potential problems, in particular perform a residual analysis of the model, including residuals against all predictors, and improve the model if you find problems.
 -   Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
+This is the model fit by Jung et al., fit with glmmTMB
+
 ```{r}
-
 library(DHARMa)
-?hurricanes
-
-# this is the model fit by Jung et al., fith with glmmTMB
 library(glmmTMB)
-originalModelGAM = glmmTMB(alldeaths ~ MasFem*
+
+m1 = glmmTMB(alldeaths ~ MasFem*
                              (Minpressure_Updated_2014 + scale(NDAM)),
                            data = hurricanes, family = nbinom2)
-summary(originalModelGAM)
+summary(m1)
+```
 
-# note that in the code that I gave you not all predictors were scaled,
-# but for looking at the main effect we should scale
+Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we for looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability
 
-originalModelGAM = glmmTMB(alldeaths ~ scale(MasFem) *
+```{r}
+m2 = glmmTMB(alldeaths ~ scale(MasFem) *
                              (scale(Minpressure_Updated_2014) + scale(NDAM)),
                            data = hurricanes, family = nbinom2)
-summary(originalModelGAM)
+summary(m2)
+```
 
-# now main effect is n.s.; it's a bit dodgy, but if you read in the main paper
-# they actually argue mainly via ANOVA and significance at high values of NDAM
+now main effect is n.s.; it's a bit dodgy, but if you read in the main paper, they do not claim a significant main effect, they mainly argue via ANOVA and significance at high values of NDAM, so let's run an ANOVA:
 
-car::Anova(originalModelGAM)
+```{r}
+car::Anova(m2)
+```
 
-# in the ANOVA we see that MasFem still n.s. but interactions, and if you
-# would calculate effect of MasFem at high NDAM, it is significnat. Something
-# like that is argued in the paper. We can emulate this by changing
-# NDAM centering to high NDAM
+In the ANOVA we see that MasFem still n.s. but interactions, and if you would calculate effect of MasFem at high NDAM, it is significant. Something like that is argued in the paper. We can emulate this by changing NDAM centering to high NDAM, which gives us a p-value for the main effect of MasFem at high values of NDAM
 
+```{r}
 hurricanes$highcenteredNDAM = hurricanes$NDAM - max(hurricanes$NDAM)
 
-originalModelGAM = glmmTMB(alldeaths ~ scale(MasFem) *
+m3 = glmmTMB(alldeaths ~ scale(MasFem) *
                              (scale(Minpressure_Updated_2014) + highcenteredNDAM),
                            data = hurricanes, family = nbinom2)
-summary(originalModelGAM)
+summary(m3)
+```
 
-# OK, let's look at the residuals
+Now we see the significant main effect that they report. Note, hwoever, that the signficant differences is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot, or to specifically use predict() to calculate differences and CIs at high NDAM values. 
 
-# no significant deviation in the general DHARMa plot
+```{r}
+library(effects)
+plot(allEffects(m3, partial.residuals = T))
+```
+
+OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results to say that there is a significant difference at high NDAM, and such a difference, if it existed, would be importat. 
+
+But we haven't done residual checks yet. Let's do that: 
+
+```{r}
 res <- simulateResiduals(originalModelGAM)
 plot(res)
 
-# but residuals ~ NDAM looks funny, which was pointed
-# out by Bob O'Hara in a blog post after publication of the paper
 plotResiduals(res, hurricanes$NDAM)
+plotResiduals(res, hurricanes$MasFem)
+plotResiduals(res, hurricanes$Minpressure_Updated_2014)
+```
 
-# correcting with a sqrt effect
+No significant deviation in the general DHARMa plot, but residuals ~ NDAM looks funny, which was also pointed out by Bob O'Hara in a blog post after publication of the paper. Let's try to correct this - scaling with ^0.2 does a great job:
+
+```{r}
 correctedModel = glmmTMB(alldeaths ~ scale(MasFem) *
-                             (scale(Minpressure_Updated_2014) + scale(NDAM) + sqrt(NDAM)),
+                             (scale(Minpressure_Updated_2014) + scale(NDAM^0.2)),
                           data = hurricanes, family = nbinom2)
 
 res <- simulateResiduals(correctedModel, plot = T)
@@ -120,17 +138,37 @@ plotResiduals(res, hurricanes$NDAM)
 summary(correctedModel)
 car::Anova(correctedModel)
 
-# all gone, only Damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.
+```
 
-# Moreover, question why they fitted this weird interactions in the first place. A initial model based on a causa analysis could be:
+All gone, only damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.
 
-newModel = glmmTMB(alldeaths ~ scale(MasFem) + Minpressure_Updated_2014
-                           + NDAM + sqrt(NDAM) + Year,
+What if we would have fit our own model? First of all, note that if hurricane names were given randomly, we wouldn't have to worry about confounders. However, this is not the case, hurricanes were only named randomly after 1978 or so. 
+
+```{r}
+plot(MasFem ~ Year, data = "hurricanes")
+```
+
+So, we could either take the earlier data out, which would remove half of our data, or we have to worry about confounding with variables that change over time. The most obvious thing would be to take time itself (Year) in the model, to correct for temporal confounding. 
+
+Do we need other variables that are not confounders? There is two reasons to add them:
+
+* they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
+* we want to fit interacts.
+
+I added NDAM to the model, because we saw earlier that it has a strong effect. I think it's not unreasonable to check for an interaction as well. 
+
+As we have several observations per year, a conservative approach would be to add a RE on year. Note that we use year both as a fixed effect (to remove temporal trends) and a random intercept, which is perfectly fine, however. 
+
+```{r}
+newModel = glmmTMB(alldeaths ~ scale(MasFem) * scale(NDAM^0.2) + Year + (1|Year),
                            data = hurricanes, family = nbinom2)
 summary(newModel)
 
 car::Anova(newModel) # nothing regarding MasFem
 ```
+
+The results remain that there is no effect of MasFem!
+
 :::
 
 ## Researchers Degrees of Freedom --- Skin Color and Red Cards
@@ -153,14 +191,89 @@ When you're done, have a look at the other modelling teams. Do you understand th
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+
+
 :::
 
 ## Scouting Ants
 
 Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting Ants in Lasius Niger.
 
+A base model should be:
+
+```{r}
+# select all data for the second visit
+dat = scoutingAnts[scoutingAnts$first.visit == 0,]
+dat$ant_group = as.factor(dat$ant_group)
+dat$ant_group_main = as.factor(dat$ant_group_main)
+
+fit <- glm(went.phero ~ ant_group_main, data = dat)
+summary(fit)
+```
+
+
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+
+For me, it made sense to change the contrasts of the possible confounders into something more easily interpretable: 
+
+* Did the side in which the pheromone was stay constant or not (testing for a directional persistence of the ants)
+
+* Was the pheromone in the left or the right arm (testing for a directional preference)
+
+
+```{r}
+dat$directionConst = ifelse(dat$Treatment %in% c("LL", "RR"), T, F)
+dat$directionPhero = as.factor(ifelse(dat$Treatment %in% c("LL", "RL"), "left", "right"))
+```
+
+Together with the orientation of the Maze, this makes 3 possible directional confounders, and the main predictor (if the Ant went to the pheromone in the first visit). 
+
+Adding an RE on colony is logical, and then let's run the model: 
+
+```{r}
+fit1<-glmer(went.phero ~ ant_group_main
+             + directionConst
+             + directionPhero
+             + Orientation
+             + (1|Colony),family="binomial", 
+             data=dat)
+summary(fit1)
+```
+
+Surprisingly, we find large effects of the other variables. Because of these large effects, testing for interactions with the experimental treatment as well
+
+```{r}
+fit2<-glmer(went.phero ~ ant_group_main * (
+             + directionConst
+             + directionPhero
+             + Orientation)
+             + (1|Colony),family="binomial", 
+             data=dat)
+summary(fit2)
+```
+
+Here we find now that ther is an interaction with the main predictor, and there could be effects. We can also look at this visually. 
+
+```{r}
+plot(allEffects(fit2))
+```
+
+The results are difficult to interpret. I would think that there was some bias in the experiment, which led to an effect of the Maze direction, which then create a spill-over to the other (and in particular the main) predictors. 
+
+For our education, we can also look at the residual plots. I will use m1, because there was a misfit:
+
+
+```{r}
+res <- simulateResiduals(m1, plot = T)
+```
+
+As we would significant interactions, we would probably see something 
+
+
+
 :::
 
 ## Owls
@@ -177,14 +290,14 @@ plot(res)
 ```
 
 ::: {.callout-caution icon="false"}
-#### Tasks
+#### Offset
 
 The offset is a special command that can be used in all regression models. It means that we include an effect with effect size 1.
 
 The offset has a special importance in models with a log link function, because with these models, we have y = exp(x ...), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) \* exp(log(BroodSize)) = y = exp(x) \* BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.
-
-Now, try to improve the model with everything we have discussed so far.
 :::
+
+*Task:* try to improve the model with everything we have discussed so far.
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
