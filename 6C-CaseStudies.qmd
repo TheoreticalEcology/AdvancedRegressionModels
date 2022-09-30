@@ -145,7 +145,7 @@ All gone, only damage is doing the effect. This wouldn't change with re-scaling 
 What if we would have fit our own model? First of all, note that if hurricane names were given randomly, we wouldn't have to worry about confounders. However, this is not the case, hurricanes were only named randomly after 1978 or so. 
 
 ```{r}
-plot(MasFem ~ Year, data = "hurricanes")
+plot(MasFem ~ Year, data = hurricanes)
 ```
 
 So, we could either take the earlier data out, which would remove half of our data, or we have to worry about confounding with variables that change over time. The most obvious thing would be to take time itself (Year) in the model, to correct for temporal confounding. 
@@ -179,6 +179,13 @@ In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods an
 
 You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
 
+The data is in
+
+```{r, eval = F}
+library(EcoData)
+?redCards
+```
+
 Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis. You can find the data in the ecodata package, dataset redCards.
 
 1.  Response variable: 'redCards' (+'yellowReds'?).
@@ -203,7 +210,7 @@ Look at the dataset EcoData::scoutingAnts, and find out if there are really scou
 A base model should be:
 
 ```{r}
-# select all data for the second visit
+library(EcoData)
 dat = scoutingAnts[scoutingAnts$first.visit == 0,]
 dat$ant_group = as.factor(dat$ant_group)
 dat$ant_group_main = as.factor(dat$ant_group_main)
@@ -234,6 +241,7 @@ Together with the orientation of the Maze, this makes 3 possible directional con
 Adding an RE on colony is logical, and then let's run the model: 
 
 ```{r}
+library(lme4)
 fit1<-glmer(went.phero ~ ant_group_main
              + directionConst
              + directionPhero
@@ -270,10 +278,33 @@ For our education, we can also look at the residual plots. I will use m1, becaus
 res <- simulateResiduals(m1, plot = T)
 ```
 
-As we would significant interactions, we would probably see something 
+As we would significant interactions, we would probably see something if we plot residuals against predictors or their interactions, but I want to show you something else:
 
+We will not see dispersion problems in a 0/1 binomial, but actually, this is a k/n binomial, just that the data are not prepared as such.
 
+Either way, in DHARMa, you can aggregate residuals by a grouping variable. 
 
+```{r}
+res2 <- recalculateResiduals(res, group = dat$Colony)
+```
+
+Now, we essentially check k/n data, and we see that there is overdispersion, which is caused by the misfit. 
+```{r}
+plot(res2)
+testDispersion(res2)
+```
+
+Let's do the same for model 2, which included the interactions. 
+
+```{r}
+res <- simulateResiduals(m2, plot = T)
+res2 <- recalculateResiduals(res, group = dat$Colony)
+
+plot(res2)
+testDispersion(res2)
+```
+
+Which largely removes the problem!
 :::
 
 ## Owls
