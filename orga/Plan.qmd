@@ -1,0 +1,58 @@
+---
+title: "Untitled"
+editor: visual
+---
+
+Day 1:
+
+-   Intro
+
+    -   Welcome
+
+    -   Introduction of participants
+
+    -   Agree to recording
+
+        -   Start recording
+
+        -   Explain rules
+
+    -   Intro course
+
+        -   Your course, questions, questions can be pasted in chat
+
+        -   Cameras on!
+
+        -   In general presence, if you're away for a while let me know
+
+    -   Goal of statistics
+
+        -   Data -\> Question -\> Model
+
+        -   Why regression, what is a regression, why not test
+
+-   Linear models
+
+-   Linear mixed models
+
+-   ANOVA
+
+Day 2:
+
+-   Causal Inference
+
+-   Model selection
+
+Day 3:
+
+-   GLMs
+
+Day 4:
+
+-   Variance models
+
+-   Missing Data
+
+Day 5:
+
+-   Correlation Structures
