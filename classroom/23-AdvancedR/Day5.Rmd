@@ -1,0 +1,102 @@
+---
+title: "My Analysis"
+output: html_document
+date: "2023-05-26"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(123)
+```
+
+The goal of this analysis was to estimate the effect of Temperature on Ozone, adjusted for the effect of other confounders
+
+# Reading in the data
+
+```{r}
+dat = airquality
+```
+
+# Checking the data
+
+```{r}
+str(dat)
+summary(dat)
+plot(dat)
+```
+
+```{r}
+dat[dat$Ozone < 0 | dat$Ozone > 500, ]
+```
+
+Looking for NAs
+
+```{r}
+image(is.na(t(dat)), axes = F)
+axis(3, at = seq(0,1, len = 6), labels = colnames(dat))
+
+
+sum(complete.cases(dat))
+
+
+datNArem = dat[complete.cases(dat), ]
+```
+
+```{r}
+fit = lm(Ozone ~ Wind + Temp, data = dat)
+summary(fit)
+
+nrow(model.matrix(fit))
+
+options("na.action")
+
+fit = lm(Ozone ~ Wind + Temp, data = airquality, na.action = "na.fail")
+
+options(na.action = "na.fail")
+
+options(na.action = "na.omit")
+
+```
+
+Because I know that NA is always caused by low concentration so that it
+
+```{r}
+library(missRanger)
+airqualityImp<- missRanger(airquality)
+
+fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
+summary(fit)
+```
+
+Multiple imputation to account for uncertainty
+
+```{r}
+# run 20 imputations
+airqualityMImp <- replicate(20, missRanger(airquality), simplify = FALSE)
+
+
+# fit 20 models
+models <- lapply(airqualityMImp, function(x) lm(Ozone ~ Wind + Temp, x))
+
+# use mice package to compute corrected p-values
+require(mice)
+summary(pooled_fit <- pool(models)) 
+```
+
+```{r}
+library(mitools)
+data(smi)
+models<-with(smi, glm(drinkreg~wave*sex,family=binomial()))
+summary(MIcombine(models))
+```
+
+--\> error in variable models
+
+```{r}
+plot(Ozone ~ Temp, data = dat)
+
+fit = lm(Ozone ~ Temp, data = dat)
+summary(fit)
+```

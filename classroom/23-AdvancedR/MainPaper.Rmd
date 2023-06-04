@@ -1,0 +1,67 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Intro
+
+blabla 
+
+Our questions were 1, 2, 3
+
+# Methods
+
+## Study site
+
+## Data collection
+
+some results, like data size, exploratory plots
+
+## Analysis 
+
+### Data cleaning decisions 
+
+There were 20% NAs in the data. Decided to use imputation to fill them. 
+
+### Analysis decisions 
+
+We initially fit a linear regression, regressing Ozone against Temp, adjusted for the Effect, which we considered a confounder. Based on residual checks (Online Suppl. 2), a quadratic effect of Temperature was added.   
+
+### Final model
+
+
+
+# Result
+
+## Question 1
+
+The first question of our paper is if Temperature has a causal effect on Ozone. In our statistical analysis, we indeed find a positive effect of Temp on Ozone (p = XXX), adjusted for Wind which was included as a confounder. Adjusted for Wind, Temp explained 30% of teh variation in Ozone (Online supplementary S2).
+
+
+
+
+
+
+
+
+
+
+Regarding our main question, we found that Temp had a significant positive effect on Ozone (Table 1, p = 1.23 E-15)
+
+Table 1: 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -65.0793    18.1903  -3.578 0.000467 ***
+Wind         -2.8811     0.5222  -5.518 1.47e-07 ***
+Temp          1.7403     0.1943   8.955 1.23e-15 ***
+
+
+
+Figure 
+
+
+## Question 2
+
+
+# Discussion and conclusions
