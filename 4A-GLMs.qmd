@@ -229,9 +229,9 @@ If you do an ANOVA on a glm, you should take care that you perform a Chisq and n
 anova(m1, test = "Chisq")
 ```
 
-note that anova works for glm and glmmTMB, but not for lme4::glmer. 
+note that anova works for glm and glmmTMB, but not for lme4::glmer.
 
-The function car::Anova works for all models and uses a ChiSq test automatically. Given that you probably want to use a type II or III Anova anyway, you should prefer it. 
+The function car::Anova works for all models and uses a ChiSq test automatically. Given that you probably want to use a type II or III Anova anyway, you should prefer it.
 
 ```{r}
 car::Anova(m1)
@@ -239,7 +239,7 @@ car::Anova(m1)
 
 Of course, when using this with random effects, the caveats that we discussed when introducing random effects apply: this function does not account for changes in the degrees of freedom created by changing the fixed effect structure. Something like the lmerTest package which uses a df approximation does not exist for GLMMs. Thus, the values that you obtain here are calculated under the assumption that the RE structure is the same.
 
-If you see large changes in your RE structure, or if you want to select on the REs, you can move to a simulated LRT. 
+If you see large changes in your RE structure, or if you want to select on the REs, you can move to a simulated LRT.
 
 #### Notes on the logistic regression
 
@@ -523,13 +523,13 @@ If effect directions change in sign, they will do so under any link function (as
 
 ## New considerations for GLMMs
 
-As we saw, in principle, random effects can be added to GLMs very much in the same way as before. Note, however, that there is a conceptual difference: 
+As we saw, in principle, random effects can be added to GLMs very much in the same way as before. Note, however, that there is a conceptual difference:
 
-1. In an LMM, we had y = f(x) + RE + residual, where both RE and residual error were normal distributions
+1.  In an LMM, we had y = f(x) + RE + residual, where both RE and residual error were normal distributions
 
-2. In a GLMM, we have y = dist <- link^-2 <- f(x) + RE, so the normally distributed RE goes into another distribution via the link function
+2.  In a GLMM, we have y = dist \<- link\^-2 \<- f(x) + RE, so the normally distributed RE goes into another distribution via the link function
 
-This has a number of consequences that may be unexpected if you don't think about it. 
+This has a number of consequences that may be unexpected if you don't think about it.
 
 ### Unconditinal vs. marginal predictions
 
@@ -539,22 +539,12 @@ One of those is that, if you have a nonlinear link function, predictions based o
 plogis(1)
 ```
 
-Now, let's try to see what the average (marginal) prediction over all random effects is. We add a random effect with 20 groups, sd = 1. In this case, there will be additional variation around the random intercept. 
+Now, let's try to see what the average (marginal) prediction over all random effects is. We add a random effect with 20 groups, sd = 1. In this case, there will be additional variation around the random intercept.
 
 ```{r}
 mean(plogis(1 + rnorm(20, sd = 1)))
 ```
 
-The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data. 
+The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data.
 
-Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.  
-
-
-
-
-
-
-
-
-
-
+Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.

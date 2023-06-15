@@ -8,7 +8,6 @@ editor_options:
 set.seed(42)
 ```
 
-
 # Correlation structures {#correlation}
 
 ## General Idea
@@ -365,6 +364,12 @@ fit2<-mgcv::gam(richness ~ agrarea_scaled + te(lon, lat),
 summary(fit2)
 plot(fit2)
 
+library(mgcViz)
+b <- getViz(fit2)
+print(plot(b, allTerms = F), pages = 1) # Calls print.plotGam()
+
+#plotRGL(sm(b, 1), residuals = TRUE)
+
 res <- simulateResiduals(fit2)
 plot(res)
 testSpatialAutocorrelation(res, x = plants_sf$lon, y =  plants_sf$lat)
@@ -504,11 +509,7 @@ For fitting PGLS with various models, you should also consider the `caper`{.R} p
 ::: {.callout-caution icon="false"}
 #### Excercise
 
-Download the following two datasets
-
-http://www.phytools.org/Cordoba2017/data/BarbetTree.nex http://www.phytools.org/Cordoba2017/data/Barbetdata.csv
-
-These data are from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called "barbets." The code reads in and cleans the data:
+The following exercise uses data from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
 
 ```{r, eval = T}
 library(ape)
@@ -528,7 +529,6 @@ geiger::name.check(reducedTree,dat)
 
 Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote\~Lnalt
 
-Bonus task: read the help of glmmTMB, vignette on correlation structures, to see how to implement phylogentic regressions with glmmTMB.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -542,10 +542,10 @@ library(effects)
 plot(allEffects(fit,partial.residuals = T))
 ```
 
-Bit of a misfit, to get a good fit, after playing around, I added an interaction with a quadratic effect - you can probably also find other solutions.
+Bit of a misfit, to get a good fit, after playing around, I logged the response and added a quadratic and a cubic effect - you can probably also find other solutions.
 
 ```{r}
-fit <- lm(Lnote~ scale(Lnalt) * I(scale(Lnalt)^2), data = dat)
+fit <- lm(log(Lnote) ~ scale(Lnalt) + I(scale(Lnalt)^2) + I(scale(Lnalt)^3), data = dat)
 summary(fit)
 plot(allEffects(fit,partial.residuals = T))
 ```
@@ -553,7 +553,7 @@ plot(allEffects(fit,partial.residuals = T))
 Now, with a more complex polynomial for Lnalt, how to we see if there is an overall effect of Lnalt? Easiest option is to do a LRT:
 
 ```{r}
-fit0 = lm(Lnote~ 1, data = dat)
+fit0 = lm(log(Lnote)~ 1, data = dat)
 anova(fit0, fit)
 ```
 

@@ -3,6 +3,7 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
 ```{r, include=FALSE}
 set.seed(42)
 ```
@@ -226,7 +227,11 @@ The blind reporting of the entire regression table is known as Table II fallacy 
 
 But what if we are interested in all the causal relationships? If we have a graph already, the best option is to fit a structural equation model.
 
-Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>. For linear SEMs, we can estimate the entire DAG in one go. This also allows to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. I will show here only an example using piecewiseSEM.
+Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>. 
+
+For linear (= normally ditributed) SEMs, we can estimate the entire DAG in one go. This also allows to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can me modelled latent. 
+
+If you have REs or GLM-type dependencies, the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN. However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.
 
 ```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(piecewiseSEM)
@@ -240,6 +245,33 @@ mod = psem(
 summary(mod)
 plot(mod)
 ```
+
+## Double ML 
+
+There is another trick to remove confounders, which is often used in machine learning. Consider the following example, where we have a main effect x->y, and a confounder c. 
+
+```{r}
+c = runif(500) # confounder
+x = 0.5 * c + 0.5 *runif(500) # main predictor
+y = 1.2* x + c + rnorm(500, sd = 0.2)
+```
+
+A multiple regression identifies the correct effect for x.
+
+```{r}
+summary(lm(y ~ x + c ))
+```
+
+Another way to get those effects is the following, where we fit all variables against the confounder. This essentially conditions on the confounder. If we then regress the residuals without the confounder, we get the orignal effect. 
+
+```{r}
+resX.C = resid(lm(x~c))
+resY.C = resid(lm(y~c))
+
+summary(lm(resY.C ~ resX.C))
+```
+
+You can also do this with more variables. 
 
 ## Case studies
 
