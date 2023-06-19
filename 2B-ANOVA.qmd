@@ -8,7 +8,7 @@ editor_options:
 set.seed(42)
 ```
 
-# ANOVA
+# ANOVA and other hypotheses
 
 ## The idea of ANOVA
 
@@ -123,7 +123,7 @@ There are other types of ANOVA that avoid this problem. The so-called type II AN
 car::Anova(fit, type = "II")
 ```
 
-There is also type III, which is as type II, but avoids a similar problem for interactions, i.e. it discards the variance that is shared between main effects and interactions. Note that numeric variables should be centered and categorical variables should have orthogonal contrast when running a type III ANOVA (see below). 
+There is also type III, which is as type II, but avoids a similar problem for interactions, i.e. it discards the variance that is shared between main effects and interactions. Note that numeric variables should be centered and categorical variables should have orthogonal contrast when running a type III ANOVA (see below).
 
 ```{r chunk_chapter3_chunk66, echo=TRUE, eval=TRUE}
 car::Anova(fit, type = "III")
@@ -141,10 +141,10 @@ Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it d
 
 -   If not, type I is really only appropriate if you explicitly want to have the order-dependence. There may be some rare cases for this, e.g. if you want to say my regression should first explain everything it can by variable A, and then I only want to see if variable B adds something.
 
--   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test. 
+-   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test.
 
 ::: callout-caution
-Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has a equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone. 
+Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1\*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has a equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.
 
 For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:
 
@@ -172,16 +172,15 @@ car::Anova(fit1, type = "III")
 car::Anova(fit2, type = "III")
 ```
 
-Let's compare the results to an ANOVA without an interaction (note that in this case, type II / III) are identical for all sensible contrasts. 
+Let's compare the results to an ANOVA without an interaction (note that in this case, type II / III) are identical for all sensible contrasts.
 
 ```{r, results='hide'}
 fit1 = lm(Ozone ~ Temp + fMonth , data = airquality)
 car::Anova(fit1, type = "III")
 ```
 
-If you run this, you will see that the Helmert contrasts (any other orthogonal contrasts would do as well) match much better with the results of the model without interaction, because they de-correlate the variance explained by the main effects and the interactions. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables. 
+If you run this, you will see that the Helmert contrasts (any other orthogonal contrasts would do as well) match much better with the results of the model without interaction, because they de-correlate the variance explained by the main effects and the interactions. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables.
 :::
-
 
 ::: {.callout-caution icon="false"}
 ###### Excercise
@@ -215,7 +214,7 @@ Only the Temp:Solar.R interaction is not affected!
 print(car::Anova(fit, type = "III"))
 ```
 
-Identical when variables are scaled. 
+Identical when variables are scaled.
 :::
 
 ### Correcting partitions for complexity
@@ -240,6 +239,46 @@ In general, reliably adjusting R^2^ components for complexity in an ANOVA is ver
 -   If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance
 
 -   Alternatively, if the true variance is really crucial for your study, you can adjust R^2^ by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H~0~, this will be a conservative estimate.
+
+## Relationship between lm and other hypotheses tests
+
+ANOVA is just one example of the close relationship between the lm and other null hypothesis significance tests. ANOVA can either be seen as a special test (traditional view), or as a special evaluation of a fitted lm (modern view). I would recommend taking the modern view, as it easily generalizes to GLMs and other more advanced regression models such as GLMMs.
+
+It is interesting to consider more generally which hypothesis tests can be obtained by looking at certain results or tests on the linear model. As you can see in the table below, there are many classical hypothesis tests that are equivalently or nearly equivalently tested by a linear model.
+
++----------------------------------+---------------------------------------+---------------------------------------------------+
+| Hypothesis                       | R function                            | Equivalent linear model                           |
++==================================+=======================================+===================================================+
+| Two groups differ in their means | `t.test(y_1, y_2)`                    | `lm(c(y_1, y_2)~c(g_1, g_2))`                     |
+|                                  |                                       |                                                   |
+| **unpaired t.test**              |                                       |                                                   |
++----------------------------------+---------------------------------------+---------------------------------------------------+
+| Two groups differ in their means | `t.test(y_1, y_2, paired = TRUE)`     | `lm(y_2-y_1~1)`                                   |
+|                                  |                                       |                                                   |
+| **paired t.test**                |                                       |                                                   |
++----------------------------------+---------------------------------------+---------------------------------------------------+
+| y depends on continuous x        | `cor.test(x, y)`                      | `lm(y~x)` note: only near-equivalent              |
+|                                  |                                       |                                                   |
+| **Pearson correlation**          |                                       |                                                   |
++----------------------------------+---------------------------------------+---------------------------------------------------+
+| y depends on continuous x        | `cor.test(x, y, method = "spearman")` | `lm(rank(y)~rank(x))` note: only near-equivalent. |
+|                                  |                                       |                                                   |
+| **Spearman correlation**         |                                       |                                                   |
++----------------------------------+---------------------------------------+---------------------------------------------------+
+| y differs within a group         | `aov(y~group)`                        | `lm(y~group)` with subsequent ANOVA               |
+|                                  |                                       |                                                   |
+| **One-way ANOVA**                |                                       |                                                   |
++----------------------------------+---------------------------------------+---------------------------------------------------+
+
+: Common statistical tests with linear models
+
+Based on this, one could think it doesn't matter then if we use a regression model or a hypothesis test. However, the advantage of the regression model is that
+
+-   It provides a richer output
+
+-   It provides the same output for all cases, with clear ideas about how to check residuals etc.
+
+-   It allows to adjust for the effects of covariates
 
 ## Case studies
 

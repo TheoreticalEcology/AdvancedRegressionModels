@@ -2,19 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.0.36">
+<meta name="generator" content="quarto-1.2.269">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Advanced Regression Models with R - 3&nbsp; ANOVA</title>
+<title>Advanced Regression Models with R - 3&nbsp; ANOVA and other hypotheses</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -53,7 +58,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -66,7 +71,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -139,26 +144,26 @@ div.csl-indent {
 }</script>
 
 
-<meta name="citation_title" content="[3]{.chapter-number}&nbsp; [ANOVA]{.chapter-title}">
+<meta name="citation_title" content="[3]{.chapter-number}&nbsp; [ANOVA and other hypotheses]{.chapter-title}">
 <meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//2B-ANOVA.html">
-<meta name="citation_journal_title" content="undefined">
-<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;">
-<meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_journal_title=Vignette for lme4;">
-<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_fulltext_html_url=https://www.R-project.org/;,citation_publication_date=2021;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2022;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;,citation_publication_date=2022;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;,citation_publication_date=2016;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_fulltext_html_url=https://yihui.org/knitr/;,citation_publication_date=2015;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_publication_date=2014;,citation_journal_title=Implementing reproducible computational research;">
-<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;,citation_publication_date=2018;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;,citation_publication_date=2020;,citation_journal_title=undefined;">
-<meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;">
-<meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_journal_title=Journal of Ecology;">
-<meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_publisher=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
+<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_publisher=CRC Press;">
+<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_publisher=https://www.statlearning.com/; Springer;">
+<meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;,citation_publisher=Oxford University Press;">
+<meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_journal_title=Vignette for lme4;">
+<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.R-project.org/;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;">
+<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://yihui.org/knitr/;">
+<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;">
+<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;">
+<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_fulltext_html_url=https://yihui.org/knitr/;">
+<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_editor=Victoria Stodden;,citation_editor=Friedrich Leisch;,citation_editor=Roger D. Peng;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_inbook_title=Implementing reproducible computational research;">
+<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;">
+<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;">
+<meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;,citation_publisher=BioMed Central;">
+<meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_journal_title=Journal of Ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;,citation_publisher=Wiley Online Library;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -167,7 +172,7 @@ div.csl-indent {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -239,7 +244,7 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></a>
+  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -349,25 +354,26 @@ div.csl-indent {
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc">
+        <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-idea-of-anova" id="toc-the-idea-of-anova" class="nav-link active" data-scroll-target="#the-idea-of-anova"> <span class="header-section-number">3.1</span> The idea of ANOVA</a>
+  <li><a href="#the-idea-of-anova" id="toc-the-idea-of-anova" class="nav-link active" data-scroll-target="#the-idea-of-anova"><span class="toc-section-number">3.1</span>  The idea of ANOVA</a>
   <ul class="collapse">
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example"> <span class="header-section-number">3.1.1</span> An example</a></li>
-  <li><a href="#customizing-the-partitioning" id="toc-customizing-the-partitioning" class="nav-link" data-scroll-target="#customizing-the-partitioning"> <span class="header-section-number">3.1.2</span> Customizing the partitioning</a></li>
+  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example"><span class="toc-section-number">3.1.1</span>  An example</a></li>
+  <li><a href="#customizing-the-partitioning" id="toc-customizing-the-partitioning" class="nav-link" data-scroll-target="#customizing-the-partitioning"><span class="toc-section-number">3.1.2</span>  Customizing the partitioning</a></li>
   </ul></li>
-  <li><a href="#fundamental-issues-in-anova" id="toc-fundamental-issues-in-anova" class="nav-link" data-scroll-target="#fundamental-issues-in-anova"> <span class="header-section-number">3.2</span> Fundamental issues in ANOVA</a>
+  <li><a href="#fundamental-issues-in-anova" id="toc-fundamental-issues-in-anova" class="nav-link" data-scroll-target="#fundamental-issues-in-anova"><span class="toc-section-number">3.2</span>  Fundamental issues in ANOVA</a>
   <ul class="collapse">
-  <li><a href="#measuring-model-fit" id="toc-measuring-model-fit" class="nav-link" data-scroll-target="#measuring-model-fit"> <span class="header-section-number">3.2.1</span> Measuring model fit</a></li>
-  <li><a href="#testing-if-the-improvement-is-significant" id="toc-testing-if-the-improvement-is-significant" class="nav-link" data-scroll-target="#testing-if-the-improvement-is-significant"> <span class="header-section-number">3.2.2</span> Testing if the improvement is significant</a></li>
-  <li><a href="#partitioning-variance-if-order-matters" id="toc-partitioning-variance-if-order-matters" class="nav-link" data-scroll-target="#partitioning-variance-if-order-matters"> <span class="header-section-number">3.2.3</span> Partitioning variance if order matters</a></li>
-  <li><a href="#correcting-partitions-for-complexity" id="toc-correcting-partitions-for-complexity" class="nav-link" data-scroll-target="#correcting-partitions-for-complexity"> <span class="header-section-number">3.2.4</span> Correcting partitions for complexity</a></li>
+  <li><a href="#measuring-model-fit" id="toc-measuring-model-fit" class="nav-link" data-scroll-target="#measuring-model-fit"><span class="toc-section-number">3.2.1</span>  Measuring model fit</a></li>
+  <li><a href="#testing-if-the-improvement-is-significant" id="toc-testing-if-the-improvement-is-significant" class="nav-link" data-scroll-target="#testing-if-the-improvement-is-significant"><span class="toc-section-number">3.2.2</span>  Testing if the improvement is significant</a></li>
+  <li><a href="#partitioning-variance-if-order-matters" id="toc-partitioning-variance-if-order-matters" class="nav-link" data-scroll-target="#partitioning-variance-if-order-matters"><span class="toc-section-number">3.2.3</span>  Partitioning variance if order matters</a></li>
+  <li><a href="#correcting-partitions-for-complexity" id="toc-correcting-partitions-for-complexity" class="nav-link" data-scroll-target="#correcting-partitions-for-complexity"><span class="toc-section-number">3.2.4</span>  Correcting partitions for complexity</a></li>
   </ul></li>
-  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"> <span class="header-section-number">3.3</span> Case studies</a>
+  <li><a href="#relationship-between-lm-and-other-hypotheses-tests" id="toc-relationship-between-lm-and-other-hypotheses-tests" class="nav-link" data-scroll-target="#relationship-between-lm-and-other-hypotheses-tests"><span class="toc-section-number">3.3</span>  Relationship between lm and other hypotheses tests</a></li>
+  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"><span class="toc-section-number">3.4</span>  Case studies</a>
   <ul class="collapse">
-  <li><a href="#plant-height" id="toc-plant-height" class="nav-link" data-scroll-target="#plant-height"> <span class="header-section-number">3.3.1</span> Plant Height</a></li>
+  <li><a href="#plant-height" id="toc-plant-height" class="nav-link" data-scroll-target="#plant-height"><span class="toc-section-number">3.4.1</span>  Plant Height</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/2B-ANOVA.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
@@ -377,7 +383,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></h1>
 </div>
 
 
@@ -385,6 +391,7 @@ div.csl-indent {
 <div class="quarto-title-meta">
 
     
+  
     
   </div>
   
@@ -817,10 +824,68 @@ F-statistic: 1.428 on 30 and 85 DF,  p-value: 0.1039</code></pre>
 </ul>
 </section>
 </section>
-<section id="case-studies" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">3.3</span> Case studies</h2>
-<section id="plant-height" class="level3" data-number="3.3.1">
-<h3 data-number="3.3.1" class="anchored" data-anchor-id="plant-height"><span class="header-section-number">3.3.1</span> Plant Height</h3>
+<section id="relationship-between-lm-and-other-hypotheses-tests" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="relationship-between-lm-and-other-hypotheses-tests"><span class="header-section-number">3.3</span> Relationship between lm and other hypotheses tests</h2>
+<p>ANOVA is just one example of the close relationship between the lm and other null hypothesis significance tests. ANOVA can either be seen as a special test (traditional view), or as a special evaluation of a fitted lm (modern view). I would recommend taking the modern view, as it easily generalizes to GLMs and other more advanced regression models such as GLMMs.</p>
+<p>It is interesting to consider more generally which hypothesis tests can be obtained by looking at certain results or tests on the linear model. As you can see in the table below, there are many classical hypothesis tests that are equivalently or nearly equivalently tested by a linear model.</p>
+<table class="table">
+<caption>Common statistical tests with linear models</caption>
+<colgroup>
+<col style="width: 27%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis</th>
+<th>R function</th>
+<th>Equivalent linear model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p>Two groups differ in their means</p>
+<p><strong>unpaired t.test</strong></p></td>
+<td><code>t.test(y_1, y_2)</code></td>
+<td><code>lm(c(y_1, y_2)~c(g_1, g_2))</code></td>
+</tr>
+<tr class="even">
+<td><p>Two groups differ in their means</p>
+<p><strong>paired t.test</strong></p></td>
+<td><code>t.test(y_1, y_2, paired = TRUE)</code></td>
+<td><code>lm(y_2-y_1~1)</code></td>
+</tr>
+<tr class="odd">
+<td><p>y depends on continuous x</p>
+<p><strong>Pearson correlation</strong></p></td>
+<td><code>cor.test(x, y)</code></td>
+<td><code>lm(y~x)</code> note: only near-equivalent</td>
+</tr>
+<tr class="even">
+<td><p>y depends on continuous x</p>
+<p><strong>Spearman correlation</strong></p></td>
+<td><code>cor.test(x, y, method = "spearman")</code></td>
+<td><code>lm(rank(y)~rank(x))</code> note: only near-equivalent.</td>
+</tr>
+<tr class="odd">
+<td><p>y differs within a group</p>
+<p><strong>One-way ANOVA</strong></p></td>
+<td><code>aov(y~group)</code></td>
+<td><code>lm(y~group)</code> with subsequent ANOVA</td>
+</tr>
+</tbody>
+</table>
+<p>Based on this, one could think it doesn’t matter then if we use a regression model or a hypothesis test. However, the advantage of the regression model is that</p>
+<ul>
+<li><p>It provides a richer output</p></li>
+<li><p>It provides the same output for all cases, with clear ideas about how to check residuals etc.</p></li>
+<li><p>It allows to adjust for the effects of covariates</p></li>
+</ul>
+</section>
+<section id="case-studies" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">3.4</span> Case studies</h2>
+<section id="plant-height" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="plant-height"><span class="header-section-number">3.4.1</span> Plant Height</h3>
 <p>Let’s look at our plant height case study from the previous chapter. Which type of ANOVA should you run to analyze the model? Compare results to “less appropriate” alternatives.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
@@ -943,7 +1008,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -971,31 +1053,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   for (var i=0; i<noterefs.length; i++) {
     const ref = noterefs[i];
     tippyHover(ref, function() {
-      let href = ref.getAttribute('href');
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
     });
   }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>

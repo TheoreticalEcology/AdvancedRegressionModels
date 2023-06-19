@@ -30,19 +30,15 @@ install.packages(LIBRARY)
 
 Exchange "LIBRARY" with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install
 
-```         
-build-essential
-gfortran
-libmagick++-dev
-r-base-dev
-cmake
-```
+    build-essential
+    gfortran
+    libmagick++-dev
+    r-base-dev
+    cmake
 
 If you are new to installing packages on Debian / Ubuntu, etc., type the following:
 
-```         
-sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
-```
+    sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
 :::
 
 In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first install devtools from CRAN by running
@@ -69,7 +65,7 @@ As mentioned in the preface, this book assumes that you have basic knowledge abo
 
 There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.
 
-For this course, however, all examples are prepared in base R. If you're not familiar with the base R syntax for these purposes, have a look at the appendix, which covers the most common tasks in this area.
+For this course, however, all examples are prepared in base R. If you're not familiar with the base R syntax for these purposes, have a look at @sec-appendix-R-crash-course, which covers the most common tasks in this area.
 
 ::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
@@ -137,7 +133,7 @@ dat = airquality
 6.  Single continuous variables can be visualized using a histogram (`hist)` , for two variables, it depends on their data types:
 
     | Scenario                     | Which plot                    | R command                                                                            |
-    |------------------|------------------|-------------------------------------|
+    |------------------|------------------|------------------------------------|
     | Numeric                      | Histogram or boxplot          | `hist()` and`boxplot`                                                                |
     | Numeric with numeric         | Scatterplot                   | `plot`                                                                               |
     | Numeric with categorical     | Boxplot                       | `boxplot(numeric~categorical)`                                                       |
@@ -167,7 +163,6 @@ dat = airquality
     cor(dat$Wind, dat$Temp, use = "complete.obs", method = "spearman")
     ```
 :::
-
 
 ## Organization of this book
 
