@@ -2394,7 +2394,7 @@ Attaching package: 'EcoData'</code></pre>
 </div>
 <p>The model suggests a significant global trend of plant height increasing with temperature.</p>
 <ol type="1">
-<li>Perform residual checks and modify the model if you think it is necessary.</li>
+<li>Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?</li>
 <li>The data set also includes a categorical variable “growthform”. Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.</li>
 </ol>
 </div>
@@ -2754,12 +2754,43 @@ Multiple R-squared:  0.1267,    Adjusted R-squared:  0.1121
 F-statistic: 8.704 on 1 and 60 DF,  p-value: 0.004522</code></pre>
 </div>
 </div>
+<p>Or you could fit the interaction but turn-off the intercept (by saying +0 or -1) and remove the plantHeight intercepts:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp<span class="sc">:</span>growthform <span class="sc">+</span> <span class="dv">0</span>, <span class="at">data =</span> plantHeight[,])</span>
+<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = loght ~ sTemp:growthform + 0, data = plantHeight[, 
+    ])
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.5156 -0.1396  0.3488  0.8103  2.3914 
+
+Coefficients:
+                           Estimate Std. Error t value Pr(&gt;|t|)    
+sTemp:growthformFern        -0.8949     2.9233  -0.306 0.759911    
+sTemp:growthformHerb         0.3195     0.1077   2.967 0.003460 ** 
+sTemp:growthformHerb/Shrub   1.1788     5.5825   0.211 0.833026    
+sTemp:growthformShrub        0.2375     0.1197   1.984 0.048974 *  
+sTemp:growthformShrub/Tree   0.8833     0.2613   3.380 0.000908 ***
+sTemp:growthformTree         0.5013     0.1171   4.281 3.17e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.8339 on 162 degrees of freedom
+  (10 observations deleted due to missingness)
+Multiple R-squared:  0.2083,    Adjusted R-squared:  0.179 
+F-statistic: 7.106 on 6 and 162 DF,  p-value: 9.796e-07</code></pre>
+</div>
+</div>
 <ol start="3" type="1">
 <li><strong>Interaction with lat</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">*</span> sLat, <span class="at">data =</span> plantHeight)</span>
-<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">*</span> sLat, <span class="at">data =</span> plantHeight)</span>
+<span id="cb183-2"><a href="#cb183-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2785,7 +2816,7 @@ F-statistic: 19.37 on 3 and 174 DF,  p-value: 6.95e-11</code></pre>
 </div>
 <p>All is n.s. … how did this happen? If we check the correlation between temp and lat, we see that the two predictors are highly collinear.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(plantHeight<span class="sc">$</span>temp, plantHeight<span class="sc">$</span>lat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb185"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb185-1"><a href="#cb185-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(plantHeight<span class="sc">$</span>temp, plantHeight<span class="sc">$</span>lat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.9249304</code></pre>
 </div>
