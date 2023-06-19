@@ -1,4 +1,4 @@
-# A crashcourse in R
+# A crashcourse in R {#sec-appendix-R-crash-course}
 
 This Appendix reminds you about basic R data types and how to operate on them. Also suitable for self-study prior to the course!
 

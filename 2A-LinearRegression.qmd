@@ -479,7 +479,7 @@ Note that for the multiple regression, that scatter around the regression line d
 :::
 
 | Formula      | Meaning                               | Details                                    |
-|--------------|---------------------------------------|--------------------------------------------|
+|----------------|--------------------------|------------------------------|
 | `y~x_1`      | $y=a_0 +a_1*x_1$                      | Slope+Intercept                            |
 | `y~x_1 - 1`  | $y=a_1*x_1$                           | Slope, no intercept                        |
 | `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$                 | Quadratic effect                           |
@@ -1122,7 +1122,6 @@ summary(model2)
 It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests.
 :::
 
-
 ::: {.callout-caution icon="false"}
 #### solomonislands
 
@@ -1134,7 +1133,7 @@ library(EcoData)
 summary(solomonislands)
 ```
 
-1.  Fit a lm 
+1.  Fit a lm
 2.  Perform residual checks
 3.  Transform variables, if necessary
 :::
@@ -1142,7 +1141,8 @@ summary(solomonislands)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-***1. LM ***
+***1. LM***
+
 ```{r}
 model = lm(Species ~ Area, data = solomonislands)
 summary(model)
@@ -1152,7 +1152,7 @@ Area has a small positive significant effect on the number of species.
 
 ***2. Residual checks***
 
-```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
@@ -1162,15 +1162,13 @@ The residuals look bad! There is something wrong with the functional form!
 ***3. Transform variables***
 
 ```{r}
-model2 = lm(Species ~ log(Area+1), data = solomonislands)
+model2 = lm(Species ~ log(Area+1) , data = solomonislands)
 summary(model2)
 plot(model2)
 ```
 
-The residuals look better now!
-
+The residuals look better now! There is some remaining nonlinearity and a remaining heteroskedasticity, which we could address with more advanced modelling techniques that are introduced later in the book. 
 :::
-
 
 ### Mulitple Regression
 
