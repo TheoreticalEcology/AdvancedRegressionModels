@@ -224,7 +224,7 @@ Here, and in this part of the book in general, we will first be concerned with a
 
 ### R regression syntax
 
-If we see a misfit of the mean, we should adjust the functional form of the model. Here a few options:
+If we see a misfit of the mean, we should adjust the functional form of the model. Here a few options (see @tbl-syntax for more details):
 
 ```{r chunk_chapter3_task_10, message=FALSE, warning=FALSE}
 fit = lm(Ozone ~ Wind, data = airquality) # Intercept + slope.
@@ -477,6 +477,17 @@ plot(allEffects(fit, partial.residuals = T) )
 ::: callout-tip
 Note that for the multiple regression, that scatter around the regression line displayed by the effects package is not the raw data, but the so-called partial residuals. Essentially, what this means is that we plot the fitted line for the respective predictor, and then we calculate the residual for the full model (including the other predictors) and add them on the regression line. The advantage is that this subtracts the effect of other predictors, and removes possible spurious correlatins that occur due to collinearity between predictors (see next section).
 :::
+
+| Formula      | Meaning                               | Details                                    |
+|--------------|---------------------------------------|--------------------------------------------|
+| `y~x_1`      | $y=a_0 +a_1*x_1$                      | Slope+Intercept                            |
+| `y~x_1 - 1`  | $y=a_1*x_1$                           | Slope, no intercept                        |
+| `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$                 | Quadratic effect                           |
+| `y~x_1+x_2`  | $y=a_0+a_1*x_1+a_2*x_2$               | Multiple linear regression (two variables) |
+| `y~x_1:x_2`  | $y=a_0+a_1*(x_1*x_2)$                 | Interaction between x~1~ and x~2~          |
+| `y~x_1*x_2`  | $y=a_0+a_1*(x_1*x_2)+a_2*x_1+a_3*x_2$ | Interaction and main effects               |
+
+: Formula syntax
 
 ## The Effect of Collinearity
 
