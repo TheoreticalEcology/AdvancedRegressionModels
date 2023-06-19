@@ -30,15 +30,19 @@ install.packages(LIBRARY)
 
 Exchange "LIBRARY" with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install
 
-    build-essential
-    gfortran
-    libmagick++-dev
-    r-base-dev
-    cmake
+```         
+build-essential
+gfortran
+libmagick++-dev
+r-base-dev
+cmake
+```
 
 If you are new to installing packages on Debian / Ubuntu, etc., type the following:
 
-    sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
+```         
+sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
+```
 :::
 
 In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first install devtools from CRAN by running
@@ -70,6 +74,100 @@ For this course, however, all examples are prepared in base R. If you're not fam
 ::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
+
+::: {.callout-caution icon="false"}
+#### Exercise - Data wrangling
+
+We work with the airquality dataset:
+
+```{r}
+dat = airquality
+```
+
+1.  Before working with a dataset, you should always get an overview of it. Helpful functions for this are `str()`, `View()`, `summary()`, `head()`, and `tail()`. Apply them to `dat` and make sure to understand what they do.
+2.  What is the data type of the variable 'Month'? Transform it to a factor
+3.  Scale the variable Wind and save it as a new variable in `dat`
+4.  Transform the variable 'Temp' (log-transform) and save it as a new variable in `dat`
+5.  Extract the first 100 rows of `dat` and remove the NAs from the subsetted dataset
+6.  Plot the variables of the dataset, and against each other (e.g. Wind, Wind vs Temp, Temp vs Month, all simultaneously)
+7.  Calculate correlation indices between the numerical variables (e.g. Wind and Temp, Temp and Ozone). What is the difference between Spearman and Pearson correlation?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+1.  `str()` helps us to check the data types of the variables, ensure that they are correct, e.g. categorical variables should be factors and continuous variables should be either num (numeric) or int (integer). `summary()`returns important summary statistics of our variables and informs us about NAs in the data
+
+    ```{r}
+    str(dat)
+    summary(dat)
+    ```
+
+    There are NAs in Ozone and Solar.R! Also, Month is not a factor!
+
+2.  We have to transform Month into a factor:
+
+    ```{r}
+    dat$Month = as.factor(dat$Month)
+    str(dat)
+    ```
+
+3.  Scaling means that the variables are centered and standardized (divided by their standard deviation):
+
+    ```{r}
+    dat$sWind = scale(dat$Wind)
+    summary(dat)
+    ```
+
+4.  Use `log`function to transform the variable (be aware of NAs!)
+
+    ```{r}
+    dat$logTemp = log(dat$Temp)
+    ```
+
+5.  Use `[rows, cols]` to subset the data and `complete.cases()` to remove observations with NAs
+
+    ```{r}
+    dat_sub = dat[1:100,]
+    summary(dat_sub)
+    dat_sub = dat_sub[complete.cases(dat_sub),]
+    summary(dat_sub)
+    ```
+
+6.  Single continuous variables can be visualized using a histogram (`hist)` , for two variables, it depends on their data types:
+
+    | Scenario                     | Which plot                    | R command                                                                            |
+    |------------------|------------------|-------------------------------------|
+    | Numeric                      | Histogram or boxplot          | `hist()` and`boxplot`                                                                |
+    | Numeric with numeric         | Scatterplot                   | `plot`                                                                               |
+    | Numeric with categorical     | Boxplot                       | `boxplot(numeric~categorical)`                                                       |
+    | Categorical with categorical | mosaicplot or grouped barplot | `mosaicplot(table(categorical, categorical))` or `barplot(data,        beside=TRUE)` |
+
+    ```{r}
+    # Numeric
+    hist(dat$Wind, main = "Wind")
+
+    # Numeric vs numeric
+    plot(dat$Wind, dat$Solar.R)
+
+    # Numeric with categorical
+    boxplot(Wind~Month, data = dat)
+
+    # All with all
+    pairs(dat)
+    ```
+
+7.  Spearman is a rank correlation factor, less sensitive against outliers and non-linearity:
+
+    ```{r}
+    # Pearson
+    cor(dat$Wind, dat$Temp, use = "complete.obs")
+
+    # Spearman
+    cor(dat$Wind, dat$Temp, use = "complete.obs", method = "spearman")
+    ```
+:::
+
 
 ## Organization of this book
 

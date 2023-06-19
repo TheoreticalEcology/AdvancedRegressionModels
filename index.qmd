@@ -21,6 +21,32 @@ This is what we will mainly train in this course. Don't worry if you think that 
 
 This course assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelors Biology Lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. There is also an appendix in this book which covers the most common functions for data manipulation and plotting in R.
 
++----------------------------------+---------------------------------------+-------------------------------+
+| Hypothesis                       | R function                            | Equivalent linear model       |
++==================================+=======================================+===============================+
+| Two groups differ in their means | `t.test(y_1, y_2)`                    | `lm(c(y_1, y_2)~c(g_1, g_2))` |
+|                                  |                                       |                               |
+| **unpaired t.test**              |                                       |                               |
++----------------------------------+---------------------------------------+-------------------------------+
+| Two groups differ in their means | `t.test(y_1, y_2, paired = TRUE)`     | `lm(y_2-y_1~1)`               |
+|                                  |                                       |                               |
+| **paired t.test**                |                                       |                               |
++----------------------------------+---------------------------------------+-------------------------------+
+| y depends on continuous x        | `cor.test(x, y)`                      | `lm(y~x)`                     |
+|                                  |                                       |                               |
+| **Pearson correlation**          |                                       |                               |
++----------------------------------+---------------------------------------+-------------------------------+
+| y depends on continuous x        | `cor.test(x, y, method = "spearman")` | `lm(rank(y)~rank(x))`         |
+|                                  |                                       |                               |
+| **Spearman correlation**         |                                       |                               |
++----------------------------------+---------------------------------------+-------------------------------+
+| y differs within a group         | `aov(y~group)`                        | `lm(y~group)`                 |
+|                                  |                                       |                               |
+| **One-way ANOVA**                |                                       |                               |
++----------------------------------+---------------------------------------+-------------------------------+
+
+: Common statistical tests with linear models
+
 If you have comments, questions or suggestions regarding this book, please submit them [here](https://github.com/TheoreticalEcology/AdvancedRegressionModels/issues).
 
 ```{=html}
