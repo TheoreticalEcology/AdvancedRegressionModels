@@ -1235,6 +1235,14 @@ fit = lm(loght ~ sTemp + 0, data = plantHeight[plantHeight$growthform == "Tree",
 summary(fit)
 ```
 
+Or you could fit the interaction but turn-off the intercept (by saying +0 or -1) and remove the plantHeight intercepts:
+
+```{r}
+fit = lm(loght ~ sTemp:growthform + 0, data = plantHeight[,])
+summary(fit)
+```
+
+
 3)  **Interaction with lat**
 
 ```{r}
