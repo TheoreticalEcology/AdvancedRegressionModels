@@ -1088,7 +1088,7 @@ summary(model)
 
 The model suggests a significant global trend of plant height increasing with temperature.
 
-1.  Perform residual checks and modify the model if you think it is necessary.
+1.  Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?
 2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
 :::
 
