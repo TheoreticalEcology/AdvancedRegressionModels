@@ -262,7 +262,65 @@ b)  A causal analysis, trying to understand the effect of roads on Elk presence.
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-TODO
+A. Predictive analysis
+
+```{r}
+library(MASS)
+fit <- glm(presence ~ dist_roads  + dem + ruggedness, data = elk_data, family = "binomial")
+predictive_model = MASS::stepAIC(fit, direction = "both")
+summary(predictive_model)
+
+```
+
+B. Causal analysis
+
+The predictive model has actually dropped the variable of interest (distance to roads) which shows the risks of tools that select for the best predictive model such as AIC selection: Collinear variables that we need to adjust our effects, are often dropped.
+
+For the causal model, we really need to think about the causal relationships between the variables:
+
+We are interested in the effect of dist_roads on presence:
+
+```{r}
+summary(glm(presence ~ dist_roads, data = elk_data, family = "binomial"))
+```
+
+Positive effect of dist_roads on elk, or in other words, more elks closer to the roads? Does that make sense? No, we expect a negative effect!
+
+Altitude (dem) and the ruggedness probably affect both variables, presence and dist_roads, and thus they should be considered as confounders:
+
+```{r}
+fit = glm(presence ~ dist_roads+ dem + ruggedness, data = elk_data, family = "binomial")
+```
+
+The effect of dist_roads is now negative!
+
+Let's check the residuals:
+
+```{r}
+res <- simulateResiduals(fit, plot = TRUE)
+plot(res, quantreg = TRUE)
+plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
+plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
+```
+
+The functional forms of our confounders are not perfect. Since we are not really interested in them, we can use a GAM to flexibly account for them:
+
+```{r}
+library(mgcv)
+fit2 <- gam(presence ~ dist_roads + s(dem) + s(ruggedness), data = elk_data, family = "binomial")
+summary(fit2)
+```
+
+Let's take another look at the functional forms of our confounders:
+
+```{r}
+res <- simulateResiduals(fit2, plot = TRUE)
+plot(res, quantreg = TRUE)
+plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
+plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
+```
+
+Nice!
 :::
 
 ## Residual and their solutions in GLMs
