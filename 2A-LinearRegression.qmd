@@ -400,7 +400,7 @@ summary(anov)
 In this case, we would conclude that the variable group (3 levels) significantly improves model fit, i.e. the group overall has a significnat effect, even though the individual contrasts in the original model where not significant.
 
 ::: callout-note
-The situation that the ANOVA is significant, but the linear regression contrasts is not is often perceived as confusing, but this is perfectly normal and not a contradiction.
+The situation that the ANOVA is significant, but the linear regression contrasts is often perceived as confusing, but this is perfectly normal and not a contradiction.
 
 In general, the ANOVA is more sensitive, because it tests for an overall effect (thus also has a larger n), whereas the individual contrasts test with a reduced n. Moreover, as we have seen, in the summary of a `lm()`, for \>2 levels, not all possible contrasts are tested. In our example, we estimate p-values for crtl-trt1 and ctrl-trt2, which are both n.s., but we do not test for differences of trt1-trt2 (which happens to be significant).
 
@@ -1121,6 +1121,56 @@ summary(model2)
 
 It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests.
 :::
+
+
+::: {.callout-caution icon="false"}
+#### solomonislands
+
+Look at the solomonislands dataset in Ecodata. Let's assume we want to analyze whether the number of Species on the islands depends on the Area to the islands:
+
+```{r echo=T, eval=TRUE, results='hide'}
+library(EcoData)
+?solomonislands
+summary(solomonislands)
+```
+
+1.  Fit a lm 
+2.  Perform residual checks
+3.  Transform variables, if necessary
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+***1. LM ***
+```{r}
+model = lm(Species ~ Area, data = solomonislands)
+summary(model)
+```
+
+Area has a small positive significant effect on the number of species.
+
+***2. Residual checks***
+
+```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(model)
+```
+
+The residuals look bad! There is something wrong with the functional form!
+
+***3. Transform variables***
+
+```{r}
+model2 = lm(Species ~ log(Area+1), data = solomonislands)
+summary(model2)
+plot(model2)
+```
+
+The residuals look better now!
+
+:::
+
 
 ### Mulitple Regression
 
