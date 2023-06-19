@@ -56,6 +56,56 @@ The function name lm is short for "linear model". Remember from your basic stats
 So, an lm is any regression of the form $y = \operatorname{f}(x) + \mathcal{N}(0, \sigma)$, where $\operatorname{f}$ is a polynomial, e.g. ${a}_{0} + {a}_{1} \cdot x + {a}_{2} \cdot {x}^{2}$, and $\mathcal{N}(0, \sigma)$ means that we assume the data scattering as a normal (Gaussian) distribution with unknown standard deviation $\sigma$ around $\operatorname{f}(x)$.
 :::
 
+::: {.callout-tip collapse="true"}
+## Understanding how the lm works
+
+To understand how the lm works, we will estimate a lm using a custom likelihood function:
+
+1.  **Create some toy data:**
+
+```{r}
+Xobs = rnorm(100, sd = 1.0)
+Y = 0.0+1.0*Xobs + rnorm(100,sd = 0.2)
+```
+
+2.  **Define the likelihood function and optimize the parameters (slope+intercept):**
+
+```{r}
+likelihood = function(par) { # three parameters now
+  lls = dnorm(Y, mean = Xobs*par[2]+par[1], sd = par[3], log = TRUE) 
+  # calculate for each observation the probability to observe the data given our model
+  # we use the logLikilihood because of numerical reasons
+  return(sum(lls))
+}
+
+likelihood(c(0, 0, 0.2))
+opt = optim(c(0.0, 0.0, 1.0), fn = function(par) -likelihood(par), hessian = TRUE )
+
+opt$par
+```
+
+3.  **Test the estimated parameters against 0 (standard errors can be derived from the hessian of the MLE):** Our true parameters are 0.0 for the intercept, 1.0 for the slope, and 0.22 for the sd of the observational error:
+    1.  calculate standard error
+    2.  calculate t-statistic
+    3.  calculate p-value
+
+```{r}
+st_errors = sqrt(diag(solve(opt$hessian)))
+st_errors[2]
+t_statistic = opt$par[2] / st_errors[2]
+pt(t_statistic, df = 100-3, lower.tail = FALSE)*2
+```
+
+The p-value is smaller than $\alpha$, so the effect is significant! Let's compare it against the output of the lm function:
+
+```{r}
+
+model = lm(Y~Xobs) # 1. Get estimates, MLE
+model
+summary(model) # 2. Calculate standard errors, CI, and p-values
+```
+:::
+
 ## Interpreting the fitted model
 
 We can get a more detailed summary of the statistical estimates with the `summary()`{.R} function.
@@ -427,7 +477,6 @@ plot(allEffects(fit, partial.residuals = T) )
 ::: callout-tip
 Note that for the multiple regression, that scatter around the regression line displayed by the effects package is not the raw data, but the so-called partial residuals. Essentially, what this means is that we plot the fitted line for the respective predictor, and then we calculate the residual for the full model (including the other predictors) and add them on the regression line. The advantage is that this subtracts the effect of other predictors, and removes possible spurious correlatins that occur due to collinearity between predictors (see next section).
 :::
-
 
 ## The Effect of Collinearity
 
