@@ -295,10 +295,14 @@ summary(fit)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-We have correlations between variables and an interaction, so should run a type II or III Anova, for III you should center predictors. For convenience, I will run a type II:
+We have correlations between variables and an interaction, so should run a type II or III Anova, for III you should center predictors:
 
 ```{r}
-print(car::Anova(fit, type = "II"))
+plantHeight$stemp = scale(plantHeight$temp, scale = FALSE) # only center variable
+plantHeight$slat = scale(plantHeight$lat, scale = FALSE)
+fit = lm(loght ~ stemp * slat, data = plantHeight)
+summary(fit)
+print(car::Anova(fit, type = "III"))
 ```
 
 Arguably not appropriate (because order dependent, and here we have strong collinearity) is a type I ANOVA:
@@ -306,4 +310,13 @@ Arguably not appropriate (because order dependent, and here we have strong colli
 ```{r}
 summary(aov(fit))
 ```
+
+Note that we have centered our variables, let's see what happens when we use the non centered variables:
+
+```{r}
+fit2 = lm(loght ~ temp * lat, data = plantHeight)
+print(car::Anova(fit2, type = "III"))
+```
+
+The shared proportion has proportionally gained a lot sum of squares!
 :::

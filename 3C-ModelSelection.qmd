@@ -46,6 +46,37 @@ summary(fullModel)
 
 The effect estimates are relatively unchanged, but the CI has increased, and the p-values are n.s.
 
+::: callout-tip
+## Precision variables
+
+We have learned that adding variables increases the complexity of the model and thus the variance/uncertainty of the model. However, there are so-called precision variables that, when added to the model, actually reduce the variance/uncertainty of the model! Technically, they explain the response variable so well that they help to improve the overall fit of the model and thus help to reduce the overall variance of the model.
+
+Here's a small example based on toy data:
+
+```{r}
+set.seed(42)
+X = runif(100)
+P = runif(100)
+Y = 0.8*X + 10*P + rnorm(100, sd = 0.5)
+```
+
+Without the precision variable (P):
+
+```{r}
+summary(lm(Y~X))
+```
+
+Effect of X is n.s. (standard error = 0.96)
+
+With the precision variable (P):
+
+```{r}
+summary(lm(Y~X+P))
+```
+
+The effect of X on Y is now significant (standard error = 0.15)!
+:::
+
 ## Model Selection Methods
 
 Because of the bias-variance trade-off, we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would loose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
@@ -423,7 +454,7 @@ R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, howeve
 ::: {.callout-caution icon="false"}
 #### Excercise
 
-Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satistisfaction. If you want, you can also tune this model in a validation or cross-validation split. 
+Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satistisfaction. If you want, you can also tune this model in a validation or cross-validation split.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -431,4 +462,3 @@ Revisit our previous analysis on life satisfaction in the chapter on causal infe
 
 TODO
 :::
-
