@@ -417,3 +417,18 @@ summary(selectedModel)
 
 R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlations in the data, or if you use variables that are (indirectly) identical to your response.
 :::
+
+### Exercise: Life Satisfaction #3
+
+::: {.callout-caution icon="false"}
+#### Excercise
+
+Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satistisfaction. If you want, you can also tune this model in a validation or cross-validation split. 
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+TODO
+:::
+
