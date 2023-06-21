@@ -265,6 +265,8 @@ b)  A causal analysis, trying to understand the effect of roads on Elk presence.
 A. Predictive analysis
 
 ```{r}
+load(file = "hiddenData/elk_data.RData")
+
 library(MASS)
 fit <- glm(presence ~ dist_roads  + dem + ruggedness, data = elk_data, family = "binomial")
 predictive_model = MASS::stepAIC(fit, direction = "both")
@@ -297,13 +299,16 @@ The effect of dist_roads is now negative!
 Let's check the residuals:
 
 ```{r}
+library(DHARMa)
 res <- simulateResiduals(fit, plot = TRUE)
 plot(res, quantreg = TRUE)
 plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-The functional forms of our confounders are not perfect. Since we are not really interested in them, we can use a GAM to flexibly account for them:
+The functional forms of our confounders are not perfect. 
+
+Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect. 
 
 ```{r}
 library(mgcv)
@@ -311,7 +316,7 @@ fit2 <- gam(presence ~ dist_roads + s(dem) + s(ruggedness), data = elk_data, fam
 summary(fit2)
 ```
 
-Let's take another look at the functional forms of our confounders:
+Let's take another look at the residual plots, in particular for the confounders.
 
 ```{r}
 res <- simulateResiduals(fit2, plot = TRUE)
@@ -320,7 +325,7 @@ plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-Nice!
+Now, everything looks perfect
 :::
 
 ## Residual and their solutions in GLMs
@@ -564,7 +569,9 @@ If we turn this around, this means that if want the model to have the same effec
 
 Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
 
-Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. So, for example, we could fit the last model with a binomial distribution, but with an identity link
+Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. 
+
+There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link
 
 ```{r, warnings = F}
 m3 = glm(survival ~ trt * concentration, 
@@ -573,7 +580,10 @@ summary(m3)
 plot(allEffects(m3))
 ```
 
-To solve this problem, there are a number of glm-specific solutions, for example for the logistic regression to prefer the so-called **odds ratios**. Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically.
+Now, we can interpret effects and interactions exactly like in a linear regression. 
+
+Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
+
 
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
