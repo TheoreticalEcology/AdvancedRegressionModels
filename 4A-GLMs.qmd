@@ -265,6 +265,8 @@ b)  A causal analysis, trying to understand the effect of roads on Elk presence.
 A. Predictive analysis
 
 ```{r}
+load(file = "hiddenData/elk_data.RData")
+
 library(MASS)
 fit <- glm(presence ~ dist_roads  + dem + ruggedness, data = elk_data, family = "binomial")
 predictive_model = MASS::stepAIC(fit, direction = "both")
@@ -297,13 +299,16 @@ The effect of dist_roads is now negative!
 Let's check the residuals:
 
 ```{r}
+library(DHARMa)
 res <- simulateResiduals(fit, plot = TRUE)
 plot(res, quantreg = TRUE)
 plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-The functional forms of our confounders are not perfect. Since we are not really interested in them, we can use a GAM to flexibly account for them:
+The functional forms of our confounders are not perfect. 
+
+Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect. 
 
 ```{r}
 library(mgcv)
@@ -311,7 +316,7 @@ fit2 <- gam(presence ~ dist_roads + s(dem) + s(ruggedness), data = elk_data, fam
 summary(fit2)
 ```
 
-Let's take another look at the functional forms of our confounders:
+Let's take another look at the residual plots, in particular for the confounders.
 
 ```{r}
 res <- simulateResiduals(fit2, plot = TRUE)
@@ -320,7 +325,7 @@ plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-Nice!
+Now, everything looks perfect
 :::
 
 ## Residual and their solutions in GLMs
