@@ -1079,16 +1079,13 @@ b2
 
 Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log(height).
 
-```{r echo=T, eval=TRUE, results='hide'}
+```{r echo=T, eval=TRUE}
 library(EcoData)
-
-model = lm(loght ~ temp, data = plantHeight)
-summary(model)
+plot(loght ~ temp, data = plantHeight)
 ```
 
-The model suggests a significant global trend of plant height increasing with temperature.
 
-1.  Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?
+1.  Fit a linear model for this relationship. Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?
 2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
 :::
 
@@ -1125,7 +1122,7 @@ It would also make sense in this case to follow up with an ANOVA and possible po
 ::: {.callout-caution icon="false"}
 #### solomonislands
 
-Look at the solomonislands dataset in Ecodata. Let's assume we want to analyze whether the number of Species on the islands depends on the Area to the islands:
+Look at the solomonislands dataset in Ecodata.
 
 ```{r echo=T, eval=TRUE, results='hide'}
 library(EcoData)
@@ -1133,19 +1130,20 @@ library(EcoData)
 summary(solomonislands)
 ```
 
-1.  Fit a lm
-2.  Perform residual checks
-3.  Transform variables, if necessary
+1.  Fit a lm, trying to fit the classical relationship of Species ~ log(Area)
+2.  Perform residual checks, and change the model if neccessary
+3.  Interpret the results
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-***1. LM***
+***1. Fitting the species-area curve ***
 
 ```{r}
-model = lm(Species ~ Area, data = solomonislands)
+model = lm(Species ~ log(Area), data = solomonislands)
 summary(model)
+plot(allEffects(model))
 ```
 
 Area has a small positive significant effect on the number of species.
@@ -1157,17 +1155,14 @@ par(mfrow = c(2, 2))
 plot(model)
 ```
 
-The residuals look bad! There is something wrong with the functional form!
+Residuals don't look particularly normal ... would get better fitting ~ log(Area+1), but that doesn't correspond to the classical model. In this case, it's a trade-off between fitting the classical model and get better residuals.
 
-***3. Transform variables***
+With advanced methods, we could also think about GLMs or quantile regressions (see next chapter). 
 
-```{r}
-model2 = lm(Species ~ log(Area+1) , data = solomonislands)
-summary(model2)
-plot(model2)
-```
+***3. Interpretation***
 
-The residuals look better now! There is some remaining nonlinearity and a remaining heteroskedasticity, which we could address with more advanced modelling techniques that are introduced later in the book. 
+Significant increase of species richness with area that follows a classical log(Area) relationship.
+
 :::
 
 ### Mulitple Regression

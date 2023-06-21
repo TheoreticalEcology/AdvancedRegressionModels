@@ -564,7 +564,9 @@ If we turn this around, this means that if want the model to have the same effec
 
 Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
 
-Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. So, for example, we could fit the last model with a binomial distribution, but with an identity link
+Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. 
+
+There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link
 
 ```{r, warnings = F}
 m3 = glm(survival ~ trt * concentration, 
@@ -573,7 +575,10 @@ summary(m3)
 plot(allEffects(m3))
 ```
 
-To solve this problem, there are a number of glm-specific solutions, for example for the logistic regression to prefer the so-called **odds ratios**. Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically.
+Now, we can interpret effects and interactions exactly like in a linear regression. 
+
+Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
+
 
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
