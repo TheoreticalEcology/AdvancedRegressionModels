@@ -253,7 +253,21 @@ If you see large changes in your RE structure, or if you want to select on the R
 ::: {.callout-caution icon="false"}
 #### Example - Elk Data
 
-You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:
+You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Description of variables:
+
+-   dist_roads - distance of the location to the next road
+
+-   NDVI - normalized difference vegetation index, essentially greeness of vegetation on the site
+
+-   ruggedness of the terrain
+
+-   dem - digital eleveation model = elevation above sea level
+
+-   presence - presence of the elk
+
+-   habitat - open or forest
+
+Perform either:
 
 a)  A predictive analysis, i.e. a model to predict where Elks can be found.
 b)  A causal analysis, trying to understand the effect of roads on Elk presence.
@@ -306,9 +320,9 @@ plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-The functional forms of our confounders are not perfect. 
+The functional forms of our confounders are not perfect.
 
-Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect. 
+Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect.
 
 ```{r}
 library(mgcv)
@@ -569,7 +583,7 @@ If we turn this around, this means that if want the model to have the same effec
 
 Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
 
-Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. 
+Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.
 
 There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link
 
@@ -580,10 +594,9 @@ summary(m3)
 plot(allEffects(m3))
 ```
 
-Now, we can interpret effects and interactions exactly like in a linear regression. 
+Now, we can interpret effects and interactions exactly like in a linear regression.
 
 Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
-
 
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
