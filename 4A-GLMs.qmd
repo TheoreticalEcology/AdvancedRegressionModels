@@ -606,3 +606,205 @@ mean(plogis(1 + rnorm(20, sd = 1)))
 The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data.
 
 Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.
+
+## Case Studies
+
+### Binomial GLM - Snails
+
+The following dataset contains information about the occurrences of 3 freshwater snail species and their infection rate with schistosomiasis (feshwater snails are intermediate hosts). The data and the analysis is from [Rabone et al. 2019](https://link.springer.com/article/10.1186/s13071-019-3745-8).
+
+```{r chunk_chapter4_chunk1, echo=TRUE, eval=T}
+library(EcoData)
+?snails
+```
+
+The dataset has data on three snail species: *Biomphalaria pfeifferi* (BP), *Bulinus forskalii* (BF), and *Bulinus truncatus* (BT). For this task, we will focus only on *Bulinus truncatus* (BT).
+
+We want to answer two questions:
+
+1.  What are the variables that explain the occurrence of the *Bulinus truncatus* species (=Species distribution model)
+2.  What are the variables that influence the infection of the snails with Schistosomiasis
+
+Tasks:
+
+-   Build two binomial GLMs (see hints) to explain the presence and the infection rate of *Bulinus truncatus* (BT)
+
+-   Add environmental variables and potential confounders (see ?snails for an overview of the variables and if you want, you can also take a loot at the original paper)
+
+-   Check residuals with DHARMa, check for misfits (plot residuals against variables)
+
+-   Which variables explain the presence of BT and which have an effect on the infection rates?
+
+::: callout-tip
+## Hints
+
+Prepare dataset before the analysis:
+
+```{r}
+data = EcoData::snails
+data$sTemp_Water = scale(data$Temp_Water)
+data$spH = scale(data$pH)
+data$swater_speed_ms = scale(data$water_speed_ms)
+data$swater_depth = scale(data$water_depth)
+data$sCond = scale(data$Cond)
+data$swmo_prec = scale(data$wmo_prec)
+data$syear = scale(data$year)
+data$sLat = scale(data$Latitude)
+data$sLon = scale(data$Longitude)
+data$sTemp_Air = scale(data$Temp_Air)
+# Remove NAs
+rows = rownames(model.matrix(~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
+data = data[rows, ]
+```
+
+1.  Factors which drive the occurrence of BT
+
+    Minimal model:
+
+    ```{r}
+    model1 = glm(bt_pres~ sTemp_Water,
+                 data = data,  family = binomial)
+    ```
+
+    Add environmental variables such as Temperature, pH, water metrics (e.g. water speed etc). Which variables could be potential confounders (year? locality? Season?....)
+
+2.  Factors which affect the infection rate
+
+    We use a k/n binomial model:
+
+    ```{r}
+    model2 = glm(cbind(BT_pos_tot, BT_tot - BT_pos_tot )~ sTemp_Water ,
+                     data = data[data$BT_tot > 0, ],  family = binomial)
+    ```
+
+    Add environmental variables such as Temperature, pH, water metrics (e.g. water speed etc). Which variables could be potential confounders (year? locality? Season?....)
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution - Species distribution model
+
+Environmental variables (part of our hypothesis): Temp_water, Temp_Air, pH, Cond, swmo_prec, water_speed_ms, and water_depth.
+
+Potential confounders: site_type, year, seas_wmo (season) (, and locality)
+
+Our model:
+
+```{r}
+model1 = glm(bt_pres~ site_type + sTemp_Water + spH +
+               sCond + swmo_prec + swater_speed_ms  + duration + 
+               sTemp_Air + seas_wmo + syear + swater_depth,
+               data = data,  family = binomial)
+summary(model1)
+```
+
+Intercept corresponds to seas_wmo == wet and site_type == can.2
+
+Year (our confounder) has a very strong effect on the occurrence rate. Conducitivity has a strong positive effect. Let's look at the effects:
+
+```{r}
+plot(allEffects(model1))
+```
+
+it appears that site_type and conductivity have the largest positive effects on occurrence rates. It is reasonable to assume that there are interactions between freshwater (site_type) and factors such as conductivity:
+
+```{r}
+model1 = glm(bt_pres~ site_type * sCond -sCond + swater_speed_ms+spH + sTemp_Water + duration + 
+                 sTemp_Air + seas_wmo + syear + swater_depth,
+             data = data,  family = binomial)
+summary(model1)
+```
+
+"-sCond" allows us to test the slopes for the different site_types against 0 (no reference level)
+
+Residual checks:
+
+```{r}
+library(DHARMa)
+sim = simulateResiduals(model1, plot = TRUE)
+```
+
+Check misfits by plotting predictors against residuals:
+
+```{r}
+plotResiduals(sim, data$sCond)
+plotResiduals(sim, data$sTemp_Air)
+```
+
+They look okay!
+
+**Bonus - Spatial autocorrelation:**
+
+A common problem with spatial data is spatial autocorrelation. We can use DHARMa to test if our residuals are spatially autocorrelated
+
+```{r}
+res2 = recalculateResiduals(sim, group = c(data$site_irn))
+groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
+testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
+```
+
+The test is significant, i.e. we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution - Infection rate
+
+Environmental variables (part of our hypothesis): Temp_water, Temp_Air, pH, Cond, swmo_prec, water_speed_ms, and water_depth.
+
+Potential confounders: site_type, year, seas_wmo (season), duration, ( and locality)
+
+Our model:
+
+```{r}
+data_inf = data[data$BT_tot > 0 , ] # only observations 
+model2 = glm(cbind(BT_pos_tot, BT_tot - BT_pos_tot )~ site_type + sTemp_Water + spH +
+               sCond + log(swmo_prec+1) + swater_speed_ms  + log(duration) + 
+               sTemp_Air + seas_wmo + syear + swater_depth,
+               data = data_inf,  family = binomial)
+summary(model2)
+```
+
+Intercept corresponds to seas_wmo == wet and site_type == can.2
+
+Year (our confounder) has a very strong effect on the occurrence rate. Syte_type, swmo_prec (Precipitation), sTemp_Water, and sTemp_Air have strong effects:
+
+```{r}
+plot(allEffects(model2))
+```
+
+With partial residuals:
+
+```{r}
+plot(allEffects(model2, partial.residuals = TRUE))
+```
+
+Reminder: The partial residuals don't tell us anything because the variance of the residuals (remember binomial) depends on the probability of the binomial process AND on k (k/n binomial model). We need DHARMa to check the residuals:
+
+```{r}
+library(DHARMa)
+sim = simulateResiduals(model2, plot = TRUE)
+
+```
+
+Residuals look okayish for a k/n model.
+
+Check misfits by plotting predictors against residuals:
+
+```{r}
+plotResiduals(sim, log(data_inf$swmo_prec+1))
+plotResiduals(sim, data_inf$sTemp_Water)
+```
+
+swmo_prec doesn't look good but this is caused by the many zeros in the variable
+
+**Bonus - Spatial autocorrelation:**
+
+A common problem with spatial data is spatial autocorrelation. We can use DHARMa to test if our residuals are spatially autocorrelated
+
+```{r}
+res2 = recalculateResiduals(sim, group = c(data_inf$site_irn))
+groupLocations = aggregate(cbind(data_inf$sLat, data_inf$sLon ), list( data_inf$site_irn), mean)
+testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
+```
+
+The test is n.s. but still we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course
+:::
