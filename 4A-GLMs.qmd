@@ -342,13 +342,10 @@ plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 Now, everything looks perfect
 :::
 
-### Continous positive response - Gamma regression 
+### Continous positive response - Gamma regression
 
 ```{r}
 library(faraway)
-
-
-
 ```
 
 ```{r}
@@ -365,11 +362,47 @@ Alternative: Gamma regresision
 fit <- glm(formula = resist ~ x1 + x2 + x3 + x4,
            family  = Gamma(link = "log"),
            data    = wafer)
-summary(res.glm.Gamma.log)
+summary(fit)
 ```
 
 ::: callout-note
 For Gamma regression, different link functions are used. The canonical link, which is also the default in R, is the inverse link 1/x. However, also log and identity link are commonly used.
+:::
+
+### Continous proportions - Beta regression and other options
+
+We already covered discrete proportions, which can be modelled with a logistic regression. For continous proportions, this model is not suitable, because we don't know how many "trials" we have. There are a few other options to model this data, in particular the beta regression. Let's have a look.
+
+There are two main ways to fit this data:
+
+1.  Transform the response, or fit the GLM with a logit link or the arcsine transformation on the response
+2.  A Beta regression
+
+For further options, see [here](https://github.com/florianhartig/Statistics/blob/master/Examples/ProportionalData.md). I would generally recommend that the Beta regression is currently the preferred way and the first thing I would try. A good way to fit it is the package glmmTMB.
+
+::: callout-tip
+#### Case study
+
+Here a case study, using the EcoData dataset
+
+```{r}
+?elemental
+```
+
+traditional lm, arc sine transformed response of proportions, see critique in https://esajournals.onlinelibrary.wiley.com/doi/10.1890/10-0340.1
+
+```{r}
+m1 <- lm(N_arc ~ Year + Site , data = elemental[elemental$Species == "ABBA", ])
+summary(m1)
+```
+
+Now a beta regression
+
+```{r}
+library(glmmTMB)
+m2 <- glmmTMB(N_dec ~ Year + Site, family = beta_family, data = elemental[elemental$Species == "ABBA", ] )
+summary(m2)
+```
 :::
 
 ## Residual and their solutions in GLMs
@@ -689,7 +722,7 @@ Tasks:
 -   Which variables explain the presence of BT and which have an effect on the infection rates?
 
 ::: callout-tip
-## Hints
+#### Hints
 
 Prepare dataset before the analysis:
 
@@ -849,39 +882,59 @@ plotResiduals(sim, data_inf$sTemp_Water)
 ```
 
 swmo_prec doesn't look good but this is caused by the many zeros in the variable
-
-**Bonus - Spatial autocorrelation:**
-
-A common problem with spatial data is spatial autocorrelation. We can use DHARMa to test if our residuals are spatially autocorrelated
-
-```{r}
-res2 = recalculateResiduals(sim, group = c(data_inf$site_irn))
-groupLocations = aggregate(cbind(data_inf$sLat, data_inf$sLon ), list( data_inf$site_irn), mean)
-testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
-```
-
-The test is n.s. but still we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course
 :::
 
-### Binomial GLM - Elephant SDM
+### Making spatial predictions with a logistic regression - Elephant SDM
 
-The following dataset contains data about occurrences of the African elephant and environmental variables ([Angelov, 2020](https://zenodo.org/record/4048271)). The dataset was used in [Ryo et al., 2020](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.05360) to demonstrate the idea of explainable AI .
+To demonstrate how to fit a species distribution model and extrapolate it in space, let's have a look at the elephant dataset, which is contained in EcoData
 
 ```{r, echo=TRUE, eval=TRUE}
-data = readRDS(file = "hiddenData/elephant_data.RDS") # adjust the path to your system
+library(EcoData)
+?elephant
 ```
 
-The data include 19 environmental variables, called bio1 through bio19, which are public and globally available bioclimatic variables (see https://www.worldclim.org/data/bioclim.html for a description of the variables). For example, bio1 is the mean annual temperature. No understanding of these variables is required for the task, the only difficulty is that many of them are highly correlated because they encode similar information (e.g. there are several temperature variables).
+The object elephant contains two subdatasets
 
-The goal of this exercise is to make new predictions with a predictive model. The workflow typically consists of two steps: 1. building and optimizing the predictive model, and 2. using the predictive model to make predictions on new data and visualizing the results.
+1.  elephant\$occurenceData contains presence / absence data as well as bioclim variables (environmental predictors) for the African elephant
 
-1.  Task - Build predictive model:
+2.  elephant\$predictionData data with environmental predictors for spatial predictions
 
--   Build a predictive model
+The environmental data consists of 19 environmental variables, called bio1 through bio19, which are public and globally available bioclimatic variables (see <https://www.worldclim.org/data/bioclim.html> for a description of the variables). For example, bio1 is the mean annual temperature. No understanding of these variables is required for the task, the only difficulty is that many of them are highly correlated because they encode similar information (e.g. there are several temperature variables).
 
-    ```{r}
-    model = glm(Presence~bio1, data = data, family = binomial()) # minimum model
-    ```
+The goal of this exercise is to fit a logistic regression model based on the observed presence / absences, and then make new predictions of habitat suitability in space across Africa based on the fitted model. Thus, our workflow consists of two steps:
+
+1.  building and optimizing the predictive model, and
+2.  using the predictive model to make predictions on new data and visualizing the results.
+
+Here an example of how you could do this
+
+**Build predictive model:**
+
+
+```{r}
+model = glm(Presence~bio1, data = elephant$occurenceData, family = binomial()) # minimum model
+```
+
+To check the predictive power of the model, you can either use
+
+```{r, message=F}
+AIC(model) 
+library(pROC)
+auc(elephant$occurenceData$Presence, predict(model, type = "response"))
+```
+
+The AUC is a common measure of goodness of fit for binary classification. However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validaton
+
+```{r, results=F, message = F}
+library(boot)
+res = cv.glm(elephant$occurenceData, model, cost = auc, K=5)
+```
+
+```{r}
+res$delta
+```
+
+Currently, fit and validation AUC are nearly identical, because we have a very simple model. However, for more complex models, this could change. 
 
 -   Drop some of the highly correlated variables (don't use all of them).
 
@@ -889,31 +942,27 @@ The goal of this exercise is to make new predictions with a predictive model. Th
 
 -   Use `stepAIC` or the `dredge` function to optimize the predictive model
 
-2.  Task - Make new predictions
+**Make new predictions**
 
--   Load new data
+The data for making spatial predictions is in elephant$predictionData. This new dataset is not a data.frame but a raster object, which is a special data class for spatial data. You can plot one of the predictors in the following way.
 
-    ```{r}
-    library(sp)
-    library(raster)
-    new_data = readRDS(file = "hiddenData/elephant_new_data.RDS")
-    ```
+```{r, message = F}
+library(sp)
+library(raster)
+plot(elephant$predictionData$bio1)
+```
 
-    The new dataset is not a data.frame but a raster object, which is a special data class for spatial data. The goal is make predictions for South Africa
+As our new_data object is not a typical data.frame, we are not using the standard predict function for a glm, which is ?predict.glm, but the predict function from the raster object (which internally transforms the new_data into a classical data.frame, pass then the data.frame to our model, and then transforms the output back to a raster object). Therefore, the syntax is slightly different to how we previously used predict().
 
--   Make new predictions with your model:
+```{r}
+predictions =  predict(elephant$predictionData, model = model, type = "response")
+head(as.data.frame(predictions))
+```
 
-    As our new_data object is not a typical data.frame, we need to use the predict function from the raster object (which internally transforms the new_data into a classical data.frame, pass then the data.frame to our model, and then transforms the output back to a raster object)
+The advantage of the raster object is that we can directly use it to create a map (the raster object has coordinates for each observation):
 
-    ```{r}
-    predictions =  predict(new_data, model = model, type = "response")
-    head(as.data.frame(predictions))
-    ```
+```{r}
+spplot(predictions, colorkey = list(space = "left") )
+```
 
-    The advantage of the raster object is that we can directly use it to create a map (the raster object has coordinates for each observation):
-
-    ```{r}
-    spplot(predictions, colorkey = list(space = "left") )
-    ```
-
-Play around with the predictive model, increase the complexity, is there a change in the map?
+**Task:** play around with the logistic regression to improve predictive accuracy. You can check predictive accuracy by looking at AIC or by taking out a bit of the data for validation, e.g. by AUC. When improving the predictive power of the model, does the map change?
