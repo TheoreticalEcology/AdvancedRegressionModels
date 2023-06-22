@@ -306,9 +306,9 @@ plotResiduals(res, form = elk_data$dem, quantreg = TRUE)
 plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 ```
 
-The functional forms of our confounders are not perfect. 
+The functional forms of our confounders are not perfect.
 
-Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect. 
+Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect.
 
 ```{r}
 library(mgcv)
@@ -569,7 +569,7 @@ If we turn this around, this means that if want the model to have the same effec
 
 Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
 
-Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. 
+Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.
 
 There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link
 
@@ -580,10 +580,9 @@ summary(m3)
 plot(allEffects(m3))
 ```
 
-Now, we can interpret effects and interactions exactly like in a linear regression. 
+Now, we can interpret effects and interactions exactly like in a linear regression.
 
 Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
-
 
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
@@ -711,13 +710,13 @@ Intercept corresponds to seas_wmo == wet and site_type == can.2
 
 Year (our confounder) has a very strong effect on the occurrence rate. Conducitivity has a strong positive effect. Let's look at the effects:
 
-```{r}
+```{r,warning=FALSE}
 plot(allEffects(model1))
 ```
 
 it appears that site_type and conductivity have the largest positive effects on occurrence rates. It is reasonable to assume that there are interactions between freshwater (site_type) and factors such as conductivity:
 
-```{r}
+```{r,warning=FALSE}
 model1 = glm(bt_pres~ site_type * sCond -sCond + swater_speed_ms+spH + sTemp_Water + duration + 
                  sTemp_Air + seas_wmo + syear + swater_depth,
              data = data,  family = binomial)
@@ -766,6 +765,7 @@ Our model:
 
 ```{r}
 data_inf = data[data$BT_tot > 0 , ] # only observations 
+
 model2 = glm(cbind(BT_pos_tot, BT_tot - BT_pos_tot )~ site_type + sTemp_Water + spH +
                sCond + log(swmo_prec+1) + swater_speed_ms  + log(duration) + 
                sTemp_Air + seas_wmo + syear + swater_depth,
@@ -777,13 +777,13 @@ Intercept corresponds to seas_wmo == wet and site_type == can.2
 
 Year (our confounder) has a very strong effect on the occurrence rate. Syte_type, swmo_prec (Precipitation), sTemp_Water, and sTemp_Air have strong effects:
 
-```{r}
+```{r,warning=FALSE}
 plot(allEffects(model2))
 ```
 
 With partial residuals:
 
-```{r}
+```{r,warning=FALSE}
 plot(allEffects(model2, partial.residuals = TRUE))
 ```
 
