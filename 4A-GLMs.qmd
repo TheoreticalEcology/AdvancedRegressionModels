@@ -342,6 +342,36 @@ plotResiduals(res, form = elk_data$ruggedness, quantreg = TRUE)
 Now, everything looks perfect
 :::
 
+### Continous positive response - Gamma regression 
+
+```{r}
+library(faraway)
+
+
+
+```
+
+```{r}
+fit <- lm(log(resist) ~ x1 + x2 + x3 + x4, data = wafer)
+summary(fit)
+
+library(DHARMa)
+simulateResiduals(fit, plot = T)
+```
+
+Alternative: Gamma regresision
+
+```{r}
+fit <- glm(formula = resist ~ x1 + x2 + x3 + x4,
+           family  = Gamma(link = "log"),
+           data    = wafer)
+summary(res.glm.Gamma.log)
+```
+
+::: callout-note
+For Gamma regression, different link functions are used. The canonical link, which is also the default in R, is the inverse link 1/x. However, also log and identity link are commonly used.
+:::
+
 ## Residual and their solutions in GLMs
 
 First of all: everything we said about model selection and residual checks for LMs also apply for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.
