@@ -2389,12 +2389,13 @@ Attaching package: 'EcoData'</code></pre>
 
     snails</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> temp, <span class="at">data =</span> plantHeight)</span>
-<span id="cb158-2"><a href="#cb158-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(loght <span class="sc">~</span> temp, <span class="at">data =</span> plantHeight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
 </div>
-<p>The model suggests a significant global trend of plant height increasing with temperature.</p>
+</div>
 <ol type="1">
-<li>Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?</li>
+<li>Fit a linear model for this relationship. Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?</li>
 <li>The data set also includes a categorical variable “growthform”. Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.</li>
 </ol>
 </div>
@@ -2495,16 +2496,16 @@ solomonislands
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Look at the solomonislands dataset in Ecodata. Let’s assume we want to analyze whether the number of Species on the islands depends on the Area to the islands:</p>
+<p>Look at the solomonislands dataset in Ecodata.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
 <span id="cb164-2"><a href="#cb164-2" aria-hidden="true" tabindex="-1"></a>?solomonislands</span>
 <span id="cb164-3"><a href="#cb164-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(solomonislands)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol type="1">
-<li>Fit a lm</li>
-<li>Perform residual checks</li>
-<li>Transform variables, if necessary</li>
+<li>Fit a lm, trying to fit the classical relationship of Species ~ log(Area)</li>
+<li>Perform residual checks, and change the model if neccessary</li>
+<li>Interpret the results</li>
 </ol>
 </div>
 </div>
@@ -2520,80 +2521,48 @@ Solution
 </div>
 <div id="callout-34" class="callout-34-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><strong><em>1. LM</em></strong></p>
+<p><strong><em>1. Fitting the species-area curve </em></strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(Species <span class="sc">~</span> Area, <span class="at">data =</span> solomonislands)</span>
+<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(Species <span class="sc">~</span> <span class="fu">log</span>(Area), <span class="at">data =</span> solomonislands)</span>
 <span id="cb165-2"><a href="#cb165-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Species ~ Area, data = solomonislands)
+lm(formula = Species ~ log(Area), data = solomonislands)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--27.097 -19.752   3.563  16.769  26.808 
+-31.422  -3.705   3.460   6.309  13.014 
 
 Coefficients:
-             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 33.087004   2.852002  11.601 8.61e-16 ***
-Area         0.020667   0.003996   5.172 4.09e-06 ***
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   30.105      1.613   18.67   &lt;2e-16 ***
+log(Area)      4.935      0.359   13.75   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 18.71 on 50 degrees of freedom
-Multiple R-squared:  0.3485,    Adjusted R-squared:  0.3355 
-F-statistic: 26.75 on 1 and 50 DF,  p-value: 4.091e-06</code></pre>
+Residual standard error: 10.6 on 50 degrees of freedom
+Multiple R-squared:  0.7907,    Adjusted R-squared:  0.7866 
+F-statistic: 188.9 on 1 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb167"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb167-1"><a href="#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Area has a small positive significant effect on the number of species.</p>
 <p><strong><em>2. Residual checks</em></strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb167"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb167-1"><a href="#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb167-2"><a href="#cb167-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb168-2"><a href="#cb168-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>The residuals look bad! There is something wrong with the functional form!</p>
-<p><strong><em>3. Transform variables</em></strong></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">lm</span>(Species <span class="sc">~</span> <span class="fu">log</span>(Area<span class="sc">+</span><span class="dv">1</span>) , <span class="at">data =</span> solomonislands)</span>
-<span id="cb168-2"><a href="#cb168-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = Species ~ log(Area + 1), data = solomonislands)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--31.5424  -5.5085   0.4081   6.6156  19.3002 
-
-Coefficients:
-              Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    16.1207     2.2845   7.057 4.89e-09 ***
-log(Area + 1)   7.6759     0.5727  13.402  &lt; 2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 10.82 on 50 degrees of freedom
-Multiple R-squared:  0.7822,    Adjusted R-squared:  0.7779 
-F-statistic: 179.6 on 1 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb170"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-56-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-56-3.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="2A-LinearRegression_files/figure-html/unnamed-chunk-56-4.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>The residuals look better now! There is some remaining nonlinearity and a remaining heteroskedasticity, which we could address with more advanced modelling techniques that are introduced later in the book.</p>
+<p>Residuals don’t look particularly normal … would get better fitting ~ log(Area+1), but that doesn’t correspond to the classical model. In this case, it’s a trade-off between fitting the classical model and get better residuals.</p>
+<p>With advanced methods, we could also think about GLMs or quantile regressions (see next chapter).</p>
+<p><strong><em>3. Interpretation</em></strong></p>
+<p>Significant increase of species richness with area that follows a classical log(Area) relationship.</p>
 </div>
 </div>
 </div>
@@ -2612,8 +2581,8 @@ Plant Height revisited
 <div class="callout-body-container callout-body">
 <p>Revisit exercise our previous analysis of EcoData::plantHeight</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb171"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb171-1"><a href="#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb171-2"><a href="#cb171-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> temp, <span class="at">data =</span> plantHeight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb169"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb169-1"><a href="#cb169-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb169-2"><a href="#cb169-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> temp, <span class="at">data =</span> plantHeight)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Use (separate) multiple regressions to test if:</p>
 <ol type="1">
@@ -2636,19 +2605,19 @@ Solution
 <div id="callout-36" class="callout-36-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb172"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb172-1"><a href="#cb172-1" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>temp)</span>
-<span id="cb172-2"><a href="#cb172-2" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>lat)</span>
-<span id="cb172-3"><a href="#cb172-3" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sNPP <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>NPP)</span>
-<span id="cb172-4"><a href="#cb172-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb172-5"><a href="#cb172-5" aria-hidden="true" tabindex="-1"></a><span class="co"># relevel </span></span>
-<span id="cb172-6"><a href="#cb172-6" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>growthform2 <span class="ot">=</span> <span class="fu">relevel</span>(<span class="fu">as.factor</span>(plantHeight<span class="sc">$</span>growthform), <span class="st">"Herb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb170"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>temp)</span>
+<span id="cb170-2"><a href="#cb170-2" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>lat)</span>
+<span id="cb170-3"><a href="#cb170-3" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>sNPP <span class="ot">=</span> <span class="fu">scale</span>(plantHeight<span class="sc">$</span>NPP)</span>
+<span id="cb170-4"><a href="#cb170-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb170-5"><a href="#cb170-5" aria-hidden="true" tabindex="-1"></a><span class="co"># relevel </span></span>
+<span id="cb170-6"><a href="#cb170-6" aria-hidden="true" tabindex="-1"></a>plantHeight<span class="sc">$</span>growthform2 <span class="ot">=</span> <span class="fu">relevel</span>(<span class="fu">as.factor</span>(plantHeight<span class="sc">$</span>growthform), <span class="st">"Herb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol type="1">
 <li><strong>NPP or Temp?</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb173"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb173-1"><a href="#cb173-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">+</span> sNPP, <span class="at">data =</span> plantHeight)</span>
-<span id="cb173-2"><a href="#cb173-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb171"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb171-1"><a href="#cb171-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">+</span> sNPP, <span class="at">data =</span> plantHeight)</span>
+<span id="cb171-2"><a href="#cb171-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2677,8 +2646,8 @@ F-statistic:  33.5 on 2 and 169 DF,  p-value: 5.553e-13</code></pre>
 <li><strong>Interaction with growth form</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb175"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb175-1"><a href="#cb175-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> growthform2 <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight)</span>
-<span id="cb175-2"><a href="#cb175-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb173"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb173-1"><a href="#cb173-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> growthform2 <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight)</span>
+<span id="cb173-2"><a href="#cb173-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2714,7 +2683,7 @@ F-statistic: 68.51 on 9 and 158 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Yes, because (some) interactions are significant.</p>
 <p>Note that the n.s. effect of sTemp is the first growth form (Ferns), for which we had only one observation. In a standard multiple regression, you don’t have p-values for the significance of the temperature effect against 0 for the other growth forms, because you test against the reference. What one usually does is to run an ANOVA (see chapter on ANOVA) to see if temp is overall significant.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb177"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb177-1"><a href="#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(<span class="fu">lm</span>(loght <span class="sc">~</span> growthform <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb175"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb175-1"><a href="#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(<span class="fu">lm</span>(loght <span class="sc">~</span> growthform <span class="sc">*</span>  sTemp , <span class="at">data =</span> plantHeight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table
 
@@ -2730,8 +2699,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <p>Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either extract the p-value from a multiple regression (a bit complicated) or just run a univariate regression for this growth form</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb179"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">+</span> <span class="dv">0</span>, <span class="at">data =</span> plantHeight[plantHeight<span class="sc">$</span>growthform <span class="sc">==</span> <span class="st">"Tree"</span>,])</span>
-<span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb177"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb177-1"><a href="#cb177-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">+</span> <span class="dv">0</span>, <span class="at">data =</span> plantHeight[plantHeight<span class="sc">$</span>growthform <span class="sc">==</span> <span class="st">"Tree"</span>,])</span>
+<span id="cb177-2"><a href="#cb177-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2756,8 +2725,8 @@ F-statistic: 8.704 on 1 and 60 DF,  p-value: 0.004522</code></pre>
 </div>
 <p>Or you could fit the interaction but turn-off the intercept (by saying +0 or -1) and remove the plantHeight intercepts:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp<span class="sc">:</span>growthform <span class="sc">+</span> <span class="dv">0</span>, <span class="at">data =</span> plantHeight[,])</span>
-<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb179"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp<span class="sc">:</span>growthform <span class="sc">+</span> <span class="dv">0</span>, <span class="at">data =</span> plantHeight[,])</span>
+<span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2789,8 +2758,8 @@ F-statistic: 7.106 on 6 and 162 DF,  p-value: 9.796e-07</code></pre>
 <li><strong>Interaction with lat</strong></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">*</span> sLat, <span class="at">data =</span> plantHeight)</span>
-<span id="cb183-2"><a href="#cb183-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> sTemp <span class="sc">*</span> sLat, <span class="at">data =</span> plantHeight)</span>
+<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -2816,7 +2785,7 @@ F-statistic: 19.37 on 3 and 174 DF,  p-value: 6.95e-11</code></pre>
 </div>
 <p>All is n.s. … how did this happen? If we check the correlation between temp and lat, we see that the two predictors are highly collinear.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb185"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb185-1"><a href="#cb185-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(plantHeight<span class="sc">$</span>temp, plantHeight<span class="sc">$</span>lat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb183"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb183-1"><a href="#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(plantHeight<span class="sc">$</span>temp, plantHeight<span class="sc">$</span>lat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.9249304</code></pre>
 </div>

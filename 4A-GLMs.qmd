@@ -253,7 +253,21 @@ If you see large changes in your RE structure, or if you want to select on the R
 ::: {.callout-caution icon="false"}
 #### Example - Elk Data
 
-You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:
+You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Description of variables:
+
+-   dist_roads - distance of the location to the next road
+
+-   NDVI - normalized difference vegetation index, essentially greeness of vegetation on the site
+
+-   ruggedness of the terrain
+
+-   dem - digital eleveation model = elevation above sea level
+
+-   presence - presence of the elk
+
+-   habitat - open or forest
+
+Perform either:
 
 a)  A predictive analysis, i.e. a model to predict where Elks can be found.
 b)  A causal analysis, trying to understand the effect of roads on Elk presence.

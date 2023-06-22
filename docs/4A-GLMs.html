@@ -226,7 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA</span></a>
+  <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -356,6 +356,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#new-considerations-for-glmms" id="toc-new-considerations-for-glmms" class="nav-link" data-scroll-target="#new-considerations-for-glmms"><span class="toc-section-number">8.5</span>  New considerations for GLMMs</a>
   <ul class="collapse">
   <li><a href="#unconditinal-vs.-marginal-predictions" id="toc-unconditinal-vs.-marginal-predictions" class="nav-link" data-scroll-target="#unconditinal-vs.-marginal-predictions"><span class="toc-section-number">8.5.1</span>  Unconditinal vs.&nbsp;marginal predictions</a></li>
+  </ul></li>
+  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"><span class="toc-section-number">8.6</span>  Case Studies</a>
+  <ul class="collapse">
+  <li><a href="#binomial-glm---snails" id="toc-binomial-glm---snails" class="nav-link" data-scroll-target="#binomial-glm---snails"><span class="toc-section-number">8.6.1</span>  Binomial GLM - Snails</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/4A-GLMs.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
@@ -756,7 +760,16 @@ Example - Elk Data
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Perform either:</p>
+<p>You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Description of variables:</p>
+<ul>
+<li><p>dist_roads - distance of the location to the next road</p></li>
+<li><p>NDVI - normalized difference vegetation index, essentially greeness of vegetation on the site</p></li>
+<li><p>ruggedness of the terrain</p></li>
+<li><p>dem - digital eleveation model = elevation above sea level</p></li>
+<li><p>presence - presence of the elk</p></li>
+<li><p>habitat - open or forest</p></li>
+</ul>
+<p>Perform either:</p>
 <ol type="a">
 <li>A predictive analysis, i.e.&nbsp;a model to predict where Elks can be found.</li>
 <li>A causal analysis, trying to understand the effect of roads on Elk presence.</li>
@@ -775,7 +788,197 @@ Solution
 </div>
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>TODO</p>
+<p>A. Predictive analysis</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"hiddenData/elk_data.RData"</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:EcoData':
+
+    snails</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(presence <span class="sc">~</span> dist_roads  <span class="sc">+</span> dem <span class="sc">+</span> ruggedness, <span class="at">data =</span> elk_data, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>predictive_model <span class="ot">=</span> MASS<span class="sc">::</span><span class="fu">stepAIC</span>(fit, <span class="at">direction =</span> <span class="st">"both"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Start:  AIC=5109.03
+presence ~ dist_roads + dem + ruggedness
+
+             Df Deviance    AIC
+- dist_roads  1   5101.9 5107.9
+&lt;none&gt;            5101.0 5109.0
+- ruggedness  1   5171.4 5177.4
+- dem         1   5241.3 5247.3
+
+Step:  AIC=5107.94
+presence ~ dem + ruggedness
+
+             Df Deviance    AIC
+&lt;none&gt;            5101.9 5107.9
++ dist_roads  1   5101.0 5109.0
+- ruggedness  1   5172.0 5176.0
+- dem         1   5324.8 5328.8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(predictive_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = presence ~ dem + ruggedness, family = "binomial", 
+    data = elk_data)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-1.97202  -1.10220   0.04971   1.13879   1.74823  
+
+Coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -6.7890658  0.4917287 -13.807   &lt;2e-16 ***
+dem          0.0042951  0.0002994  14.343   &lt;2e-16 ***
+ruggedness  -0.0289100  0.0035076  -8.242   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 5334.5  on 3847  degrees of freedom
+Residual deviance: 5101.9  on 3845  degrees of freedom
+AIC: 5107.9
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>B. Causal analysis</p>
+<p>The predictive model has actually dropped the variable of interest (distance to roads) which shows the risks of tools that select for the best predictive model such as AIC selection: Collinear variables that we need to adjust our effects, are often dropped.</p>
+<p>For the causal model, we really need to think about the causal relationships between the variables:</p>
+<p>We are interested in the effect of dist_roads on presence:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">glm</span>(presence <span class="sc">~</span> dist_roads, <span class="at">data =</span> elk_data, <span class="at">family =</span> <span class="st">"binomial"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = presence ~ dist_roads, family = "binomial", data = elk_data)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-1.56301  -1.14680  -0.09152   1.17040   1.35579  
+
+Coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -4.101e-01  6.026e-02  -6.806  1.0e-11 ***
+dist_roads   3.204e-04  3.977e-05   8.056  7.9e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 5334.5  on 3847  degrees of freedom
+Residual deviance: 5268.1  on 3846  degrees of freedom
+AIC: 5272.1
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>Positive effect of dist_roads on elk, or in other words, more elks closer to the roads? Does that make sense? No, we expect a negative effect!</p>
+<p>Altitude (dem) and the ruggedness probably affect both variables, presence and dist_roads, and thus they should be considered as confounders:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">glm</span>(presence <span class="sc">~</span> dist_roads<span class="sc">+</span> dem <span class="sc">+</span> ruggedness, <span class="at">data =</span> elk_data, <span class="at">family =</span> <span class="st">"binomial"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The effect of dist_roads is now negative!</p>
+<p>Let’s check the residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is DHARMa 0.4.6. For overview type '?DHARMa'. For recent changes, type news(package = 'DHARMa')</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, <span class="at">form =</span> elk_data<span class="sc">$</span>dem, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-21-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, <span class="at">form =</span> elk_data<span class="sc">$</span>ruggedness, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-21-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The functional forms of our confounders are not perfect.</p>
+<p>Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: nlme</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is mgcv 1.8-40. For overview type 'help("mgcv-package")'.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">gam</span>(presence <span class="sc">~</span> dist_roads <span class="sc">+</span> <span class="fu">s</span>(dem) <span class="sc">+</span> <span class="fu">s</span>(ruggedness), <span class="at">data =</span> elk_data, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: binomial 
+Link function: logit 
+
+Formula:
+presence ~ dist_roads + s(dem) + s(ruggedness)
+
+Parametric coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)  1.783e-01  8.229e-02   2.167  0.03025 * 
+dist_roads  -1.798e-04  5.771e-05  -3.115  0.00184 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Approximate significance of smooth terms:
+                edf Ref.df Chi.sq p-value    
+s(dem)        8.283  8.845  220.3  &lt;2e-16 ***
+s(ruggedness) 8.510  8.918  128.3  &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.114   Deviance explained = 9.27%
+UBRE = 0.26754  Scale est. = 1         n = 3848</code></pre>
+</div>
+</div>
+<p>Let’s take another look at the residual plots, in particular for the confounders.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(fit2, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'mgcViz':
+  method from  
+  +.gg   GGally</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, <span class="at">form =</span> elk_data<span class="sc">$</span>dem, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, <span class="at">form =</span> elk_data<span class="sc">$</span>ruggedness, <span class="at">quantreg =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-23-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now, everything looks perfect</p>
 </div>
 </div>
 </div>
@@ -787,12 +990,12 @@ Solution
 <p>First of all: everything we said about model selection and residual checks for LMs also apply for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.</p>
 <p>Let’s look again at the titanic example</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check <code>class(m1)</code>), the standard residual plots still work</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk10-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -802,15 +1005,12 @@ Solution
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="dharma-residual-plots-for-glmms"><span class="header-section-number">8.3.1</span> DHARMA residual plots for GL(M)Ms</h3>
 <p>The <code>DHARMa</code> package that we already introduced solves this problem</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>This is DHARMa 0.4.6. For overview type '?DHARMa'. For recent changes, type news(package = 'DHARMa')</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Standard plot:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk13-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -824,25 +1024,25 @@ Solution
 <p>Deviations from these expectations can be interpreted similarly to a linear regression. See the vignette for detailed examples.</p>
 <p>With that in mind, we can say that there is nothing special to see here. Also residuals against predictors shows no particular problem:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>age)</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>age)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> <span class="fu">model.frame</span>(m1)<span class="sc">$</span>sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>However, residuals against the missing predictor pclass show a clear problem:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>dataUsed <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rownames</span>(<span class="fu">model.frame</span>(m1)))</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> titanic<span class="sc">$</span>pclass[dataUsed])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>dataUsed <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rownames</span>(<span class="fu">model.frame</span>(m1)))</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m1, <span class="at">form =</span> titanic<span class="sc">$</span>pclass[dataUsed])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Thus, I should add passenger class to the model</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age <span class="sc">+</span> pclass, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survived <span class="sc">~</span> sex<span class="sc">*</span>age <span class="sc">+</span> pclass, <span class="at">family =</span> <span class="st">"binomial"</span>, <span class="at">data =</span> titanic)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -873,9 +1073,9 @@ AIC: 973.92
 
 Number of Fisher Scoring iterations: 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m2, <span class="at">form =</span> <span class="fu">model.frame</span>(m2)<span class="sc">$</span>pclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(m2, <span class="at">form =</span> <span class="fu">model.frame</span>(m2)<span class="sc">$</span>pclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Now, residuals look fine. Of course, if your model gets more complicated, you may want to do additional checks, for example for the distribution of random effects etc.</p>
@@ -909,29 +1109,44 @@ Note
 <h4 data-number="8.3.2.1" class="anchored" data-anchor-id="recognizing-overdispersion"><span class="header-section-number">8.3.2.1</span> Recognizing overdispersion</h4>
 <p>To understand how to recognize overdispersion, let’s look at an example. We’ll use the Salamanders dataset from the package glmmTMB, staring with a simple Poisson glm:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in checkMatrixPackageVersion(): Package version inconsistency detected.
+TMB was built with Matrix version 1.4.1
+Current Matrix version is 1.5.4.1
+Please re-install 'TMB' from source using install.packages('TMB', type = 'source') or ask CRAN for a binary version of 'TMB' matching CRAN's 'Matrix' package</code></pre>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in checkDepPackageVersion(dep_pkg = "TMB"): Package version inconsistency detected.
 glmmTMB was built with TMB version 1.9.3
 Current TMB version is 1.9.1
 Please re-install glmmTMB from source or restore original 'TMB' package (see '?reinstalling' for more information)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: Matrix</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined, <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lme4'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:nlme':
+
+    lmList</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined, <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Overdispersion will be automatically highlighted in the standard DHARMa plots</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>You see the dispersion problem by:</p>
@@ -942,9 +1157,9 @@ Please re-install glmmTMB from source or restore original 'TMB' package (see '?r
 </ul>
 <p>You can get a more detailed output with the testDispersion function, which also displays the direction of the dispersion problem (over or underdispersion)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -958,35 +1173,40 @@ alternative hypothesis: two.sided</code></pre>
 </div>
 <p>OK, often the dispersion problem is caused by structural problems. Let’s add a random effect for site, which makes sense. We can do so using the function lme4::glmer, which adds the same extensions to glm as lmer adds to lm. This means we can use the usual random effect syntax we have used before.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glmer</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), </span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glmer</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), </span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> poisson, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The standard dispersion test is OK</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>But when random effects are added, you should prefer to calcualte conditional residuals, because this test is more powerful. For lme4 models, we can switch via re.form = T</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This test shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter. For now, let’s switch to a negative binomial model. This could be fit with lme4, but it is more convenient to use the package glmmTMB, which has the same syntax as lme4, but more advanced options.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">data =</span> Salamanders)</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m4, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: '.T2Cmat' is deprecated.
+Use '.T2CR' instead.
+See help("Deprecated") and help("Matrix-deprecated").</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m4, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Unfortunately, glmmTMB doesn’t allow to calculate conditional residuals, so we have to be satisfied with the fact that the unconditional residuals look great.</p>
@@ -1018,7 +1238,7 @@ Danger
 </div>
 <p>Let’s look at our last model - DHARMa has a special function to check for zero-inflation</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="4A-GLMs_files/figure-html/chunk_chapter5_chunk22-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -1039,8 +1259,13 @@ alternative hypothesis: two.sided</code></pre>
 </ol>
 <p>Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. You can compare a zero-inflation model via AIC or likelihood ratio test to your base model, or simply check if the ZIP term in glmmTMB is significant.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">ziformula =</span> <span class="sc">~</span><span class="dv">1</span>,  <span class="at">data =</span> Salamanders)</span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(count <span class="sc">~</span> spp <span class="sc">+</span> mined <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> nbinom2, <span class="at">ziformula =</span> <span class="sc">~</span><span class="dv">1</span>,  <span class="at">data =</span> Salamanders)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: '.T2Cmat' is deprecated.
+Use '.T2CR' instead.
+See help("Deprecated") and help("Matrix-deprecated").</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: nbinom2  ( log )
 Formula:          count ~ spp + mined + (1 | site)
@@ -1085,20 +1310,20 @@ Zero-inflation model:
 <h2 data-number="8.4" class="anchored" data-anchor-id="interpreting-interactions-in-glms"><span class="header-section-number">8.4</span> Interpreting interactions in GLMs</h2>
 <p>A significant problem with interpreting GLMs is the interpretation of slopes in the presence of other variables, in particular interactions. To understand this problem, let’s first confirm to ourselves: if we simulate data under the model assumptions, parameters will be recovered as expected.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>trt <span class="ot">=</span> <span class="fu">as.factor</span>(<span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">"ctrl"</span>, <span class="st">"trt"</span>), <span class="dv">5000</span>, <span class="at">replace=</span> T))</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>concentration <span class="ot">=</span>  <span class="fu">runif</span>(<span class="dv">5000</span>)</span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fu">plogis</span>(<span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">*</span> (<span class="fu">as.numeric</span>(trt) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">*</span>concentration)</span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, <span class="at">prob =</span> response)</span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>trt <span class="ot">=</span> <span class="fu">as.factor</span>(<span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">"ctrl"</span>, <span class="st">"trt"</span>), <span class="dv">5000</span>, <span class="at">replace=</span> T))</span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a>concentration <span class="ot">=</span>  <span class="fu">runif</span>(<span class="dv">5000</span>)</span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-6"><a href="#cb106-6" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fu">plogis</span>(<span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span> <span class="sc">*</span> (<span class="fu">as.numeric</span>(trt) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">*</span>concentration)</span>
+<span id="cb106-7"><a href="#cb106-7" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, <span class="at">prob =</span> response)</span>
+<span id="cb106-8"><a href="#cb106-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-9"><a href="#cb106-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
+<span id="cb106-10"><a href="#cb106-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
+<span id="cb106-11"><a href="#cb106-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
+<span id="cb106-12"><a href="#cb106-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-13"><a href="#cb106-13" aria-hidden="true" tabindex="-1"></a>m1 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb106-14"><a href="#cb106-14" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1126,23 +1351,23 @@ AIC: 5630.9
 
 Number of Fisher Scoring iterations: 4</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The problem with this, however, is the condition that we “simulate data under model assumptions”, which includes the nonlinear link function. Let’s have a look what happens if we simulate data differently: in this case, we just assume that treatment changes the overall probability of survival (from 45% to 90%), and the concentration increases the survival by up to 10% for each group. We may think that we don’t have an interaction in this case, but the model finds one</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fl">0.45</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(trt) <span class="sc">+</span> <span class="fl">0.1</span><span class="sc">*</span>concentration</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, response)</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
-<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>response <span class="ot">=</span> <span class="fl">0.45</span> <span class="sc">*</span> <span class="fu">as.numeric</span>(trt) <span class="sc">+</span> <span class="fl">0.1</span><span class="sc">*</span>concentration</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>survival <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="dv">5000</span>, <span class="dv">1</span>, response)</span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">trt =</span> trt, </span>
+<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">concentration =</span> concentration,</span>
+<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">survival =</span> survival)</span>
+<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
+<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>)</span>
+<span id="cb109-10"><a href="#cb109-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1170,24 +1395,25 @@ AIC: 4363.1
 
 Number of Fisher Scoring iterations: 6</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>It looks in the effect plots as if the slope is changing as well, but note that this because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.</p>
 <p>The reason is simple: if we plot the plogis function, it becomes obvious that at different base levels (which would be controlled by trt in our case), moving a unit in concentration has a different effect.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>If we turn this around, this means that if want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.</p>
 <p>Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn’t make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.</p>
-<p>Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint. So, for example, we could fit the last model with a binomial distribution, but with an identity link</p>
+<p>Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.</p>
+<p>There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link</p>
 <div class="cell" data-warnings="false">
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"identity"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">=</span> <span class="fu">glm</span>(survival <span class="sc">~</span> trt <span class="sc">*</span> concentration, </span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> dat, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"identity"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: step size truncated: out of bounds
 
@@ -1214,7 +1440,7 @@ Warning: step size truncated: out of bounds</code></pre>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: glm.fit: algorithm stopped at boundary value</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1242,12 +1468,13 @@ AIC: 4355.2
 
 Number of Fisher Scoring iterations: 12</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(m3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>To solve this problem, there are a number of glm-specific solutions, for example for the logistic regression to prefer the so-called <strong>odds ratios</strong>. Another option is to look at the predicted effects at the response scale, e.g.&nbsp;via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically.</p>
+<p>Now, we can interpret effects and interactions exactly like in a linear regression.</p>
+<p>Another option is to look at the predicted effects at the response scale, e.g.&nbsp;via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1274,20 +1501,623 @@ Note
 <h3 data-number="8.5.1" class="anchored" data-anchor-id="unconditinal-vs.-marginal-predictions"><span class="header-section-number">8.5.1</span> Unconditinal vs.&nbsp;marginal predictions</h3>
 <p>One of those is that, if you have a nonlinear link function, predictions based on the fixed effects (unconditional) will not correspond to the mean of your data, or the average of the model predictions including the random effect (marginal predictions). To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plogis</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.7310586</code></pre>
 </div>
 </div>
 <p>Now, let’s try to see what the average (marginal) prediction over all random effects is. We add a random effect with 20 groups, sd = 1. In this case, there will be additional variation around the random intercept.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">plogis</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">20</span>, <span class="at">sd =</span> <span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">plogis</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">20</span>, <span class="at">sd =</span> <span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.6966425</code></pre>
 </div>
 </div>
 <p>The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data.</p>
 <p>Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.</p>
+</section>
+</section>
+<section id="case-studies" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">8.6</span> Case Studies</h2>
+<section id="binomial-glm---snails" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="binomial-glm---snails"><span class="header-section-number">8.6.1</span> Binomial GLM - Snails</h3>
+<p>The following dataset contains information about the occurrences of 3 freshwater snail species and their infection rate with schistosomiasis (feshwater snails are intermediate hosts). The data and the analysis is from <a href="https://link.springer.com/article/10.1186/s13071-019-3745-8">Rabone et al.&nbsp;2019</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a>?snails</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Help on topic 'snails' was found in the following packages:
+
+  Package               Library
+  EcoData               /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+  MASS                  /Library/Frameworks/R.framework/Versions/4.2/Resources/library
+
+
+Using the first match ...</code></pre>
+</div>
+</div>
+<p>The dataset has data on three snail species: <em>Biomphalaria pfeifferi</em> (BP), <em>Bulinus forskalii</em> (BF), and <em>Bulinus truncatus</em> (BT). For this task, we will focus only on <em>Bulinus truncatus</em> (BT).</p>
+<p>We want to answer two questions:</p>
+<ol type="1">
+<li>What are the variables that explain the occurrence of the <em>Bulinus truncatus</em> species (=Species distribution model)</li>
+<li>What are the variables that influence the infection of the snails with Schistosomiasis</li>
+</ol>
+<p>Tasks:</p>
+<ul>
+<li><p>Build two binomial GLMs (see hints) to explain the presence and the infection rate of <em>Bulinus truncatus</em> (BT)</p></li>
+<li><p>Add environmental variables and potential confounders (see ?snails for an overview of the variables and if you want, you can also take a loot at the original paper)</p></li>
+<li><p>Check residuals with DHARMa, check for misfits (plot residuals against variables)</p></li>
+<li><p>Which variables explain the presence of BT and which have an effect on the infection rates?</p></li>
+</ul>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Hints
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Prepare dataset before the analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> EcoData<span class="sc">::</span>snails</span>
+<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp_Water <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp_Water)</span>
+<span id="cb124-3"><a href="#cb124-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>spH <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>pH)</span>
+<span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_speed_ms <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_speed_ms)</span>
+<span id="cb124-5"><a href="#cb124-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swater_depth <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>water_depth)</span>
+<span id="cb124-6"><a href="#cb124-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sCond <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Cond)</span>
+<span id="cb124-7"><a href="#cb124-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>swmo_prec <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>wmo_prec)</span>
+<span id="cb124-8"><a href="#cb124-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>syear <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>year)</span>
+<span id="cb124-9"><a href="#cb124-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLat <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Latitude)</span>
+<span id="cb124-10"><a href="#cb124-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sLon <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Longitude)</span>
+<span id="cb124-11"><a href="#cb124-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp_Air <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp_Air)</span>
+<span id="cb124-12"><a href="#cb124-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove NAs</span></span>
+<span id="cb124-13"><a href="#cb124-13" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span>sTemp_Water <span class="sc">+</span> spH <span class="sc">+</span> sLat <span class="sc">+</span> sLon <span class="sc">+</span> sCond <span class="sc">+</span> seas_wmo<span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms <span class="sc">+</span> swater_depth <span class="sc">+</span>sTemp_Air<span class="sc">+</span> syear <span class="sc">+</span> duration <span class="sc">+</span> locality <span class="sc">+</span> site_irn <span class="sc">+</span> coll_date, <span class="at">data =</span> data))</span>
+<span id="cb124-14"><a href="#cb124-14" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><p>Factors which drive the occurrence of BT</p>
+<p>Minimal model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glm</span>(bt_pres<span class="sc">~</span> sTemp_Water,</span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data,  <span class="at">family =</span> binomial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Add environmental variables such as Temperature, pH, water metrics (e.g.&nbsp;water speed etc). Which variables could be potential confounders (year? locality? Season?….)</p></li>
+<li><p>Factors which affect the infection rate</p>
+<p>We use a k/n binomial model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(BT_pos_tot, BT_tot <span class="sc">-</span> BT_pos_tot )<span class="sc">~</span> sTemp_Water ,</span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data[data<span class="sc">$</span>BT_tot <span class="sc">&gt;</span> <span class="dv">0</span>, ],  <span class="at">family =</span> binomial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Add environmental variables such as Temperature, pH, water metrics (e.g.&nbsp;water speed etc). Which variables could be potential confounders (year? locality? Season?….)</p></li>
+</ol>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution - Species distribution model
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Environmental variables (part of our hypothesis): Temp_water, Temp_Air, pH, Cond, swmo_prec, water_speed_ms, and water_depth.</p>
+<p>Potential confounders: site_type, year, seas_wmo (season) (, and locality)</p>
+<p>Our model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glm</span>(bt_pres<span class="sc">~</span> site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> spH <span class="sc">+</span></span>
+<span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a>               sCond <span class="sc">+</span> swmo_prec <span class="sc">+</span> swater_speed_ms  <span class="sc">+</span> duration <span class="sc">+</span> </span>
+<span id="cb127-3"><a href="#cb127-3" aria-hidden="true" tabindex="-1"></a>               sTemp_Air <span class="sc">+</span> seas_wmo <span class="sc">+</span> syear <span class="sc">+</span> swater_depth,</span>
+<span id="cb127-4"><a href="#cb127-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> data,  <span class="at">family =</span> binomial)</span>
+<span id="cb127-5"><a href="#cb127-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = bt_pres ~ site_type + sTemp_Water + spH + sCond + 
+    swmo_prec + swater_speed_ms + duration + sTemp_Air + seas_wmo + 
+    syear + swater_depth, family = binomial, data = data)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.3275  -1.0924   0.6059   0.9616   2.4113  
+
+Coefficients:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        0.815224   0.194147   4.199 2.68e-05 ***
+site_typecanal.3  -0.332009   0.121838  -2.725  0.00643 ** 
+site_typepond     -1.256373   0.198187  -6.339 2.31e-10 ***
+site_typerice.p   -2.549160   0.226259 -11.267  &lt; 2e-16 ***
+site_typeriver    -0.937624   0.178915  -5.241 1.60e-07 ***
+site_typerivulet  -0.655550   0.214947  -3.050  0.00229 ** 
+site_typespillway -2.948800   0.410426  -7.185 6.73e-13 ***
+sTemp_Water       -0.147118   0.089085  -1.651  0.09865 .  
+spH               -0.058152   0.050195  -1.159  0.24665    
+sCond              0.226405   0.057109   3.964 7.36e-05 ***
+swmo_prec         -0.156915   0.059027  -2.658  0.00785 ** 
+swater_speed_ms   -0.129785   0.054930  -2.363  0.01814 *  
+duration          -0.007267   0.006853  -1.060  0.28899    
+sTemp_Air         -0.207746   0.075345  -2.757  0.00583 ** 
+seas_wmowet       -0.070866   0.134537  -0.527  0.59838    
+syear             -0.487076   0.063083  -7.721 1.15e-14 ***
+swater_depth      -0.050282   0.051463  -0.977  0.32854    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2862.7  on 2071  degrees of freedom
+Residual deviance: 2469.6  on 2055  degrees of freedom
+AIC: 2503.6
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>Intercept corresponds to seas_wmo == wet and site_type == can.2</p>
+<p>Year (our confounder) has a very strong effect on the occurrence rate. Conducitivity has a strong positive effect. Let’s look at the effects:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(model1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, swmo_prec, swater_speed_ms, sTemp_Air,
+syear, swater_depth are one-column matrices that were converted to vectors</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>it appears that site_type and conductivity have the largest positive effects on occurrence rates. It is reasonable to assume that there are interactions between freshwater (site_type) and factors such as conductivity:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glm</span>(bt_pres<span class="sc">~</span> site_type <span class="sc">*</span> sCond <span class="sc">-</span>sCond <span class="sc">+</span> swater_speed_ms<span class="sc">+</span>spH <span class="sc">+</span> sTemp_Water <span class="sc">+</span> duration <span class="sc">+</span> </span>
+<span id="cb131-2"><a href="#cb131-2" aria-hidden="true" tabindex="-1"></a>                 sTemp_Air <span class="sc">+</span> seas_wmo <span class="sc">+</span> syear <span class="sc">+</span> swater_depth,</span>
+<span id="cb131-3"><a href="#cb131-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data,  <span class="at">family =</span> binomial)</span>
+<span id="cb131-4"><a href="#cb131-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = bt_pres ~ site_type * sCond - sCond + swater_speed_ms + 
+    spH + sTemp_Water + duration + sTemp_Air + seas_wmo + syear + 
+    swater_depth, family = binomial, data = data)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.4717  -1.1029   0.5995   0.9587   2.4166  
+
+Coefficients:
+                         Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)              0.859045   0.195491   4.394 1.11e-05 ***
+site_typecanal.3        -0.341943   0.122316  -2.796 0.005181 ** 
+site_typepond           -1.445413   0.216706  -6.670 2.56e-11 ***
+site_typerice.p         -2.731996   0.251334 -10.870  &lt; 2e-16 ***
+site_typeriver          -1.128968   0.238779  -4.728 2.27e-06 ***
+site_typerivulet        -0.744423   0.288857  -2.577 0.009962 ** 
+site_typespillway       -2.699163   0.419229  -6.438 1.21e-10 ***
+swater_speed_ms         -0.132721   0.054953  -2.415 0.015727 *  
+spH                     -0.081288   0.050445  -1.611 0.107084    
+sTemp_Water             -0.166515   0.089683  -1.857 0.063353 .  
+duration                -0.008406   0.006896  -1.219 0.222867    
+sTemp_Air               -0.186726   0.075486  -2.474 0.013374 *  
+seas_wmowet             -0.089821   0.134777  -0.666 0.505130    
+syear                   -0.478198   0.063467  -7.535 4.90e-14 ***
+swater_depth            -0.054116   0.051882  -1.043 0.296922    
+site_typecan.2:sCond     0.285611   0.116639   2.449 0.014338 *  
+site_typecanal.3:sCond  -0.040904   0.116426  -0.351 0.725342    
+site_typepond:sCond      0.482954   0.133330   3.622 0.000292 ***
+site_typerice.p:sCond    0.731702   0.205377   3.563 0.000367 ***
+site_typeriver:sCond    -0.186359   0.348331  -0.535 0.592646    
+site_typerivulet:sCond   0.069200   0.414818   0.167 0.867511    
+site_typespillway:sCond  0.030526   0.148147   0.206 0.836751    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2862.7  on 2071  degrees of freedom
+Residual deviance: 2456.7  on 2050  degrees of freedom
+AIC: 2500.7
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>“-sCond” allows us to test the slopes for the different site_types against 0 (no reference level)</p>
+<p>Residual checks:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb133-2"><a href="#cb133-2" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Check misfits by plotting predictors against residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(sim, data<span class="sc">$</span>sCond)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(sim, data<span class="sc">$</span>sTemp_Air)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-47-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>They look okay!</p>
+<p><strong>Bonus - Spatial autocorrelation:</strong></p>
+<p>A common problem with spatial data is spatial autocorrelation. We can use DHARMa to test if our residuals are spatially autocorrelated</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">=</span> <span class="fu">recalculateResiduals</span>(sim, <span class="at">group =</span> <span class="fu">c</span>(data<span class="sc">$</span>site_irn))</span>
+<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>groupLocations <span class="ot">=</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(data<span class="sc">$</span>sLat, data<span class="sc">$</span>sLon ), <span class="fu">list</span>( data<span class="sc">$</span>site_irn), mean)</span>
+<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a><span class="fu">testSpatialAutocorrelation</span>(res2, <span class="at">x =</span> groupLocations<span class="sc">$</span>V1, <span class="at">y =</span> groupLocations<span class="sc">$</span>V2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa Moran's I test for distance-based autocorrelation
+
+data:  res2
+observed = 0.242175, expected = -0.011364, sd = 0.067256, p-value =
+0.0001634
+alternative hypothesis: Distance-based autocorrelation</code></pre>
+</div>
+</div>
+<p>The test is significant, i.e.&nbsp;we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course</p>
+</div>
+</div>
+</div>
+<div class="callout-tip callout callout-style-simple no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution - Infection rate
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Environmental variables (part of our hypothesis): Temp_water, Temp_Air, pH, Cond, swmo_prec, water_speed_ms, and water_depth.</p>
+<p>Potential confounders: site_type, year, seas_wmo (season), duration, ( and locality)</p>
+<p>Our model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>data_inf <span class="ot">=</span> data[data<span class="sc">$</span>BT_tot <span class="sc">&gt;</span> <span class="dv">0</span> , ] <span class="co"># only observations </span></span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">=</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(BT_pos_tot, BT_tot <span class="sc">-</span> BT_pos_tot )<span class="sc">~</span> site_type <span class="sc">+</span> sTemp_Water <span class="sc">+</span> spH <span class="sc">+</span></span>
+<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>               sCond <span class="sc">+</span> <span class="fu">log</span>(swmo_prec<span class="sc">+</span><span class="dv">1</span>) <span class="sc">+</span> swater_speed_ms  <span class="sc">+</span> <span class="fu">log</span>(duration) <span class="sc">+</span> </span>
+<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a>               sTemp_Air <span class="sc">+</span> seas_wmo <span class="sc">+</span> syear <span class="sc">+</span> swater_depth,</span>
+<span id="cb138-5"><a href="#cb138-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> data_inf,  <span class="at">family =</span> binomial)</span>
+<span id="cb138-6"><a href="#cb138-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = cbind(BT_pos_tot, BT_tot - BT_pos_tot) ~ site_type + 
+    sTemp_Water + spH + sCond + log(swmo_prec + 1) + swater_speed_ms + 
+    log(duration) + sTemp_Air + seas_wmo + syear + swater_depth, 
+    family = binomial, data = data_inf)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-4.1600  -0.6178  -0.3103  -0.1493   8.6079  
+
+Coefficients:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.84336    0.52079  -5.460 4.77e-08 ***
+site_typecanal.3    0.06733    0.14076   0.478 0.632399    
+site_typepond       2.42003    0.20151  12.010  &lt; 2e-16 ***
+site_typerice.p     1.06829    0.39734   2.689 0.007175 ** 
+site_typeriver      0.11099    0.46215   0.240 0.810207    
+site_typerivulet    1.16396    0.33047   3.522 0.000428 ***
+site_typespillway   1.20405    1.02591   1.174 0.240542    
+sTemp_Water         0.23679    0.10178   2.327 0.019991 *  
+spH                 0.03519    0.06160   0.571 0.567794    
+sCond              -0.10822    0.05731  -1.888 0.059000 .  
+log(swmo_prec + 1) -1.14756    0.33413  -3.434 0.000594 ***
+swater_speed_ms     0.09253    0.04145   2.232 0.025595 *  
+log(duration)      -0.90117    0.17268  -5.219 1.80e-07 ***
+sTemp_Air          -0.29302    0.09338  -3.138 0.001702 ** 
+seas_wmowet         0.17373    0.16907   1.028 0.304160    
+syear              -0.11184    0.06612  -1.691 0.090746 .  
+swater_depth       -0.16272    0.06577  -2.474 0.013353 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1532.4  on 1106  degrees of freedom
+Residual deviance: 1264.9  on 1090  degrees of freedom
+AIC: 1597.1
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+<p>Intercept corresponds to seas_wmo == wet and site_type == can.2</p>
+<p>Year (our confounder) has a very strong effect on the occurrence rate. Syte_type, swmo_prec (Precipitation), sTemp_Water, and sTemp_Air have strong effects:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(model2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>With partial residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(model2, <span class="at">partial.residuals =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors
+
+Warning in Analyze.model(focal.predictors, mod, xlevels, default.levels, :
+the predictors sTemp_Water, spH, sCond, log(swmo_prec + 1), swater_speed_ms,
+sTemp_Air, syear, swater_depth, swmo_prec are one-column matrices that were
+converted to vectors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, : at
+-0.28177</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+radius 0.0017044</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, : all
+data on boundary of neighborhood. make span bigger</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+pseudoinverse used at -0.28177</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+neighborhood radius 0.041285</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+reciprocal condition number 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+zero-width neighborhood. make span bigger</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, : at
+-0.44147</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+radius 0.018151</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, : all
+data on boundary of neighborhood. make span bigger</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+pseudoinverse used at -0.44147</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+neighborhood radius 0.13473</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+reciprocal condition number 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+zero-width neighborhood. make span bigger</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+There are other near singularities as well. 0.29042</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+pseudoinverse used at -0.76648</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+neighborhood radius 0.85333</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = FALSE, :
+reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Reminder: The partial residuals don’t tell us anything because the variance of the residuals (remember binomial) depends on the probability of the binomial process AND on k (k/n binomial model). We need DHARMa to check the residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb162-2"><a href="#cb162-2" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Residuals look okayish for a k/n model.</p>
+<p>Check misfits by plotting predictors against residuals:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(sim, <span class="fu">log</span>(data_inf<span class="sc">$</span>swmo_prec<span class="sc">+</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(sim, data_inf<span class="sc">$</span>sTemp_Water)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-53-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>swmo_prec doesn’t look good but this is caused by the many zeros in the variable</p>
+<p><strong>Bonus - Spatial autocorrelation:</strong></p>
+<p>A common problem with spatial data is spatial autocorrelation. We can use DHARMa to test if our residuals are spatially autocorrelated</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb166"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb166-1"><a href="#cb166-1" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">=</span> <span class="fu">recalculateResiduals</span>(sim, <span class="at">group =</span> <span class="fu">c</span>(data_inf<span class="sc">$</span>site_irn))</span>
+<span id="cb166-2"><a href="#cb166-2" aria-hidden="true" tabindex="-1"></a>groupLocations <span class="ot">=</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(data_inf<span class="sc">$</span>sLat, data_inf<span class="sc">$</span>sLon ), <span class="fu">list</span>( data_inf<span class="sc">$</span>site_irn), mean)</span>
+<span id="cb166-3"><a href="#cb166-3" aria-hidden="true" tabindex="-1"></a><span class="fu">testSpatialAutocorrelation</span>(res2, <span class="at">x =</span> groupLocations<span class="sc">$</span>V1, <span class="at">y =</span> groupLocations<span class="sc">$</span>V2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="4A-GLMs_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    DHARMa Moran's I test for distance-based autocorrelation
+
+data:  res2
+observed = 0.112776, expected = -0.011905, sd = 0.067583, p-value =
+0.06506
+alternative hypothesis: Distance-based autocorrelation</code></pre>
+</div>
+</div>
+<p>The test is n.s. but still we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course</p>
+</div>
+</div>
+</div>
 
 
 </section>
