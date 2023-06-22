@@ -832,3 +832,58 @@ testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
 
 The test is n.s. but still we should assume that the data is spatially autocorrelated. Addressing this issue, however, is part of the Advanced course
 :::
+
+### Binomial GLM - Elephant SDM
+
+The following dataset contains data about occurrences of the African elephant and environmental variables ([Angelov, 2020](https://zenodo.org/record/4048271)). The dataset was used in [Ryo et al., 2020](https://onlinelibrary.wiley.com/doi/full/10.1111/ecog.05360) to demonstrate the idea of explainable AI .
+
+```{r, echo=TRUE, eval=TRUE}
+data = readRDS(file = "hiddenData/elephant_data.RDS") # adjust the path to your system
+```
+
+The data include 19 environmental variables, called bio1 through bio19, which are public and globally available bioclimatic variables (see https://www.worldclim.org/data/bioclim.html for a description of the variables). For example, bio1 is the mean annual temperature. No understanding of these variables is required for the task, the only difficulty is that many of them are highly correlated because they encode similar information (e.g. there are several temperature variables).
+
+The goal of this exercise is to make new predictions with a predictive model. The workflow typically consists of two steps: 1. building and optimizing the predictive model, and 2. using the predictive model to make predictions on new data and visualizing the results.
+
+1.  Task - Build predictive model:
+
+-   Build a predictive model
+
+    ```{r}
+    model = glm(Presence~bio1, data = data, family = binomial()) # minimum model
+    ```
+
+-   Drop some of the highly correlated variables (don't use all of them).
+
+-   Use quadratic effects
+
+-   Use `stepAIC` or the `dredge` function to optimize the predictive model
+
+2.  Task - Make new predictions
+
+-   Load new data
+
+    ```{r}
+    library(sp)
+    library(raster)
+    new_data = readRDS(file = "hiddenData/elephant_new_data.RDS")
+    ```
+
+    The new dataset is not a data.frame but a raster object, which is a special data class for spatial data. The goal is make predictions for South Africa
+
+-   Make new predictions with your model:
+
+    As our new_data object is not a typical data.frame, we need to use the predict function from the raster object (which internally transforms the new_data into a classical data.frame, pass then the data.frame to our model, and then transforms the output back to a raster object)
+
+    ```{r}
+    predictions =  predict(new_data, model = model, type = "response")
+    head(as.data.frame(predictions))
+    ```
+
+    The advantage of the raster object is that we can directly use it to create a map (the raster object has coordinates for each observation):
+
+    ```{r}
+    spplot(predictions, colorkey = list(space = "left") )
+    ```
+
+Play around with the predictive model, increase the complexity, is there a change in the map?
