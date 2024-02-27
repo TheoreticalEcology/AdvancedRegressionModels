@@ -666,6 +666,12 @@ For model selection, the degrees of freedom problem means that normal model sele
 
 The easy part is the selection on the fixed effect structure - if we can assume that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use all standard model selection methods (with all their caveats) as before on the fixed effect structure. All I will say about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference (see later section).
 
+::: callout-caution
+##### Careful when selecting on models fit with REML
+
+As discussed, LMMs are per default fit with REML. For model selection, you should use the likelihood of these models. See also [@verbyla2019]
+:::
+
 #### A prior selection on random effects
 
 When changing the RE structure, you should not use standard AIC or LRTs, because of the df problem. For that reason, I would generally recommend to fix the RE structure *a priori* and keep selection on REs to a minimum.

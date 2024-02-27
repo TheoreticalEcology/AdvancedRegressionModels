@@ -27,6 +27,42 @@ summary(fit)
 summary(aov(fit))
 ```
 
+::: callout-important
+A subtlety about heteroskedasticity in the normal model is that it maily affects p-values for the variable that we are
+
+``` r
+
+# error sd is variable, but uncorrelated with predictor
+
+getP <- function(effect = 0, n = 1000){
+  sd = rgamma(n, shape = 2)
+  #hist(sd)
+  x = runif(n)
+  y = effect * x + rnorm(n, sd = sd)  
+  fit <- lm(y ~ x)
+  table <- summary(fit)
+  return(table$coefficients[2,4])
+}
+
+out = replicate(1000, getP())
+hist(out, breaks = 20)
+
+
+# error sd is variable and correlated with predictor (identical in this case)
+
+getP2 <- function(effect = 0, n = 1000){
+  sd = rgamma(n, shape = 2)
+  y = effect * sd + rnorm(n, sd = sd)  
+  fit <- lm(y ~ sd)
+  table <- summary(fit)
+  return(table$coefficients[2,4])
+}
+
+out2 = replicate(1000, getP2())
+hist(out2, breaks = 20)
+```
+:::
+
 So, what can we do?
 
 ### Transformation

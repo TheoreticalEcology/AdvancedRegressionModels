@@ -2,7 +2,6 @@
 set.seed(42)
 ```
 
-
 # Summary and concluding thoughts
 
 ## Reminder: Modelling Strategy
@@ -45,7 +44,6 @@ Packages to fit thes models (see Apppedix: syntax cheat sheet):
 -   `glmmTMB`: Generalized linear mixed models with variance / correlation modelling and zip term.
 
 Alternatively, you could move to Bayesian estimates with `brms`, which allows all that, easier inclusion of shrinkage, and p-value / df problems less visible
-
 
 ## Thoughts About the Analysis Pipeline
 
@@ -121,3 +119,33 @@ mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
 ```
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
+
+## Experimental design and power analysis
+
+All we have learned in this course directly informs experimental and research design, may it be of controlled experiments, quasi-experiments or observational studies.
+
+As a start, note our discussions of causality and model selection:
+
+-   First of all, research design needs a goal: do you want to design for prediction or (causal) inference
+
+-   If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confouders are at the same value. This can be useful because, as we discussed, adjusting for collinear variable is possible, but cost power.
+
+-   In experimental settings, blocked designs where blocks will be later treated as a RE are standard
+
+If you have decided on the selection of variables, treat
+
+```{r}
+library(lme4)
+library(lmerTest)
+library(EcoData)
+plantHeight$sTemp = scale(plantHeight$temp)
+plantHeight$sLat = scale(plantHeight$lat)
+
+fit <- lmer(loght ~ sTemp * sLat  + (1 | Family), data = plantHeight)
+summary(fit)
+
+```
+
+```{r}
+newData = simulate(fit, re.form = NULL)
+```
