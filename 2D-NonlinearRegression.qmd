@@ -146,7 +146,7 @@ We see here that there is no significant difference between wild type and mutant
 
 ## Model selection
 
-You can use all model selection methods described in the next chapter. If you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn't distinguis between types, we can either to a LRT
+You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn't distinguish between types, we can either to a LRT
 
 ```{r}
 anova(mm, mm1)
