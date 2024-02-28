@@ -144,6 +144,16 @@ summary(mm1)
 
 We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type.
 
+There is no automatic plotting function for this, so you will hae to plot by hand:
+
+```{r}
+dat = data.frame(S = seq(0,2,length.out = 50), type = 0)
+plot(dat$S, predict(mm1, newdata = dat), type = "l")
+dat$type = 1
+lines(dat$S, predict(mm1, newdata = dat), type = "l", col = "red")
+points(vmkm1$S, vmkm1$v, col = vmkm1$type +1)
+```
+
 ## Model selection
 
 You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn't distinguish between types, we can either to a LRT
