@@ -535,17 +535,11 @@ Vmax 1.547605 1.337787 1.942798</code></pre>
 <p>In principle, predictions on an nls object (also for new data) can be made with the predict.nls function</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] 0.1607039 0.1607039 0.2070964 0.2070964 0.2504823 0.2504823 0.2911448
- [8] 0.2911448 0.3652647 0.3652647 0.4311173 0.4311173 0.4900126 0.4900126
-[15] 0.5429979 0.5429979 0.5909202 0.5909202 0.6344723 0.6344723 0.6742257
-[22] 0.6742257</code></pre>
-</div>
 </div>
 <p>however, this function does not calculate confidence intervals. You can add those using the propagate package, which propagates uncertainties through the nonlinear model based on MC samples or Taylor expansion based on the normal approximation of the likelihood.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(propagate)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> propagate<span class="sc">::</span><span class="fu">predictNLS</span>(mm, <span class="at">nsim =</span> <span class="dv">10000</span>) <span class="co"># nsim must be set much higher for production</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(propagate)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> propagate<span class="sc">::</span><span class="fu">predictNLS</span>(mm, <span class="at">nsim =</span> <span class="dv">10000</span>) <span class="co"># nsim must be set much higher for production</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the Igeneral boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e.&nbsp;quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.</p>
 <p>The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this).</p>
@@ -555,9 +549,9 @@ Vmax 1.547605 1.337787 1.942798</code></pre>
 <p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise).</p>
 <p>Here I created an exampel with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T) <span class="co"># wild type and mutant</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T) <span class="co"># wild type and mutant</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    S    v type
 1 0.3 0.17    1
@@ -570,8 +564,8 @@ Vmax 1.547605 1.337787 1.942798</code></pre>
 </div>
 <p>Now I can fit the model</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mm1 <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km <span class="sc">+</span> type<span class="sc">*</span>DeltaMutantKm) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm1, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>, <span class="at">DeltaMutantKm =</span> <span class="dv">0</span>)) </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mm1 <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km <span class="sc">+</span> type<span class="sc">*</span>DeltaMutantKm) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm1, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>, <span class="at">DeltaMutantKm =</span> <span class="dv">0</span>)) </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Formula: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
@@ -596,7 +590,7 @@ Achieved convergence tolerance: 1.958e-06</code></pre>
 <h2 data-number="5.7" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">5.7</span> Model selection</h2>
 <p>You can use all model selection methods described in the next chapter. If you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn’t distinguis between types, we can either to a LRT</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mm, mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mm, mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table
 
@@ -609,11 +603,11 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 </div>
 <p>or an AIC comparison</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -94.71828</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -93.73724</code></pre>
 </div>
@@ -624,11 +618,11 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 <h2 data-number="5.8" class="anchored" data-anchor-id="mixed-effects-heteroskedasticity-and-correlations"><span class="header-section-number">5.8</span> Mixed effects, heteroskedasticity and correlations</h2>
 <p>If you want mixed effects to your model (which can often make sense, e.g.&nbsp;consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">=</span> vmkm</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>vmkm2<span class="sc">$</span>group <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">&lt;-</span> <span class="fu">groupedData</span>(v <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, vmkm2) <span class="co"># transferring to a grouped data object recommended for nlme</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">=</span> vmkm</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>vmkm2<span class="sc">$</span>group <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">&lt;-</span> <span class="fu">groupedData</span>(v <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, vmkm2) <span class="co"># transferring to a grouped data object recommended for nlme</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Grouped Data: v ~ 1 | group
     S    v group
@@ -642,11 +636,11 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 </div>
 <p>We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mm2 <span class="ot">=</span> <span class="fu">nlme</span>(<span class="at">model =</span> michaelis,<span class="at">data =</span> vmkm2, </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">fixed =</span> Vmax <span class="sc">+</span> Km <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> Km <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, </span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">c</span>(<span class="at">Km=</span><span class="dv">1</span>, <span class="at">Vmax=</span><span class="dv">1</span>))</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mm2 <span class="ot">=</span> <span class="fu">nlme</span>(<span class="at">model =</span> michaelis,<span class="at">data =</span> vmkm2, </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">fixed =</span> Vmax <span class="sc">+</span> Km <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> Km <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">c</span>(<span class="at">Km=</span><span class="dv">1</span>, <span class="at">Vmax=</span><span class="dv">1</span>))</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Nonlinear mixed-effects model fit by maximum likelihood
   Model: michaelis 

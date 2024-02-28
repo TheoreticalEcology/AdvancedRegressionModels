@@ -108,7 +108,7 @@ The most complete solution to calculating confidence intervals for complex model
 
 In principle, predictions on an nls object (also for new data) can be made with the predict.nls function
 
-```{r}
+```{r, eval = F}
 predict(mm)
 ```
 
