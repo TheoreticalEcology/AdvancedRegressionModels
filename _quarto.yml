@@ -21,6 +21,7 @@ book:
       - 2A-LinearRegression.qmd
       - 2B-ANOVA.qmd
       - 2C-RandomEffects.qmd
+      - 2D-NonlinearRegression.qmd
     - part: "Model Choice"
       chapters: 
       - 3A-MissingData.qmd
@@ -34,9 +35,8 @@ book:
     - part: "Summary and references"
       chapters: 
       - 5A-Summary.qmd   
-      - 5B-References.qmd
   appendices:
-    - 6A-RCrashCourse.qmd
+    - 5B-References.qmd
     - 6B-CheatSheet.qmd
     - 6C-CaseStudies.qmd
 

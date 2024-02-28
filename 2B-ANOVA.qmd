@@ -8,7 +8,7 @@ editor_options:
 set.seed(42)
 ```
 
-# ANOVA and other hypotheses
+# ANOVA and other tests on the LM
 
 ## The idea of ANOVA
 

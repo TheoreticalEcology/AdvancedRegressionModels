@@ -6,6 +6,15 @@ editor_options:
 
 # Getting Started
 
+## Organization of this book
+
+The aim of this book is to introduce you to the main techniques and concepts that are used when performing regression analyses in applied settings. This book is organized in three parts:
+
+1.  **Modelling the mean:** The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. For this chapter, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression, ANOVA and mixed models
+2.  **Model Choice** The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods
+3.  **Modelling the Distribution** The third part of the book is about modelling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.
+
+
 ## Your R System
 
 In this course, we work with the combination of R + RStudio.
@@ -63,13 +72,13 @@ As mentioned in the preface, this book assumes that you have basic knowledge abo
 1.  **base R**, which uses functions such as `plot()`, `apply()`, `aggregate()`
 2.  **tidyverse**, with packages such as **dplyr** and **ggplot2**, which provide functions such as `mutate()`, `filter()` and heavily rely on the `%>%` pipe operator.
 
-There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2.
-
-For this course, however, all examples are prepared in base R. If you're not familiar with the base R syntax for these purposes, have a look at @sec-appendix-R-crash-course, which covers the most common tasks in this area.
+There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2. To keep it simple, however, all code in this course uses base R. 
 
 ::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
+
+In the following box, you will find an exercise that asks you to perform basic plots and data manipulations. To text yourself, please check that you can perform these operations. If you have problems, you should study an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)) before continuing with this text. 
 
 ::: {.callout-caution icon="false"}
 #### Exercise - Data wrangling
@@ -163,11 +172,3 @@ dat = airquality
     cor(dat$Wind, dat$Temp, use = "complete.obs", method = "spearman")
     ```
 :::
-
-## Organization of this book
-
-This book is organized in three parts:
-
-1.  The first part of this book is focusing on using regression models to describe the mean response as a function of the one or several predictor variables. To that end, we will stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression, ANOVA and mixed models
-2.  The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods
-3.  The third part of the book is about modelling variance. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.

@@ -132,20 +132,11 @@ As a start, note our discussions of causality and model selection:
 
 -   In experimental settings, blocked designs where blocks will be later treated as a RE are standard
 
-If you have decided on the selection of variables, treat
+If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study [things to be added] 
 
-```{r}
-library(lme4)
-library(lmerTest)
-library(EcoData)
-plantHeight$sTemp = scale(plantHeight$temp)
-plantHeight$sLat = scale(plantHeight$lat)
 
-fit <- lmer(loght ~ sTemp * sLat  + (1 | Family), data = plantHeight)
-summary(fit)
+## Next steps
 
-```
 
-```{r}
-newData = simulate(fit, re.form = NULL)
-```
+
+
