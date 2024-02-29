@@ -81,13 +81,13 @@ Of course, all discussions about residuals from the chapter on linear regression
 
 ## Uncertainties and CIs on parameters
 
-In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the the se. The nlstools package allows you to calculate CIs based the normal approximation (asymptotic) or on profiling.
+In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.
 
 ```{r}
 nlstools::confint2(mm)
 ```
 
-We can also visualize the likelihood contour
+We can also visualize the likelihood contour (again, this is using the normal approximation)
 
 ```{r}
 cont <- nlsContourRSS(mm)
@@ -101,6 +101,8 @@ mmboot <- nlstools::nlsBoot(mm, niter = 200)
 plot(mmboot)
 summary(mmboot)
 ```
+
+In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case. 
 
 The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this). 
 
@@ -119,15 +121,15 @@ library(propagate)
 out = propagate::predictNLS(mm, nsim = 10000) # nsim must be set much higher for production
 ```
 
-For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the Igeneral boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e. quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.
+For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the general boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e. quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.
 
 The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this).
 
 ## Interactions in NLS
 
-What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise).
+What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in setion linear regression)
 
-Here I created an exampel with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if 
+Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant. 
 
 ```{r}
 vmkm1 = vmkm
@@ -142,7 +144,7 @@ mm1 <- nls(v ~ S/(S + Km + type*DeltaMutantKm) * Vmax,data = vmkm1, start = list
 summary(mm1)
 ```
 
-We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type.
+We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables. 
 
 There is no automatic plotting function for this, so you will hae to plot by hand:
 
@@ -169,7 +171,9 @@ AIC(mm)
 AIC(mm1)
 ```
 
-Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not bettr than the model that assumes that they have the same functional relationship.
+Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.
+
+Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong. 
 
 ## Mixed effects, heteroskedasticity and correlations
 

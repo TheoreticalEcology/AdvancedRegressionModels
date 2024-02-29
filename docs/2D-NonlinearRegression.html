@@ -484,7 +484,7 @@ Vmax 0.9917486 1.0000000</code></pre>
 </section>
 <section id="uncertainties-and-cis-on-parameters" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="uncertainties-and-cis-on-parameters"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</h2>
-<p>In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the the se. The nlstools package allows you to calculate CIs based the normal approximation (asymptotic) or on profiling.</p>
+<p>In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>nlstools<span class="sc">::</span><span class="fu">confint2</span>(mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -493,7 +493,7 @@ Km   1.813418 3.358860
 Vmax 1.242790 1.849303</code></pre>
 </div>
 </div>
-<p>We can also visualize the likelihood contour</p>
+<p>We can also visualize the likelihood contour (again, this is using the normal approximation)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cont <span class="ot">&lt;-</span> <span class="fu">nlsContourRSS</span>(mm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -528,6 +528,7 @@ Km   2.597163 2.042456 3.577164
 Vmax 1.547605 1.337787 1.942798</code></pre>
 </div>
 </div>
+<p>In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case.</p>
 <p>The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this).</p>
 </section>
 <section id="uncertainties-and-cis-on-predictions-and-derived-quantities" class="level2" data-number="5.5">
@@ -541,13 +542,13 @@ Vmax 1.547605 1.337787 1.942798</code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(propagate)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> propagate<span class="sc">::</span><span class="fu">predictNLS</span>(mm, <span class="at">nsim =</span> <span class="dv">10000</span>) <span class="co"># nsim must be set much higher for production</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the Igeneral boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e.&nbsp;quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.</p>
+<p>For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the general boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e.&nbsp;quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.</p>
 <p>The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this).</p>
 </section>
 <section id="interactions-in-nls" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="interactions-in-nls"><span class="header-section-number">5.6</span> Interactions in NLS</h2>
-<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise).</p>
-<p>Here I created an exampel with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if</p>
+<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in setion linear regression)</p>
+<p>Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T) <span class="co"># wild type and mutant</span></span>
@@ -584,7 +585,7 @@ Number of iterations to convergence: 6
 Achieved convergence tolerance: 1.958e-06</code></pre>
 </div>
 </div>
-<p>We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type.</p>
+<p>We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables.</p>
 <p>There is no automatic plotting function for this, so you will hae to plot by hand:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">S =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">50</span>), <span class="at">type =</span> <span class="dv">0</span>)</span>
@@ -623,7 +624,8 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 <pre><code>[1] -93.73724</code></pre>
 </div>
 </div>
-<p>Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not bettr than the model that assumes that they have the same functional relationship.</p>
+<p>Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.</p>
+<p>Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.</p>
 </section>
 <section id="mixed-effects-heteroskedasticity-and-correlations" class="level2" data-number="5.8">
 <h2 data-number="5.8" class="anchored" data-anchor-id="mixed-effects-heteroskedasticity-and-correlations"><span class="header-section-number">5.8</span> Mixed effects, heteroskedasticity and correlations</h2>
