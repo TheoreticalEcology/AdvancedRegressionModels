@@ -884,6 +884,15 @@ plotResiduals(sim, data_inf$sTemp_Water)
 swmo_prec doesn't look good but this is caused by the many zeros in the variable
 :::
 
+### Elks
+
+The data for this example is not in the ecodata package, but will be distributed in the course.
+
+The data contains observations of elk presence / absence in various places in Canada. The ecological question is if roads disturb the elks.
+
+Task: perform an analysis of the data to understand if roads have a causal effect on elk presence. Correct for appropriately for confounders! Check the residuals of your model to make sure it's properly specified!
+
+
 ### Making spatial predictions with a logistic regression - Elephant SDM
 
 To demonstrate how to fit a species distribution model and extrapolate it in space, let's have a look at the elephant dataset, which is contained in EcoData

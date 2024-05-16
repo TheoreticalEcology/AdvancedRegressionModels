@@ -295,28 +295,41 @@ summary(fit)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-We have correlations between variables and an interaction, so should run a type II or III Anova, for III you should center predictors:
+We have correlations between variables and an interaction, so per default, we should probably run a type II or III Anova. Note that for type III, you should center predictors to reduce collinearities (and thus shared fractions between main effects and interactions):
 
 ```{r}
 plantHeight$stemp = scale(plantHeight$temp, scale = FALSE) # only center variable
 plantHeight$slat = scale(plantHeight$lat, scale = FALSE)
 fit = lm(loght ~ stemp * slat, data = plantHeight)
 summary(fit)
+
+```
+
+The type II ANOVA discards shared fractions between main effects. Note that because of the high collinearity, R2 assigned to each predictor is extremely low.
+
+```{r}
+print(car::Anova(fit, type = "II"))
+```
+
+The type III ANOVA also discards the shared fractions between the interactions and main effects. For this reason, the main effects are even lower than in type II.
+
+```{r}
 print(car::Anova(fit, type = "III"))
 ```
 
-Arguably not appropriate (because order dependent, and here we have strong collinearity) is a type I ANOVA:
+Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, it can also run a type I ANVOA.
 
 ```{r}
 summary(aov(fit))
 ```
 
-Note that we have centered our variables, let's see what happens when we use the non centered variables:
+As a last, add-on, let's see let's see what happens when we use the non centered variables:
 
 ```{r}
 fit2 = lm(loght ~ temp * lat, data = plantHeight)
+print(car::Anova(fit2, type = "II"))
 print(car::Anova(fit2, type = "III"))
 ```
 
-The shared proportion has proportionally gained a lot sum of squares!
+Note that in this case, main effects drop stronger between II and III, because there are stronger correlations between the main and interaction effects. This is an example of a more general point: if you run type II / III ANOVAs, you should do everything to reduce correlations between the variables. For categorical variables, one way to do so is to use orthogonal contrasts.
 :::

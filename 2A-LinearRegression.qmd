@@ -1086,29 +1086,58 @@ plot(loght ~ temp, data = plantHeight)
 
 
 1.  Fit a linear model for this relationship. Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?
+
 2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-***1. Residual checks***
+
+***1. Temperature dependence ***
+
+```{r}
+model = lm(loght ~ temp, data = plantHeight)
+```
+
 
 ```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
 
-Looks OK!
+We're seeing a bit of heterosekdasticity, maybe a tiny bit of misfit, otherwise it looks OK! If you want to do something:
+
+* Heteroskedasticity - see next chapter
+* Misfit: could change functional form or use gam
+
+But that doesn't really seem to be a problem, so we can now interpret this model! 
+
+```{r}
+model = lm(loght ~ temp, data = plantHeight)
+summary(model)
+```
 
 ***2. Including "growthform"***
+
+```{r}
+boxplot(loght ~ growthform, data = plantHeight)
+```
+
+Fit the model
 
 ```{r}
 model2 = lm(loght ~ growthform, data = plantHeight)
 summary(model2)
 ```
 
-There is an effect of growth form, however, note that the comparisons are against the growth form fern (intercept), which has only one observation (`table(plantHeight$growthform`)), so it may make sense to re-order the factor in the regression so that you compare, e.g., against Herb (will yield more significant comparisons).
+There is an effect of growth form, however, note that the comparisons are against the growth form fern (intercept), which has only one observation
+
+```{r}
+table(plantHeight$growthform)
+```
+
+so it may make sense to re-order the factor in the regression so that you compare, e.g., against Herb (will yield more significant comparisons).
 
 ```{r}
 plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
@@ -1117,6 +1146,24 @@ summary(model2)
 ```
 
 It would also make sense in this case to follow up with an ANOVA and possible post-hoc tests.
+
+```{r}
+summary(aov(model2))
+```
+
+
+```{r}
+library(multcomp)
+tuk = glht(model2, linfct = mcp(growthform2 = "Tukey"))
+summary(tuk)          # Standard display.
+
+tuk.cld = cld(tuk)    # Letter-based display.
+
+par(mar = c(5,3,10,3))
+plot(tuk.cld)
+```
+
+
 :::
 
 ::: {.callout-caution icon="false"}

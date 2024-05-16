@@ -190,6 +190,8 @@ with(Exam, {
 })
 ```
 
+### Exercise
+
 ::: {.callout-caution icon="false"}
 #### Excercise: a mixed model for plantHeight
 
