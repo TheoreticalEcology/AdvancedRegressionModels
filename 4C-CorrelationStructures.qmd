@@ -200,6 +200,8 @@ plot(res)
 Voila, the residuals look good now!
 :::
 
+### Exercise - hurricanes revisited?
+
 ::: {.callout-caution icon="false"}
 #### Excercise
 
@@ -220,14 +222,17 @@ res2 = recalculateResiduals(res, group = hurricanes$Year)
 testTemporalAutocorrelation(res2, time = unique(hurricanes$Year))
 ```
 
-Add an AR1 term to the model!
+We see that there is a tiny bit of autocorrelation. Note that this autocorrelation is negative, so if we have a higher residual in one year, it is lower in the next year. Normally, we would expect temporal autocorrelation to be positive, so this is a bit weird. It could be an effect of people being more careful if there mere many fatalities in the previous year, but it could also be a statistical fluke.
+
+In any case, as an exercise, we want to address the issue - add an AR1 term to the model!
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r}
+Adding the AR1 to the glmmTMB model
 
+```{r}
 hurricanes$yearF <- factor(hurricanes$Year)
 hurricanes$group = factor(rep(1,nrow(hurricanes)))
 
@@ -237,6 +242,17 @@ fit = glmmTMB(alldeaths ~ scale(MasFem) *
                            data = hurricanes, family = nbinom2)
 summary(fit)
 ```
+
+Careful, we are getting a convergence warning here! You should take these warnings seriously! If we look at the fitted values, we see that we estimate positive temporal autocorrelation, although the plots showed negative autocorrelation. Let's fit a reduced model:
+
+```{r}
+fit = glmmTMB(alldeaths ~ scale(MasFem) 
+                          + ar1(yearF + 0 | group),
+                           data = hurricanes, family = nbinom2)
+summary(fit)
+```
+
+Now we get the right estimates for the autocorrelation, but of course this is not the model we want. You should now go to the optimizer settings and see if you can fix this. If you can't fix it, you could maybe
 :::
 
 ## Spatial Correlation Structures
@@ -319,6 +335,8 @@ summary(fit3)
 ```
 
 If you wonder why there is such a large correlation matrix displayed: both the AR1 and the exp(pos + 0 \| group) structure impose a particular correlation structure on the random effects. Per default, glmmTMB shows correlations of random effects if they are estimated. In the case of the AR1 structure, the programmers apparently surpressed this, and just showed the stimate of the AR1 parameter. Here, however, they didn't implement this feature, so you see the entire correlation structure, which is, admittedly, less helpful and should be changed.
+
+### Exercise - does agriculture influence plant species richness?
 
 ::: {.callout-caution icon="false"}
 #### Plant counts in Regensburg
@@ -506,9 +524,11 @@ Other example: <a href="http://schmitzlab.info/pgls.htmla" target="_blank" rel="
 
 For fitting PGLS with various models, you should also consider the `caper`{.R} package.
 
-::: {.callout-caution icon="false"}
+### Exercise - Does bird song change with altitude?
+
 #### Excercise
 
+::: {.callout-caution icon="false"}
 The following exercise uses data from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
 
 ```{r, eval = T}
@@ -528,7 +548,6 @@ geiger::name.check(reducedTree,dat)
 ```
 
 Task: Check if there is a relationship between altitude at which a species is found and the length of the note in its song, which uses the variables Lnote\~Lnalt
-
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}

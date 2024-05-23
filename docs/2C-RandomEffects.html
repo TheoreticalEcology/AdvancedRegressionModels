@@ -232,7 +232,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2B-ANOVA.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other tests on the LM</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -365,7 +365,10 @@ div.csl-indent {
   <ul>
   <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation"><span class="header-section-number">4.1</span> Motivation</a></li>
   <li><a href="#the-random-intercept-model" id="toc-the-random-intercept-model" class="nav-link" data-scroll-target="#the-random-intercept-model"><span class="header-section-number">4.2</span> The random intercept model</a></li>
-  <li><a href="#the-random-slope-model" id="toc-the-random-slope-model" class="nav-link" data-scroll-target="#the-random-slope-model"><span class="header-section-number">4.3</span> The random slope model</a></li>
+  <li><a href="#the-random-slope-model" id="toc-the-random-slope-model" class="nav-link" data-scroll-target="#the-random-slope-model"><span class="header-section-number">4.3</span> The random slope model</a>
+  <ul class="collapse">
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">4.3.1</span> Exercise</a></li>
+  </ul></li>
   <li><a href="#specifying-and-estimating-mixed-models" id="toc-specifying-and-estimating-mixed-models" class="nav-link" data-scroll-target="#specifying-and-estimating-mixed-models"><span class="header-section-number">4.4</span> Specifying and estimating mixed models:</a>
   <ul class="collapse">
   <li><a href="#lme4-glmmtmb" id="toc-lme4-glmmtmb" class="nav-link" data-scroll-target="#lme4-glmmtmb"><span class="header-section-number">4.4.1</span> lme4 / glmmTMB</a></li>
@@ -695,6 +698,8 @@ Generate equation with the <code>equatiomatic</code> package
 <p><img src="2C-RandomEffects_files/figure-html/chunk_chapter4_chunk28-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<section id="exercise" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="exercise"><span class="header-section-number">4.3.1</span> Exercise</h3>
 <div class="callout callout-style-default callout-caution no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -749,6 +754,7 @@ Solution
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="specifying-and-estimating-mixed-models" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="specifying-and-estimating-mixed-models"><span class="header-section-number">4.4</span> Specifying and estimating mixed models:</h2>
@@ -1418,11 +1424,77 @@ Hand-coded simulated LRT
 </section>
 <section id="variance-partitioning-anova" class="level3" data-number="4.7.5">
 <h3 data-number="4.7.5" class="anchored" data-anchor-id="variance-partitioning-anova"><span class="header-section-number">4.7.5</span> Variance partitioning / ANOVA</h3>
-<p>Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way “correlated”. Moreover, a key question is (see also interpretation above): Do you want to count the random effect variance as “explained”, or “residual”. The most common approach is the hierarchical partitioning proposed by by <em>Nakagawa &amp; Schielzeth 2013, Nakagawa et al.&nbsp;(2017)</em>, which is implemented in the <code>MuMIn</code> package. With this, we can run</p>
+<p>Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way “correlated”.</p>
+<p>First of all, note that you have to be careful because as most S3 functions in R, the anova function is overloaded, so depending on the class of the model object, different functions will be used.</p>
+<p>Let’s look at this for the case of a lmer model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MuMIn)</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">r.squaredGLMM</span>(m2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">detach</span>(<span class="st">"package:lmerTest"</span>, <span class="at">unload=</span><span class="cn">TRUE</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(irrigation)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(yield <span class="sc">~</span> irrigation <span class="sc">+</span> variety <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>field), <span class="at">data =</span> irrigation)</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: yield ~ irrigation + variety + (1 | field)
+   Data: irrigation
+
+REML criterion at convergence: 54.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-0.8751 -0.5615 -0.1090  0.6889  1.0931 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ field    (Intercept) 16.541   4.067   
+ Residual              1.426   1.194   
+Number of obs: 16, groups:  field, 8
+
+Fixed effects:
+             Estimate Std. Error t value
+(Intercept)    38.425      2.952  13.015
+irrigationi2    1.000      4.154   0.241
+irrigationi3    0.600      4.154   0.144
+irrigationi4    4.100      4.154   0.987
+varietyv2       0.750      0.597   1.256
+
+Correlation of Fixed Effects:
+            (Intr) irrgt2 irrgt3 irrgt4
+irrigation2 -0.703                     
+irrigation3 -0.703  0.500              
+irrigation4 -0.703  0.500  0.500       
+varietyv2   -0.101  0.000  0.000  0.000</code></pre>
+</div>
+</div>
+<p>If you run the anova command on this, it will call anova.merMod from package lme4, which runs a sequential (type I) ANOVA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+           npar Sum Sq Mean Sq F value
+irrigation    3 1.6605  0.5535  0.3882
+variety       1 2.2500  2.2500  1.5782</code></pre>
+</div>
+</div>
+<p>See discussions about the exact calculations of this function <a href="https://stats.stackexchange.com/questions/71914/what-does-the-anova-command-do-with-a-lmer-model-object">here</a>.</p>
+<p>If you load lmerTest, the anova command will be overwritten by anova.lmerTest, which performs, as displayed in the output, a type III Anova with df estimated by Satterthwaite’s method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(yield <span class="sc">~</span> irrigation <span class="sc">+</span> variety <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>field), <span class="at">data =</span> irrigation)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+           Sum Sq Mean Sq NumDF DenDF F value Pr(&gt;F)
+irrigation 1.6605  0.5535     3     4  0.3882 0.7685
+variety    2.2500  2.2500     1     7  1.5782 0.2493</code></pre>
+</div>
+</div>
+<p>Arguably, this method is preferable over the based lme4 method if you are interested in the p-values of the model terms.</p>
+<p>Another common question in ANOVA for mixed models is how much R2 is explained by fixed vs.&nbsp;random effects. Philosophically, the main point of discussion here is: Do you want to count the random effect variance as “explained”, or “residual”. In any case, aommon approach is the hierarchical partitioning proposed by by <em>Nakagawa &amp; Schielzeth 2013, Nakagawa et al.&nbsp;(2017)</em>, which is implemented in the <code>MuMIn</code> package. With this, we can run</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MuMIn)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">r.squaredGLMM</span>(m2) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           R2m       R2c
 [1,] 0.3303846 0.4210712</code></pre>
@@ -1444,8 +1516,8 @@ Hand-coded simulated LRT
 <p>The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e.&nbsp;if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive. (integer, 1 - 24).)</p>
 <p>Task: fit an appropriate linear mixed model on this data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(bees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(bees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   72 obs. of  6 variables:
  $ Spobee   : num  6.67 13.33 6.67 6.67 20 ...
@@ -1475,9 +1547,9 @@ Solution
 <li>It is natural to model hive as a random intercept (1|Hive). I don’t expect that the infection ~ spores relationship should be different between hives, but can test for this after fitting the model</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log</span>(Spobee <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">~</span> Infection <span class="sc">+</span> BeesN <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Hive), <span class="at">data =</span> bees)</span>
-<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(<span class="fu">log</span>(Spobee <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">~</span> Infection <span class="sc">+</span> BeesN <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Hive), <span class="at">data =</span> bees)</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -1514,20 +1586,20 @@ Some predictor variables are on very different scales: consider rescaling</code>
 </div>
 <p>Standard residual plots look fine, possible minor evidence for heteroskedasticity</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Let’s have a look at the random effects</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">ranef</span>(fit)</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">ranef</span>(fit)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="672"></p>
+<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(x<span class="sc">$</span>Hive<span class="sc">$</span><span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -1538,9 +1610,9 @@ W = 0.95543, p-value = 0.3537</code></pre>
 </div>
 <p>Looks good. Could also check with DHARMa. The default plot calculates residuals, i.e.&nbsp;residuals based on random effect and residual variation together. This leads to more noise, which, however, I would disregard in this case.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
+<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -1550,9 +1622,9 @@ Scaled residual values: 0.272 0.32 0.26 0.248 0.424 0.06 0.356 0.22 0.292 0.476 
 </div>
 <p>With lme4, you can switch to conditinal residuals by using the re.form syntax of lme4</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid" width="672"></p>
+<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-54-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -1562,11 +1634,11 @@ Scaled residual values: 0.388 0.672 0.372 0.624 0.96 0.008 0.688 0.192 0.568 0.3
 </div>
 <p>Residual plot to check for evidence of a random slope shows that hives are either infected or not, thus doesn’t make sense to add a random slope</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit, </span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">resid</span>(., <span class="at">scaled=</span><span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">fitted</span>(.) <span class="sc">|</span> Hive, </span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">abline =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit, </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">resid</span>(., <span class="at">scaled=</span><span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">fitted</span>(.) <span class="sc">|</span> Hive, </span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">abline =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid" width="672"></p>
+<p><img src="2C-RandomEffects_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </div>
@@ -1577,8 +1649,8 @@ Scaled residual values: 0.388 0.672 0.372 0.624 0.96 0.008 0.688 0.192 0.568 0.3
 <h3 data-number="4.8.2" class="anchored" data-anchor-id="college-student-performance"><span class="header-section-number">4.8.2</span> College Student Performance</h3>
 <p>The GPA (college grade point average) data is a <strong>longitudinal</strong> data set (also named <strong>panel data</strong>, German: “Längsschnittstudie”. A study repeated at several different moments in time, compared to a <strong>cross-sectional study</strong> (German: “Querschnittstudie”) which has several participants at <em>one time</em>). In this data set, 200 college students and their GPA have been followed 6 consecutive semesters. Look at the GPA data set, which can be found in the <code class="sourceCode r">EcoData</code> package:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gpa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gpa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>In this data set, there are GPA measures on 6 consecutive <strong>occasions</strong>, with a <strong>job</strong> status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: The <strong>sex</strong> (1 = male, 2 = female) and the high school <strong>gpa</strong>. There is also a dichotomous student-level outcome variable, which indicates whether a student has been <strong>admitted</strong> to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each <strong>student</strong> and each <strong>year</strong> of observation have an id.</p>
 <p><strong><em>Task</em></strong></p>
@@ -1602,38 +1674,38 @@ Solution
 <div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="co"># initial model with a random intercept and fixed effect structure based on</span></span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="co"># causal assumptions</span></span>
-<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>gpa<span class="sc">$</span>sOccasion <span class="ot">=</span> <span class="fu">scale</span>(gpa<span class="sc">$</span>occasion)</span>
-<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>gpa<span class="sc">$</span>nJob <span class="ot">=</span> <span class="fu">as.numeric</span>(gpa<span class="sc">$</span>job)</span>
-<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>student), <span class="at">data =</span> gpa)</span>
-<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
-<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a><span class="co"># plot seems to show a lot of differences still, so add random slope</span></span>
-<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit, </span>
-<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>     <span class="fu">resid</span>(., <span class="at">scaled=</span><span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">fitted</span>(.) <span class="sc">|</span> student, </span>
-<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">abline =</span> <span class="dv">0</span>)</span>
-<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a><span class="co"># slope + intercept model</span></span>
-<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (sOccasion<span class="sc">|</span>student), <span class="at">data =</span> gpa)</span>
-<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a><span class="co"># checking residuals - heteroskedasticity </span></span>
-<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit)</span>
-<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a><span class="co"># We only learn later how to specify a variable, dispersion, but as a teaser - I'm modelling this using glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with all variance modelling options that we discussed for gls, but random effect specification is different than here</span></span>
-<span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (sOccasion<span class="sc">|</span>student), <span class="at">data =</span> gpa, <span class="at">dispformula =</span> <span class="sc">~</span> sOccasion)</span>
-<span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
-<span id="cb79-27"><a href="#cb79-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-28"><a href="#cb79-28" aria-hidden="true" tabindex="-1"></a><span class="co"># unfortunately, the dispersion in this model cannot be reliably checked, because the functions for this are not (yet) implemented in glmmTMB</span></span>
-<span id="cb79-29"><a href="#cb79-29" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">residuals</span>(fit, <span class="at">type =</span> <span class="st">"pearson"</span>) <span class="sc">~</span> <span class="fu">predict</span>(fit)) <span class="co"># not implemented</span></span>
-<span id="cb79-30"><a href="#cb79-30" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
-<span id="cb79-31"><a href="#cb79-31" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T) </span>
-<span id="cb79-32"><a href="#cb79-32" aria-hidden="true" tabindex="-1"></a><span class="co"># still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a><span class="co"># initial model with a random intercept and fixed effect structure based on</span></span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a><span class="co"># causal assumptions</span></span>
+<span id="cb85-6"><a href="#cb85-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-7"><a href="#cb85-7" aria-hidden="true" tabindex="-1"></a>gpa<span class="sc">$</span>sOccasion <span class="ot">=</span> <span class="fu">scale</span>(gpa<span class="sc">$</span>occasion)</span>
+<span id="cb85-8"><a href="#cb85-8" aria-hidden="true" tabindex="-1"></a>gpa<span class="sc">$</span>nJob <span class="ot">=</span> <span class="fu">as.numeric</span>(gpa<span class="sc">$</span>job)</span>
+<span id="cb85-9"><a href="#cb85-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-10"><a href="#cb85-10" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>student), <span class="at">data =</span> gpa)</span>
+<span id="cb85-11"><a href="#cb85-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb85-12"><a href="#cb85-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-13"><a href="#cb85-13" aria-hidden="true" tabindex="-1"></a><span class="co"># plot seems to show a lot of differences still, so add random slope</span></span>
+<span id="cb85-14"><a href="#cb85-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit, </span>
+<span id="cb85-15"><a href="#cb85-15" aria-hidden="true" tabindex="-1"></a>     <span class="fu">resid</span>(., <span class="at">scaled=</span><span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">fitted</span>(.) <span class="sc">|</span> student, </span>
+<span id="cb85-16"><a href="#cb85-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">abline =</span> <span class="dv">0</span>)</span>
+<span id="cb85-17"><a href="#cb85-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-18"><a href="#cb85-18" aria-hidden="true" tabindex="-1"></a><span class="co"># slope + intercept model</span></span>
+<span id="cb85-19"><a href="#cb85-19" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lmer</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (sOccasion<span class="sc">|</span>student), <span class="at">data =</span> gpa)</span>
+<span id="cb85-20"><a href="#cb85-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-21"><a href="#cb85-21" aria-hidden="true" tabindex="-1"></a><span class="co"># checking residuals - heteroskedasticity </span></span>
+<span id="cb85-22"><a href="#cb85-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit)</span>
+<span id="cb85-23"><a href="#cb85-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-24"><a href="#cb85-24" aria-hidden="true" tabindex="-1"></a><span class="co"># We only learn later how to specify a variable, dispersion, but as a teaser - I'm modelling this using glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with all variance modelling options that we discussed for gls, but random effect specification is different than here</span></span>
+<span id="cb85-25"><a href="#cb85-25" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(gpa <span class="sc">~</span> sOccasion<span class="sc">*</span>sex <span class="sc">+</span> nJob <span class="sc">+</span> (sOccasion<span class="sc">|</span>student), <span class="at">data =</span> gpa, <span class="at">dispformula =</span> <span class="sc">~</span> sOccasion)</span>
+<span id="cb85-26"><a href="#cb85-26" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb85-27"><a href="#cb85-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-28"><a href="#cb85-28" aria-hidden="true" tabindex="-1"></a><span class="co"># unfortunately, the dispersion in this model cannot be reliably checked, because the functions for this are not (yet) implemented in glmmTMB</span></span>
+<span id="cb85-29"><a href="#cb85-29" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">residuals</span>(fit, <span class="at">type =</span> <span class="st">"pearson"</span>) <span class="sc">~</span> <span class="fu">predict</span>(fit)) <span class="co"># not implemented</span></span>
+<span id="cb85-30"><a href="#cb85-30" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb85-31"><a href="#cb85-31" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(fit, <span class="at">plot =</span> T) </span>
+<span id="cb85-32"><a href="#cb85-32" aria-hidden="true" tabindex="-1"></a><span class="co"># still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -1888,7 +1960,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./2B-ANOVA.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other hypotheses</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ANOVA and other tests on the LM</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

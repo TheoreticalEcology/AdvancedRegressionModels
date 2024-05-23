@@ -1028,3 +1028,19 @@ str(snouter)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 :::
+
+### Volcanoe Island
+
+Option 2: Analyse ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (including residual checks and everything) to understand the predictors that determine the value of 
+
+windObs (numeric) 
+lizards (1/0)
+beetles2 (counts)
+survived (k/n)
+There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (RE, overdispersion, zero-inflation, spatial autocorrelation) could appear in this data. 
+
+Hint: it is possible that the possibility to observe a species depends on wind, and it is possible that lizards eat beetles, so you can also consider these variables (or predictions for these variables) as predictors of the others.
+
+Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survived, all-survived) ~ predictor, data = data, family = "binomial")
+
+

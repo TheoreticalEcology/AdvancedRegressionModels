@@ -771,11 +771,43 @@ mean(nullDistribution > observedLR)
 
 ### Variance partitioning / ANOVA
 
-Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". Moreover, a key question is (see also interpretation above): Do you want to count the random effect variance as "explained", or "residual". The most common approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn` package. With this, we can run
+Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". 
+
+First of all, note that you have to be careful because as most S3 functions in R, the anova function is overloaded, so depending on the class of the model object, different functions will be used.
+
+Let's look at this for the case of a lmer model.
+
+```{r, message=F, warning=F}
+library(faraway)
+library(lme4)
+detach("package:lmerTest", unload=TRUE)
+data(irrigation)
+fit <- lmer(yield ~ irrigation + variety + (1|field), data = irrigation)
+summary(fit)
+```
+
+If you run the anova command on this, it will call anova.merMod from package lme4, which runs a sequential (type I) ANOVA.
+
+```{r}
+anova(fit)
+```
+
+See discussions about the exact calculations of this function [here](https://stats.stackexchange.com/questions/71914/what-does-the-anova-command-do-with-a-lmer-model-object).
+
+If you load lmerTest, the anova command will be overwritten by anova.lmerTest, which performs, as displayed in the output, a type III Anova with df estimated by Satterthwaite's method.
+
+```{r, message=F, warning=F}
+library(lmerTest)
+fit <- lmer(yield ~ irrigation + variety + (1|field), data = irrigation)
+anova(fit)
+```
+
+Arguably, this method is preferable over the based lme4 method if you are interested in the p-values of the model terms.
+
+Another common question in ANOVA for mixed models is how much R2 is explained by fixed vs. random effects. Philosophically, the main point of discussion here is: Do you want to count the random effect variance as "explained", or "residual". In any case, aommon approach is the hierarchical partitioning proposed by by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn` package. With this, we can run
 
 ```{r chunk_chapter4_chunk33, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(MuMIn)
-
 r.squaredGLMM(m2) 
 ```
 
