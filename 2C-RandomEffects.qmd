@@ -54,17 +54,17 @@ Because grouping naturally occurs in any type of experimental data (batches, blo
 Most models that are used in practice are mixed models
 :::
 
-## The random intercept model
+## Specifying and estimating mixed models:
+
+### The random intercept model
 
 The simplest random effect structure is the random intercept model.
 
-::: callout-note
 Each random effect model has a fixed counterpart. For the random intercept model, this counterpart is the model we already saw, with school as a fixed effect
 
 ```{r}
 mod0b = lm(normexam ~ standLRT + sex + school , data = Exam)
 ```
-:::
 
 The random intercept model is practically identical to the model above, except that it assumes that the school effects come from a common normal distribution. The model can be estimated with `lme4::lmer`
 
@@ -97,12 +97,10 @@ with(Exam, {
 
 We can see that there is the same slope, but a different intercept per school.
 
-::: callout-note
 The RE effectively "centers" the categorical predictor - unlike for the fixed effect model, where the intercept would be interpreted as the value for the first school, the intercept in the random effect model is the mean across all schools, and the REs measure the deviation of the individual school from the mean. It should be stressed, however, that this is a welcome consequence, but not the main motivation, for the RE structure.
-:::
 
 ::: {.callout-tip collapse="true"}
-## Generate equation with the `equatiomatic` package
+#### Generate equation with the `equatiomatic` package
 
 We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random intercept model:
 
@@ -120,7 +118,7 @@ $$
 $$
 :::
 
-## The random slope model
+### The random slope model
 
 A second effect that we could imagine is that the effect of `standLRT`{.R} is different for each school. As a fixed effect model, we would express this, for example, as `lm(normexam ~ standLRT*school + sex)`{.R}
 
@@ -134,7 +132,7 @@ summary(mod2)
 Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes come from a normal distribution. The results is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
 
 ::: {.callout-tip collapse="true"}
-## Generate equation with the `equatiomatic` package
+#### Generate equation with the `equatiomatic` package
 
 We can use the `equatiomatic` package to print LaTeX code for the underlying equation of our random slope model:
 
@@ -190,50 +188,9 @@ with(Exam, {
 })
 ```
 
-### Exercise
+### Mixed models in different packages
 
-::: {.callout-caution icon="false"}
-#### Excercise: a mixed model for plantHeight
-
-Take plantHeight model that we worked with already:
-
-```{r, eval=FALSE}
-library(EcoData)
-
-oldModel <- lm(loght ~ temp, data = plantHeight)
-summary(oldModel)
-```
-
-We have one observation per species. Consider that the relationship height \~ temp may be different for each family. Some families may have larger plants in general (random intercept), but it may also be that the temperature relationship changes per family (random slope). Run these two models for our problem.
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r, eval = F}
-# Random intercept model
-
-library(lme4)
-library(lmerTest)
-randomInterceptModel <- lmer(loght ~ temp + (1|Family), data = plantHeight)
-summary(randomInterceptModel)
-
-# Random slope model
-
-randomSlopeModel <- lmer(loght ~ temp + (temp | Family), data = plantHeight)
-summary(randomSlopeModel)
-
-# scaling helps the optimizer
-plantHeight$sTemp = scale(plantHeight$temp)
-
-randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
-summary(randomSlopeModel)
-```
-:::
-
-## Specifying and estimating mixed models:
-
-### lme4 / glmmTMB
+#### lme4 / glmmTMB
 
 There are a large number of packages to fit mixed models in R. The main packages that you use, because they are most user-friendly and stable, are lme4 and glmmTMB. They share more or less the same syntax for random effects.
 
@@ -286,7 +243,7 @@ summary(m3)
 If you check the summary of m3, now we also have 4055 levels for uniqueStudent, and the results are identical to the nested model version.
 :::
 
-### nlme
+#### nlme
 
 nlme is a classic package for fitting (nonlinear) mixed effect models. I would argue that it is largely superseded by lme4 and glmmTMB, but it still offers a few special tricks that are not available in either lme4 or glmmTMB. A linear mixed model with random intercept in nlme looks like this
 
@@ -294,7 +251,7 @@ nlme is a classic package for fitting (nonlinear) mixed effect models. I would a
 nlme::lme(Resp ~ Predictor, random=~1|Group)
 ```
 
-### mgcv
+#### mgcv
 
 If you want to use GAMs, there is basically only mgcv (or brms, if you're willing to go Bayesian).
 
@@ -302,7 +259,7 @@ If you want to use GAMs, there is basically only mgcv (or brms, if you're willin
 mgcv::gam(Resp ~ Predictor + s(Group, bs = 're'))
 ```
 
-### brms
+#### brms
 
 brms is a very interesting package that allows to estimate mixed models via Bayesian Inference with STAN.
 
@@ -311,6 +268,70 @@ brms::brm(Resp ~ Predictor + (1|Group),
          data = Owls , family = poisson)
 summary(mod1)
 ```
+
+### REML vs. MLE
+
+Frequentist linear mixed models are usually estimated with REML = restricted maximum likelihood, rather than with classical MLE. Most packages allow you to switch between REML and MLE. The motivation for REML is that for limited data (non-asymptotics), the MLE for variance components of the model are typically negatively biased, because the uncertainty of the fixed effects is not properly accounted for. If you go through the mathematics, you can make an analogy to the bias-corrected sampling variance [@bates2011computational].
+
+REML uses a mathematical transformation to first obtain the residuals conditional on the fixed effect components of the model (thus accounting for the df lost in this part), and then estimating variance components. One can view REML as a special case of an expectation maximization (EM) algorithm.
+
+Most packages offer an option to switch between REML and ML estimation of the model. In lme4, this is done via
+
+```{r, echo = F}
+m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
+m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam, REML = F)
+```
+
+Regarding when to use what, use the following rule of thumb:
+
+-   Per default, use REML
+
+-   Switch to ML if you use downstream any model functions that use the likelihood, unless you are really sure that the calculation you do is also valid for REML.
+
+::: callout-tip
+In later in this chapter, we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend to stick to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see below).
+:::
+
+### Exercise
+
+::: {.callout-caution icon="false"}
+#### Excercise: a mixed model for plantHeight
+
+Take plantHeight model that we worked with already:
+
+```{r, eval=FALSE}
+library(EcoData)
+
+oldModel <- lm(loght ~ temp, data = plantHeight)
+summary(oldModel)
+```
+
+We have one observation per species. Consider that the relationship height \~ temp may be different for each family. Some families may have larger plants in general (random intercept), but it may also be that the temperature relationship changes per family (random slope). Run these two models for our problem.
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r, eval = F}
+# Random intercept model
+
+library(lme4)
+library(lmerTest)
+randomInterceptModel <- lmer(loght ~ temp + (1|Family), data = plantHeight)
+summary(randomInterceptModel)
+
+# Random slope model
+
+randomSlopeModel <- lmer(loght ~ temp + (temp | Family), data = plantHeight)
+summary(randomSlopeModel)
+
+# scaling helps the optimizer
+plantHeight$sTemp = scale(plantHeight$temp)
+
+randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
+summary(randomSlopeModel)
+```
+:::
 
 ## Advantages and interpretation of random effects
 
@@ -479,6 +500,8 @@ x = ranef(mod1)
 qqnorm(x$school$`(Intercept)`)
 ```
 
+Question is how bad can this be? [@neuhaus2013] report some simulation results that suggest that fixed effect slopes (bias, coverage) are relatively robust to misspecification in the RE distribution, which is re-assuring.
+
 ### Correlation of REs with predictors
 
 As mentioned above, REs can sometimes absorb misfit of the fixed effect structure. It can therefore be useful to check if there is a correlation with the predictors, especially if you only check conditional residuals. Example:
@@ -498,7 +521,7 @@ plot(mod1, resid(., scaled=TRUE) ~ standLRT | school, abline = 0)
 
 Looks still good to me, but if we think we see a pattern here, we should introduce a random slope.
 
-## Problems With Mixed Models
+## Downstream Analysis of  Mixed Models
 
 Specifying mixed models is quite simple, however, there is a large list of (partly quite complicate) issues in their practical application. Here, a (incomplete) list:
 
@@ -637,29 +660,6 @@ plot(boot)
 confint(boot)
 ```
 
-### REML vs. MLE
-
-Frequentist linear mixed models are usually estimated with REML = restricted maximum likelihood, rather than with classical MLE. Most packages allow you to switch between REML and MLE. The motivation for REML is that for limited data (non-asymptotics), the MLE for variance components of the model are typically negatively biased, because the uncertainty of the fixed effects is not properly accounted for. If you go through the mathematics, you can make an analogy to the bias-corrected sampling variance [@bates2011computational].
-
-REML uses a mathematical transformation to first obtain the residuals conditional on the fixed effect components of the model (thus accounting for the df lost in this part), and then estimating variance components. One can view REML as a special case of an expectation maximization (EM) algorithm.
-
-Most packages offer an option to switch between REML and ML estimation of the model. In lme4, this is done via
-
-```{r, echo = F}
-m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
-m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam, REML = F)
-```
-
-Regarding when to use what, use the following rule of thumb:
-
--   Per default, use REML
-
--   Switch to ML if you use downstream any model functions that use the likelihood, unless you are really sure that the calculation you do is also valid for REML.
-
-::: callout-tip
-In the next part of the book, we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend to stick to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see below).
-:::
-
 ### Model selection and hypothesis tests with mixed models
 
 For model selection, the degrees of freedom problem means that normal model selection techniques such as AIC or naive LRTs don't work on the random effect structure, because they don't count the correct degrees of freedom.
@@ -771,7 +771,7 @@ mean(nullDistribution > observedLR)
 
 ### Variance partitioning / ANOVA
 
-Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated". 
+Also variance partitioning in mixed models is a bit tricky, as (see type I/II/III ANOVA discussion) fixed and random components of the model are in some way "correlated".
 
 First of all, note that you have to be careful because as most S3 functions in R, the anova function is overloaded, so depending on the class of the model object, different functions will be used.
 
@@ -808,7 +808,7 @@ Another common question in ANOVA for mixed models is how much R2 is explained by
 
 ```{r chunk_chapter4_chunk33, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(MuMIn)
-r.squaredGLMM(m2) 
+r.squaredGLMM(fit) 
 ```
 
 Interpretation
@@ -817,6 +817,94 @@ Interpretation
 -   **R^2^c**: Conditional R^2^ value associated with fixed effects plus the random effects.
 
 It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R^2^ values under a cross-validation.
+
+### Variance partition coefficients (VPCs)
+
+An interesting variation of using mixed models is to use them as an alternative to ANOVA to understand how much variation in a response variable is explained by different factor variables (for applications in ecology, see [@leite2024]). Consider the following example of simulated data, where I created 3 categorical variables with an increasing number of levels per variable, and essentially a "normal" distribution of effects for the different levels of those. In other words, these are exactly the assumptions of a mixed model, where we have 4 normally distributed errors: 3 for the 3 groups (with different group sizes) and 1 residual error, all with the same sd of 1.
+
+```{r}
+set.seed(123)
+
+k1 = 4
+k2 = 8
+k3 = 20
+rep = 5
+
+RE1 = rnorm(k1)
+RE2 = rnorm(k2)
+RE3 = rnorm(k3)
+
+dat = expand.grid(1:k1,1:k2,1:k3, 1:rep)
+dat$y = RE1[dat$Var1] + RE2[dat$Var2] + RE3[dat$Var3] + rnorm(nrow(dat))
+dat[1:4] <- lapply(dat[1:4], as.factor)
+```
+
+To see how much variation is created by each of the factors, the standard way would be to fit an ANOVA (see section on ANOVA if you don't recall the details). As the design is perfectly balanced and orthogonal, it doesn't matter if we fit type I,II,III ANOVA:
+
+```{r}
+summary(aov(y ~ Var1+Var2+Var3, data = dat))
+# car::Anova(lm(y ~ Var1+Var2+Var3, data = dat)) # identical
+```
+
+The alternative would be to fit a random effect model with the 3 grouping variables as random intercepts
+
+```{r}
+library(lme4)
+library(lmerTest)
+fit <- lmer(y ~ (1|Var1) + (1|Var2) + (1|Var3), data = dat)
+```
+
+After having fit the model, we can look at the the random effect table
+
+```{r}
+x = VarCorr(fit)
+x
+```
+
+Which pretty much already looks like an ANOVA table. If you standardize the RE variances to sum of all variance, you obtain the so-called **variance partition coefficients (VPCs).**, which are often seen as an alternative to ANOVA
+
+```{r}
+x = data.frame(x)
+x$vcov / sum(x$vcov)
+```
+
+::: callout-important
+Note that the results of a VPC can be very different from an ANOVA. In an ANOVA, you look at the variance explained in the response. In VPCs, you compare the the variance between different groups in the data. This will tend to be similar to ANOVA if ob observations are balanced in groups, but it can be very different if they are not. In this behavior, VPCs resemble standardized effect sizes (which can also differ in ranking variables from ANOVA if the distribution of the predictor is very skewed). I would therefore recommend to interpret VPCs as "effect sizes of categorical predictors", rather than as ANOVA shares.
+:::
+
+We can get (note: approximate) p-values on the terms by running a random effect anova
+
+```{r}
+lmerTest::ranova(fit)
+```
+
+The quality of the p-value approximation is somewhat unclear. Alternatively, you could run non-parametric simulation-based LRTs (see section on testing on the RE structure). In a frequentist framework, it will be difficult to obtain CIs on the VPCs, unless you bootstrap. Alternatively, you could run this in a Bayesian framework via brms.
+
+As a final step, let's test out if we test for factors that did not have an effect in the model. In this case, I create a 3 two-way interaction as well as another RE on the factor replicate, which did not have an effect on the response
+
+```{r, warning=F, message = F}
+dat$Var12 = factor(paste(dat$Var1,dat$Var2))
+dat$Var23 = factor(paste(dat$Var2,dat$Var3))
+dat$Var13 = factor(paste(dat$Var1,dat$Var3))
+
+summary(aov(y ~ (Var1+Var2+Var3)^2 +Var4, data = dat))
+
+fit <- lmer(y ~ (1|Var1) + (1|Var2) + (1|Var3) + (1|Var12) +  + (1|Var23) + (1|Var13) +  (1|Var4)  , data = dat)
+VarCorr(fit)
+lmerTest::ranova(fit)
+```
+
+In this case, both methods attribute some variation to the null terms, but also both methods realize that these terms are (mostly) n.s., which is re-assuring! Ther term V12 is around 0.05, significant in ANOVA and n.s. in VPC, suggesting maybe that the VPC could be a bit more conservative, although I suspect that this is highly context and package dependent (as different packages fit the REs differently). Note that I have surpressed boundary / convergence warnings in the fit of the mixed model, which should be of course solved in a real application.
+
+::: callout-tip
+#### VPC vs. ANOVA
+
+So, when and why should you prefer VPC over ANOVA?
+
+A considerable advantage of the VPCs over ANOVA is that they compute orders of magnitudes faster than a standard anova in large datasets with many group levels.
+
+Disadvantages are measures of uncertainty (p-values, CIs) may be problematic to obtain. Moreover, you should also note that the estimation of the VPCs depends on the ability of the mixed models to estimate the correct RE variance. To obtain unbiased estimates of the RE variance is notoriously difficult, as evidenced by the different methods to estimate the RE variances in different packages, as well as the REML / ML estimation debate (see section on REML). The issues are usually not a primary concern, because we usually do not interpret the RE variances directly, but they are only indirectly used to account for the group level effects. In the VPC analysis, however, they are directly used, and thus particular care should be taken, e.g., in checking if RE distributions are indeed normal etc. (see, e.g., section on residual checks for mixed models).
+:::
 
 ## Case studies
 
