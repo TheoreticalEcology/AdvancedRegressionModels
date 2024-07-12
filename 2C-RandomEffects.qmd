@@ -521,7 +521,7 @@ plot(mod1, resid(., scaled=TRUE) ~ standLRT | school, abline = 0)
 
 Looks still good to me, but if we think we see a pattern here, we should introduce a random slope.
 
-## Downstream Analysis of  Mixed Models
+## Downstream Analysis of Mixed Models
 
 Specifying mixed models is quite simple, however, there is a large list of (partly quite complicate) issues in their practical application. Here, a (incomplete) list:
 
