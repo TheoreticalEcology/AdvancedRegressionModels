@@ -14,7 +14,6 @@ The aim of this book is to introduce you to the main techniques and concepts tha
 2.  **Model Choice** The second part covers model choice, including how to handle missing data, model selection, causal inference and non-parametric methods
 3.  **Modelling the Distribution** The third part of the book is about modelling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs and modelling variance and correlation of residuals.
 
-
 ## Your R System
 
 In this course, we work with the combination of R + RStudio.
@@ -39,15 +38,19 @@ install.packages(LIBRARY)
 
 Exchange "LIBRARY" with the name of the library you want to install. The default is to search the package in CRAN, but you can specify other repositories or file locations in the function. For Windows / Mac, R should work out of the box. For other UNIX based systems, may also need to install
 
-    build-essential
-    gfortran
-    libmagick++-dev
-    r-base-dev
-    cmake
+```         
+build-essential
+gfortran
+libmagick++-dev
+r-base-dev
+cmake
+```
 
 If you are new to installing packages on Debian / Ubuntu, etc., type the following:
 
-    sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
+```         
+sudo apt update && sudo apt install -y --install-recommends build-essential gfortran libmagick++-dev r-base-dev cmake
+```
 :::
 
 In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, if you don't have the devtools package installed already, first install devtools from CRAN by running
@@ -72,13 +75,13 @@ As mentioned in the preface, this book assumes that you have basic knowledge abo
 1.  **base R**, which uses functions such as `plot()`, `apply()`, `aggregate()`
 2.  **tidyverse**, with packages such as **dplyr** and **ggplot2**, which provide functions such as `mutate()`, `filter()` and heavily rely on the `%>%` pipe operator.
 
-There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2. To keep it simple, however, all code in this course uses base R. 
+There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2. To keep it simple, however, all code in this course uses base R.
 
 ::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
 
-In the following box, you will find an exercise that asks you to perform basic plots and data manipulations. To text yourself, please check that you can perform these operations. If you have problems, you should study an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)) before continuing with this text. 
+In the following box, you will find an exercise that asks you to perform basic plots and data manipulations. To text yourself, please check that you can perform these operations. If you have problems, you should study an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)) before continuing with this text.
 
 ::: {.callout-caution icon="false"}
 #### Exercise - Data wrangling
@@ -142,7 +145,7 @@ dat = airquality
 6.  Single continuous variables can be visualized using a histogram (`hist)` , for two variables, it depends on their data types:
 
     | Scenario                     | Which plot                    | R command                                                                            |
-    |------------------|------------------|------------------------------------|
+    |------------------------------|-------------------------------|--------------------------------------------------------------------------------------|
     | Numeric                      | Histogram or boxplot          | `hist()` and`boxplot`                                                                |
     | Numeric with numeric         | Scatterplot                   | `plot`                                                                               |
     | Numeric with categorical     | Boxplot                       | `boxplot(numeric~categorical)`                                                       |
