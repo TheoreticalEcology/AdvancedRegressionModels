@@ -118,6 +118,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="citation_reference" content="citation_title=A biologist’s guide to model selection and causal inference;,citation_author=Zachary M Laubach;,citation_author=Eleanor J Murray;,citation_author=Kim L Hoke;,citation_author=Rebecca J Safran;,citation_author=Wei Perng;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_issue=1943;,citation_volume=288;,citation_journal_title=Proceedings of the Royal Society B;,citation_publisher=The Royal Society;">
 <meta name="citation_reference" content="citation_title=Control of confounding and reporting of results in causal inference studies. Guidance for authors from editors of respiratory, sleep, and critical care journals;,citation_author=David J Lederer;,citation_author=Scott C Bell;,citation_author=Richard D Branson;,citation_author=James D Chalmers;,citation_author=Rachel Marshall;,citation_author=David M Maslove;,citation_author=David E Ost;,citation_author=Naresh M Punjabi;,citation_author=Michael Schatz;,citation_author=Alan R Smyth;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=16;,citation_journal_title=Annals of the American Thoracic Society;,citation_publisher=American Thoracic Society;">
 <meta name="citation_reference" content="citation_title=A note on model selection using information criteria for general linear models estimated using REML;,citation_author=Arunas Petras Verbyla;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/anzs.12254;,citation_issue=1;,citation_doi=10.1111/anzs.12254;,citation_volume=61;,citation_language=en;,citation_journal_title=Australian &amp;amp;amp; New Zealand Journal of Statistics;">
+<meta name="citation_reference" content="citation_title=Estimation of covariate effects in generalized linear mixed models with a misspecified distribution of random intercepts and slopes;,citation_author=John M. Neuhaus;,citation_author=Charles E. McCulloch;,citation_author=Ross Boylan;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.5682;,citation_issue=14;,citation_doi=10.1002/sim.5682;,citation_volume=32;,citation_language=en;,citation_journal_title=Statistics in Medicine;">
+<meta name="citation_reference" content="citation_title=Major axes of variation in tree demography across global forests;,citation_author=Melina de Souza Leite;,citation_author=Sean M. McMahon;,citation_author=Paulo Inácio Prado;,citation_author=Stuart J. Davies;,citation_author=Alexandre Adalardo Oliveira;,citation_author=Hannes P. De Deurwaerder;,citation_author=Salomón Aguilar;,citation_author=Kristina J. Anderson-Teixeira;,citation_author=Nurfarah Aqilah;,citation_author=Norman A. Bourg;,citation_author=Warren Y. Brockelman;,citation_author=Nicolas Castaño;,citation_author=Chia-Hao Chang-Yang;,citation_author=Yu-Yun Chen;,citation_author=George Chuyong;,citation_author=Keith Clay;,citation_author=Álvaro Duque;,citation_author=Sisira Ediriweera;,citation_author=Corneille E. N. Ewango;,citation_author=Gregory Gilbert;,citation_author=I. a. U. N. Gunatilleke;,citation_author=C. V. S. Gunatilleke;,citation_author=Robert Howe;,citation_author=Walter Huaraca Huasco;,citation_author=Akira Itoh;,citation_author=Daniel J. Johnson;,citation_author=David Kenfack;,citation_author=Kamil Král;,citation_author=Yao Tze Leong;,citation_author=James A. Lutz;,citation_author=Jean-Remy Makana;,citation_author=Yadvinder Malhi;,citation_author=William J. McShea;,citation_author=Mohizah Mohamad;,citation_author=Musalmah Nasardin;,citation_author=Anuttara Nathalang;,citation_author=Geoffrey Parker;,citation_author=Renan Parmigiani;,citation_author=Rolando Pérez;,citation_author=Richard P. Phillips;,citation_author=Pavel Šamonil;,citation_author=I-Fang Sun;,citation_author=Sylvester Tan;,citation_author=Duncan Thomas;,citation_author=Jill Thompson;,citation_author=María Uriarte;,citation_author=Amy Wolf;,citation_author=Jess Zimmerman;,citation_author=Daniel Zuleta;,citation_author=Marco D. Visser;,citation_author=Lisa Hülsmann;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/ecog.07187;,citation_issue=6;,citation_doi=10.1111/ecog.07187;,citation_volume=2024;,citation_language=en;,citation_journal_title=Ecography;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -1049,19 +1051,22 @@ an__S_1__:O  0.225 -0.526     0.089  0.034 -0.845 -0.021      0.046    </code></
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.25. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.25. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.5. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.5. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
@@ -1093,19 +1098,22 @@ alternative hypothesis: two.sided</code></pre>
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.25. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.25. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.5. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.5. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): basis dimension, k, increased to minimum possible</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. Will be ommited in plots and significance calculations.</code></pre>
+<pre><code>
+ DHARMa: qgam was unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid" width="672"></p>
@@ -1277,8 +1285,8 @@ Solution using brms
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000262 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.62 seconds.
+Chain 1: Gradient evaluation took 0.000458 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.58 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1295,15 +1303,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 2.284 seconds (Warm-up)
-Chain 1:                1.581 seconds (Sampling)
-Chain 1:                3.865 seconds (Total)
+Chain 1:  Elapsed Time: 2.578 seconds (Warm-up)
+Chain 1:                2.871 seconds (Sampling)
+Chain 1:                5.449 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000167 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.67 seconds.
+Chain 2: Gradient evaluation took 0.000198 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.98 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -1320,15 +1328,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 2.233 seconds (Warm-up)
-Chain 2:                1.737 seconds (Sampling)
-Chain 2:                3.97 seconds (Total)
+Chain 2:  Elapsed Time: 4.067 seconds (Warm-up)
+Chain 2:                2.684 seconds (Sampling)
+Chain 2:                6.751 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 0.00014 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 1.4 seconds.
+Chain 3: Gradient evaluation took 0.000206 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.06 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -1345,15 +1353,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 2.223 seconds (Warm-up)
-Chain 3:                1.76 seconds (Sampling)
-Chain 3:                3.983 seconds (Total)
+Chain 3:  Elapsed Time: 3.459 seconds (Warm-up)
+Chain 3:                3.217 seconds (Sampling)
+Chain 3:                6.676 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 0.000151 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 1.51 seconds.
+Chain 4: Gradient evaluation took 0.000203 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.03 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -1370,9 +1378,9 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 2.231 seconds (Warm-up)
-Chain 4:                1.807 seconds (Sampling)
-Chain 4:                4.038 seconds (Total)
+Chain 4:  Elapsed Time: 3.887 seconds (Warm-up)
+Chain 4:                3.107 seconds (Sampling)
+Chain 4:                6.994 seconds (Total)
 Chain 4: </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2004,15 +2012,13 @@ Solution of multivariate (joint) species distribution model
 <span id="cb121-36"><a href="#cb121-36" aria-hidden="true" tabindex="-1"></a>                 sTemp_Air <span class="sc">+</span> seas_wmo) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>year) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span>  (swater_depth<span class="sc">|</span>coll_date<span class="sc">:</span>Species) <span class="sc">+</span> <span class="fu">exp</span>(<span class="dv">0</span><span class="sc">+</span>numFac<span class="sc">|</span>group) <span class="sc">+</span> <span class="fu">rr</span>(Species <span class="sc">+</span> <span class="dv">0</span><span class="sc">|</span>locality<span class="sc">:</span>site_irn, <span class="at">d =</span> <span class="dv">2</span>),</span>
 <span id="cb121-37"><a href="#cb121-37" aria-hidden="true" tabindex="-1"></a>                 <span class="at">dispformula =</span> <span class="sc">~</span><span class="dv">0</span><span class="sc">+</span>Species<span class="sc">+</span>Species<span class="sc">:</span>(swater_speed_ms <span class="sc">+</span> swater_depth<span class="sc">+</span>sCond),</span>
 <span id="cb121-38"><a href="#cb121-38" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> nbinom2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in finalizeTMB(TMBStruc, obj, fit, h, data.tmb.old): Model convergence
-problem; singular convergence (7). See vignette('troubleshooting'),
-help('diagnose')</code></pre>
-</div>
 </div>
 <p>Unconditional residuals:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(modelJoint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(modelJoint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+</div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -2294,27 +2300,27 @@ Random effects:
 Conditional model:
  Groups   Name        Variance Std.Dev. Corr  
  Site     (Intercept) 0.07148  0.2674         
- Species  (Intercept) 2.53436  1.5920         
-          sAltitude   1.30196  1.1410   -0.44 
+ Species  (Intercept) 2.53442  1.5920         
+          sAltitude   1.30195  1.1410   -0.44 
  Residual                  NA      NA         
 Number of obs: 1729, groups:  Site, 17; Species, 152
 
 Conditional model:
             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  1.51414    0.16437   9.212  &lt; 2e-16 ***
-sSeedMass   -0.28916    0.13762  -2.101   0.0356 *  
+(Intercept)  1.51412    0.16438   9.211  &lt; 2e-16 ***
+sSeedMass   -0.28914    0.13762  -2.101   0.0356 *  
 sSeedShape  -0.24086    0.13832  -1.741   0.0816 .  
-sSeedN      -0.14540    0.10827  -1.343   0.1793    
-sAltitude   -0.59733    0.14562  -4.102 4.09e-05 ***
+sSeedN      -0.14539    0.10827  -1.343   0.1793    
+sAltitude   -0.59734    0.14562  -4.102 4.09e-05 ***
 sHum         0.09070    0.09475   0.957   0.3384    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Dispersion model:
             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  1.02897    0.03713  27.713  &lt; 2e-16 ***
-sAltitude   -0.24685    0.04795  -5.148 2.63e-07 ***
-sHum        -0.03151    0.05259  -0.599    0.549    
+(Intercept)  0.51449    0.01856  27.713  &lt; 2e-16 ***
+sAltitude   -0.12343    0.02397  -5.148 2.63e-07 ***
+sHum        -0.01575    0.02630  -0.599    0.549    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -2335,8 +2341,17 @@ Bonus: Solution for SBDensity (lmm) with phylogenetic correlation structure
 <div class="callout-body-container callout-body">
 <p>Prepare phylogeny:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span>
-<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geiger)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'ape'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    where</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geiger)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'geiger'</code></pre>
@@ -2346,14 +2361,14 @@ Attaching package: 'geiger'</code></pre>
 
     bf</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a>species <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>Species)</span>
-<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>species_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Species =</span> species)</span>
-<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(species_df) <span class="ot">=</span> species</span>
-<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">=</span> <span class="fu">name.check</span>(plantPhylo, species_df)</span>
-<span id="cb143-5"><a href="#cb143-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-6"><a href="#cb143-6" aria-hidden="true" tabindex="-1"></a><span class="co"># drop rest of the species</span></span>
-<span id="cb143-7"><a href="#cb143-7" aria-hidden="true" tabindex="-1"></a>phyl.upd <span class="ot">=</span> <span class="fu">drop.tip</span>(plantPhylo, obj<span class="sc">$</span>tree_not_data)</span>
-<span id="cb143-8"><a href="#cb143-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a>species <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>Species)</span>
+<span id="cb146-2"><a href="#cb146-2" aria-hidden="true" tabindex="-1"></a>species_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Species =</span> species)</span>
+<span id="cb146-3"><a href="#cb146-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(species_df) <span class="ot">=</span> species</span>
+<span id="cb146-4"><a href="#cb146-4" aria-hidden="true" tabindex="-1"></a>obj <span class="ot">=</span> <span class="fu">name.check</span>(plantPhylo, species_df)</span>
+<span id="cb146-5"><a href="#cb146-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb146-6"><a href="#cb146-6" aria-hidden="true" tabindex="-1"></a><span class="co"># drop rest of the species</span></span>
+<span id="cb146-7"><a href="#cb146-7" aria-hidden="true" tabindex="-1"></a>phyl.upd <span class="ot">=</span> <span class="fu">drop.tip</span>(plantPhylo, obj<span class="sc">$</span>tree_not_data)</span>
+<span id="cb146-8"><a href="#cb146-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Phylogenetic tree: phyl.upd 
@@ -2388,22 +2403,22 @@ Phylogenetic tree: phyl.upd
                          Juncaceae
                          Luzula</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the names in the tree and in the data set</span></span>
-<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name.check</span>(phyl.upd, species_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the names in the tree and in the data set</span></span>
+<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name.check</span>(phyl.upd, species_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "OK"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb147"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a>phyl.upd2 <span class="ot">=</span> <span class="fu">multi2di</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a>phyl.upd2 <span class="ot">=</span> <span class="fu">multi2di</span>(phyl.upd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>nlme:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
-<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">=</span> <span class="fu">gls</span>(logSBDensity <span class="sc">~</span></span>
-<span id="cb148-3"><a href="#cb148-3" aria-hidden="true" tabindex="-1"></a>              sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
-<span id="cb148-4"><a href="#cb148-4" aria-hidden="true" tabindex="-1"></a>                 sAltitude <span class="sc">+</span> sHum,</span>
-<span id="cb148-5"><a href="#cb148-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corBrownian</span>(<span class="at">phy =</span> phyl.upd2, <span class="at">form =</span><span class="sc">~</span> Species),</span>
-<span id="cb148-6"><a href="#cb148-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data)</span>
-<span id="cb148-7"><a href="#cb148-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb151-2"><a href="#cb151-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">=</span> <span class="fu">gls</span>(logSBDensity <span class="sc">~</span></span>
+<span id="cb151-3"><a href="#cb151-3" aria-hidden="true" tabindex="-1"></a>              sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
+<span id="cb151-4"><a href="#cb151-4" aria-hidden="true" tabindex="-1"></a>                 sAltitude <span class="sc">+</span> sHum,</span>
+<span id="cb151-5"><a href="#cb151-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corBrownian</span>(<span class="at">phy =</span> phyl.upd2, <span class="at">form =</span><span class="sc">~</span> Species),</span>
+<span id="cb151-6"><a href="#cb151-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> data)</span>
+<span id="cb151-7"><a href="#cb151-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generalized least squares fit by REML
   Model: logSBDensity ~ sSeedMass + sSeedShape + sSeedN + sAltitude +      sHum 
@@ -2443,36 +2458,36 @@ Degrees of freedom: 1729 total; 1723 residual</code></pre>
 </div>
 <p>glmmTMB (not perfect because lack of support of specific phylogenetic correlation structures):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
-<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
-<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
-<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
-<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
-<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
-<span id="cb150-9"><a href="#cb150-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
-<span id="cb150-10"><a href="#cb150-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
-<span id="cb150-11"><a href="#cb150-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
-<span id="cb150-12"><a href="#cb150-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
-<span id="cb150-13"><a href="#cb150-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
-<span id="cb150-14"><a href="#cb150-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
-<span id="cb150-15"><a href="#cb150-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb150-16"><a href="#cb150-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb150-17"><a href="#cb150-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb150-18"><a href="#cb150-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-19"><a href="#cb150-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
-<span id="cb150-20"><a href="#cb150-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
-<span id="cb150-21"><a href="#cb150-21" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(logSBDensity<span class="sc">~</span></span>
-<span id="cb150-22"><a href="#cb150-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
-<span id="cb150-23"><a href="#cb150-23" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
-<span id="cb150-24"><a href="#cb150-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species) <span class="sc">+</span></span>
-<span id="cb150-25"><a href="#cb150-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
-<span id="cb150-26"><a href="#cb150-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sHum,</span>
-<span id="cb150-27"><a href="#cb150-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
-<span id="cb150-28"><a href="#cb150-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
-<span id="cb150-29"><a href="#cb150-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
-<span id="cb150-30"><a href="#cb150-30" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb153-1"><a href="#cb153-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
+<span id="cb153-2"><a href="#cb153-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
+<span id="cb153-3"><a href="#cb153-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb153-4"><a href="#cb153-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
+<span id="cb153-5"><a href="#cb153-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
+<span id="cb153-6"><a href="#cb153-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
+<span id="cb153-7"><a href="#cb153-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb153-8"><a href="#cb153-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
+<span id="cb153-9"><a href="#cb153-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
+<span id="cb153-10"><a href="#cb153-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
+<span id="cb153-11"><a href="#cb153-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
+<span id="cb153-12"><a href="#cb153-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
+<span id="cb153-13"><a href="#cb153-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
+<span id="cb153-14"><a href="#cb153-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
+<span id="cb153-15"><a href="#cb153-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb153-16"><a href="#cb153-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb153-17"><a href="#cb153-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb153-18"><a href="#cb153-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb153-19"><a href="#cb153-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb153-20"><a href="#cb153-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
+<span id="cb153-21"><a href="#cb153-21" aria-hidden="true" tabindex="-1"></a>model5 <span class="ot">=</span> <span class="fu">glmmTMB</span>(logSBDensity<span class="sc">~</span></span>
+<span id="cb153-22"><a href="#cb153-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
+<span id="cb153-23"><a href="#cb153-23" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
+<span id="cb153-24"><a href="#cb153-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species) <span class="sc">+</span></span>
+<span id="cb153-25"><a href="#cb153-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
+<span id="cb153-26"><a href="#cb153-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">dispformula =</span> <span class="sc">~</span>sAltitude <span class="sc">+</span> sHum,</span>
+<span id="cb153-27"><a href="#cb153-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
+<span id="cb153-28"><a href="#cb153-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
+<span id="cb153-29"><a href="#cb153-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb153-30"><a href="#cb153-30" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian  ( identity )
 Formula:          logSBDensity ~ sSeedMass + sSeedShape + sSeedN + sAltitude +  
@@ -2490,158 +2505,158 @@ Conditional model:
  Site     (Intercept)                         1.022    1.011                  
  Species  (Intercept)                         1.022    1.011                  
           sAltitude                           1.022    1.011    0.01          
- dummy    (Intercept)                         2.395    1.547                  
-          SpeciesAchillea_clavennae           2.395    1.547    0.00          
-          SpeciesAchillea_millefolium         2.395    1.547    0.20 0.00     
-          SpeciesAcinos_alpinus               2.395    1.547    0.28 0.00 0.20
-          SpeciesAconitum_tauricum            2.395    1.547    0.31 0.00 0.20
-          SpeciesAdenostyles_alliariae        2.395    1.547    0.00 0.93 0.00
-          SpeciesAgrostis_alpina              2.395    1.547    0.20 0.00 0.34
-          SpeciesAgrostis_capillaris          2.395    1.547    0.31 0.00 0.20
-          SpeciesAjuga_reptans                2.395    1.547    0.31 0.00 0.20
-          SpeciesAlchemilla_vulgaris          2.395    1.547    0.20 0.00 0.26
-          SpeciesAndrosace_chamaejasme        2.395    1.547    0.25 0.00 0.20
-          SpeciesAnemone_nemorosa             2.395    1.547    0.00 0.93 0.00
-          SpeciesAntennaria_dioica            2.395    1.547    0.31 0.00 0.20
-          SpeciesAnthoxanthum_alpinum         2.395    1.547    0.31 0.00 0.20
-          SpeciesAnthoxanthum_odoratum        2.395    1.547    0.00 0.45 0.00
-          SpeciesAnthyllis_vulneraria         2.395    1.547    0.00 0.45 0.00
-          SpeciesAposeris_foetida             2.395    1.547    0.00 0.45 0.00
-          SpeciesArctostaphylos_alpinus       2.395    1.547    0.00 0.45 0.00
-          SpeciesAster_bellidiastrum          2.395    1.547    0.00 0.45 0.00
-          SpeciesBartsia_alpina               2.395    1.547    0.00 0.45 0.00
-          SpeciesBellis_perennis              2.395    1.547    0.00 0.45 0.00
-          SpeciesBetonica_alopecuros          2.395    1.547    0.00 0.45 0.00
-          SpeciesBiscutella_laevigata         2.395    1.547    0.00 0.45 0.00
-          SpeciesBistorta_vivipara            2.395    1.547    0.31 0.00 0.20
-          SpeciesBriza_media                  2.395    1.547    0.31 0.00 0.20
-          SpeciesBuphthalmum_salicifolium     2.395    1.547    0.31 0.00 0.20
-          SpeciesCalamagrostis_varia          2.395    1.547    0.00 0.88 0.00
-          SpeciesCampanula_scheuchzeri        2.395    1.547    0.00 0.88 0.00
-          SpeciesCarduus_defloratus           2.395    1.547    0.20 0.00 0.51
-          SpeciesCarex_caryophyllea           2.395    1.547    0.20 0.00 0.30
-          SpeciesCarex_firma                  2.395    1.547    0.55 0.00 0.20
-          SpeciesCarex_flacca                 2.395    1.547    0.00 0.88 0.00
-          SpeciesCarex_flava                  2.395    1.547    0.40 0.00 0.20
-          SpeciesCarex_ornithopoda            2.395    1.547    0.40 0.00 0.20
-          SpeciesCarex_ornithopodioides       2.395    1.547    0.20 0.00 0.26
-          SpeciesCarex_pallescens             2.395    1.547    0.20 0.00 0.34
-          SpeciesCarex_panicea                2.395    1.547    0.31 0.00 0.20
-          SpeciesCarex_sempervirens           2.395    1.547    0.20 0.00 0.30
-          SpeciesCarex_sylvatica              2.395    1.547    0.31 0.00 0.20
-          SpeciesCarlina_acaulis              2.395    1.547    0.31 0.00 0.20
-          SpeciesCentaurea_jacea              2.395    1.547    0.20 0.00 0.30
-          SpeciesChaerophyllum_hirsutum       2.395    1.547    0.20 0.00 0.34
-          SpeciesClinopodium_vulgare          2.395    1.547    0.00 0.17 0.00
-          SpeciesCrepis_alpestris             2.395    1.547    0.85 0.00 0.20
-          SpeciesCrepis_aurea                 2.395    1.547    0.31 0.00 0.20
-          SpeciesCrepis_biennis               2.395    1.547    0.55 0.00 0.20
-          SpeciesCrepis_terglouensis          2.395    1.547    0.55 0.00 0.20
-          SpeciesCruciata_laevipes            2.395    1.547    0.55 0.00 0.20
-          SpeciesCynosurus_cristatus          2.395    1.547    0.55 0.00 0.20
-          SpeciesDactylis_glomerata           2.395    1.547    0.00 0.88 0.00
-          SpeciesDeschampsia_cespitosa        2.395    1.547    0.00 0.88 0.00
-          SpeciesDryas_octopetala             2.395    1.547    0.00 0.88 0.00
-          SpeciesErica_carnea                 2.395    1.547    0.20 0.00 0.34
-          SpeciesEuphorbia_cyparissias        2.395    1.547    0.20 0.00 0.34
-          SpeciesEuphrasia_montana            2.395    1.547    0.00 0.17 0.00
-          SpeciesEuphrasia_picta              2.395    1.547    0.20 0.00 0.78
-          SpeciesFestuca_alpina               2.395    1.547    0.28 0.00 0.20
-          SpeciesFestuca_pratensis            2.395    1.547    0.28 0.00 0.20
-          SpeciesFestuca_quadriflora          2.395    1.547    0.69 0.00 0.20
-          SpeciesFestuca_rubra                2.395    1.547    0.09 0.00 0.09
-          SpeciesFragaria_vesca               2.395    1.547    0.09 0.00 0.09
-          SpeciesGalium_anisophyllon          2.395    1.547    0.09 0.00 0.09
-          SpeciesGentiana_asclepiadea         2.395    1.547    0.31 0.00 0.20
-          SpeciesGentiana_bavarica            2.395    1.547    0.00 0.88 0.00
-          SpeciesGentiana_pannonica           2.395    1.547    0.00 0.11 0.00
-          SpeciesGentiana_verna               2.395    1.547    0.20 0.00 0.34
-          SpeciesGentianella_aspera           2.395    1.547    0.20 0.00 0.34
-          SpeciesGeranium_sylvaticum          2.395    1.547    0.31 0.00 0.20
-          SpeciesGypsophila_repens            2.395    1.547    0.55 0.00 0.20
-          SpeciesHedysarum_hedysaroides       2.395    1.547    0.55 0.00 0.20
-          SpeciesHelianthemum_nummularium     2.395    1.547    0.31 0.00 0.20
-          SpeciesHelictotrichon_pubescens     2.395    1.547    0.00 0.94 0.00
-          SpeciesHeracleum_austriacum         2.395    1.547    0.00 0.45 0.00
-          SpeciesHieracium_villosum           2.395    1.547    0.31 0.00 0.20
-          SpeciesHippocrepis_comosa           2.395    1.547    0.00 0.88 0.00
-          SpeciesHolcus_lanatus               2.395    1.547    0.40 0.00 0.20
-          SpeciesHomogyne_alpina              2.395    1.547    0.20 0.00 0.26
-          SpeciesHypericum_maculatum          2.395    1.547    0.00 0.45 0.00
-          SpeciesJuncus_monanthos             2.395    1.547    0.00 0.45 0.00
-          SpeciesKnautia_dipsacifolia         2.395    1.547    0.00 0.45 0.00
-          SpeciesLeontodon_hispidus           2.395    1.547    0.25 0.00 0.20
-          SpeciesLeucanthemum_ircutianum      2.395    1.547    0.20 0.00 0.30
-          SpeciesLigusticum_mutellina         2.395    1.547    0.55 0.00 0.20
-          SpeciesLinum_catharticum            2.395    1.547    0.31 0.00 0.20
-          SpeciesLotus_corniculatus           2.395    1.547    0.20 0.00 0.78
-          SpeciesLuzula_glabrata              2.395    1.547    0.09 0.00 0.09
-          SpeciesLuzula_multiflora            2.395    1.547    0.28 0.00 0.20
-          SpeciesLuzula_sylvatica             2.395    1.547    0.28 0.00 0.20
-          SpeciesLysimachia_nemorum           2.395    1.547    0.09 0.00 0.09
-          SpeciesMaianthemum_bifolium         2.395    1.547    0.28 0.00 0.20
-          SpeciesMentha_longifolia            2.395    1.547    0.00 0.17 0.00
-          SpeciesMinuartia_sedoides           2.395    1.547    0.20 0.00 0.30
-          SpeciesMoehringia_ciliata           2.395    1.547    0.31 0.00 0.20
-          SpeciesMyosotis_alpestris           2.395    1.547    0.31 0.00 0.20
-          SpeciesMyosotis_sylvatica           2.395    1.547    0.55 0.00 0.20
-          SpeciesNardus_stricta               2.395    1.547    0.00 0.88 0.00
-          SpeciesOriganum_vulgare             2.395    1.547    0.40 0.00 0.20
-          SpeciesParnassia_palustris          2.395    1.547    0.28 0.00 0.20
-          SpeciesPedicularis_rostratocapitata 2.395    1.547    0.09 0.00 0.09
-          SpeciesPhleum_pratense              2.395    1.547    0.20 0.00 0.21
-          SpeciesPhyteuma_orbiculare          2.395    1.547    0.25 0.00 0.20
-          SpeciesPimpinella_major             2.395    1.547    0.28 0.00 0.20
-          SpeciesPinguicula_alpina            2.395    1.547    0.55 0.00 0.20
-          SpeciesPlantago_lanceolata          2.395    1.547    0.20 0.00 0.34
-          SpeciesPlantago_major               2.395    1.547    0.31 0.00 0.20
-          SpeciesPlantago_media               2.395    1.547    0.31 0.00 0.20
-          SpeciesPoa_alpina                   2.395    1.547    0.31 0.00 0.20
-          SpeciesPoa_pratensis                2.395    1.547    0.00 0.88 0.00
-          SpeciesPoa_trivialis                2.395    1.547    0.00 0.88 0.00
-          SpeciesPolygala_amara               2.395    1.547    0.31 0.00 0.20
-          SpeciesPolygala_chamaebuxus         2.395    1.547    0.31 0.00 0.20
-          SpeciesPolygonatum_verticillatum    2.395    1.547    0.28 0.00 0.20
-          SpeciesPotentilla_aurea             2.395    1.547    0.87 0.00 0.20
-          SpeciesPotentilla_erecta            2.395    1.547    0.36 0.00 0.20
-          SpeciesPrimula_auricula             2.395    1.547    0.00 0.88 0.00
-          SpeciesPrimula_elatior              2.395    1.547    0.25 0.00 0.20
-          SpeciesPrimula_farinosa             2.395    1.547    0.25 0.00 0.20
-          SpeciesPrimula_minima               2.395    1.547    0.85 0.00 0.20
-          SpeciesPrunella_vulgaris            2.395    1.547    0.31 0.00 0.20
-          SpeciesRanunculus_acris             2.395    1.547    0.00 0.97 0.00
-          SpeciesRanunculus_alpestris         2.395    1.547    0.65 0.00 0.20
-          SpeciesRanunculus_montanus          2.395    1.547    0.28 0.00 0.20
-          SpeciesRanunculus_nemorosus         2.395    1.547    0.20 0.00 0.79
-          SpeciesRanunculus_repens            2.395    1.547    0.40 0.00 0.20
-          SpeciesRhinanthus_glacialis         2.395    1.547    0.31 0.00 0.20
-          SpeciesRhodothamnus_chamaecistus    2.395    1.547    0.31 0.00 0.20
-          SpeciesRumex_acetosa                2.395    1.547    0.36 0.00 0.20
-          SpeciesSalix_retusa                 2.395    1.547    0.31 0.00 0.20
-          SpeciesSaxifraga_caesia             2.395    1.547    0.22 0.00 0.20
-          SpeciesScabiosa_lucida              2.395    1.547    0.40 0.00 0.20
-          SpeciesSenecio_abrotanifolius       2.395    1.547    0.25 0.00 0.20
-          SpeciesSesleria_albicans            2.395    1.547    0.25 0.00 0.20
-          SpeciesSilene_acaulis               2.395    1.547    0.20 0.00 0.30
-          SpeciesSoldanella_alpina            2.395    1.547    0.09 0.00 0.09
-          SpeciesSolidago_virgaurea           2.395    1.547    0.00 0.93 0.00
-          SpeciesStellaria_graminea           2.395    1.547    0.00 0.45 0.00
-          SpeciesThesium_alpinum              2.395    1.547    0.00 0.69 0.00
-          SpeciesThymus_pulegioides           2.395    1.547    0.28 0.00 0.20
-          SpeciesTofieldia_calyculata         2.395    1.547    0.00 0.88 0.00
-          SpeciesTofieldia_pusilla            2.395    1.547    0.55 0.00 0.20
-          SpeciesTrifolium_pratense           2.395    1.547    0.31 0.00 0.20
-          SpeciesTrifolium_repens             2.395    1.547    0.00 0.88 0.00
-          SpeciesTrollius_europaeus           2.395    1.547    0.63 0.00 0.20
-          SpeciesVaccinium_myrtillus          2.395    1.547    0.31 0.00 0.20
-          SpeciesVaccinium_vitis-idaea        2.395    1.547    0.31 0.00 0.20
-          SpeciesValeriana_saxatilis          2.395    1.547    0.28 0.00 0.20
-          SpeciesVeratrum_album               2.395    1.547    0.31 0.00 0.20
-          SpeciesVeronica_aphylla             2.395    1.547    0.20 0.00 0.34
-          SpeciesVeronica_chamaedrys          2.395    1.547    0.00 0.11 0.00
-          SpeciesVicia_sepium                 2.395    1.547    0.90 0.00 0.20
-          SpeciesViola_biflora                2.395    1.547    0.40 0.00 0.20
-          SpeciesWillemetia_stipitata         2.395    1.547    0.09 0.00 0.09
+ dummy    (Intercept)                         2.394    1.547                  
+          SpeciesAchillea_clavennae           2.394    1.547    0.00          
+          SpeciesAchillea_millefolium         2.394    1.547    0.20 0.00     
+          SpeciesAcinos_alpinus               2.394    1.547    0.28 0.00 0.20
+          SpeciesAconitum_tauricum            2.394    1.547    0.31 0.00 0.20
+          SpeciesAdenostyles_alliariae        2.394    1.547    0.00 0.93 0.00
+          SpeciesAgrostis_alpina              2.394    1.547    0.20 0.00 0.34
+          SpeciesAgrostis_capillaris          2.394    1.547    0.31 0.00 0.20
+          SpeciesAjuga_reptans                2.394    1.547    0.31 0.00 0.20
+          SpeciesAlchemilla_vulgaris          2.394    1.547    0.20 0.00 0.26
+          SpeciesAndrosace_chamaejasme        2.394    1.547    0.25 0.00 0.20
+          SpeciesAnemone_nemorosa             2.394    1.547    0.00 0.93 0.00
+          SpeciesAntennaria_dioica            2.394    1.547    0.31 0.00 0.20
+          SpeciesAnthoxanthum_alpinum         2.394    1.547    0.31 0.00 0.20
+          SpeciesAnthoxanthum_odoratum        2.394    1.547    0.00 0.45 0.00
+          SpeciesAnthyllis_vulneraria         2.394    1.547    0.00 0.45 0.00
+          SpeciesAposeris_foetida             2.394    1.547    0.00 0.45 0.00
+          SpeciesArctostaphylos_alpinus       2.394    1.547    0.00 0.45 0.00
+          SpeciesAster_bellidiastrum          2.394    1.547    0.00 0.45 0.00
+          SpeciesBartsia_alpina               2.394    1.547    0.00 0.45 0.00
+          SpeciesBellis_perennis              2.394    1.547    0.00 0.45 0.00
+          SpeciesBetonica_alopecuros          2.394    1.547    0.00 0.45 0.00
+          SpeciesBiscutella_laevigata         2.394    1.547    0.00 0.45 0.00
+          SpeciesBistorta_vivipara            2.394    1.547    0.31 0.00 0.20
+          SpeciesBriza_media                  2.394    1.547    0.31 0.00 0.20
+          SpeciesBuphthalmum_salicifolium     2.394    1.547    0.31 0.00 0.20
+          SpeciesCalamagrostis_varia          2.394    1.547    0.00 0.88 0.00
+          SpeciesCampanula_scheuchzeri        2.394    1.547    0.00 0.88 0.00
+          SpeciesCarduus_defloratus           2.394    1.547    0.20 0.00 0.51
+          SpeciesCarex_caryophyllea           2.394    1.547    0.20 0.00 0.30
+          SpeciesCarex_firma                  2.394    1.547    0.55 0.00 0.20
+          SpeciesCarex_flacca                 2.394    1.547    0.00 0.88 0.00
+          SpeciesCarex_flava                  2.394    1.547    0.40 0.00 0.20
+          SpeciesCarex_ornithopoda            2.394    1.547    0.40 0.00 0.20
+          SpeciesCarex_ornithopodioides       2.394    1.547    0.20 0.00 0.26
+          SpeciesCarex_pallescens             2.394    1.547    0.20 0.00 0.34
+          SpeciesCarex_panicea                2.394    1.547    0.31 0.00 0.20
+          SpeciesCarex_sempervirens           2.394    1.547    0.20 0.00 0.30
+          SpeciesCarex_sylvatica              2.394    1.547    0.31 0.00 0.20
+          SpeciesCarlina_acaulis              2.394    1.547    0.31 0.00 0.20
+          SpeciesCentaurea_jacea              2.394    1.547    0.20 0.00 0.30
+          SpeciesChaerophyllum_hirsutum       2.394    1.547    0.20 0.00 0.34
+          SpeciesClinopodium_vulgare          2.394    1.547    0.00 0.17 0.00
+          SpeciesCrepis_alpestris             2.394    1.547    0.85 0.00 0.20
+          SpeciesCrepis_aurea                 2.394    1.547    0.31 0.00 0.20
+          SpeciesCrepis_biennis               2.394    1.547    0.55 0.00 0.20
+          SpeciesCrepis_terglouensis          2.394    1.547    0.55 0.00 0.20
+          SpeciesCruciata_laevipes            2.394    1.547    0.55 0.00 0.20
+          SpeciesCynosurus_cristatus          2.394    1.547    0.55 0.00 0.20
+          SpeciesDactylis_glomerata           2.394    1.547    0.00 0.88 0.00
+          SpeciesDeschampsia_cespitosa        2.394    1.547    0.00 0.88 0.00
+          SpeciesDryas_octopetala             2.394    1.547    0.00 0.88 0.00
+          SpeciesErica_carnea                 2.394    1.547    0.20 0.00 0.34
+          SpeciesEuphorbia_cyparissias        2.394    1.547    0.20 0.00 0.34
+          SpeciesEuphrasia_montana            2.394    1.547    0.00 0.17 0.00
+          SpeciesEuphrasia_picta              2.394    1.547    0.20 0.00 0.78
+          SpeciesFestuca_alpina               2.394    1.547    0.28 0.00 0.20
+          SpeciesFestuca_pratensis            2.394    1.547    0.28 0.00 0.20
+          SpeciesFestuca_quadriflora          2.394    1.547    0.69 0.00 0.20
+          SpeciesFestuca_rubra                2.394    1.547    0.09 0.00 0.09
+          SpeciesFragaria_vesca               2.394    1.547    0.09 0.00 0.09
+          SpeciesGalium_anisophyllon          2.394    1.547    0.09 0.00 0.09
+          SpeciesGentiana_asclepiadea         2.394    1.547    0.31 0.00 0.20
+          SpeciesGentiana_bavarica            2.394    1.547    0.00 0.88 0.00
+          SpeciesGentiana_pannonica           2.394    1.547    0.00 0.11 0.00
+          SpeciesGentiana_verna               2.394    1.547    0.20 0.00 0.34
+          SpeciesGentianella_aspera           2.394    1.547    0.20 0.00 0.34
+          SpeciesGeranium_sylvaticum          2.394    1.547    0.31 0.00 0.20
+          SpeciesGypsophila_repens            2.394    1.547    0.55 0.00 0.20
+          SpeciesHedysarum_hedysaroides       2.394    1.547    0.55 0.00 0.20
+          SpeciesHelianthemum_nummularium     2.394    1.547    0.31 0.00 0.20
+          SpeciesHelictotrichon_pubescens     2.394    1.547    0.00 0.94 0.00
+          SpeciesHeracleum_austriacum         2.394    1.547    0.00 0.45 0.00
+          SpeciesHieracium_villosum           2.394    1.547    0.31 0.00 0.20
+          SpeciesHippocrepis_comosa           2.394    1.547    0.00 0.88 0.00
+          SpeciesHolcus_lanatus               2.394    1.547    0.40 0.00 0.20
+          SpeciesHomogyne_alpina              2.394    1.547    0.20 0.00 0.26
+          SpeciesHypericum_maculatum          2.394    1.547    0.00 0.45 0.00
+          SpeciesJuncus_monanthos             2.394    1.547    0.00 0.45 0.00
+          SpeciesKnautia_dipsacifolia         2.394    1.547    0.00 0.45 0.00
+          SpeciesLeontodon_hispidus           2.394    1.547    0.25 0.00 0.20
+          SpeciesLeucanthemum_ircutianum      2.394    1.547    0.20 0.00 0.30
+          SpeciesLigusticum_mutellina         2.394    1.547    0.55 0.00 0.20
+          SpeciesLinum_catharticum            2.394    1.547    0.31 0.00 0.20
+          SpeciesLotus_corniculatus           2.394    1.547    0.20 0.00 0.78
+          SpeciesLuzula_glabrata              2.394    1.547    0.09 0.00 0.09
+          SpeciesLuzula_multiflora            2.394    1.547    0.28 0.00 0.20
+          SpeciesLuzula_sylvatica             2.394    1.547    0.28 0.00 0.20
+          SpeciesLysimachia_nemorum           2.394    1.547    0.09 0.00 0.09
+          SpeciesMaianthemum_bifolium         2.394    1.547    0.28 0.00 0.20
+          SpeciesMentha_longifolia            2.394    1.547    0.00 0.17 0.00
+          SpeciesMinuartia_sedoides           2.394    1.547    0.20 0.00 0.30
+          SpeciesMoehringia_ciliata           2.394    1.547    0.31 0.00 0.20
+          SpeciesMyosotis_alpestris           2.394    1.547    0.31 0.00 0.20
+          SpeciesMyosotis_sylvatica           2.394    1.547    0.55 0.00 0.20
+          SpeciesNardus_stricta               2.394    1.547    0.00 0.88 0.00
+          SpeciesOriganum_vulgare             2.394    1.547    0.40 0.00 0.20
+          SpeciesParnassia_palustris          2.394    1.547    0.28 0.00 0.20
+          SpeciesPedicularis_rostratocapitata 2.394    1.547    0.09 0.00 0.09
+          SpeciesPhleum_pratense              2.394    1.547    0.20 0.00 0.21
+          SpeciesPhyteuma_orbiculare          2.394    1.547    0.25 0.00 0.20
+          SpeciesPimpinella_major             2.394    1.547    0.28 0.00 0.20
+          SpeciesPinguicula_alpina            2.394    1.547    0.55 0.00 0.20
+          SpeciesPlantago_lanceolata          2.394    1.547    0.20 0.00 0.34
+          SpeciesPlantago_major               2.394    1.547    0.31 0.00 0.20
+          SpeciesPlantago_media               2.394    1.547    0.31 0.00 0.20
+          SpeciesPoa_alpina                   2.394    1.547    0.31 0.00 0.20
+          SpeciesPoa_pratensis                2.394    1.547    0.00 0.88 0.00
+          SpeciesPoa_trivialis                2.394    1.547    0.00 0.88 0.00
+          SpeciesPolygala_amara               2.394    1.547    0.31 0.00 0.20
+          SpeciesPolygala_chamaebuxus         2.394    1.547    0.31 0.00 0.20
+          SpeciesPolygonatum_verticillatum    2.394    1.547    0.28 0.00 0.20
+          SpeciesPotentilla_aurea             2.394    1.547    0.87 0.00 0.20
+          SpeciesPotentilla_erecta            2.394    1.547    0.36 0.00 0.20
+          SpeciesPrimula_auricula             2.394    1.547    0.00 0.88 0.00
+          SpeciesPrimula_elatior              2.394    1.547    0.25 0.00 0.20
+          SpeciesPrimula_farinosa             2.394    1.547    0.25 0.00 0.20
+          SpeciesPrimula_minima               2.394    1.547    0.85 0.00 0.20
+          SpeciesPrunella_vulgaris            2.394    1.547    0.31 0.00 0.20
+          SpeciesRanunculus_acris             2.394    1.547    0.00 0.97 0.00
+          SpeciesRanunculus_alpestris         2.394    1.547    0.65 0.00 0.20
+          SpeciesRanunculus_montanus          2.394    1.547    0.28 0.00 0.20
+          SpeciesRanunculus_nemorosus         2.394    1.547    0.20 0.00 0.79
+          SpeciesRanunculus_repens            2.394    1.547    0.40 0.00 0.20
+          SpeciesRhinanthus_glacialis         2.394    1.547    0.31 0.00 0.20
+          SpeciesRhodothamnus_chamaecistus    2.394    1.547    0.31 0.00 0.20
+          SpeciesRumex_acetosa                2.394    1.547    0.36 0.00 0.20
+          SpeciesSalix_retusa                 2.394    1.547    0.31 0.00 0.20
+          SpeciesSaxifraga_caesia             2.394    1.547    0.22 0.00 0.20
+          SpeciesScabiosa_lucida              2.394    1.547    0.40 0.00 0.20
+          SpeciesSenecio_abrotanifolius       2.394    1.547    0.25 0.00 0.20
+          SpeciesSesleria_albicans            2.394    1.547    0.25 0.00 0.20
+          SpeciesSilene_acaulis               2.394    1.547    0.20 0.00 0.30
+          SpeciesSoldanella_alpina            2.394    1.547    0.09 0.00 0.09
+          SpeciesSolidago_virgaurea           2.394    1.547    0.00 0.93 0.00
+          SpeciesStellaria_graminea           2.394    1.547    0.00 0.45 0.00
+          SpeciesThesium_alpinum              2.394    1.547    0.00 0.69 0.00
+          SpeciesThymus_pulegioides           2.394    1.547    0.28 0.00 0.20
+          SpeciesTofieldia_calyculata         2.394    1.547    0.00 0.88 0.00
+          SpeciesTofieldia_pusilla            2.394    1.547    0.55 0.00 0.20
+          SpeciesTrifolium_pratense           2.394    1.547    0.31 0.00 0.20
+          SpeciesTrifolium_repens             2.394    1.547    0.00 0.88 0.00
+          SpeciesTrollius_europaeus           2.394    1.547    0.63 0.00 0.20
+          SpeciesVaccinium_myrtillus          2.394    1.547    0.31 0.00 0.20
+          SpeciesVaccinium_vitis-idaea        2.394    1.547    0.31 0.00 0.20
+          SpeciesValeriana_saxatilis          2.394    1.547    0.28 0.00 0.20
+          SpeciesVeratrum_album               2.394    1.547    0.31 0.00 0.20
+          SpeciesVeronica_aphylla             2.394    1.547    0.20 0.00 0.34
+          SpeciesVeronica_chamaedrys          2.394    1.547    0.00 0.11 0.00
+          SpeciesVicia_sepium                 2.394    1.547    0.90 0.00 0.20
+          SpeciesViola_biflora                2.394    1.547    0.40 0.00 0.20
+          SpeciesWillemetia_stipitata         2.394    1.547    0.09 0.00 0.09
  Residual                                        NA       NA                  
                                                                            
                                                                            
@@ -4217,24 +4232,24 @@ Number of obs: 1729, groups:  Site, 17; Species, 152; dummy, 1
 
 Conditional model:
             Estimate Std. Error z value Pr(&gt;|z|)   
-(Intercept)   1.6634     1.3865   1.200  0.23024   
+(Intercept)   1.6633     1.3864   1.200  0.23025   
 sSeedMass    -0.3205     0.1166  -2.748  0.00599 **
 sSeedShape   -0.3606     0.1331  -2.709  0.00674 **
-sSeedN       -0.2142     0.1144  -1.872  0.06119 . 
-sAltitude    -0.6441     0.3159  -2.039  0.04144 * 
-sHum          0.1031     0.3041   0.339  0.73450   
+sSeedN       -0.2142     0.1144  -1.872  0.06118 . 
+sAltitude    -0.6441     0.3159  -2.039  0.04143 * 
+sHum          0.1031     0.3041   0.339  0.73456   
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Dispersion model:
-            Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  1.03941    0.03744  27.759  &lt; 2e-16 ***
-sAltitude   -0.24168    0.04828  -5.006 5.57e-07 ***
-sHum        -0.01986    0.05260  -0.378    0.706    
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  0.519708   0.018722  27.759  &lt; 2e-16 ***
+sAltitude   -0.120838   0.024140  -5.006 5.57e-07 ***
+sHum        -0.009928   0.026301  -0.377    0.706    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>) <span class="co"># Unconditional simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>) <span class="co"># Unconditional simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -4261,41 +4276,41 @@ Solution for SBPA (glmm)
 <div class="callout-body-container callout-body">
 <p>Prepare+scale data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb154"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb154-1"><a href="#cb154-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
-<span id="cb154-2"><a href="#cb154-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
-<span id="cb154-3"><a href="#cb154-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
-<span id="cb154-4"><a href="#cb154-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
-<span id="cb154-5"><a href="#cb154-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
-<span id="cb154-6"><a href="#cb154-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
-<span id="cb154-7"><a href="#cb154-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
-<span id="cb154-8"><a href="#cb154-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
-<span id="cb154-9"><a href="#cb154-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
-<span id="cb154-10"><a href="#cb154-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
-<span id="cb154-11"><a href="#cb154-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
-<span id="cb154-12"><a href="#cb154-12" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sMGT <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>MGT)</span>
-<span id="cb154-13"><a href="#cb154-13" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sJwidth <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Jwidth)</span>
-<span id="cb154-14"><a href="#cb154-14" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sEpiStein <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>EpiStein)</span>
-<span id="cb154-15"><a href="#cb154-15" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sMGR <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>MGR)</span>
-<span id="cb154-16"><a href="#cb154-16" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sT95 <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>T95)</span>
-<span id="cb154-17"><a href="#cb154-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb154-18"><a href="#cb154-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
-<span id="cb154-19"><a href="#cb154-19" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(SBDensity<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
-<span id="cb154-20"><a href="#cb154-20" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sMGT <span class="sc">+</span> </span>
-<span id="cb154-21"><a href="#cb154-21" aria-hidden="true" tabindex="-1"></a>                               sMGR <span class="sc">+</span> sEpiStein <span class="sc">+</span> sT95 <span class="sc">+</span></span>
-<span id="cb154-22"><a href="#cb154-22" aria-hidden="true" tabindex="-1"></a>                               sJwidth <span class="sc">+</span> sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
-<span id="cb154-23"><a href="#cb154-23" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb157"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb157-1"><a href="#cb157-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">as.data.frame</span>(EcoData<span class="sc">::</span>seedBank)</span>
+<span id="cb157-2"><a href="#cb157-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sAltitude <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Altitude)</span>
+<span id="cb157-3"><a href="#cb157-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedMass <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedMass)</span>
+<span id="cb157-4"><a href="#cb157-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedShape <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedShape)</span>
+<span id="cb157-5"><a href="#cb157-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedN <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedN)</span>
+<span id="cb157-6"><a href="#cb157-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sSeedPr <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>SeedPr)</span>
+<span id="cb157-7"><a href="#cb157-7" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sDormRank <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>DormRank)</span>
+<span id="cb157-8"><a href="#cb157-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sTemp <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Temp)</span>
+<span id="cb157-9"><a href="#cb157-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sHum <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Humidity)</span>
+<span id="cb157-10"><a href="#cb157-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sNitro <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Nitrogen)</span>
+<span id="cb157-11"><a href="#cb157-11" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sGrazing <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Grazing)</span>
+<span id="cb157-12"><a href="#cb157-12" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sMGT <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>MGT)</span>
+<span id="cb157-13"><a href="#cb157-13" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sJwidth <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>Jwidth)</span>
+<span id="cb157-14"><a href="#cb157-14" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sEpiStein <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>EpiStein)</span>
+<span id="cb157-15"><a href="#cb157-15" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sMGR <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>MGR)</span>
+<span id="cb157-16"><a href="#cb157-16" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sT95 <span class="ot">=</span> <span class="fu">scale</span>(data<span class="sc">$</span>T95)</span>
+<span id="cb157-17"><a href="#cb157-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb157-18"><a href="#cb157-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's remove NAs beforehand:</span></span>
+<span id="cb157-19"><a href="#cb157-19" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(SBDensity<span class="sc">~</span>sAltitude <span class="sc">+</span> sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span></span>
+<span id="cb157-20"><a href="#cb157-20" aria-hidden="true" tabindex="-1"></a>                               sSeedPr <span class="sc">+</span> sDormRank <span class="sc">+</span> sTemp <span class="sc">+</span> sHum <span class="sc">+</span> sNitro <span class="sc">+</span> sMGT <span class="sc">+</span> </span>
+<span id="cb157-21"><a href="#cb157-21" aria-hidden="true" tabindex="-1"></a>                               sMGR <span class="sc">+</span> sEpiStein <span class="sc">+</span> sT95 <span class="sc">+</span></span>
+<span id="cb157-22"><a href="#cb157-22" aria-hidden="true" tabindex="-1"></a>                               sJwidth <span class="sc">+</span> sGrazing <span class="sc">+</span> Site <span class="sc">+</span> Species, <span class="at">data =</span> data))</span>
+<span id="cb157-23"><a href="#cb157-23" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> data[rows, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
-<span id="cb155-2"><a href="#cb155-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
-<span id="cb155-3"><a href="#cb155-3" aria-hidden="true" tabindex="-1"></a>                 sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
-<span id="cb155-4"><a href="#cb155-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species),</span>
-<span id="cb155-5"><a href="#cb155-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
+<span id="cb158-2"><a href="#cb158-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
+<span id="cb158-3"><a href="#cb158-3" aria-hidden="true" tabindex="-1"></a>                 sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
+<span id="cb158-4"><a href="#cb158-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species),</span>
+<span id="cb158-5"><a href="#cb158-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
 Model failed to converge with max|grad| = 0.0110149 (tol = 0.002, component 1)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb157"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb157-1"><a href="#cb157-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
   Approximation) [glmerMod]
@@ -4342,13 +4357,13 @@ Model failed to converge with max|grad| = 0.0110149 (tol = 0.002, component 1)</
 </div>
 <p>Model did not converge, but there is a trick which often helps. The default optimizer in lme4 is not the best optimizer, changing it to ‘bobyqa’ often helps with convergence issues</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb159"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb159-1"><a href="#cb159-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
-<span id="cb159-2"><a href="#cb159-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
-<span id="cb159-3"><a href="#cb159-3" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
-<span id="cb159-4"><a href="#cb159-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species),</span>
-<span id="cb159-5"><a href="#cb159-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
-<span id="cb159-6"><a href="#cb159-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="st">'bobyqa'</span>))</span>
-<span id="cb159-7"><a href="#cb159-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">=</span> <span class="fu">glmer</span>(SBPA<span class="sc">~</span></span>
+<span id="cb162-2"><a href="#cb162-2" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
+<span id="cb162-3"><a href="#cb162-3" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
+<span id="cb162-4"><a href="#cb162-4" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species),</span>
+<span id="cb162-5"><a href="#cb162-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb162-6"><a href="#cb162-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">control =</span> <span class="fu">glmerControl</span>(<span class="st">'bobyqa'</span>))</span>
+<span id="cb162-7"><a href="#cb162-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
   Approximation) [glmerMod]
@@ -4396,7 +4411,7 @@ sHum        0.023  0.002 -0.003 -0.011  0.229</code></pre>
 <p><strong>Residual checks:</strong></p>
 <p>Check residuals:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb161"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb161-1"><a href="#cb161-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -4404,36 +4419,36 @@ sHum        0.023  0.002 -0.003 -0.011  0.229</code></pre>
 <p>Residuals look good!</p>
 <p><strong>Bonus: With phylogenetic correlation structure:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
-<span id="cb162-2"><a href="#cb162-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
-<span id="cb162-3"><a href="#cb162-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb162-4"><a href="#cb162-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
-<span id="cb162-5"><a href="#cb162-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
-<span id="cb162-6"><a href="#cb162-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
-<span id="cb162-7"><a href="#cb162-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb162-8"><a href="#cb162-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
-<span id="cb162-9"><a href="#cb162-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
-<span id="cb162-10"><a href="#cb162-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
-<span id="cb162-11"><a href="#cb162-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
-<span id="cb162-12"><a href="#cb162-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
-<span id="cb162-13"><a href="#cb162-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
-<span id="cb162-14"><a href="#cb162-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
-<span id="cb162-15"><a href="#cb162-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb162-16"><a href="#cb162-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
-<span id="cb162-17"><a href="#cb162-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
-<span id="cb162-18"><a href="#cb162-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb162-19"><a href="#cb162-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
-<span id="cb162-20"><a href="#cb162-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
-<span id="cb162-21"><a href="#cb162-21" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">=</span> <span class="fu">glmmTMB</span>(SBPA<span class="sc">~</span></span>
-<span id="cb162-22"><a href="#cb162-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
-<span id="cb162-23"><a href="#cb162-23" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
-<span id="cb162-24"><a href="#cb162-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species) <span class="sc">+</span></span>
-<span id="cb162-25"><a href="#cb162-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
-<span id="cb162-26"><a href="#cb162-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
-<span id="cb162-27"><a href="#cb162-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
-<span id="cb162-28"><a href="#cb162-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> binomial,</span>
-<span id="cb162-29"><a href="#cb162-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
-<span id="cb162-30"><a href="#cb162-30" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model6, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a>dist_phylo <span class="ot">=</span> ape<span class="sc">::</span><span class="fu">cophenetic.phylo</span>(phyl.upd2) <span class="co"># create distance matrix</span></span>
+<span id="cb165-2"><a href="#cb165-2" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">=</span> <span class="fu">vcv</span>(phyl.upd2)[<span class="fu">unique</span>(data<span class="sc">$</span>Species), <span class="fu">unique</span>(data<span class="sc">$</span>Species)]</span>
+<span id="cb165-3"><a href="#cb165-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb165-4"><a href="#cb165-4" aria-hidden="true" tabindex="-1"></a><span class="do">###</span></span>
+<span id="cb165-5"><a href="#cb165-5" aria-hidden="true" tabindex="-1"></a><span class="co">#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd</span></span>
+<span id="cb165-6"><a href="#cb165-6" aria-hidden="true" tabindex="-1"></a>as.theta.vcov <span class="ot">&lt;-</span> <span class="cf">function</span>(Sigma,<span class="at">corrs.only=</span><span class="cn">FALSE</span>) {</span>
+<span id="cb165-7"><a href="#cb165-7" aria-hidden="true" tabindex="-1"></a>    logsd <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">diag</span>(Sigma))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb165-8"><a href="#cb165-8" aria-hidden="true" tabindex="-1"></a>    cr <span class="ot">&lt;-</span> <span class="fu">cov2cor</span>(Sigma)</span>
+<span id="cb165-9"><a href="#cb165-9" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> <span class="fu">chol</span>(cr)</span>
+<span id="cb165-10"><a href="#cb165-10" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">%*%</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> <span class="fu">diag</span>(cc))</span>
+<span id="cb165-11"><a href="#cb165-11" aria-hidden="true" tabindex="-1"></a>    corrs <span class="ot">&lt;-</span> cc[<span class="fu">upper.tri</span>(cc)]</span>
+<span id="cb165-12"><a href="#cb165-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (corrs.only) <span class="fu">return</span>(corrs)</span>
+<span id="cb165-13"><a href="#cb165-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="ot">&lt;-</span> <span class="fu">c</span>(logsd,corrs)</span>
+<span id="cb165-14"><a href="#cb165-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ret)</span>
+<span id="cb165-15"><a href="#cb165-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb165-16"><a href="#cb165-16" aria-hidden="true" tabindex="-1"></a>corrs <span class="ot">=</span> <span class="fu">as.theta.vcov</span>(correlation_matrix, <span class="at">corrs.only=</span><span class="cn">TRUE</span>)</span>
+<span id="cb165-17"><a href="#cb165-17" aria-hidden="true" tabindex="-1"></a><span class="do">#####</span></span>
+<span id="cb165-18"><a href="#cb165-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb165-19"><a href="#cb165-19" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>dummy <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb165-20"><a href="#cb165-20" aria-hidden="true" tabindex="-1"></a>nsp <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(data<span class="sc">$</span>Species))</span>
+<span id="cb165-21"><a href="#cb165-21" aria-hidden="true" tabindex="-1"></a>model6 <span class="ot">=</span> <span class="fu">glmmTMB</span>(SBPA<span class="sc">~</span></span>
+<span id="cb165-22"><a href="#cb165-22" aria-hidden="true" tabindex="-1"></a>                sSeedMass <span class="sc">+</span> sSeedShape <span class="sc">+</span> sSeedN <span class="sc">+</span> </span>
+<span id="cb165-23"><a href="#cb165-23" aria-hidden="true" tabindex="-1"></a>                sAltitude <span class="sc">+</span> sHum <span class="sc">+</span></span>
+<span id="cb165-24"><a href="#cb165-24" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>Site) <span class="sc">+</span> (sAltitude<span class="sc">|</span>Species) <span class="sc">+</span></span>
+<span id="cb165-25"><a href="#cb165-25" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">+</span>Species<span class="sc">|</span>dummy),</span>
+<span id="cb165-26"><a href="#cb165-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">map=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">factor</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">1</span>,nsp),<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="fu">length</span>(corrs))) )),</span>
+<span id="cb165-27"><a href="#cb165-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">start=</span><span class="fu">list</span>(<span class="at">theta=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">0</span>,nsp),corrs)),</span>
+<span id="cb165-28"><a href="#cb165-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> binomial,</span>
+<span id="cb165-29"><a href="#cb165-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
+<span id="cb165-30"><a href="#cb165-30" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model6, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -4445,10 +4460,10 @@ Scaled residual values: 0.5024676 0.5329717 0.5854716 0.9968902 0.7858493 0.5647
 </div>
 <p>Conditional simulations:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model6, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb164-2"><a href="#cb164-2" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rbinom</span>(<span class="fu">length</span>(pred),<span class="dv">1</span>, pred))</span>
-<span id="cb164-3"><a href="#cb164-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model6)[,<span class="dv">1</span>], pred)</span>
-<span id="cb164-4"><a href="#cb164-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb167"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb167-1"><a href="#cb167-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(model6, <span class="at">re.form =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb167-2"><a href="#cb167-2" aria-hidden="true" tabindex="-1"></a>simulations <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="cf">function</span>(i) <span class="fu">rbinom</span>(<span class="fu">length</span>(pred),<span class="dv">1</span>, pred))</span>
+<span id="cb167-3"><a href="#cb167-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model6)[,<span class="dv">1</span>], pred)</span>
+<span id="cb167-4"><a href="#cb167-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -4461,8 +4476,8 @@ Scaled residual values: 0.5024676 0.5329717 0.5854716 0.9968902 0.7858493 0.5647
 <h2 data-number="C.7" class="anchored" data-anchor-id="snouter"><span class="header-section-number">C.7</span> Snouter</h2>
 <p>Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set’s help for details on the variables.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb165-2"><a href="#cb165-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(snouter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb168-2"><a href="#cb168-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(snouter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-simple callout-tip no-icon callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
