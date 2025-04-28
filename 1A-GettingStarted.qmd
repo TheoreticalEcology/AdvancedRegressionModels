@@ -81,7 +81,7 @@ There are many opinions about advantages and disadvantages of the two schools. I
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
 
-## Recap basic R programming
+## Reminder basic R programming
 
 In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this part, there is a small exercise about data manipulation. If you are confindent that you can do it, you can also go there directly without reading the content of this section. 
 
