@@ -65,6 +65,7 @@ knitr::include_graphics(c("images/linkFunctions.jpg"))
 ```{=html}
 <p><small>Screenshot taken from Wikipedia: <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function</a>. Content licensed under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike License 3.0</a>.</small></p>
 ```
+
 ### Count data - Poisson regression
 
 The standard model for count data (1,2,3) is the Poisson regression, which implements
@@ -886,12 +887,25 @@ swmo_prec doesn't look good but this is caused by the many zeros in the variable
 
 ### Elks
 
-The data for this example is not in the ecodata package, but will be distributed in the course.
+The data for this example contains observations of elk presence / absence in various places in Canada.
 
-The data contains observations of elk presence / absence in various places in Canada. The ecological question is if roads disturb the elks.
+The ecological question is if roads have a causal effect on elk presence. As we have 0/1 data, we should fit a binomial GLM (logistic regression)
 
-Task: perform an analysis of the data to understand if roads have a causal effect on elk presence. Correct for appropriately for confounders! Check the residuals of your model to make sure it's properly specified!
+```{r}
+library(EcoData)
+library(effects)
+fit <- glm(presence ~ dist_roads, family = binomial, data = elk_data)
+summary(fit)
+plot(allEffects(fit))
+```
 
+The initial results seem to suggest that elk presence is lower close to roads. However, as we want to estimate a causal effect, we have to first establish the likely causal diagram and then correct for confounders! Tasks:
+
+1.  Check the help of the data ?elk and consider which variables you should adjust for in a multiple GLM, based on the ideas explained in the chapter on causal analysis
+
+2.  After specifying the multiple regression, check the residuals of your model to make sure it's properly specified, including residual plots against all predictors. If you find misfits, consider the use of splines, which can be specified by replacing the glm with the mgcv::gam function
+
+3.  Bonus: read up on checking residuals of logistic regressions in the DHARMa vignette
 
 ### Making spatial predictions with a logistic regression - Elephant SDM
 
@@ -919,7 +933,6 @@ Here an example of how you could do this
 
 **Build predictive model:**
 
-
 ```{r}
 model = glm(Presence~bio1, data = elephant$occurenceData, family = binomial()) # minimum model
 ```
@@ -943,7 +956,7 @@ res = cv.glm(elephant$occurenceData, model, cost = auc, K=5)
 res$delta
 ```
 
-Currently, fit and validation AUC are nearly identical, because we have a very simple model. However, for more complex models, this could change. 
+Currently, fit and validation AUC are nearly identical, because we have a very simple model. However, for more complex models, this could change.
 
 -   Drop some of the highly correlated variables (don't use all of them).
 
@@ -953,7 +966,7 @@ Currently, fit and validation AUC are nearly identical, because we have a very s
 
 **Make new predictions**
 
-The data for making spatial predictions is in elephant$predictionData. This new dataset is not a data.frame but a raster object, which is a special data class for spatial data. You can plot one of the predictors in the following way.
+The data for making spatial predictions is in elephant\$predictionData. This new dataset is not a data.frame but a raster object, which is a special data class for spatial data. You can plot one of the predictors in the following way.
 
 ```{r, message = F}
 library(sp)

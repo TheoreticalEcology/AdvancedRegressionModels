@@ -159,6 +159,24 @@ plot(allEffects(fit, partial.residuals = T))
 
 The blue line is the fitted model (with confidence interval in light blue). When using the argument partial.residuals = T, purple circles are the data, and the purple line is a nonparametric fit to the data. If the two lines deviate strongly, this indicates that we may have a misspecified model (see next section on residual checks).
 
+::: {.callout-caution icon="false"}
+#### Question
+
+Fit Ozone \~ Temp, and look at summary, residuals and visualizations. What would you conclude?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r}
+fit = lm(Ozone ~ Temp, data = airquality)
+plot(allEffects(fit, partial.residuals = T))
+summary(fit)
+```
+
+Temperature has a significant positive effect of Ozone. However, effect seems nonlinear, could consider adding a quadratic term of a GAM to improve the fit. The model explains nearly 49% of the variance of the given data (R2). 37 observations have missing data and are omitted. The model explains the data significantly better compared a model with only an intercept (F-statistic).
+:::
+
 ## Residual checks
 
 The regression line of an lm, including p-values and all that, is estimated under the assumptions that the residuals scatter iid normal. If that is not (approximately) the case, the results may be nonsense. Looking at the results of the effect plots above, we can already see a first indication that there may be a problem.
@@ -308,23 +326,6 @@ In the summary(), you still get significance for the smoothing term (i.e. a p-va
 summary(fit)
 ```
 
-::: {.callout-caution icon="false"}
-#### Question
-
-Fit Ozone \~ Temp, and look at summary, residuals and visualizations. What would you conclude?
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r}
-fit = lm(Ozone ~ Temp, data = airquality)
-plot(allEffects(fit, partial.residuals = T))
-summary(fit)
-```
-
-Temperature has a significant positive effect of Ozone. However, effect seems nonlinear, could consider adding a quadratic term of a GAM to improve the fit. The model explains nearly 49% of the variance of the given data (R2). 37 observations have missing data and are omitted. The model explains the data significantly better compared a model with only an intercept (F-statistic).
-:::
 
 ## Categorical Predictors
 
@@ -478,14 +479,14 @@ plot(allEffects(fit, partial.residuals = T) )
 Note that for the multiple regression, that scatter around the regression line displayed by the effects package is not the raw data, but the so-called partial residuals. Essentially, what this means is that we plot the fitted line for the respective predictor, and then we calculate the residual for the full model (including the other predictors) and add them on the regression line. The advantage is that this subtracts the effect of other predictors, and removes possible spurious correlatins that occur due to collinearity between predictors (see next section).
 :::
 
-| Formula      | Meaning                               | Details                                    |
-|----------------|--------------------------|------------------------------|
-| `y~x_1`      | $y=a_0 +a_1*x_1$                      | Slope+Intercept                            |
-| `y~x_1 - 1`  | $y=a_1*x_1$                           | Slope, no intercept                        |
-| `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$                 | Quadratic effect                           |
-| `y~x_1+x_2`  | $y=a_0+a_1*x_1+a_2*x_2$               | Multiple linear regression (two variables) |
-| `y~x_1:x_2`  | $y=a_0+a_1*(x_1*x_2)$                 | Interaction between x~1~ and x~2~          |
-| `y~x_1*x_2`  | $y=a_0+a_1*(x_1*x_2)+a_2*x_1+a_3*x_2$ | Interaction and main effects               |
+| Formula | Meaning | Details |
+|------------------|-------------------------|-----------------------------|
+| `y~x_1` | $y=a_0 +a_1*x_1$ | Slope+Intercept |
+| `y~x_1 - 1` | $y=a_1*x_1$ | Slope, no intercept |
+| `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$ | Quadratic effect |
+| `y~x_1+x_2` | $y=a_0+a_1*x_1+a_2*x_2$ | Multiple linear regression (two variables) |
+| `y~x_1:x_2` | $y=a_0+a_1*(x_1*x_2)$ | Interaction between x~1~ and x~2~ |
+| `y~x_1*x_2` | $y=a_0+a_1*(x_1*x_2)+a_2*x_1+a_3*x_2$ | Interaction and main effects |
 
 : Formula syntax
 
@@ -814,7 +815,17 @@ fit = lm(Ozone ~ Wind * fMonth, data = airquality)
 summary(fit)
 ```
 
-The interpretation is like for a single categorical predictor, i.e. we see the effect of Wind as the effect for the first Month 5, and the Wind:fMonth6 effect, for example, tests for a difference in the Wind effect between month 5 (reference) and month 6. As before, you could change this behavior by changing contrasts.
+The interpretation is like for a single categorical predictor, i.e. we see the effect of Wind as the effect for the first Month 5, and the Wind:fMonth6 effect, for example, tests for a difference in the Wind effect between month 5 (reference) and month 6. As before, you could change this behavior by changing contrasts, e.g. mean contrasts for main effects:
+
+```{r echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind * fMonth - 1, data = airquality) 
+```
+
+and to change to mean contrasts for main effects and int, we can type: 
+
+```{r echo=TRUE, eval=TRUE}
+fit = lm(Ozone ~ Wind * fMonth - 1 - Wind, data = airquality)
+```
 
 ### Interactions and centering
 
@@ -1084,7 +1095,6 @@ library(EcoData)
 plot(loght ~ temp, data = plantHeight)
 ```
 
-
 1.  Fit a linear model for this relationship. Perform residual checks and modify the model if you think it is necessary. Interpret the fitted model - how would you present the results in a scientific publication?
 
 2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts in this case.
@@ -1093,13 +1103,11 @@ plot(loght ~ temp, data = plantHeight)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-
-***1. Temperature dependence ***
+***1. Temperature dependence***
 
 ```{r}
 model = lm(loght ~ temp, data = plantHeight)
 ```
-
 
 ```{r chunk_chapter3_task_19, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
@@ -1108,10 +1116,10 @@ plot(model)
 
 We're seeing a bit of heterosekdasticity, maybe a tiny bit of misfit, otherwise it looks OK! If you want to do something:
 
-* Heteroskedasticity - see next chapter
-* Misfit: could change functional form or use gam
+-   Heteroskedasticity - see next chapter
+-   Misfit: could change functional form or use gam
 
-But that doesn't really seem to be a problem, so we can now interpret this model! 
+But that doesn't really seem to be a problem, so we can now interpret this model!
 
 ```{r}
 model = lm(loght ~ temp, data = plantHeight)
@@ -1151,7 +1159,6 @@ It would also make sense in this case to follow up with an ANOVA and possible po
 summary(aov(model2))
 ```
 
-
 ```{r}
 library(multcomp)
 tuk = glht(model2, linfct = mcp(growthform2 = "Tukey"))
@@ -1162,8 +1169,6 @@ tuk.cld = cld(tuk)    # Letter-based display.
 par(mar = c(5,3,10,3))
 plot(tuk.cld)
 ```
-
-
 :::
 
 ::: {.callout-caution icon="false"}
@@ -1177,7 +1182,7 @@ library(EcoData)
 summary(solomonislands)
 ```
 
-1.  Fit a lm, trying to fit the classical relationship of Species ~ log(Area)
+1.  Fit a lm, trying to fit the classical relationship of Species \~ log(Area)
 2.  Perform residual checks, and change the model if neccessary
 3.  Interpret the results
 :::
@@ -1185,7 +1190,7 @@ summary(solomonislands)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-***1. Fitting the species-area curve ***
+***1. Fitting the species-area curve***
 
 ```{r}
 model = lm(Species ~ log(Area), data = solomonislands)
@@ -1202,17 +1207,16 @@ par(mfrow = c(2, 2))
 plot(model)
 ```
 
-Residuals don't look particularly normal ... would get better fitting ~ log(Area+1), but that doesn't correspond to the classical model. In this case, it's a trade-off between fitting the classical model and get better residuals.
+Residuals don't look particularly normal ... would get better fitting \~ log(Area+1), but that doesn't correspond to the classical model. In this case, it's a trade-off between fitting the classical model and get better residuals.
 
-With advanced methods, we could also think about GLMs or quantile regressions (see next chapter). 
+With advanced methods, we could also think about GLMs or quantile regressions (see next chapter).
 
 ***3. Interpretation***
 
 Significant increase of species richness with area that follows a classical log(Area) relationship.
-
 :::
 
-### Mulitple Regression
+### Multiple Regression
 
 ::: {.callout-caution icon="false"}
 #### Plant Height revisited
@@ -1234,6 +1238,8 @@ Use (separate) multiple regressions to test if:
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
+Preparations
+
 ```{r}
 plantHeight$sTemp = scale(plantHeight$temp)
 plantHeight$sLat = scale(plantHeight$lat)
@@ -1245,12 +1251,14 @@ plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
 
 1)  **NPP or Temp?**
 
+Important here is to use the scaled variables, so that effect sizes are comparable. An alternative would be to use an ANOVA, but this is only discussed in the next chapter!
+
 ```{r}
 fit = lm(loght ~ sTemp + sNPP, data = plantHeight)
 summary(fit)
 ```
 
-NPP is slightly more important
+Conclusion: NPP is slightly more important.
 
 2)  **Interaction with growth form**
 
@@ -1262,26 +1270,26 @@ summary(fit)
 
 Yes, because (some) interactions are significant.
 
-Note that the n.s. effect of sTemp is the first growth form (Ferns), for which we had only one observation. In a standard multiple regression, you don't have p-values for the significance of the temperature effect against 0 for the other growth forms, because you test against the reference. What one usually does is to run an ANOVA (see chapter on ANOVA) to see if temp is overall significant.
+Note that the the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see chapter on ANOVA) to see the effect of the variables overall is significant. 
+
 
 ```{r}
-anova(lm(loght ~ growthform *  sTemp , data = plantHeight))
+anova(lm(loght ~ growthform2 *  sTemp , data = plantHeight))
 ```
 
-Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either extract the p-value from a multiple regression (a bit complicated) or just run a univariate regression for this growth form
+Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either run a univariate regression for this growth form
 
 ```{r}
-fit = lm(loght ~ sTemp + 0, data = plantHeight[plantHeight$growthform == "Tree",])
+fit = lm(loght ~ sTemp, data = plantHeight[plantHeight$growthform == "Tree",])
 summary(fit)
 ```
 
-Or you could fit the interaction but turn-off the intercept (by saying +0 or -1) and remove the plantHeight intercepts:
+or, better (because you use all data at once, better df) you could fit the interaction switch from treatment to mean contrasts also for the interactions by:i
 
 ```{r}
-fit = lm(loght ~ sTemp:growthform + 0, data = plantHeight[,])
+fit = lm(loght ~ sTemp*growthform2 - sTemp -1, data = plantHeight)
 summary(fit)
 ```
-
 
 3)  **Interaction with lat**
 

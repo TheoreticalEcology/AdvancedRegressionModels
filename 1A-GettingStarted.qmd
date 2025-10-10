@@ -83,7 +83,7 @@ The tidyverse framework is currently trying to expand to the tasks of statistica
 
 ## Reminder basic R programming
 
-In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this part, there is a small exercise about data manipulation. If you are confindent that you can do it, you can also go there directly without reading the content of this section. 
+In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this part, there is a small exercise about data manipulation. If you are confindent that you can do it, you can also go there directly without reading the content of this section.
 
 ### Representing Data in R
 
@@ -281,6 +281,7 @@ squareValue = function(x){
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Tasks</span></strong><br/>
 ```
+
 1.  Try what happens if you type in `squareValue(2)`{.R}.
 2.  Write a function for multiplying 2 values. Hint: This should start with `function(x1, x2)`{.R}.
 3.  Change the first line of the `squareValue`{.R} function to `function(x = 3)`{.R} and try out the following commands: `squareValue(2)`{.R}, `squareValue()`{.R}. What is the sense of this syntax?
@@ -360,6 +361,7 @@ apply(iris[,1:4], 2, mean)
   <hr/>
   <strong><span style="color: #0011AA; font-size:25px;">Tasks</span></strong><br/>
 ```
+
 1.  Check the help of `apply`{.R} to understand what this does.
 2.  Why is the first result of `apply(iris[,1:4], 2, mean)`{.R} NA? Check the help of mean to understand this.
 3.  Try `apply(iris[,1:4], 1, mean)`{.R}. Think about what has changed here.
@@ -372,6 +374,7 @@ apply(iris[,1:4], 2, mean)
     </summary>
     <p>
 ```
+
 ***1***
 
 ```{r chunk_chapter2_task_4, eval=FALSE}
@@ -505,8 +508,6 @@ For more help on plotting, I recommend:
 -   Read ["Fundamentals of Data Visualization" by Claus O. Wilke](https://clauswilke.com/dataviz/) (explains all standard plots and why / when to use them)
 -   [Data to Viz](https://www.data-to-viz.com) provides a decision tree for visualizations and links to the [R graph gallery](https://r-graph-gallery.com/index.html)
 
-
-
 ### Final exercise
 
 ::: {.callout-caution icon="false"}
@@ -571,7 +572,7 @@ dat = airquality
 6.  Single continuous variables can be visualized using a histogram (`hist)` , for two variables, it depends on their data types:
 
     | Scenario | Which plot | R command |
-    |----------------|----------------|---------------------------------------|
+    |----|----|----|
     | Numeric | Histogram or boxplot | `hist()` and`boxplot` |
     | Numeric with numeric | Scatterplot | `plot` |
     | Numeric with categorical | Boxplot | `boxplot(numeric~categorical)` |

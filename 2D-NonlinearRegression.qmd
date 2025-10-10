@@ -12,12 +12,11 @@ set.seed(42)
 
 ## What is a nonlinear regression?
 
-The most important thing first: the main distinction between a linear and a nonlinear regression is NOT if you fit a linear function. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as "polynomial regressions") are effectively all linear regressions. 
+The most important thing first: the main distinction between a linear and a nonlinear regression is NOT if you fit a linear function. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as "polynomial regressions") are effectively all linear regressions.
 
 The reason is that as long as the function of the mean can be represented as a polynomial of the form
 
-$$ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$
-you are considering linear effects of a predictor, which just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
+$$ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$ you are considering linear effects of a predictor, which just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
 
 Because the linear regression is much better supported in R (as in other statistical packages), it is always preferable to consider if the function you want to fit can be expressed as a polynomial by transforming y or x (e.g. by regressing against log(y), logit(y)).
 
@@ -80,7 +79,7 @@ res <- nlsResiduals(mm)
 plot(res, which = 0)
 ```
 
-Of course, all discussions about residuals from the chapter on linear regressions also applies here, so we are checking for iid normal residuals. 
+Of course, all discussions about residuals from the chapter on linear regressions also applies here, so we are checking for iid normal residuals.
 
 ## Uncertainties and CIs on parameters
 
@@ -105,9 +104,9 @@ plot(mmboot)
 summary(mmboot)
 ```
 
-In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case. 
+In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case.
 
-The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this). 
+The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this).
 
 ## Uncertainties and CIs on predictions and derived quantities
 
@@ -132,7 +131,7 @@ The most complete solution to calculating confidence intervals and uncertainties
 
 What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in setion linear regression)
 
-Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant. 
+Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.
 
 ```{r}
 vmkm1 = vmkm
@@ -147,7 +146,7 @@ mm1 <- nls(v ~ S/(S + Km + type*DeltaMutantKm) * Vmax,data = vmkm1, start = list
 summary(mm1)
 ```
 
-We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables. 
+We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables.
 
 There is no automatic plotting function for this, so you will hae to plot by hand:
 
@@ -176,7 +175,7 @@ AIC(mm1)
 
 Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.
 
-Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong. 
+Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.
 
 ## Mixed effects, heteroskedasticity and correlations
 

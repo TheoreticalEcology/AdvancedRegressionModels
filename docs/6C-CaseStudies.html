@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Advanced Regression Models with R - Appendix C — Case studies</title>
+<title>Appendix C — Case studies – Advanced Regression Models with R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -80,7 +80,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -89,14 +95,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
 
 <meta name="citation_title" content="Appendix C — Case studies">
-<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels//6C-CaseStudies.html">
+<meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels/6C-CaseStudies.html">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_publisher=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
 <meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_publisher=CRC Press;">
@@ -128,12 +136,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6C-CaseStudies.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Case studies</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6C-CaseStudies.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Case studies</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
@@ -143,30 +151,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Advanced Regression Models with R</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
     <div class="dropdown">
-      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
       <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
           <li>
             <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
-              <i class="bi bi-bi-twitter pe-1"></i>
+              <i class="bi bi-twitter pe-1"></i>
             Twitter
             </a>
           </li>
           <li>
             <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
-              <i class="bi bi-bi-facebook pe-1"></i>
+              <i class="bi bi-facebook pe-1"></i>
             Facebook
             </a>
           </li>
           <li>
             <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
-              <i class="bi bi-bi-linkedin pe-1"></i>
+              <i class="bi bi-linkedin pe-1"></i>
             LinkedIn
             </a>
           </li>
@@ -196,9 +204,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">Modelling the mean</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -231,9 +239,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Model Choice</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -260,9 +268,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">Modelling the distribution</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -289,9 +297,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
  <span class="menu-text">Summary and references</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -306,9 +314,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -336,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -349,17 +357,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#owls" id="toc-owls" class="nav-link" data-scroll-target="#owls"><span class="header-section-number">C.4</span> Owls</a></li>
   <li><a href="#snails" id="toc-snails" class="nav-link" data-scroll-target="#snails"><span class="header-section-number">C.5</span> Snails</a></li>
   <li><a href="#seed-bank" id="toc-seed-bank" class="nav-link" data-scroll-target="#seed-bank"><span class="header-section-number">C.6</span> Seed bank</a></li>
-  <li><a href="#snouter" id="toc-snouter" class="nav-link" data-scroll-target="#snouter"><span class="header-section-number">C.7</span> Snouter</a>
-  <ul class="collapse">
-  <li><a href="#volcanoe-island" id="toc-volcanoe-island" class="nav-link" data-scroll-target="#volcanoe-island"><span class="header-section-number">C.7.1</span> Volcanoe Island</a></li>
-  </ul></li>
+  <li><a href="#snouter" id="toc-snouter" class="nav-link" data-scroll-target="#snouter"><span class="header-section-number">C.7</span> Snouter</a></li>
+  <li><a href="#volcanoe-island" id="toc-volcanoe-island" class="nav-link" data-scroll-target="#volcanoe-island"><span class="header-section-number">C.8</span> Volcanoe Island</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6C-CaseStudies.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6C-CaseStudies.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6C-CaseStudies.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Case studies</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Appendix C — Case studies</h1>
 </div>
@@ -374,7 +380,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
+
 
 <p>General strategy for analysis:</p>
 <ol type="1">
@@ -426,7 +434,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(hurricanes<span class="sc">$</span>MasFem, hurricanes<span class="sc">$</span>NDAM, <span class="at">cex =</span> hurricanes<span class="sc">$</span>alldeaths<span class="sc">/</span><span class="dv">20</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">4</span>, <span class="at">col=</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_6-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The original model from the paper fits a negative binomial, using <code>mgcv</code>.{R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular mass::glm.nb and lme4::glmer.nb often had convergence problems.</p>
@@ -645,7 +657,11 @@ the predictors scale(MasFem), scale(Minpressure_Updated_2014) are one-column
 matrices that were converted to vectors</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Another way to phrase the result is that we don’t find a main effect of MasFem. However, to be fair: the current results to say that there is a significant difference at high NDAM, and such a difference, if it existed, would be importat.</p>
@@ -664,19 +680,35 @@ matrices that were converted to vectors</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>MasFem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>Minpressure_Updated_2014)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-4.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-8-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>No significant deviation in the general DHARMa plot, but residuals ~ NDAM looks funny, which was also pointed out by Bob O’Hara in a blog post after publication of the paper. Let’s try to correct this - scaling with ^0.2 does a great job:</p>
@@ -687,11 +719,19 @@ matrices that were converted to vectors</code></pre>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(correctedModel, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotResiduals</span>(res, hurricanes<span class="sc">$</span>NDAM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(correctedModel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -745,7 +785,11 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(MasFem <span class="sc">~</span> Year, <span class="at">data =</span> hurricanes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>So, we could either take the earlier data out, which would remove half of our data, or we have to worry about confounding with variables that change over time. The most obvious thing would be to take time itself (Year) in the model, to correct for temporal confounding.</p>
@@ -931,8 +975,8 @@ Formula: went.phero ~ ant_group_main + directionConst + directionPhero +
     Orientation + (1 | Colony)
    Data: dat
 
-     AIC      BIC   logLik deviance df.resid 
-  2192.5   2225.7  -1090.2   2180.5     1869 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   2192.5    2225.7   -1090.2    2180.5      1869 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -945,7 +989,7 @@ Number of obs: 1875, groups:  Colony, 15
 
 Fixed effects:
                                        Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                              1.9505     0.3330   5.857 4.71e-09 ***
+(Intercept)                              1.9505     0.3330   5.857 4.72e-09 ***
 ant_group_mainSecondvisit_1st_to_phero   0.1311     0.1248   1.050  0.29351    
 directionConstTRUE                      -1.1465     0.2409  -4.760 1.94e-06 ***
 directionPheroright                     -0.5680     0.1984  -2.863  0.00420 ** 
@@ -958,7 +1002,7 @@ Correlation of Fixed Effects:
 ant_g_S_1__ -0.252                     
 drctnCnTRUE -0.413 -0.062              
 drctnPhrrgh -0.441 -0.001  0.306       
-Orinttnrght -0.182 -0.093 -0.074  0.085</code></pre>
+Orinttnrght -0.182 -0.094 -0.074  0.085</code></pre>
 </div>
 </div>
 <p>Surprisingly, we find large effects of the other variables. Because of these large effects, testing for interactions with the experimental treatment as well</p>
@@ -978,8 +1022,8 @@ Formula: went.phero ~ ant_group_main * (+directionConst + directionPhero +
     Orientation) + (1 | Colony)
    Data: dat
 
-     AIC      BIC   logLik deviance df.resid 
-  2131.2   2181.0  -1056.6   2113.2     1866 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   2131.2    2181.0   -1056.6    2113.2      1866 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -992,22 +1036,22 @@ Number of obs: 1875, groups:  Colony, 15
 
 Fixed effects:
                                                            Estimate Std. Error
-(Intercept)                                                  2.7384     0.3914
+(Intercept)                                                  2.7384     0.3913
 ant_group_mainSecondvisit_1st_to_phero                      -0.7658     0.2763
 directionConstTRUE                                          -1.9420     0.3065
-directionPheroright                                         -1.8133     0.3008
+directionPheroright                                         -1.8133     0.3007
 Orientationright                                             0.2322     0.2345
-ant_group_mainSecondvisit_1st_to_phero:directionConstTRUE    1.0467     0.2638
+ant_group_mainSecondvisit_1st_to_phero:directionConstTRUE    1.0466     0.2638
 ant_group_mainSecondvisit_1st_to_phero:directionPheroright   1.4752     0.2664
 ant_group_mainSecondvisit_1st_to_phero:Orientationright     -0.8261     0.2668
                                                            z value Pr(&gt;|z|)    
-(Intercept)                                                  6.997 2.61e-12 ***
-ant_group_mainSecondvisit_1st_to_phero                      -2.771  0.00558 ** 
+(Intercept)                                                  6.999 2.58e-12 ***
+ant_group_mainSecondvisit_1st_to_phero                      -2.772  0.00557 ** 
 directionConstTRUE                                          -6.337 2.34e-10 ***
-directionPheroright                                         -6.029 1.65e-09 ***
-Orientationright                                             0.990  0.32199    
+directionPheroright                                         -6.030 1.64e-09 ***
+Orientationright                                             0.990  0.32202    
 ant_group_mainSecondvisit_1st_to_phero:directionConstTRUE    3.967 7.28e-05 ***
-ant_group_mainSecondvisit_1st_to_phero:directionPheroright   5.537 3.08e-08 ***
+ant_group_mainSecondvisit_1st_to_phero:directionPheroright   5.538 3.07e-08 ***
 ant_group_mainSecondvisit_1st_to_phero:Orientationright     -3.097  0.00196 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -1019,7 +1063,7 @@ drctnCnTRUE -0.433  0.241
 drctnPhrrgh -0.512  0.369     0.186                                    
 Orinttnrght -0.282  0.428    -0.100  0.008                             
 a__S_1__:CT  0.217 -0.443    -0.592  0.043  0.015                      
-an__S_1__:P  0.343 -0.529     0.007 -0.733 -0.049 -0.072               
+an__S_1__:P  0.342 -0.528     0.007 -0.733 -0.048 -0.072               
 an__S_1__:O  0.225 -0.526     0.089  0.034 -0.845 -0.021      0.046    </code></pre>
 </div>
 </div>
@@ -1027,7 +1071,11 @@ an__S_1__:O  0.225 -0.526     0.089  0.034 -0.845 -0.021      0.046    </code></
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">allEffects</span>(fit2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The results are difficult to interpret. I would think that there was some bias in the experiment, which led to an effect of the Maze direction, which then create a spill-over to the other (and in particular the main) predictors.</p>
@@ -1035,7 +1083,11 @@ an__S_1__:O  0.225 -0.526     0.089  0.034 -0.845 -0.021      0.046    </code></
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>As we would significant interactions, we would probably see something if we plot residuals against predictors or their interactions, but I want to show you something else:</p>
@@ -1069,11 +1121,19 @@ an__S_1__:O  0.225 -0.526     0.089  0.034 -0.845 -0.021      0.046    </code></
  DHARMa: qgam was unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1089,7 +1149,11 @@ alternative hypothesis: two.sided</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">simulateResiduals</span>(m2, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>res2 <span class="ot">&lt;-</span> <span class="fu">recalculateResiduals</span>(res, <span class="at">group =</span> dat<span class="sc">$</span>Colony)</span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1116,11 +1180,19 @@ alternative hypothesis: two.sided</code></pre>
  DHARMa: qgam was unable to calculate quantile regression for quantile 0.75. Possibly to few (unique) data points / predictions. The quantile will be ommited in plots and significance calculations. </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-3.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-21-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1148,7 +1220,11 @@ alternative hypothesis: two.sided</code></pre>
 <span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1)</span>
 <span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_3-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/chunk_chapter5_task_3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution no-icon callout-titled">
@@ -1230,11 +1306,19 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(m1, <span class="at">plot =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1247,7 +1331,11 @@ alternative hypothesis: two.sided</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-3.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-22-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1285,8 +1373,8 @@ Solution using brms
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000458 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.58 seconds.
+Chain 1: Gradient evaluation took 0.000209 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 2.09 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1303,15 +1391,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 2.578 seconds (Warm-up)
-Chain 1:                2.871 seconds (Sampling)
-Chain 1:                5.449 seconds (Total)
+Chain 1:  Elapsed Time: 1.328 seconds (Warm-up)
+Chain 1:                1.159 seconds (Sampling)
+Chain 1:                2.487 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 0.000198 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1.98 seconds.
+Chain 2: Gradient evaluation took 9.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.91 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -1328,15 +1416,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 4.067 seconds (Warm-up)
-Chain 2:                2.684 seconds (Sampling)
-Chain 2:                6.751 seconds (Total)
+Chain 2:  Elapsed Time: 1.448 seconds (Warm-up)
+Chain 2:                1.292 seconds (Sampling)
+Chain 2:                2.74 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 0.000206 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 2.06 seconds.
+Chain 3: Gradient evaluation took 9.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.91 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -1353,15 +1441,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 3.459 seconds (Warm-up)
-Chain 3:                3.217 seconds (Sampling)
-Chain 3:                6.676 seconds (Total)
+Chain 3:  Elapsed Time: 1.303 seconds (Warm-up)
+Chain 3:                1.056 seconds (Sampling)
+Chain 3:                2.359 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 0.000203 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 2.03 seconds.
+Chain 4: Gradient evaluation took 8.8e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.88 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -1378,9 +1466,9 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 3.887 seconds (Warm-up)
-Chain 4:                3.107 seconds (Sampling)
-Chain 4:                6.994 seconds (Total)
+Chain 4:  Elapsed Time: 1.286 seconds (Warm-up)
+Chain 4:                0.931 seconds (Sampling)
+Chain 4:                2.217 seconds (Total)
 Chain 4: </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1395,23 +1483,23 @@ Formula: SiblingNegotiation ~ FoodTreatment * SexParent + (1 | Nest) + offset(lo
 Group-Level Effects: 
 ~Nest (Number of levels: 27) 
               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     0.40      0.10     0.22     0.62 1.00     1220     1568
+sd(Intercept)     0.39      0.10     0.21     0.61 1.00     1374     2113
 
 Population-Level Effects: 
                                     Estimate Est.Error l-95% CI u-95% CI Rhat
-Intercept                               0.71      0.14     0.44     1.00 1.00
-FoodTreatmentSatiated                  -0.78      0.17    -1.10    -0.46 1.00
-SexParentMale                          -0.03      0.15    -0.33     0.24 1.00
-FoodTreatmentSatiated:SexParentMale     0.17      0.20    -0.24     0.56 1.00
+Intercept                               0.72      0.14     0.45     0.99 1.00
+FoodTreatmentSatiated                  -0.78      0.16    -1.09    -0.45 1.00
+SexParentMale                          -0.03      0.14    -0.32     0.25 1.00
+FoodTreatmentSatiated:SexParentMale     0.16      0.21    -0.25     0.56 1.00
                                     Bulk_ESS Tail_ESS
-Intercept                               2490     2754
-FoodTreatmentSatiated                   2724     2538
-SexParentMale                           3266     2706
-FoodTreatmentSatiated:SexParentMale     3205     2447
+Intercept                               2668     2826
+FoodTreatmentSatiated                   3341     2963
+SexParentMale                           3450     3277
+FoodTreatmentSatiated:SexParentMale     3242     2710
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-shape     0.84      0.06     0.72     0.97 1.00     4502     2565
+shape     0.84      0.07     0.72     0.98 1.00     5466     2991
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1419,10 +1507,18 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m2, <span class="at">ask =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -1550,8 +1646,8 @@ Formula: Bulinus_tot ~ offset(log(duration)) + site_type + sTemp_Water +
     (swater_depth | coll_date)
    Data: data
 
-     AIC      BIC   logLik deviance df.resid 
- 48873.9  48992.3 -24415.9  48831.9     2051 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+  48873.9   48992.3  -24415.9   48831.9      2051 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -1559,31 +1655,31 @@ Scaled residuals:
 
 Random effects:
  Groups            Name         Variance Std.Dev. Corr
- coll_date         (Intercept)  1.8752   1.3694       
-                   swater_depth 1.2494   1.1178   0.29
+ coll_date         (Intercept)  1.8754   1.3694       
+                   swater_depth 1.2493   1.1177   0.29
  site_irn:locality (Intercept)  0.7207   0.8489       
- locality          (Intercept)  0.8319   0.9121       
- year              (Intercept)  0.1613   0.4016       
+ locality          (Intercept)  0.8318   0.9120       
+ year              (Intercept)  0.1613   0.4017       
 Number of obs: 2072, groups:  
 coll_date, 191; site_irn:locality, 89; locality, 20; year, 5
 
 Fixed effects:
                    Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)       -0.971234   0.362760  -2.677 0.007421 ** 
-site_typecanal.3  -0.078434   0.238250  -0.329 0.741997    
-site_typepond      0.291206   0.412076   0.707 0.479766    
-site_typerice.p   -0.774651   0.343155  -2.257 0.023981 *  
-site_typeriver    -0.531948   0.423089  -1.257 0.208646    
-site_typerivulet  -0.449273   0.555608  -0.809 0.418737    
-site_typespillway -0.422274   0.558556  -0.756 0.449644    
-sTemp_Water       -0.055653   0.018103  -3.074 0.002110 ** 
-spH               -0.029208   0.008983  -3.251 0.001148 ** 
-sCond             -0.015815   0.009465  -1.671 0.094733 .  
-swmo_prec         -0.212255   0.099804  -2.127 0.033444 *  
-swater_speed_ms   -0.128273   0.009414 -13.626  &lt; 2e-16 ***
-swater_depth      -0.290808   0.084218  -3.453 0.000554 ***
-sTemp_Air         -0.102229   0.013609  -7.512 5.83e-14 ***
-seas_wmowet       -0.057509   0.205743  -0.280 0.779848    
+(Intercept)       -0.971159   0.363661  -2.671 0.007574 ** 
+site_typecanal.3  -0.078307   0.238497  -0.328 0.742657    
+site_typepond      0.291211   0.412801   0.705 0.480530    
+site_typerice.p   -0.774537   0.343706  -2.253 0.024228 *  
+site_typeriver    -0.532048   0.424187  -1.254 0.209741    
+site_typerivulet  -0.448872   0.557398  -0.805 0.420647    
+site_typespillway -0.422082   0.560277  -0.753 0.451242    
+sTemp_Water       -0.055643   0.018103  -3.074 0.002114 ** 
+spH               -0.029211   0.008983  -3.252 0.001147 ** 
+sCond             -0.015816   0.009465  -1.671 0.094709 .  
+swmo_prec         -0.212222   0.099810  -2.126 0.033481 *  
+swater_speed_ms   -0.128274   0.009414 -13.626  &lt; 2e-16 ***
+swater_depth      -0.290767   0.084223  -3.452 0.000556 ***
+sTemp_Air         -0.102232   0.013609  -7.512 5.82e-14 ***
+seas_wmowet       -0.057522   0.205846  -0.279 0.779907    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -1598,10 +1694,15 @@ Use print(x, correlation=TRUE)  or
 <div class="cell">
 <div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">re.form =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details
+DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Does not look great -&gt; dispersion problems -&gt; switch to -&gt; negative binomial distribution:</p>
@@ -1663,7 +1764,11 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model3, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Residuals look better but there is still a dispersion problem.</p>
@@ -1735,14 +1840,22 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model4, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Dispersion tests are n.s.:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testDispersion</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1755,7 +1868,11 @@ alternative hypothesis: two.sided</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testZeroInflation</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-33-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-33-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1774,7 +1891,11 @@ alternative hypothesis: two.sided</code></pre>
 <span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a>groupLocations <span class="ot">=</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(data<span class="sc">$</span>sLat, data<span class="sc">$</span>sLon ), <span class="fu">list</span>( data<span class="sc">$</span>site_irn), mean)</span>
 <span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="fu">testSpatialAutocorrelation</span>(res2, <span class="at">x =</span> groupLocations<span class="sc">$</span>V1, <span class="at">y =</span> groupLocations<span class="sc">$</span>V2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1802,10 +1923,15 @@ alternative hypothesis: Distance-based autocorrelation</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details
+DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>glmmTMB does not support conditional simulations but we can create conditional simulations on our own:</p>
@@ -1816,7 +1942,11 @@ alternative hypothesis: Distance-based autocorrelation</code></pre>
 <span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model5)[,<span class="dv">1</span>], pred)</span>
 <span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Residuals do not look perfect but I would say that we can stop here now.</p>
@@ -1912,10 +2042,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
+<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details
+DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We have dispersion problems, but we cannot model the dispersion for binomial models.</p>
@@ -1926,7 +2061,11 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>groupLocations <span class="ot">=</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(data<span class="sc">$</span>sLat, data<span class="sc">$</span>sLon ), <span class="fu">list</span>( data<span class="sc">$</span>site_irn), mean)</span>
 <span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a><span class="fu">testSpatialAutocorrelation</span>(res2, <span class="at">x =</span> groupLocations<span class="sc">$</span>V1, <span class="at">y =</span> groupLocations<span class="sc">$</span>V2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1952,7 +2091,11 @@ alternative hypothesis: Distance-based autocorrelation</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model2, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>They look good now!</p>
@@ -2012,15 +2155,21 @@ Solution of multivariate (joint) species distribution model
 <span id="cb121-36"><a href="#cb121-36" aria-hidden="true" tabindex="-1"></a>                 sTemp_Air <span class="sc">+</span> seas_wmo) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>year) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>locality<span class="sc">/</span>site_irn) <span class="sc">+</span>  (swater_depth<span class="sc">|</span>coll_date<span class="sc">:</span>Species) <span class="sc">+</span> <span class="fu">exp</span>(<span class="dv">0</span><span class="sc">+</span>numFac<span class="sc">|</span>group) <span class="sc">+</span> <span class="fu">rr</span>(Species <span class="sc">+</span> <span class="dv">0</span><span class="sc">|</span>locality<span class="sc">:</span>site_irn, <span class="at">d =</span> <span class="dv">2</span>),</span>
 <span id="cb121-37"><a href="#cb121-37" aria-hidden="true" tabindex="-1"></a>                 <span class="at">dispformula =</span> <span class="sc">~</span><span class="dv">0</span><span class="sc">+</span>Species<span class="sc">+</span>Species<span class="sc">:</span>(swater_speed_ms <span class="sc">+</span> swater_depth<span class="sc">+</span>sCond),</span>
 <span id="cb121-38"><a href="#cb121-38" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data,  <span class="at">family =</span> nbinom2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in finalizeTMB(TMBStruc, obj, fit, h, data.tmb.old): Model convergence
+problem; singular convergence (7). See vignette('troubleshooting'),
+help('diagnose')</code></pre>
+</div>
 </div>
 <p>Unconditional residuals:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(modelJoint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>DHARMa:testOutliers with type = binomial may have inflated Type I error rates for integer-valued distributions. To get a more exact result, it is recommended to re-run testOutliers with type = 'bootstrap'. See ?testOutliers for details</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(modelJoint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Conditional residuals:</p>
@@ -2031,7 +2180,11 @@ Solution of multivariate (joint) species distribution model
 <span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(modelJoint)[,<span class="dv">1</span>], pred)</span>
 <span id="cb124-5"><a href="#cb124-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -2098,7 +2251,11 @@ Solution for SBDensity (lmm)
 <div class="cell">
 <div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(data<span class="sc">$</span>SBDensity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>logSBDensity <span class="ot">=</span> <span class="fu">log</span>(data<span class="sc">$</span>SBDensity <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -2206,14 +2363,22 @@ sHum       -0.004 -0.008 -0.003  0.004  0.512</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model2, <span class="fu">resid</span>(., <span class="at">rescale=</span><span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">fitted</span>(.) <span class="sc">|</span> Species, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid" width="960"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>There seems to be a pattern!</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model2, <span class="fu">resid</span>(., <span class="at">rescale=</span><span class="cn">TRUE</span>) <span class="sc">~</span> sAltitude <span class="sc">|</span> Species, <span class="at">abline =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid" width="960"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The pattern seems to be caused by sAltitude (check <code>plot(model2, resid(., rescale=TRUE) ~ sSeedMass | Species, abline = 1)</code> )</p>
@@ -2272,7 +2437,11 @@ sHum        0.015 -0.009 -0.009  0.004  0.367</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(model3, <span class="at">re.form=</span><span class="cn">NULL</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>There seems to be dispersion problem.</p>
@@ -4251,7 +4420,11 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model5, <span class="at">plot =</span> <span class="cn">TRUE</span>) <span class="co"># Unconditional simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -4308,7 +4481,7 @@ Solution for SBPA (glmm)
 <span id="cb158-5"><a href="#cb158-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data, <span class="at">family =</span> <span class="fu">binomial</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
-Model failed to converge with max|grad| = 0.0110149 (tol = 0.002, component 1)</code></pre>
+Model failed to converge with max|grad| = 0.0112646 (tol = 0.002, component 1)</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -4319,28 +4492,28 @@ Formula: SBPA ~ sSeedMass + sSeedShape + sSeedN + sAltitude + sHum + (1 |
     Site) + (sAltitude | Species)
    Data: data
 
-     AIC      BIC   logLik deviance df.resid 
-  1368.9   1423.4   -674.4   1348.9     1719 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1368.9    1423.4    -674.4    1348.9      1719 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--2.5937 -0.2658 -0.1017  0.2001  3.3352 
+-2.5936 -0.2658 -0.1017  0.2001  3.3351 
 
 Random effects:
  Groups  Name        Variance Std.Dev. Corr 
- Species (Intercept) 8.16183  2.8569        
-         sAltitude   4.39263  2.0959   -0.13
- Site    (Intercept) 0.06796  0.2607        
+ Species (Intercept) 8.16403  2.8573        
+         sAltitude   4.39310  2.0960   -0.13
+ Site    (Intercept) 0.06797  0.2607        
 Number of obs: 1729, groups:  Species, 152; Site, 17
 
 Fixed effects:
             Estimate Std. Error z value Pr(&gt;|z|)    
 (Intercept)  -2.6286     0.4066  -6.465 1.01e-10 ***
-sSeedMass    -1.3673     0.6432  -2.126   0.0335 *  
-sSeedShape   -0.5805     0.3099  -1.873   0.0610 .  
-sSeedN       -2.1361     1.3166  -1.622   0.1047    
-sAltitude    -1.3928     0.3364  -4.140 3.47e-05 ***
-sHum         -0.1019     0.1308  -0.779   0.4358    
+sSeedMass    -1.3671     0.6432  -2.125   0.0335 *  
+sSeedShape   -0.5807     0.3099  -1.873   0.0610 .  
+sSeedN       -2.1354     1.3164  -1.622   0.1048    
+sAltitude    -1.3931     0.3365  -4.140 3.47e-05 ***
+sHum         -0.1021     0.1308  -0.781   0.4350    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -4348,11 +4521,11 @@ Correlation of Fixed Effects:
            (Intr) sSdMss sSdShp sSeedN sAlttd
 sSeedMass   0.221                            
 sSeedShape  0.033  0.062                     
-sSeedN      0.336  0.061 -0.066              
+sSeedN      0.336  0.060 -0.066              
 sAltitude   0.132  0.142  0.079  0.012       
 sHum        0.023  0.002 -0.003 -0.011  0.229
 optimizer (Nelder_Mead) convergence code: 0 (OK)
-Model failed to converge with max|grad| = 0.0110149 (tol = 0.002, component 1)</code></pre>
+Model failed to converge with max|grad| = 0.0112646 (tol = 0.002, component 1)</code></pre>
 </div>
 </div>
 <p>Model did not converge, but there is a trick which often helps. The default optimizer in lme4 is not the best optimizer, changing it to ‘bobyqa’ often helps with convergence issues</p>
@@ -4373,8 +4546,8 @@ Formula: SBPA ~ sSeedMass + sSeedShape + sSeedN + sAltitude + sHum + (1 |
    Data: data
 Control: glmerControl("bobyqa")
 
-     AIC      BIC   logLik deviance df.resid 
-  1368.9   1423.4   -674.4   1348.9     1719 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1368.9    1423.4    -674.4    1348.9      1719 
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -4389,10 +4562,10 @@ Number of obs: 1729, groups:  Species, 152; Site, 17
 
 Fixed effects:
             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  -2.6284     0.4066  -6.465 1.01e-10 ***
+(Intercept)  -2.6284     0.4066  -6.465 1.02e-10 ***
 sSeedMass    -1.3693     0.6438  -2.127   0.0334 *  
 sSeedShape   -0.5816     0.3100  -1.876   0.0606 .  
-sSeedN       -2.1419     1.3181  -1.625   0.1042    
+sSeedN       -2.1419     1.3184  -1.625   0.1042    
 sAltitude    -1.3920     0.3362  -4.141 3.46e-05 ***
 sHum         -0.1022     0.1307  -0.781   0.4345    
 ---
@@ -4413,7 +4586,11 @@ sHum        0.023  0.002 -0.003 -0.011  0.229</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">simulateResiduals</span>(model1, <span class="at">re.form=</span><span class="cn">NULL</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Residuals look good!</p>
@@ -4450,7 +4627,11 @@ sHum        0.023  0.002 -0.003 -0.011  0.229</code></pre>
 <span id="cb165-29"><a href="#cb165-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> data)</span>
 <span id="cb165-30"><a href="#cb165-30" aria-hidden="true" tabindex="-1"></a><span class="fu">simulateResiduals</span>(model6, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
@@ -4465,7 +4646,11 @@ Scaled residual values: 0.5024676 0.5329717 0.5854716 0.9968902 0.7858493 0.5647
 <span id="cb167-3"><a href="#cb167-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">createDHARMa</span>(simulations, <span class="fu">model.frame</span>(model6)[,<span class="dv">1</span>], pred)</span>
 <span id="cb167-4"><a href="#cb167-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="6C-CaseStudies_files/figure-html/unnamed-chunk-65-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -4495,15 +4680,15 @@ Solution
 </div>
 </div>
 </div>
-<section id="volcanoe-island" class="level3" data-number="C.7.1">
-<h3 data-number="C.7.1" class="anchored" data-anchor-id="volcanoe-island"><span class="header-section-number">C.7.1</span> Volcanoe Island</h3>
+</section>
+<section id="volcanoe-island" class="level2" data-number="C.8">
+<h2 data-number="C.8" class="anchored" data-anchor-id="volcanoe-island"><span class="header-section-number">C.8</span> Volcanoe Island</h2>
 <p>Option 2: Analyse ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (including residual checks and everything) to understand the predictors that determine the value of</p>
 <p>windObs (numeric) lizards (1/0) beetles2 (counts) survived (k/n) There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (RE, overdispersion, zero-inflation, spatial autocorrelation) could appear in this data.</p>
 <p>Hint: it is possible that the possibility to observe a species depends on wind, and it is possible that lizards eat beetles, so you can also consider these variables (or predictions for these variables) as predictors of the others.</p>
 <p>Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survived, all-survived) ~ predictor, data = data, family = “binomial”)</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -4542,18 +4727,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -4585,11 +4759,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/TheoreticalEcology\.github\.io\/AdvancedRegressionModels\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -4599,8 +4812,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -4612,7 +4834,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -4656,6 +5001,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -4681,6 +5027,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -4742,7 +5114,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./6B-CheatSheet.html" class="pagination-link">
+      <a href="./6B-CheatSheet.html" class="pagination-link" aria-label="Cheat sheet">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></span>
       </a>          
   </div>
@@ -4753,4 +5125,5 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-</body></html>
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6C-CaseStudies.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
