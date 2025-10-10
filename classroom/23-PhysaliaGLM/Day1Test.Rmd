@@ -1,0 +1,34 @@
+---
+title: "Test"
+author: "Florian Hartig"
+date: "2023-06-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(EcoData)
+
+str(plantHeight)
+
+plot(loght ~ temp, data = plantHeight)
+
+
+
+```
+
+Add some text here inbetween 
+
+```{r}
+model = lm(loght ~ temp, data = plantHeight)
+par(mfrow = c(2, 2))
+plot(model)
+abline(model)
+summary(model)
+```
+
+

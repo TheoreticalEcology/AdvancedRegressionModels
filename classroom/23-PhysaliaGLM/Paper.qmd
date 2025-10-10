@@ -1,0 +1,109 @@
+---
+title: "Paper"
+format: html
+editor: visual
+---
+
+## Introduction
+
+The questions we adress in this paper are
+
+1.  Is there a significant effect of temperature on plant height?
+
+2.  Does the temperature effect, if it exists, differ between growth forms?
+
+## 
+
+
+
+
+## Methods 
+
+### Data collection 
+
+| Col1   | Col2               |
+|--------|--------------------|
+| height | plant height in cm |
+|        |                    |
+|        |                    |
+|        |                    |
+|        |                    |
+
+### Statistical analysis
+
+Data cleaning -\> Details appendix
+
+To analyze these questions, we used linear (mixed) models, regressing height against temperature and its interaction with growthForm
+
+height \~ temp \* growthform + (1\|Family)
+
+**Don't just say what you did but also WHY!**
+
+-   Why were variables included - confounders, interest,
+
+-   Why a particular functional shape?
+
+-   Why RE and all that
+
+Residual for all models were checked (Appendix)
+
+## 
+
+
+
+
+## Results 
+
+### Question1
+
+### Question2
+
+Our second question was if growth forms differ in termerature. Our results, based on a linear regression, are that there are no significant differences between herbs and shrubs in their temp dependence, but trees respond significantly less to temp than herbs (-0.24, +/- 0.07, p = 0.001). In fact, while herbs responded positive in their height to temp (XXX), tree height did not respond signficantly to temperature (XXXX).
+
+Table?
+
+Figure?
+
+Additional analyses / calculations for the appendix?
+
+|                     |       |          |     |         |       |
+|---------------------|-------|----------|-----|---------|-------|
+| r2 = xx, AIC = xxx  |       |          |     |         |       |
+| Variable            |       | Estimate | CI  | p-value | ANOVA |
+| int                 |       |          |     |         |       |
+| temp                |       |          |     |         |       |
+| temp\^2             |       |          |     |         |       |
+| growth              | shrub |          |     | \*      | \*\*  |
+| form                | tree  |          |     | \*      | \*\*  |
+
+## 
+
+
+
+Conclusions 
+
+### Summary
+
+Big summary
+
+### Discussion 
+
+### Limitations 
+
+BAD: It would have been useful to have more predictors or larger sample size -\> WHY?
+
+Keep limitations to real problem!
+
+What to do about n.s. results?
+
+-   Post-hoc power analysis
+
+-   Easier: confidence interval of n.s. effect - what effects, if they exist, would be compatible with the data
+
+### Conclusions
+
+## 
+
+## Code and Data availability 
+
+Code + data on Github, Zenodo snapshot DOI

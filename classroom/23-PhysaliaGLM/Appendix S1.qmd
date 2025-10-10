@@ -1,0 +1,29 @@
+---
+title: "Appendix S1"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## Data cleaning
+
+```{r}
+library(EcoData)
+plantHeight$sTemp = scale(plantHeight$temp)
+plantHeight$sLat = scale(plantHeight$lat)
+plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
+```
+
+## Statistical analysis
+
+### Question 1 - height \~ temp ?
+
+### Question 2 - height \~ temp depends on growth form?
+
+```{r}
+library(effects)
+fit <- lm(loght ~ sTemp*growthform2 , data = plantHeight)
+summary(fit)
+plot(allEffects(fit))
+```

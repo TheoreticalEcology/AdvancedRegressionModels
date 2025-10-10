@@ -1,0 +1,67 @@
+---
+title: "Effect of Roads on Elk Presence"
+author: "Florian Hartig"
+date: "2023-10-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+```{r}
+set.seed(123)
+```
+
+
+# Loading in the data
+
+```{r}
+load(file = "../AdvancedBiostatistics/0_Data/Data/elk_data.RData")
+
+library(MASS)
+
+```
+
+# Data cleaning
+
+
+# Exploratory analysis
+
+
+# Statistical analysis
+
+```{r}
+
+fit <- glm(presence ~ (dist_roads  + dem + ruggedness + habitat + NDVI)^2, data = elk_data, family = "binomial")
+predictive_model = MASS::stepAIC(fit, direction = "both")
+
+
+
+fit <- glm(presence ~ dist_roads + dem + ruggedness + habitat , data = elk_data, family = "binomial")
+summary(fit)
+
+```
+
+## Residual checks
+
+```{r}
+library(effects)
+library(DHARMa)
+plot(allEffects(fit))
+
+res <- simulateResiduals(fit, plot = T)
+plotResiduals(res, elk_data$dist_roads, quantreg = T)
+plotResiduals(res, elk_data$NDVI, quantreg = T)
+plotResiduals(res, elk_data$dem, quantreg = T)
+```
+
+
+
+
+```{r}
+sessionInfo()
+```
+
