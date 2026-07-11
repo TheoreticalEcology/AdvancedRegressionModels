@@ -18,8 +18,8 @@ The aim of this book is to introduce you to the main techniques and concepts tha
 
 In this course, we work with the combination of R + RStudio.
 
--   R is the calculation engine that performs the computations.
--   RStudio is the editor that helps you sending inputs to R and collect outputs.
+- R is the calculation engine that performs the computations.
+- RStudio is the editor that helps you sending inputs to R and collect outputs.
 
 Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1" target="_blank" rel="noopener">here</a> is a good video introducing the basic system and how R and RStudio interact.
 
@@ -118,12 +118,12 @@ allow you to explore the structure of variables and the data they contain. Ask y
 
 What is the meaning of the three functions, and what is the structure / properties of the following data types in R:
 
--   Atomic types (which atomic types exist),
--   list,
--   vector,
--   data.frame,
--   matrix,
--   array.
+- Atomic types (which atomic types exist),
+- list,
+- vector,
+- data.frame,
+- matrix,
+- array.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -198,8 +198,8 @@ vector[c(T, F)] # works but repeats T,F 3 times - error prone!
 
 For a list, it's basically the same, except the following points:
 
--   Elements in lists usually have a name, so you can also access those via `list$name`{.R}.
--   Lists accessed with \[\] return a list. If you want to select a single element, you have to access it via \[\[\]\], as in `list[[2]]`{.R}.
+- Elements in lists usually have a name, so you can also access those via `list$name`{.R}.
+- Lists accessed with \[\] return a list. If you want to select a single element, you have to access it via \[\[\]\], as in `list[[2]]`{.R}.
 
 ```{r}
 myList = list(a = 1, b = "dog", c = TRUE)
@@ -249,8 +249,8 @@ Apart from selecting data, you will often combine or calculate statistics on dat
 
 Maybe this is a good time to remind you about functions. The two basic options we use in R are:
 
--   Variables / data structures.
--   Functions.
+- Variables / data structures.
+- Functions.
 
 We have already used variables / data structures. Variables have a name and if you type this name in R, you get the values that are inside the respective data structure.
 
@@ -481,8 +481,8 @@ out
 
 I assume that you have already made plots with R. Else [here](https://www.youtube.com/embed/UXeJ1bNYCos) is a super-quick 5-min introduction video. In this course, we will not be using a lot graphics, but it will be useful for you to know the basic plot commands. Note in particular that the following two commands are identical:
 
--   `plot(iris$Sepal.Length, iris$Sepal.Width)`{.R}
--   `plot(Sepal.Width ~ Sepal.Length, data = iris)`{.R}
+- `plot(iris$Sepal.Length, iris$Sepal.Width)`{.R}
+- `plot(Sepal.Width ~ Sepal.Length, data = iris)`{.R}
 
 The second option is preferable, because it allows you to subset data easier and can be directly copied to regression functions.
 
@@ -505,8 +505,8 @@ plot(iris$Sepal.Length, iris$Sepal.Width, col = iris$Species,
 
 For more help on plotting, I recommend:
 
--   Read ["Fundamentals of Data Visualization" by Claus O. Wilke](https://clauswilke.com/dataviz/) (explains all standard plots and why / when to use them)
--   [Data to Viz](https://www.data-to-viz.com) provides a decision tree for visualizations and links to the [R graph gallery](https://r-graph-gallery.com/index.html)
+- Read ["Fundamentals of Data Visualization" by Claus O. Wilke](https://clauswilke.com/dataviz/) (explains all standard plots and why / when to use them)
+- [Data to Viz](https://www.data-to-viz.com) provides a decision tree for visualizations and links to the [R graph gallery](https://r-graph-gallery.com/index.html)
 
 ### Final exercise
 

@@ -14,12 +14,9 @@ The questions we adress in this paper are
 
 ## 
 
+## Methods
 
-
-
-## Methods 
-
-### Data collection 
+### Data collection
 
 | Col1   | Col2               |
 |--------|--------------------|
@@ -39,20 +36,17 @@ height \~ temp \* growthform + (1\|Family)
 
 **Don't just say what you did but also WHY!**
 
--   Why were variables included - confounders, interest,
+- Why were variables included - confounders, interest,
 
--   Why a particular functional shape?
+- Why a particular functional shape?
 
--   Why RE and all that
+- Why RE and all that
 
 Residual for all models were checked (Appendix)
 
 ## 
 
-
-
-
-## Results 
+## Results
 
 ### Question1
 
@@ -66,29 +60,27 @@ Figure?
 
 Additional analyses / calculations for the appendix?
 
-|                     |       |          |     |         |       |
-|---------------------|-------|----------|-----|---------|-------|
-| r2 = xx, AIC = xxx  |       |          |     |         |       |
-| Variable            |       | Estimate | CI  | p-value | ANOVA |
-| int                 |       |          |     |         |       |
-| temp                |       |          |     |         |       |
-| temp\^2             |       |          |     |         |       |
-| growth              | shrub |          |     | \*      | \*\*  |
-| form                | tree  |          |     | \*      | \*\*  |
+|                    |       |          |     |         |       |
+|--------------------|-------|----------|-----|---------|-------|
+| r2 = xx, AIC = xxx |       |          |     |         |       |
+| Variable           |       | Estimate | CI  | p-value | ANOVA |
+| int                |       |          |     |         |       |
+| temp               |       |          |     |         |       |
+| temp\^2            |       |          |     |         |       |
+| growth             | shrub |          |     | \*      | \*\*  |
+| form               | tree  |          |     | \*      | \*\*  |
 
 ## 
 
-
-
-Conclusions 
+Conclusions
 
 ### Summary
 
 Big summary
 
-### Discussion 
+### Discussion
 
-### Limitations 
+### Limitations
 
 BAD: It would have been useful to have more predictors or larger sample size -\> WHY?
 
@@ -96,14 +88,14 @@ Keep limitations to real problem!
 
 What to do about n.s. results?
 
--   Post-hoc power analysis
+- Post-hoc power analysis
 
--   Easier: confidence interval of n.s. effect - what effects, if they exist, would be compatible with the data
+- Easier: confidence interval of n.s. effect - what effects, if they exist, would be compatible with the data
 
 ### Conclusions
 
 ## 
 
-## Code and Data availability 
+## Code and Data availability
 
 Code + data on Github, Zenodo snapshot DOI

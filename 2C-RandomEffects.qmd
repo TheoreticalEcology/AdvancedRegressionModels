@@ -70,7 +70,7 @@ The random intercept model is practically identical to the model above, except t
 
 ```{r chunk_chapter4_chunk25, echo=TRUE, eval=TRUE}
 library(lme4)
-mod1 = lmer(normexam ~ standLRT + sex +  (1 | school/student), data = Exam)
+mod1 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 summary(mod1)
 ```
 

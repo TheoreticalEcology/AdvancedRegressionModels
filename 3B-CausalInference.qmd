@@ -167,9 +167,9 @@ Take the example of the past exercise (airquality) and assume, the goal is to un
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
--   Solar.R could affect both Temp, Ozone -\> Coufounder, include
--   Wind could affect Temp, Ozone -\> Coufounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it's a mediator
--   I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it it will nearly act as a collider, because it can snitch away some of the effects of the other variables.
+- Solar.R could affect both Temp, Ozone -\> Coufounder, include
+- Wind could affect Temp, Ozone -\> Coufounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it's a mediator
+- I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it it will nearly act as a collider, because it can snitch away some of the effects of the other variables.
 :::
 
 ## Graphs and models on graphs
@@ -284,8 +284,8 @@ Perform a causal, a predictive and an exploratory analysis of the Swiss fertilit
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
--   Agriculture, Catholic could be seen as confounders or mediators, depending on whether you think Education affects the number of people being in Agriculture or Catholic, or vice versa
--   Infant mortality could be a mediator or a collider, depeding on whether you think fertility -\> infant mortality or infant mortality -\> fertility. I would tend to see it as a mediator.
+- Agriculture, Catholic could be seen as confounders or mediators, depending on whether you think Education affects the number of people being in Agriculture or Catholic, or vice versa
+- Infant mortality could be a mediator or a collider, depeding on whether you think fertility -\> infant mortality or infant mortality -\> fertility. I would tend to see it as a mediator.
 
 For all mediators: remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included.
 :::
@@ -304,8 +304,8 @@ Perform a causal analysis of the effect of income on life satisfaction, consider
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
--   Nearly all other variables are confounders, gesund_org could als be a collider
--   Might consider splitting data into single households, families, as effects could be very different. Alternatively, could add interactions with single, families and / or time to see if effects of income are different
+- Nearly all other variables are confounders, gesund_org could als be a collider
+- Might consider splitting data into single households, families, as effects could be very different. Alternatively, could add interactions with single, families and / or time to see if effects of income are different
 
 A possible model is
 

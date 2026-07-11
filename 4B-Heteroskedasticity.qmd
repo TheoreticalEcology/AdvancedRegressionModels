@@ -189,10 +189,10 @@ plot(fit)
 
 What can we do to deal with such distributional problems and outliers?
 
--   **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
--   **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other.
--   **Robust regressions**.
--   **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
+- **Removing** - Bad option, hard to defend, reviewers don't like this - if at all, better show robustness with and without outlier, but result is sometimes not robust.
+- **Change the distribution** - Fit a model with a different distribution, i.e. GLM or other.
+- **Robust regressions**.
+- **Quantile regression** - A special type of regression that does not assume a particular residual distribution.
 
 ### Robust regression
 

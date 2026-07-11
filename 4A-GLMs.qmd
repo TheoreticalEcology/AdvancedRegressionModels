@@ -28,33 +28,29 @@ In R, the distribution is specified via the `family()` function, which distingui
 
 A full GLM structure is thus:
 
-$$
-y \sim family[link^{-1}(f(x) + RE)]
-$$
+$$y \sim family[link^{-1}(f(x) + RE)]$$
 
 ::: callout-note
 As you see, in noted the link function as $link^{-1}$ in this equation. The reason is that traditionally, the link function is applied to the left hand side of the equation, i.e.
 
-$$
-link(y) \sim x
-$$
+$$link(y) \sim x$$
 
 This is important to keep in mind when interpreting the names of the link function - the log link, for example, means that $log(y) = x$, which actually means that we assume $y = exp(x)$, i.e. the result of the linear predictor enters the exponential function, which assures that we have strictly positive predictions.
 :::
 
 The function $f(x)$ itself can have all components that we discussed before, in particular
 
--   You can add random effects as before (using functions `lme4::glmer` or `glmmTMB::glmmTMB`)
+- You can add random effects as before (using functions `lme4::glmer` or `glmmTMB::glmmTMB`)
 
--   You can also use splines using `mgcv::gam`
+- You can also use splines using `mgcv::gam`
 
 ## Important GLM variants
 
 The most important are
 
--   Bernoulli / Binomial family = logistic regression with logit link
--   Poisson family = Poisson regression with log link
--   Beta regresion for continous 0/1 data
+- Bernoulli / Binomial family = logistic regression with logit link
+- Poisson family = Poisson regression with log link
+- Beta regresion for continous 0/1 data
 
 Of course, there are many additional distributions that you could consider for your response. Here an overview of the common choices:
 
@@ -70,9 +66,9 @@ knitr::include_graphics(c("images/linkFunctions.jpg"))
 
 The standard model for count data (1,2,3) is the Poisson regression, which implements
 
--   A log-link function -\> $y = exp(ax + b)$
+- A log-link function -\> $y = exp(ax + b)$
 
--   A Poisson distribution
+- A Poisson distribution
 
 As an example, we use the data set birdfeeding from the EcoData package - the dataset consists of observations of foods given to nestlings to parents as a function of the attractiveness of the nestling.
 
@@ -91,9 +87,9 @@ summary(fit)
 
 The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = - 2 logL(saturated) - logL(fitted)). So, we have
 
--   Deviance residuals on top
+- Deviance residuals on top
 
--   Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~))\]
+- Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~))\]
 
 ::: callout-note
 As already mentioned, the deviance is a generalization of the sum of squares and plays, for example, a similar role as the residual sum of squares in ANOVA.
@@ -256,17 +252,17 @@ If you see large changes in your RE structure, or if you want to select on the R
 
 You will be given a data set of habitat use of Elks in Canada. Measured is the presence of Elks (0/1), and a number of other predictors. Description of variables:
 
--   dist_roads - distance of the location to the next road
+- dist_roads - distance of the location to the next road
 
--   NDVI - normalized difference vegetation index, essentially greeness of vegetation on the site
+- NDVI - normalized difference vegetation index, essentially greeness of vegetation on the site
 
--   ruggedness of the terrain
+- ruggedness of the terrain
 
--   dem - digital eleveation model = elevation above sea level
+- dem - digital eleveation model = elevation above sea level
 
--   presence - presence of the elk
+- presence - presence of the elk
 
--   habitat - open or forest
+- habitat - open or forest
 
 Perform either:
 
@@ -516,11 +512,11 @@ res = simulateResiduals(m1, plot = T)
 
 You see the dispersion problem by:
 
--   Dispersion test in the left plot significant
+- Dispersion test in the left plot significant
 
--   QQ plot S-shaped
+- QQ plot S-shaped
 
--   Quantile lines in the right plots outside their expected quantiles
+- Quantile lines in the right plots outside their expected quantiles
 
 You can get a more detailed output with the testDispersion function, which also displays the direction of the dispersion problem (over or underdispersion)
 
@@ -714,13 +710,13 @@ We want to answer two questions:
 
 Tasks:
 
--   Build two binomial GLMs (see hints) to explain the presence and the infection rate of *Bulinus truncatus* (BT)
+- Build two binomial GLMs (see hints) to explain the presence and the infection rate of *Bulinus truncatus* (BT)
 
--   Add environmental variables and potential confounders (see ?snails for an overview of the variables and if you want, you can also take a loot at the original paper)
+- Add environmental variables and potential confounders (see ?snails for an overview of the variables and if you want, you can also take a loot at the original paper)
 
--   Check residuals with DHARMa, check for misfits (plot residuals against variables)
+- Check residuals with DHARMa, check for misfits (plot residuals against variables)
 
--   Which variables explain the presence of BT and which have an effect on the infection rates?
+- Which variables explain the presence of BT and which have an effect on the infection rates?
 
 ::: callout-tip
 #### Hints
@@ -894,7 +890,7 @@ The ecological question is if roads have a causal effect on elk presence. As we 
 ```{r}
 library(EcoData)
 library(effects)
-fit <- glm(presence ~ dist_roads, family = binomial, data = elk_data)
+fit <- glm(presence ~ dist_roads, family = binomial, data = elk)
 summary(fit)
 plot(allEffects(fit))
 ```
@@ -958,11 +954,11 @@ res$delta
 
 Currently, fit and validation AUC are nearly identical, because we have a very simple model. However, for more complex models, this could change.
 
--   Drop some of the highly correlated variables (don't use all of them).
+- Drop some of the highly correlated variables (don't use all of them).
 
--   Use quadratic effects
+- Use quadratic effects
 
--   Use `stepAIC` or the `dredge` function to optimize the predictive model
+- Use `stepAIC` or the `dredge` function to optimize the predictive model
 
 **Make new predictions**
 

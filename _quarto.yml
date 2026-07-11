@@ -3,11 +3,11 @@ project:
   output-dir: docs
 
 book:
-  title: "Advanced Regression Models with R"
+  title: "Applied Regression Analysis for Empirical Research: Inference, Causality, and Model Choice with GLMMs in R"
   author: 
      name: "Florian Hartig"
      url: https://www.uni-regensburg.de/biologie-vorklinische-medizin/theoretische-oekologie/mitarbeiter/hartig/
-  date: "Sept 2022"
+  date: "Jun 2026"
   site-url: https://TheoreticalEcology.github.io/AdvancedRegressionModels/
   repo-url: https://github.com/TheoreticalEcology/AdvancedRegressionModels
   repo-branch: master
