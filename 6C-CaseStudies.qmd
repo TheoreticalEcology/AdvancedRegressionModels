@@ -50,7 +50,7 @@ points(hurricanes$MasFem, hurricanes$NDAM, cex = hurricanes$alldeaths/20,
        pch = 4, col= "red")
 ```
 
-The original model from the paper fits a negative binomial, using `mgcv`.{R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular MASS::glm.nb and lme4::glmer.nb often had convergence problems.
+The original model from the paper fits a negative binomial, using `mgcv`{.R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular MASS::glm.nb and lme4::glmer.nb often had convergence problems.
 
 ```{r chunk_chapter5_task_7, eval=TRUE, message=FALSE, warning=FALSE}
 originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM),
@@ -81,7 +81,7 @@ m1 = glmmTMB(alldeaths ~ MasFem*
 summary(m1)
 ```
 
-Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we for looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability
+Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability
 
 ```{r}
 m2 = glmmTMB(alldeaths ~ scale(MasFem) *
@@ -699,7 +699,7 @@ The data also contains data on environmental factors and plant traits. You shoul
 
 Tasks:
 
-1.  Fit a lm/lmm with SBDensity as response
+1.  Fit an lm/lmm with SBDensity as response
 
 2.  Bonus: Add phylogenetic correlation structure
 

@@ -4,7 +4,7 @@ set.seed(42)
 
 # Dispersion models
 
-Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is know as heteroskedasticity.
+Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is known as heteroskedasticity.
 
 ## Heteroskedasticity in the linear model
 
@@ -71,9 +71,9 @@ One option is to search for a transformation of the response that improves the p
 
 ### Modelling the variance / dispersion
 
-The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow to model the dispersion
+The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow you to model the dispersion
 
-The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In the `gls` function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the `varIdent` function, which allows to specify a different variance per treatment.
+The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares*. In the `gls` function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the `varIdent` function, which allows you to specify a different variance per treatment.
 
 ```{r chunk_chapter4_chunk10, echo=TRUE, eval=TRUE}
 library(nlme)

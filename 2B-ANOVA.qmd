@@ -20,7 +20,7 @@ Modern explanation: ANOVA is not a statistical model, but a hypothesis test that
 
 ### An example
 
-As an example, here is a ANOVA (function `aov()`) performed on the fit of a linear model
+As an example, here is an ANOVA (function `aov()`) performed on the fit of a linear model
 
 ```{r}
 fit = lm(Ozone ~ Wind + Temp, data = airquality)
@@ -278,7 +278,7 @@ Based on this, one could think it doesn't matter then if we use a regression mod
 
 -   It provides the same output for all cases, with clear ideas about how to check residuals etc.
 
--   It allows to adjust for the effects of covariates
+-   It allows us to adjust for the effects of covariates
 
 ## Case studies
 

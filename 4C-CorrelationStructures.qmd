@@ -189,7 +189,7 @@ res = simulateResiduals(fit1, plot = TRUE)
 testTemporalAutocorrelation(res, time = data$time)
 ```
 
-Test for temporal autocorrelation is siginificant -\> add autoregressive structure
+Test for temporal autocorrelation is significant -\> add autoregressive structure
 
 2.  **Add autoregressive structure**
 

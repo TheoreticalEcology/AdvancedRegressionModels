@@ -257,7 +257,7 @@ mgcv::gam(Resp ~ Predictor + s(Group, bs = 're'))
 
 #### brms
 
-brms is a very interesting package that allows to estimate mixed models via Bayesian Inference with STAN.
+brms is a very interesting package that allows you to estimate mixed models via Bayesian Inference with STAN.
 
 ```{r, eval = F}
 brms::brm(Resp ~ Predictor + (1|Group),

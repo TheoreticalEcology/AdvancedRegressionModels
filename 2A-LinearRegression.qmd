@@ -59,7 +59,7 @@ So, an lm is any regression of the form $y = \operatorname{f}(x) + \mathcal{N}(0
 ::: {.callout-tip collapse="true"}
 ## Understanding how the lm works
 
-To understand how the lm works, we will estimate a lm using a custom likelihood function:
+To understand how the lm works, we will estimate an lm using a custom likelihood function:
 
 1.  **Create some toy data:**
 
@@ -218,7 +218,7 @@ The argument `plot = T` creates a plot with two panels (alternatively, you could
 
 Very briefly, we would expect that a correctly specified model shows:
 
-1.  a straight 1-1 line, as well as n.s. of the displayed tests in the qq-plot (left) -\> evidence for an the correct overall residual distribution (for more details on the interpretation of this plot, see plotQQunif)
+1.  a straight 1-1 line, as well as n.s. of the displayed tests in the qq-plot (left) -\> evidence for the correct overall residual distribution (for more details on the interpretation of this plot, see plotQQunif)
 
 2.  visual homogeneity of residuals in both vertical and horizontal direction, as well as n.s. of quantile tests in the res \~ predictor plot (for more details on the interpretation of this plot, see `?plotResiduals`)
 
@@ -1006,12 +1006,12 @@ We estimate a standard error of 0.84, slightly higher than the parametric error 
 summary(fit)
 ```
 
-In R, you don't have to code the bootstrap by hand, you can also use the boot package. The code will not neccessarily be shorter, because you still need to code the statistics, but it offers a few convenient downstream functions for CIs etc.
+In R, you don't have to code the bootstrap by hand, you can also use the boot package. The code will not necessarily be shorter, because you still need to code the statistics, but it offers a few convenient downstream functions for CIs etc.
 
 ::: {.callout-tip collapse="true"}
 #### Code for same example using the boot package
 
-```{r}
+```{r, message=FALSE}
 # see help, needs arguments d = data, k = index
 getBoot = function(d, k){
   fitNew = lm(Ozone ~ Wind, data = d[k,])
@@ -1182,7 +1182,7 @@ library(EcoData)
 summary(solomonislands)
 ```
 
-1.  Fit a lm, trying to fit the classical relationship of Species \~ log(Area)
+1.  Fit an lm, trying to fit the classical relationship of Species \~ log(Area)
 2.  Perform residual checks, and change the model if necessary
 3.  Interpret the results
 :::

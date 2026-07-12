@@ -231,7 +231,7 @@ But what if we are interested in all the causal relationships? If we have a grap
 
 Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
 
-For linear (= normally ditributed) SEMs, we can estimate the entire DAG in one go. This also allows to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can me modelled latent.
+For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can be modelled latent.
 
 If you have REs or GLM-type dependencies, the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN. However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.
 
@@ -264,7 +264,7 @@ A multiple regression identifies the correct effect for x.
 summary(lm(y ~ x + c ))
 ```
 
-Another way to get those effects is the following, where we fit all variables against the confounder. This essentially conditions on the confounder. If we then regress the residuals without the confounder, we get the orignal effect.
+Another way to get those effects is the following, where we fit all variables against the confounder. This essentially conditions on the confounder. If we then regress the residuals without the confounder, we get the original effect.
 
 ```{r}
 resX.C = resid(lm(x~c))

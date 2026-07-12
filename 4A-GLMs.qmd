@@ -14,7 +14,7 @@ set.seed(42)
 
 Generalized linear models (GLMs) extend the linear model (LM) to other (i.e. non-normal) distributions. The idea is the following:
 
-1.  We want to keep the regression formula $y \sim f(x)$ of the lm with all it's syntax, inlcuding splines, random effects and all that. In the GLM world, this is called the "linear predictor".
+1.  We want to keep the regression formula $y \sim f(x)$ of the lm with all its syntax, including splines, random effects and all that. In the GLM world, this is called the "linear predictor".
 
 2.  However, in the GLM, we now allow other residual distributions than normal, e.g. binomial, Poisson, Gamma, etc.
 
@@ -155,9 +155,9 @@ plot(allEffects(fit))
 
 #### Notes on the Poisson regression
 
-**Poisson vs. log transformed count data:** For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, was common to it lm with log transformed counts, which is basically log link + normal distribution
+**Poisson vs. log transformed count data:** For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, it was common to fit an lm with log-transformed counts, which is basically log link + normal distribution
 
-**Log offset:** If there is a variable that that controls the number of counts (e.g. time, area), this variable is usually added as a offset in the following form
+**Log offset:** If there is a variable that controls the number of counts (e.g. time, area), this variable is usually added as an offset in the following form
 
 ```{r, eval = F}
 fit = glm(y ~ x + offset(log(area)), family = "poisson")
@@ -928,7 +928,7 @@ library(pROC)
 auc(elephant$occurenceData$Presence, predict(model, type = "response"))
 ```
 
-The AUC is a common measure of goodness of fit for binary classification. However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validaton
+The AUC is a common measure of goodness of fit for binary classification. However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validation
 
 ```{r, results=F, message = F}
 library(boot)

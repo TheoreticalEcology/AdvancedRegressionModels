@@ -44,13 +44,13 @@ mm <- nls(v ~ S/(S + Km) * Vmax,data = vmkm,
           start = list(Km=1,Vmax=1)) 
 ```
 
-Alternatively, the helpful nlstools package already provides many functions that you may want to fit, including this particular function under the name 'michaelis'. We have already loaded this package, so you could can just write
+Alternatively, the helpful nlstools package already provides many functions that you may want to fit, including this particular function under the name 'michaelis'. We have already loaded this package, so you can just write
 
 ```{r}
 mm <- nls(michaelis,data = vmkm, start = list(Km=1,Vmax=1)) 
 ```
 
-Note that in unlike in a lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the MLE for the model, which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).
+Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the MLE for the model, which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).
 
 The model provides a standard summary table.
 
