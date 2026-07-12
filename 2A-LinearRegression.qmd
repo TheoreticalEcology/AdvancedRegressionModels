@@ -17,7 +17,7 @@ Let's start with the basics. For this chapter, we will rely a lot on the airqual
 ::: {.callout-tip collapse="true"}
 #### More info on the airquality data
 
-Most datasets in R have a help file. Thus, if you don't know the data set, have a look at the description via pressing F1 with the curses on the word, or via typing
+Most datasets in R have a help file. Thus, if you don't know the data set, have a look at the description via pressing F1 with the cursor on the word, or via typing
 
 ```{r chunk_chapter3_chunk2, echo=TRUE, eval=FALSE}
 ?airquality
@@ -273,7 +273,7 @@ Modify the formula with the tools above to get (as far as possible) an acceptabl
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-Possible solution, adding a quadratic predictor and chosing a power of 0.35 transformation based on the boxcox function:
+Possible solution, adding a quadratic predictor and choosing a power of 0.35 transformation based on the boxcox function:
 
 ```{r chunk_chapter3_task_11, message=FALSE, warning=FALSE}
 fit1 = lm(Ozone^0.35 ~ Wind + I(Wind^2), data = airquality)
@@ -398,7 +398,7 @@ anov = aov(fit)
 summary(anov)
 ```
 
-In this case, we would conclude that the variable group (3 levels) significantly improves model fit, i.e. the group overall has a significnat effect, even though the individual contrasts in the original model where not significant.
+In this case, we would conclude that the variable group (3 levels) significantly improves model fit, i.e. the group overall has a significant effect, even though the individual contrasts in the original model were not significant.
 
 ::: callout-note
 The situation that the ANOVA is significant, but the linear regression contrasts is often perceived as confusing, but this is perfectly normal and not a contradiction.
@@ -424,7 +424,7 @@ Remember: a significance test with a significance threshold of alpha = 0.05 has 
 
 ### Compact Letter Display
 
-It is common to visualize the results of the post-hoc tests with the so-called **Compact Letter Display** (cld). This doesn't work with the base `TukeyHSD`{.R} function, so we will use the `multcomp`{.R} pacakge:
+It is common to visualize the results of the post-hoc tests with the so-called **Compact Letter Display** (cld). This doesn't work with the base `TukeyHSD`{.R} function, so we will use the `multcomp`{.R} package:
 
 ```{r chunk_chapter3_chunk37, echo=TRUE, eval=TRUE, fig.show='hide', message=FALSE, warning=FALSE}
 library(multcomp)
@@ -488,7 +488,7 @@ Note that for the multiple regression, that scatter around the regression line d
 | `y~x_1:x_2` | $y=a_0+a_1*(x_1*x_2)$ | Interaction between x~1~ and x~2~ |
 | `y~x_1*x_2` | $y=a_0+a_1*(x_1*x_2)+a_2*x_1+a_3*x_2$ | Interaction and main effects |
 
-: Formula syntax
+: Formula syntax {#tbl-syntax}
 
 ## The Effect of Collinearity
 
@@ -532,7 +532,7 @@ y = x1 + x2 + rnorm(100)
 summary(lm(y ~ x1 + x2))
 ```
 
-We see that the multiple regression is not terribly wrong, but very uncertain about the true values. Some authors therefore advice to remove collinear predictions. This can sometimes be useful, in particular for predictions (see section on model selection); however, note that the effect of removed predictor will then be absorbed by the remaining predictor(s). In our case, the univariate regression would be very sure that there is an effect, note that the CI does not cover the true effect of x1 (which was 1).
+We see that the multiple regression is not terribly wrong, but very uncertain about the true values. Some authors therefore advise to remove collinear predictors. This can sometimes be useful, in particular for predictions (see section on model selection); however, note that the effect of removed predictor will then be absorbed by the remaining predictor(s). In our case, the univariate regression would be very sure that there is an effect, note that the CI does not cover the true effect of x1 (which was 1).
 
 ```{r}
 summary(lm(y ~ x1))
@@ -736,7 +736,7 @@ Scaling: scaled, you get estimate of relative importance, while unscaled, effect
 :::
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
 How does adding or multiplying a factor on the predictor change the intercept and slope (effect, CI, p-values) of a regression?
 :::
@@ -895,7 +895,7 @@ predict(fit, se.fit = T)
 
 To generate confidence intervals on predictions, we can use se.fit = T, which returns standard errors on predictions. As always, 95% confidence interval (CI) = 1.96 \* se.
 
-So, let's assume we want to predict Ozone with a 95% CI for for wind between 0 and 10:
+So, let's assume we want to predict Ozone with a 95% CI for wind between 0 and 10:
 
 ```{r}
 Wind = seq(0,10,0.1)
@@ -1183,7 +1183,7 @@ summary(solomonislands)
 ```
 
 1.  Fit a lm, trying to fit the classical relationship of Species \~ log(Area)
-2.  Perform residual checks, and change the model if neccessary
+2.  Perform residual checks, and change the model if necessary
 3.  Interpret the results
 :::
 
@@ -1270,7 +1270,7 @@ summary(fit)
 
 Yes, because (some) interactions are significant.
 
-Note that the the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see chapter on ANOVA) to see the effect of the variables overall is significant. 
+Note that for the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see chapter on ANOVA) to see the effect of the variables overall is significant. 
 
 
 ```{r}

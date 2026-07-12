@@ -83,7 +83,7 @@ The tidyverse framework is currently trying to expand to the tasks of statistica
 
 ## Reminder basic R programming
 
-In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this part, there is a small exercise about data manipulation. If you are confindent that you can do it, you can also go there directly without reading the content of this section.
+In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this part, there is a small exercise about data manipulation. If you are confident that you can do it, you can also go there directly without reading the content of this section.
 
 ### Representing Data in R
 
@@ -114,7 +114,7 @@ str(x)
 allow you to explore the structure of variables and the data they contain. Ask yourself, or discuss with your partner(s):
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
 What is the meaning of the three functions, and what is the structure / properties of the following data types in R:
 
@@ -129,13 +129,13 @@ What is the meaning of the three functions, and what is the structure / properti
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-Atomic types: e.g. numeric, factor, boolean ...; List can have severa tyes, vector not! data.frame is list of vectors. matrix is 2-dim array, array can have any dim, only one type.
+Atomic types: e.g. numeric, factor, boolean ...; List can have several types, vector not! data.frame is list of vectors. matrix is 2-dim array, array can have any dim, only one type.
 :::
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
-What is the data type of the iris data set, which is built-in in R under the name
+What is the data type of the iris data set, which is built into R under the name
 
 ```{r chunk_chapter2_6, eval=FALSE}
 iris
@@ -457,7 +457,7 @@ for (i in 1:10){
 }
 ```
 
-and if it is executed, it will excecute 10 times the main block in the curly brackes, while counting the index variable i from 1:10. To demonstrate this, let's execute a shorter for lool, going from 1:3, and printing i
+and if it is executed, it will execute 10 times the main block in the curly braces, while counting the index variable i from 1:10. To demonstrate this, let's execute a shorter for loop, going from 1:3, and printing i
 
 ```{r}
 for (i in 1:3){

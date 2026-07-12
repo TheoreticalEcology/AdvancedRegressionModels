@@ -18,12 +18,12 @@ General strategy for analysis:
 
 Fit this base model, then do residual checks for
 
--   Wrong functional form -\> Change fitted function.
--   Wrong distribution-\> Transformation or GLM adjustment.
--   (Over)dispersion -\> Variable dispersion GLM.
--   Heteroskedasticity -\> Model dispersion.
--   Zero-inflation -\> Add ZIP term.
--   ...
+- Wrong functional form -\> Change fitted function.
+- Wrong distribution-\> Transformation or GLM adjustment.
+- (Over)dispersion -\> Variable dispersion GLM.
+- Heteroskedasticity -\> Model dispersion.
+- Zero-inflation -\> Add ZIP term.
+- ...
 
 And adjust the model accordingly.
 
@@ -50,7 +50,7 @@ points(hurricanes$MasFem, hurricanes$NDAM, cex = hurricanes$alldeaths/20,
        pch = 4, col= "red")
 ```
 
-The original model from the paper fits a negative binomial, using `mgcv`.{R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular mass::glm.nb and lme4::glmer.nb often had convergence problems.
+The original model from the paper fits a negative binomial, using `mgcv`.{R}. I suppose the reason is mainly that glmmTMB was not available at the time, and implementations of the negative binomial, in particular MASS::glm.nb and lme4::glmer.nb often had convergence problems.
 
 ```{r chunk_chapter5_task_7, eval=TRUE, message=FALSE, warning=FALSE}
 originalModelGAM = gam(alldeaths ~ MasFem * (Minpressure_Updated_2014 + NDAM),
@@ -61,9 +61,9 @@ summary(originalModelGAM)
 ::: {.callout-caution icon="false"}
 Tasks:
 
--   Confirm that you get the same results as in the paper. It makes sense to translate their model to glmmTMB. Note that the nb parameterization of mgcv corresponds to nbinom2 in glmmTMB. You will get different results when choosing nbinom1
--   Inspect the fitted model for potential problems, in particular perform a residual analysis of the model, including residuals against all predictors, and improve the model if you find problems.
--   Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
+- Confirm that you get the same results as in the paper. It makes sense to translate their model to glmmTMB. Note that the nb parameterization of mgcv corresponds to nbinom2 in glmmTMB. You will get different results when choosing nbinom1
+- Inspect the fitted model for potential problems, in particular perform a residual analysis of the model, including residuals against all predictors, and improve the model if you find problems.
+- Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -107,14 +107,14 @@ m3 = glmmTMB(alldeaths ~ scale(MasFem) *
 summary(m3)
 ```
 
-Now we see the significant main effect that they report. Note, hwoever, that the signficant differences is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot, or to specifically use predict() to calculate differences and CIs at high NDAM values.
+Now we see the significant main effect that they report. Note, however, that the significant difference is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot, or to specifically use predict() to calculate differences and CIs at high NDAM values.
 
 ```{r}
 library(effects)
 plot(allEffects(m3, partial.residuals = T))
 ```
 
-OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results to say that there is a significant difference at high NDAM, and such a difference, if it existed, would be importat.
+OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results do say that there is a significant difference at high NDAM, and such a difference, if it existed, would be important.
 
 But we haven't done residual checks yet. Let's do that:
 
@@ -153,8 +153,8 @@ So, we could either take the earlier data out, which would remove half of our da
 
 Do we need other variables that are not confounders? There is two reasons to add them:
 
--   they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
--   we want to fit interacts.
+- they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
+- we want to fit interacts.
 
 I added NDAM to the model, because we saw earlier that it has a strong effect. I think it's not unreasonable to check for an interaction as well.
 
@@ -171,9 +171,9 @@ car::Anova(newModel) # nothing regarding MasFem
 The results remain that there is no effect of MasFem!
 :::
 
-## Researchers Degrees of Freedom --- Skin Color and Red Cards
+## Researcher Degrees of Freedom --- Skin Color and Red Cards
 
-In 2018 Silberzahn et al. published a "meta analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
+In 2018 Silberzahn et al. published a "meta-analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
 
 **Spoiler**: They found that the "\[a\]nalytic approaches varied widely across the teams, and the estimated effect sizes ranged from 0.89 to 2.93 (Mdn = 1.31) in odds-ratio units", highlighting that different approaches in data analysis can yield significant variation in the results.
 
@@ -186,7 +186,7 @@ library(EcoData)
 ?redCards
 ```
 
-Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta analysis. You can find the data in the ecodata package, dataset redCards.
+Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta-analysis. You can find the data in the ecodata package, dataset redCards.
 
 1.  Response variable: 'redCards' (+'yellowReds'?).
 2.  primary predictors: 'rater1', 'rater2'
@@ -202,7 +202,7 @@ When you're done, have a look at the other modelling teams. Do you understand th
 
 ## Scouting Ants
 
-Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting Ants in Lasius Niger.
+Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting ants in *Lasius niger*.
 
 A base model should be:
 
@@ -221,9 +221,9 @@ summary(fit)
 
 For me, it made sense to change the contrasts of the possible confounders into something more easily interpretable:
 
--   Did the side in which the pheromone was stay constant or not (testing for a directional persistence of the ants)
+- Did the side in which the pheromone was stay constant or not (testing for a directional persistence of the ants)
 
--   Was the pheromone in the left or the right arm (testing for a directional preference)
+- Was the pheromone in the left or the right arm (testing for a directional preference)
 
 ```{r}
 dat$directionConst = ifelse(dat$Treatment %in% c("LL", "RR"), T, F)
@@ -245,7 +245,7 @@ fit1<-glmer(went.phero ~ ant_group_main
 summary(fit1)
 ```
 
-Surprisingly, we find large effects of the other variables. Because of these large effects, testing for interactions with the experimental treatment as well
+Surprisingly, we find large effects of the other variables. Because of these large effects, we also test for interactions with the experimental treatment
 
 ```{r}
 fit2<-glmer(went.phero ~ ant_group_main * (
@@ -257,21 +257,21 @@ fit2<-glmer(went.phero ~ ant_group_main * (
 summary(fit2)
 ```
 
-Here we find now that ther is an interaction with the main predictor, and there could be effects. We can also look at this visually.
+Here we find now that there is an interaction with the main predictor, and there could be effects. We can also look at this visually.
 
 ```{r}
 plot(allEffects(fit2))
 ```
 
-The results are difficult to interpret. I would think that there was some bias in the experiment, which led to an effect of the Maze direction, which then create a spill-over to the other (and in particular the main) predictors.
+The results are difficult to interpret. I would think that there was some bias in the experiment, which led to an effect of the Maze direction, which then creates a spill-over to the other (and in particular the main) predictors.
 
-For our education, we can also look at the residual plots. I will use m1, because there was a misfit:
+For our education, we can also look at the residual plots. I will use fit1, because there was a misfit:
 
 ```{r}
-res <- simulateResiduals(m1, plot = T)
+res <- simulateResiduals(fit1, plot = T)
 ```
 
-As we would significant interactions, we would probably see something if we plot residuals against predictors or their interactions, but I want to show you something else:
+As we would expect significant interactions, we would probably see something if we plot residuals against predictors or their interactions, but I want to show you something else:
 
 We will not see dispersion problems in a 0/1 binomial, but actually, this is a k/n binomial, just that the data are not prepared as such.
 
@@ -291,7 +291,7 @@ testDispersion(res2)
 Let's do the same for model 2, which included the interactions.
 
 ```{r}
-res <- simulateResiduals(m2, plot = T)
+res <- simulateResiduals(fit2, plot = T)
 res2 <- recalculateResiduals(res, group = dat$Colony)
 
 plot(res2)
@@ -373,7 +373,7 @@ Look at the Snails data set in the `EcoData` package, and find out which environ
 
 The snails data set in the EcoData package includes observations on the distribution of freshwater snails and their infection rates ( schistosomiasis (a parasit)).
 
-The first scientific question is that their adbundance depends on the water conditions. The second scientific question is that their infection rate depends on the water conditions and seasonsal factors
+The first scientific question is that their abundance depends on the water conditions. The second scientific question is that their infection rate depends on the water conditions and seasonal factors
 
 The data also contains data on other environmental (and seasonal factors). You should consider if it is useful to add them to the analysis.
 
@@ -389,7 +389,7 @@ Tasks:
 
 1.  Model the summed total abundance of the three species (Bulinus_tot)
 
-2.  Model the infection rate of all three species (Bulinuts_pos_tot) (k/n binomial)
+2.  Model the infection rate of all three species (Bulinus_pos_tot) (k/n binomial)
 
 3.  Optional: Model the species individually (BP_tot, BF_tot, BT_tot)
 
@@ -446,7 +446,7 @@ summary(model2)
 Check residuals:
 
 ```{r}
-res = simulateResiduals(model2, plot = TRUE, re.form = NULL)
+res = simulateResiduals(model2, plot = TRUE)
 ```
 
 Does not look great -\> dispersion problems -\> switch to -\> negative binomial distribution:
@@ -691,7 +691,7 @@ library(tidyverse)
 ?EcoData::seedBank
 ```
 
-The seedBank data set in the EcoData package includes observation on seed bank presence and size in different vegetaition plots.
+The seedBank data set in the EcoData package includes observation on seed bank presence and size in different vegetation plots.
 
 The scientific question is if the ability of plants to build a seed bank depends on their seed traits (see help).
 
@@ -743,7 +743,7 @@ hist(data$SBDensity)
 data$logSBDensity = log(data$SBDensity + 1)
 ```
 
-Let's fit a base model with with our hypothesis that logSBDensity \~ sSeedMass (Seed Mass) + sSeedShape + sSeedN (Number of Seeds).
+Let's fit a base model with our hypothesis that logSBDensity \~ sSeedMass (Seed Mass) + sSeedShape + sSeedN (Number of Seeds).
 
 We set random intercepts on species and sites because we assume that there are species and site specific variations:
 
@@ -814,7 +814,7 @@ summary(model3)
 **Residual checks:**
 
 ```{r}
-plot(simulateResiduals(model3, re.form=NULL))
+plot(simulateResiduals(model3))
 ```
 
 There seems to be dispersion problem.
@@ -966,7 +966,7 @@ Success, it converged!
 Check residuals:
 
 ```{r}
-res = simulateResiduals(model1, re.form=NULL, plot=TRUE)
+res = simulateResiduals(model1, plot=TRUE)
 ```
 
 Residuals look good!
@@ -1018,7 +1018,7 @@ plot(res)
 
 ## Snouter
 
-Fit one of the responses in the snouter datset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
+Fit one of the responses in the snouter dataset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
 
 ```{r eval = F}
 library(EcoData)

@@ -40,7 +40,7 @@ options(na.action = "na.fail")
 Setting na.fail means that you will get an error if there are NAs in the data used for your regression. Why would we want this, if the lm conveniently removes all NA lines? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
 
 1.  If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
-2.  If you run a model with many variables, each of them with a number of NAs, you might loose a lot of observations and thus power. It may be better to perform an imputation (see below).
+2.  If you run a model with many variables, each of them with a number of NAs, you might lose a lot of observations and thus power. It may be better to perform an imputation (see below).
 3.  If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
 
 For all this reason, you should get a good overview about your NAs, and consider what to do with them.
@@ -60,7 +60,7 @@ image(is.na(t(airquality)), axes = F)
 axis(3, at = seq(0,1, len = 6), labels = colnames(airquality))
 ```
 
-We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are seperate. To check if you have a complete row, we can use the function `complete.cases()`, which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
+We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are separate. To check if you have a complete row, we can use the function `complete.cases()`, which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
 
 ```{r, eval = F}
 sum(complete.cases(airquality))
@@ -91,7 +91,7 @@ The easiest cases is arguably MCAR = missing completely at random - in this case
 
 ### Imputation
 
-The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example `missRanger`
+The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple imputation refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example `missRanger`
 
 ```{r, warning=F, message=F, results='hide'}
 library(missRanger)
@@ -105,7 +105,7 @@ fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
 summary(fit)
 ```
 
-The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.ze
+The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
 
 ```{r, warning=F, message=F}
 # run 20 imputations

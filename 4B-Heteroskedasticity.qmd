@@ -28,7 +28,7 @@ summary(aov(fit))
 ```
 
 ::: callout-important
-A subtlety about heteroskedasticity in the normal model is that it maily affects p-values for the variable that we are
+A subtlety about heteroskedasticity in the normal model is that it mainly affects p-values for the variable that the residual variance is correlated with, as illustrated by the simulation below
 
 ``` r
 
@@ -196,7 +196,7 @@ What can we do to deal with such distributional problems and outliers?
 
 ### Robust regression
 
-Robust methods generally refer to methods that are robust to violation of assumptions, e.g. outliers. More specifically, standard robust regressions typically downweight datap oints that have a too high influence on the fit. See <a href="https://cran.r-project.org/web/views/Robust.html" target="_blank" rel="noopener">https://cran.r-project.org/web/views/Robust.html</a> for a list of robust packages in R.
+Robust methods generally refer to methods that are robust to violation of assumptions, e.g. outliers. More specifically, standard robust regressions typically downweight data points that have a too high influence on the fit. See <a href="https://cran.r-project.org/web/views/Robust.html" target="_blank" rel="noopener">https://cran.r-project.org/web/views/Robust.html</a> for a list of robust packages in R.
 
 ```{r chunk_chapter4_chunk18, echo=TRUE, eval=TRUE}
 # This is the classic method.

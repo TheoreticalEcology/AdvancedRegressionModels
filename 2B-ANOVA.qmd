@@ -79,7 +79,7 @@ The definition of model fit via sum of squares makes sense as long as we work wi
 
 For GLMs, this definition doesn't make sense any more. A number of so-called pseudo-R^2^ metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R^2^ for the linear model.
 
-A common metrics is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~))\], where M is our model, and M0 is an intercept only model.
+A common metrics is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~)\], where M is our model, and M0 is an intercept only model.
 
 ### Testing if the improvement is significant
 
@@ -144,7 +144,7 @@ Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it d
 -   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test.
 
 ::: callout-caution
-Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1\*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has a equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.
+Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1\*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has an equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.
 
 For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:
 
@@ -160,7 +160,7 @@ car::Anova(fit, type = "III")
 car::Anova(fit2, type = "III")
 ```
 
-For categorical variables, the same thing can happen - the choice of contrasts (see section on contrasts) will influence the amount of shared variation between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized, because the interaction cannot explain . Let's do a small example, where we compare a regression with treatment contrasts (which are not orthogonal) to Helmert contrasts (which are orthogonal):
+For categorical variables, the same thing can happen - the choice of contrasts (see section on contrasts) will influence the amount of shared variation between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized, because the interaction cannot explain any of the variance already attributed to the main effects. Let's do a small example, where we compare a regression with treatment contrasts (which are not orthogonal) to Helmert contrasts (which are orthogonal):
 
 ```{r, results='hide'}
 airquality$fMonth = as.factor(airquality$Month)
@@ -183,7 +183,7 @@ If you run this, you will see that the Helmert contrasts (any other orthogonal c
 :::
 
 ::: {.callout-caution icon="false"}
-###### Excercise
+#### Exercise
 
 Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see next section).
 :::

@@ -33,7 +33,7 @@ data(vmkm)
 plot(vmkm)
 ```
 
-From the MM model, we can derive the evolution of the reaction rate (v) as a function of the concentration of substrate (S) (For details, see ?nlstoools::michaelismodels ). The function we want to fit is of the form:
+From the MM model, we can derive the evolution of the reaction rate (v) as a function of the concentration of substrate (S) (For details, see ?nlstools::michaelismodels ). The function we want to fit is of the form:
 
 $$ v = \frac{S}{S + K_m} \cdot V_{max}$$
 
@@ -148,7 +148,7 @@ summary(mm1)
 
 We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables.
 
-There is no automatic plotting function for this, so you will hae to plot by hand:
+There is no automatic plotting function for this, so you will have to plot by hand:
 
 ```{r}
 dat = data.frame(S = seq(0,2,length.out = 50), type = 0)

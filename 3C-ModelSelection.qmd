@@ -79,7 +79,7 @@ The effect of X on Y is now significant (standard error = 0.15)!
 
 ## Model Selection Methods
 
-Because of the bias-variance trade-off, we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would loose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
+Because of the bias-variance trade-off, we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
 
 1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests
 2.  Optimize a penalized fit to the data -\> AIC selection
@@ -110,7 +110,7 @@ anova(m1, m2)
 
 Another method for model selection, and probably the most widely used, also because it does not require that models are nested, is the AIC = **Akaike Information Criterion**.
 
-The AIC is defined as $2 \ln(\text{likelihood}) + 2k$, where $k$ = number of parameters.
+The AIC is defined as $-2 \ln(\text{likelihood}) + 2k$, where $k$ = number of parameters.
 
 Essentially, this means AIC = Fit - Penalty for complexity.
 
@@ -140,7 +140,7 @@ Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or 
 
 ### Shrinkage estimation
 
-A third option option for model selection are shrinkage estimators. These include the LASSO and ridge, but also random-effects could be seen as shrinkage estimators.
+A third option for model selection are shrinkage estimators. These include the LASSO and ridge, but also random-effects could be seen as shrinkage estimators.
 
 The basic idea behind these estimators is not to reduce the number of parameters, but to reduce the flexibility of the model by introducing a penalty on the regression coefficients that code a preference for smaller or zero coefficient values. Effectively, this can either amount to model selection (because some coefficients are shrunk directly to zero), or it can mean that we can fit very large models while still being able to do good predictions, or avoid overfitting.
 
@@ -201,38 +201,60 @@ The next obvious step would be to let the model and the data decide on the varia
 Small simulation example:
 
 ```{r}
-n = 25
-p = 10
+set.seed(123)
+n = 30
+p = 50
 X = matrix(runif(p*n), n, p)
 head(X)
-Y = 4*X[,1] + rnorm(n)
+effects = runif(p, -1,1)
+Y = X%*%effects + rnorm(n)
 ```
 
-10 observations, 20 predictors, and only X1 has an effect on Y, let's start with a fixed-effect model:
+30 observations, 50 predictors, each with its own true effect drawn from a Uniform(-1, 1) distribution, let's start with a fixed-effect model:
 
 ```{r}
 m1 = glmmTMB(Y~X)
 summary(m1)
 ```
 
-Not surprising, we get many warnings about convergence issues and NAs because p == n. Also the effects are not even close to zero.
+Not surprising, we get many warnings about convergence issues and NAs, because we have more predictors (p = 50) than observations (n = 30) - the fixed-effect model is not even identifiable. Also, the effects that can be estimated are not even close to their true values.
 
-Let's try adaptive shrinkage:
+Let's try adaptive shrinkage. As before, we turn each predictor's slope into a random slope within a dummy group that has only one level:
 
 ```{r}
 data = data.frame(Y = Y, X, group = as.factor(rep(1, n)))
 form = paste0("Y~ 0+ (0+",paste0(paste0(  "X", 1:p ),  collapse = "+"),"||group)" )
 print(form)
-m2 = glmmTMB(as.formula(form), data = data)
-ranef(m2)
 ```
 
-We still get a convergence issue, but this is related to the very small variance estimates of the other predictors (glmmTMB tries to calculate standard errors based on the hessian, however, the hessian has very small elements on its diagonal, which makes it impossible to calculate its inverse).
+What we want for a proper (ridge-like) adaptive shrinkage is a single, *shared* variance for all p random slopes, estimated jointly by pooling information across all p coefficients at once - this is the classic "ridge regression as a mixed model" trick. We achieve this with the `map` argument. By default, the `||` syntax would give *every* predictor its own, independently estimated variance (p = 50 separate variance parameters) - but `map` lets us tell glmmTMB which of its internal parameters should be tied together (estimated as one shared value) instead of independently. Giving all p entries of `theta` the *same* factor level ties them into a single, freely estimated parameter. This is needed here because, with only one level in `group`, each individually estimated variance would be informed by essentially a single realized slope - nowhere near enough information to estimate 50 separate variances reliably. Tying them together pools all p coefficients into the estimation of that one shared variance, which is far better identified. Note that, unlike the constant-shrinkage example above, where `NA` fixed the variances at chosen constants, a shared (non-`NA`) level still lets the model estimate their common value from the data:
+
+```{r}
+m2 = glmmTMB(as.formula(form), data = data,
+             start = list(theta = rep(0, p)),
+             map   = list(theta = factor(rep(1, p))))
+summary(m2)
+```
+
+Now, extract the estimates and compare them to the true values
+
+```{r}
+shrinkageEstimates = as.numeric(ranef(m2)$cond$group)
+
+plot(effects, shrinkageEstimates, xlab = "True effects", ylab = "Estimated shrinkage effects")
+abline(0,1)
+```
+
+Note that there is quite a bit of variance, but this is to be expected when we estimate 50 parameters with 30 observations. However, there is a clear signal, in the sense that the correlation between true and estimated effects is significantly positive:
+
+```{r}
+cor.test(effects, shrinkageEstimates)
+```
 :::
 
 ### P-hacking {#pHacking}
 
-The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercises is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
+The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercise is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
 
 ::: {.callout-caution icon="false"}
 ## p-hacking exercise
@@ -247,7 +269,7 @@ colnames(dat) = c("Performance", "Gen1", "Gen2", "soilC", "soilP", "Temp",
 fullModel <- lm(Performance ~ ., data = dat)
 ```
 
-When you run summary(fullModel), you will see that there is no significant effect of of Gen1. Task for you: P-hack the analysis, i.e. make an effect appear, by trying around (systematically, e.g. with selecting with data, model selection, or by hand to find a model combination that has an effect). Popular strategies for p-hacking include changing the mdoel, but also sub-selecting particualr data. The group who finds the model with the highest significance for Gen1 wins!
+When you run summary(fullModel), you will see that there is no significant effect of Gen1. Task for you: P-hack the analysis, i.e. make an effect appear, by trying around (systematically, e.g. with selecting with data, model selection, or by hand to find a model combination that has an effect). Popular strategies for p-hacking include changing the model, but also sub-selecting particular data. The group who finds the model with the highest significance for Gen1 wins!
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -421,7 +443,7 @@ Note that cross-validation requires independence of data points. For non-indepen
 ### Exercise: Global Plant Trait Analysis #3
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
 Revisit exercises our previous analyses of the dataset plantHeight, and discuss / analyze:
 
@@ -452,7 +474,7 @@ R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, howeve
 ### Exercise: Life Satisfaction #3
 
 ::: {.callout-caution icon="false"}
-#### Excercise
+#### Exercise
 
 Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satistisfaction. If you want, you can also tune this model in a validation or cross-validation split.
 :::
