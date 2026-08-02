@@ -210,7 +210,7 @@ helps me by suggesting which confounders I should control for. Note that the fun
 ggdag_adjustment_set(dag, effect="direct")
 ```
 
-in this case, plot suggest to adjust for fireseverity, to isolate the direct effect of cover on richness.
+in this case, plot suggest to adjust for fire severity, to isolate the direct effect of cover on richness.
 
 So, the model we should fit is
 

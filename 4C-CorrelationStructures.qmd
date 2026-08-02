@@ -131,7 +131,7 @@ testTemporalAutocorrelation(fit, time = 1:1000)
 ```
 
 ::: callout-note
-Remember: in general, for spatial / temporal data, there are two processes that can created residual autocorreation:
+Remember: in general, for spatial / temporal data, there are two processes that can create residual autocorrelation:
 
 1.  There is a spatial misfit trend in time / space, which creates a correlation in space / time.
 2.  There truly is a spatial correlation, after accounting for the trend.
@@ -357,7 +357,7 @@ If you wonder why there is such a large correlation matrix displayed: both the A
 
 Use the dataset `EcoData::plantcounts`. Our scientific question is if richness \~ agrarea. Help on the dataset, as well as a few initial plots, is in the help of `?plantcounts`.
 
-This is count data, so start with a Poisson or Neg Binom GLM. The quadrats are not all equally sized, so you should include an offest to account for area. Then, check for spatial autocorrelation.
+This is count data, so start with a Poisson or Neg Binom GLM. The quadrats are not all equally sized, so you should include an offset to account for area. Then, check for spatial autocorrelation.
 
 If you find autocorrelation that cannot be removed with a gam, the problem is that the gls function that we have used so far only extends lm, and not glm models. In this case, you can either read up in https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html how to specify a spatial covariance in glmmTMB, or just log transform your counts + 1, and fit a gls.
 :::
@@ -535,7 +535,7 @@ In this case, if we insist on an OU process, we would have to search for a more 
 #### Exercise
 
 ::: {.callout-caution icon="false"}
-The following exercise uses data from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in an group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
+The following exercise uses data from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in a group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
 
 ```{r, eval = T}
 library(ape)
@@ -600,7 +600,7 @@ fit <- gls(Lnote~ scale(Lnalt) * I(scale(Lnalt)^2),
 summary(fit)
 ```
 
-Btw, did you notice that neither Lnalt has a significant effect - so is there no dependence on Lnalt? Because we have the linear and quadaratic effect, the best way to answer this is to run an ANOVA:
+Btw, did you notice that neither Lnalt has a significant effect - so is there no dependence on Lnalt? Because we have the linear and quadratic effect, the best way to answer this is to run an ANOVA:
 
 ```{r}
 fit0 <- gls(Lnote~ 1, 
@@ -611,7 +611,7 @@ fit0 <- gls(Lnote~ 1,
 anova(fit0, fit)
 ```
 
-which tells us that Lnalt has a significant effect, even though we can't reject that either the linear or the quadrart term is zero.
+which tells us that Lnalt has a significant effect, even though we can't reject that either the linear or the quadratic term is zero.
 
 Addition: what would happen if we do the same with a misspecified model? Have a look at the p-values of the fitted models. Can you explain what's going on here?
 
@@ -657,6 +657,6 @@ however, these so-called full-rank models have a lot of degrees of freedom and a
 glmmTMB(abundance ~ 0 + species + env:species + rr(Species + 0|id, d = 2))
 ```
 
-The parameter d controlls the number of latent variables.
+The parameter d controls the number of latent variables.
 
 Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to set this models in the general topic of correlations, and realize that we can fit them with the same methods and packages as for all other correlation structures.

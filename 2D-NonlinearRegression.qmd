@@ -12,15 +12,15 @@ set.seed(42)
 
 ## What is a nonlinear regression?
 
-The most important thing first: the main distinction between a linear and a nonlinear regression is NOT if you fit a linear function. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as "polynomial regressions") are effectively all linear regressions.
+The most important thing first: the main distinction between a linear and a nonlinear regression is NOT whether you fit a straight line. The defining criterion is whether the model is **linear in the parameters**. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as "polynomial regressions") are all still linear regressions, and so are transformations such as $\log(x)$ or spline bases.
 
-The reason is that as long as the function of the mean can be represented as a polynomial of the form
+The reason is that as long as the function of the mean is linear in the parameters - for example a polynomial of the form
 
-$$ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$ you are considering linear effects of a predictor, which just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
+$$ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$ you are considering linear effects ($a_0, a_1, a_2$), where the predictor just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
 
-Because the linear regression is much better supported in R (as in other statistical packages), it is always preferable to consider if the function you want to fit can be expressed as a polynomial by transforming y or x (e.g. by regressing against log(y), logit(y)).
+Because the linear regression is much better supported in R (as in other statistical packages), it is always preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g. by regressing against log(y), logit(y)).
 
-However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be reduced to a polynomial. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these an other case, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with a normal residuals, which is known as nls(nonlinear least squares).
+However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be made linear in the parameters. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these and other cases, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with normal residuals, which is known as nls (nonlinear least squares).
 
 ## Fitting a nonlinear regression using nls
 
@@ -129,7 +129,7 @@ The most complete solution to calculating confidence intervals and uncertainties
 
 ## Interactions in NLS
 
-What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in setion linear regression)
+What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in section linear regression)
 
 Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.
 
@@ -175,7 +175,7 @@ AIC(mm1)
 
 Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.
 
-Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.
+Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a difference between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.
 
 ## Mixed effects, heteroskedasticity and correlations
 

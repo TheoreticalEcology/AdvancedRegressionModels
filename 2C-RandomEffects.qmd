@@ -120,14 +120,14 @@ $$\begin{aligned}
 
 A second effect that we could imagine is that the effect of `standLRT`{.R} is different for each school. As a fixed effect model, we would express this, for example, as `lm(normexam ~ standLRT*school + sex)`{.R}
 
-The random effect equivalent is called the random slope model. A random slope model assumes that each school also gets their own slope for a given parameter (per default we will always estimate slope and intercept, but you could overwrite this, not recommended!). Let's do this for standLRT (you could of course random slopes on both predictors as well).
+The random effect equivalent is called the random slope model. A random slope model assumes that each school also gets their own slope for a given parameter (per default we will always estimate slope and intercept, but you could overwrite this, not recommended!). Let's do this for standLRT (you could of course fit random slopes on both predictors as well).
 
 ```{r chunk_chapter4_chunk27, echo=TRUE, eval=TRUE}
 mod2 = lmer(normexam ~ standLRT + sex +  (standLRT | school), data = Exam)
 summary(mod2)
 ```
 
-Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes come from a normal distribution. The results is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
+Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes comes from a normal distribution. The result is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
 
 ::: {.callout-tip collapse="true"}
 #### Generate equation with the `equatiomatic` package
@@ -339,7 +339,7 @@ The classical interpretation of the random intercept is that they model a group-
 
 Another view this is that REs terms absorb group-structured variation in model parameters. This view works for random intercept and slope models. So, our main model fits the grand mean, and the RE models variation in the parameters, which is assumed to be normally distributed.
 
-A third view of RE models is that they are regularized fixed effect models. What does that mean? Note again that, conceptual, every random effect model corresponds to a fixed effect model. For a random intercept model, this would be
+A third view of RE models is that they are regularized fixed effect models. What does that mean? Note again that, conceptually, every random effect model corresponds to a fixed effect model. For a random intercept model, this would be
 
 ```{r, eval = F}
 lmer(y ~ x + (1|group)) => lm(y ~ x + group)
@@ -392,7 +392,7 @@ fit <- lmer(loght ~ sTemp + (sTemp | growthform2) , data = plantHeight)
 ranef(fit)
 ```
 
-The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimatest that is a cost that you have to take into account.
+The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a LASSO or ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimates that is a cost that you have to take into account.
 
 ### When to use what?
 
@@ -432,7 +432,7 @@ If there is a convergence problem, you should usually get a warning. Other signs
 There are different types of convergence problems that you can encounter:
 
 - Warnings about scaling and centering -\> just do it, it doesn't cost you!
-- The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -\> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. In random slope models, it often helps to move from \| to \|\| (supressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
+- The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -\> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. In random slope models, it often helps to move from \| to \|\| (suppressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
 - Optimizer / convergence warnings: use glmerControl() to change the optimizer to bobyqa and possibly increase the number of iterations.
 
 ### Observation-level residual plots
@@ -484,7 +484,7 @@ Exam$normexam - predict(mod1, re.form = ~0)
 while the default in DHARMa is to calculate marginal predictions. Both have advantages and disadvantages:
 
 1.  Conditional predictions are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
-2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but uncoditional \~ pred does not. For that reason, if you use unconditional predictions, you should also check REs \~ pred (see below)
+2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but unconditional \~ pred does not. For that reason, if you use unconditional predictions, you should also check REs \~ pred (see below)
 :::
 
 ### Normality of REs
@@ -564,7 +564,7 @@ summary(m2)
 ::: {.callout-caution icon="false"}
 #### Exercise: mixed vs. fixed effect models
 
-For the plantHeigt mixed models in the previous exercise, compare the p-values of the slope for temp to the fixed-effect equivalent (adding family as main effect / interaction). What do you find?
+For the plantHeight mixed models in the previous exercise, compare the p-values of the slope for temp to the fixed-effect equivalent (adding family as main effect / interaction). What do you find?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -725,7 +725,7 @@ observedLR = logLik(m1) - logLik(m0)
 
 The log LR of m1 (the RE model) over m0 is 225, meaning that seeing the observed data under m1 is exp(225) times more likely than under m0.
 
-As noted, the complex model will always fit better, so that the data is more likely under M1 is expected, but is the increase significant? In this case, the LR is actually so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we could 1 df for each RE group, this should be easily significant. Nevertheless, let's do the formal test, and this time by hand.
+As noted, the complex model will always fit better, so it is expected that the data is more likely under M1, but is the increase significant? In this case, the LR is actually so large that we actually wouldn't need to test. A rough rule of thumb is that you need a log LR of 2 for each df that you add, and here we have an RE with 10 groups, so even if we counted 1 df for each RE group, this should be easily significant. Nevertheless, let's do the formal test, and this time by hand.
 
 First, we write a function that creates new LRs under H~0~, by simulating new data from the fitted M~0~, and re-fitting M~0~/M~1~ to this data, and return the LR.
 

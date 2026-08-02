@@ -85,7 +85,7 @@ fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = - 2 logL(saturated) - logL(fitted)). So, we have
+The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 [logL(saturated) - logL(fitted)]). So, we have
 
 - Deviance residuals on top
 
@@ -334,6 +334,8 @@ Now, everything looks perfect
 
 ### Continuous positive response - Gamma regression
 
+The Gamma regression is the natural choice for a **strictly positive, continuous, right-skewed** response whose variance grows with the mean (e.g. concentrations, waiting times, biomass, body sizes). A common alternative is to log-transform and fit an `lm` (as we do first below), but the two are not equivalent: the log-`lm` assumes constant variance *on the log scale* and, if you back-transform predictions, incurs a retransformation bias, whereas the Gamma GLM models the mean on the original scale with a variance that scales as $\text{Var}(y) \propto \mu^2$. With the default log link, coefficients are interpreted multiplicatively - `exp(coef)` is the factor by which the mean changes per unit of the predictor, exactly as in the Poisson regression.
+
 ```{r}
 library(faraway)
 ```
@@ -362,6 +364,8 @@ For Gamma regression, different link functions are used. The canonical link, whi
 ### Continuous proportions - Beta regression and other options
 
 We already covered discrete proportions, which can be modelled with a logistic regression. For continuous proportions, this model is not suitable, because we don't know how many "trials" we have. There are a few other options to model this data, in particular the beta regression. Let's have a look.
+
+Use a Beta regression when the response is a **continuous proportion strictly inside (0, 1)** - a fraction, a percentage cover, a probability - as opposed to $k$ successes out of $n$ trials (that is the binomial case). The Beta distribution is bounded on (0, 1) and naturally heteroskedastic (its variance is largest near 0.5 and shrinks towards the boundaries), which the logit-normal `lm` and the arcsine transform handle poorly. One caveat: the Beta density is undefined at exactly 0 or 1, so responses containing 0s or 1s need either a small squeeze towards the interior or a zero-/one-inflated (ordered Beta) model. As with the logistic regression, effects are interpreted on the logit scale.
 
 There are two main ways to fit this data:
 
@@ -397,7 +401,7 @@ summary(m2)
 
 ## Residual and their solutions in GLMs
 
-First of all: everything we said about model selection and residual checks for LMs also apply for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.
+First of all: everything we said about model selection and residual checks for LMs also applies for GLMs, with only very few additions, so you should check your model in principle as before. However, there are a few tweaks you have to be aware of.
 
 Let's look again at the titanic example
 
@@ -564,7 +568,7 @@ testZeroInflation(res)
 
 This shows no sign of zero-inflation. There are, however, two problems with this test:
 
-1.  glmmTMB models only allow unconditional residuals, which means that dispersion and zero-inflation tests are less powerfull
+1.  glmmTMB models only allow unconditional residuals, which means that dispersion and zero-inflation tests are less powerful
 2.  When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.
 
 Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. You can compare a zero-inflation model via AIC or likelihood ratio test to your base model, or simply check if the ZIP term in glmmTMB is significant.
@@ -659,7 +663,7 @@ As we saw, in principle, random effects can be added to GLMs very much in the sa
 
 This has a number of consequences that may be unexpected if you don't think about it.
 
-### Unconditinal vs. marginal predictions
+### Unconditional vs. marginal predictions
 
 One of those is that, if you have a nonlinear link function, predictions based on the fixed effects (unconditional) will not correspond to the mean of your data, or the average of the model predictions including the random effect (marginal predictions). To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale
 
@@ -675,13 +679,13 @@ mean(plogis(1 + rnorm(20, sd = 1)))
 
 The value is considerably lower than the unconditional prediction, and this value is also what you would approximately get if you take the mean of your data.
 
-Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effecots on top as above (with the estimated variances) and push them through the corresponding link function.
+Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effects on top as above (with the estimated variances) and push them through the corresponding link function.
 
 ## Case Studies
 
 ### Binomial GLM - Snails
 
-The following dataset contains information about the occurrences of 3 freshwater snail species and their infection rate with schistosomiasis (feshwater snails are intermediate hosts). The data and the analysis is from [Rabone et al. 2019](https://link.springer.com/article/10.1186/s13071-019-3745-8).
+The following dataset contains information about the occurrences of 3 freshwater snail species and their infection rate with schistosomiasis (freshwater snails are intermediate hosts). The data and the analysis is from [Rabone et al. 2019](https://link.springer.com/article/10.1186/s13071-019-3745-8).
 
 ```{r chunk_chapter4_chunk1, echo=TRUE, eval=T}
 library(EcoData)

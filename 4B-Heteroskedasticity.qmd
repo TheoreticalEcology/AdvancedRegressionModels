@@ -205,7 +205,7 @@ library(MASS)
 fit = rlm(growth ~ concentration) 
 summary(fit)
 # No p-values and not sure if we can trust the confidence intervals.
-# Would need to boostrap by hand!
+# Would need to bootstrap by hand!
 
 # This is another option that gives us p-values directly.
 library(robustbase)

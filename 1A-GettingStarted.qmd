@@ -469,7 +469,7 @@ for (i in 1:3){
 }
 ```
 
-For loops are very useful when you want to execute the same task many times. This can be for plotting, but also for data manipulation. For example, if I would like to re-programm the apply function with a for loop, it would look like that:
+For loops are very useful when you want to execute the same task many times. This can be for plotting, but also for data manipulation. For example, if I would like to re-program the apply function with a for loop, it would look like that:
 
 ```{r}
 apply(iris[,1:4], 2, mean, na.rm = T)
@@ -483,7 +483,7 @@ out
 
 ### Plotting
 
-I assume that you have already made plots with R. Else [here](https://www.youtube.com/embed/UXeJ1bNYCos) is a super-quick 5-min introduction video. In this course, we will not be using a lot graphics, but it will be useful for you to know the basic plot commands. Note in particular that the following two commands are identical:
+I assume that you have already made plots with R. Else [here](https://www.youtube.com/embed/UXeJ1bNYCos) is a super-quick 5-min introduction video. In this course, we will not be using a lot of graphics, but it will be useful for you to know the basic plot commands. Note in particular that the following two commands are identical:
 
 - `plot(iris$Sepal.Length, iris$Sepal.Width)`{.R}
 - `plot(Sepal.Width ~ Sepal.Length, data = iris)`{.R}

@@ -132,6 +132,22 @@ As a start, note our discussions of causality and model selection:
 
 - In experimental settings, blocked designs where blocks will be later treated as a RE are standard
 
-If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study \[things to be added\]
+If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study.
+
+The cleanest way to do a power analysis for any model - not just the textbook cases - is by simulation: assume an effect size, simulate many datasets, fit your planned model to each, and count how often the effect comes out significant. That fraction *is* the power.
+
+```{r chunk_chapter7_chunk7, echo=TRUE, eval=TRUE}
+getP = function(n = 50, effect = 0.3){
+  x = runif(n)
+  y = effect * x + rnorm(n)          # assumed true effect + noise
+  summary(lm(y ~ x))$coefficients[2, 4]
+}
+
+mean(replicate(1000, getP(n = 50, effect = 0.3)) < 0.05)   # power at n = 50
+```
+
+To find the sample size for, say, 80% power, wrap this in a loop over `n`. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.
 
 ## Next steps
+
+This book covered the core GLMM toolbox. Natural next steps are the fully Bayesian treatment of these models (`brms` / Stan), which sidesteps several of the degrees-of-freedom and p-value problems we flagged along the way; machine-learning approaches when the goal is purely prediction; and domain-specific extensions such as joint species distribution models, survival / time-to-event models, and structural equation models - each of which builds directly on the ideas developed here.

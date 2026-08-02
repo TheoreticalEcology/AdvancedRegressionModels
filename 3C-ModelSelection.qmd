@@ -93,7 +93,7 @@ A likelihood-ratio test (LRT) is a hypothesis test that can be used to compare 2
 
 The more complex model will always fit the data better, i.e. have a higher likelihood. This is the reason why you shouldn't use fit or residual patterns for model selection. The likelihood-ratio test tests whether this improvement in likelihood is significantly larger than one would expect if the simpler model is the correct model.
 
-Likelihood-ratio tests are used to get the p-values in an R ANOVA, and thus you can also use the `anova`{.R} function to perform an likelihood-ratio test between 2 models (Note: For simple models, this will run an F-test, which is technically not exactly a likelihood-ratio test, but the principle is the same):
+Likelihood-ratio tests are used to get the p-values in an R ANOVA, and thus you can also use the `anova`{.R} function to perform a likelihood-ratio test between 2 models (Note: For simple models, this will run an F-test, which is technically not exactly a likelihood-ratio test, but the principle is the same):
 
 ```{r chunk_chapter3_chunk74, echo=TRUE, eval=TRUE}
 # Model 1
@@ -112,7 +112,7 @@ Another method for model selection, and probably the most widely used, also beca
 
 The AIC is defined as $-2 \ln(\text{likelihood}) + 2k$, where $k$ = number of parameters.
 
-Essentially, this means AIC = Fit - Penalty for complexity.
+Essentially, this means AIC = misfit + penalty for complexity: the first term ($-2 \ln(\text{likelihood})$) gets smaller the better the model fits, while the second term ($2k$) grows with the number of parameters.
 
 **Lower AIC is better!**
 
@@ -126,7 +126,7 @@ AIC(m2)
 
 **Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation, so what AIC is optimizing is essentially the predictive error of the model on new data.
 
-**Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just the note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
+**Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
 
 ::: {.callout-caution icon="false"}
 #### Exercise
@@ -136,6 +136,20 @@ Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or 
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+The two answer different questions. A **likelihood-ratio test** is a hypothesis test: it requires **nested** models, returns a **p-value**, and controls the type-I error rate at your chosen $\alpha$ - it answers *"is there significant evidence to prefer the more complex model?"*. **AIC** estimates the model's **out-of-sample predictive error** (it is asymptotically equivalent to leave-one-out cross-validation), does **not** require nesting, and returns no p-value or error guarantee - it answers *"which model is expected to predict best?"*.
+
+```{r}
+m1 = lm(Ozone ~ Wind, data = airquality)
+m2 = lm(Ozone ~ Wind + Temp, data = airquality)
+
+anova(m1, m2)      # LRT / F-test -> p-value (error-controlled test)
+AIC(m1); AIC(m2)   # AIC -> lower is better (predictive ranking)
+```
+
+They routinely disagree. For adding a single parameter, AIC prefers the larger model whenever the deviance drops by more than 2, which corresponds to an LRT p-value of about 0.157 - so AIC is considerably more *liberal* about including predictors than an LRT at $\alpha = 0.05$.
+
+**Rule of thumb:** use the LRT (or F-test) for a confirmatory, pre-specified nested comparison where you want error control; use AIC when the goal is prediction, or to rank many (possibly non-nested) candidate models. For neither should you read the resulting coefficients as unbiased causal effects (see the sections above on model selection and causality).
 :::
 
 ### Shrinkage estimation
@@ -284,7 +298,7 @@ Here some more inspiration on p-hacking:
 
 1.  Hack Your Way To Scientific Glory: <a href="https://projects.fivethirtyeight.com/p-hacking/" target="_blank" rel="noopener">https://projects.fivethirtyeight.com/p-hacking/</a>
 2.  False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant: <a href="https://journals.sagepub.com/doi/full/10.1177/0956797611417632" target="_blank" rel="noopener">https://journals.sagepub.com/doi/full/10.1177/0956797611417632</a>
-3.  Sixty seconds on ... P-hacking: <a href="https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039" target="_blank" rel="noopener">https://sci-hub.tw/https://www.bmj.com/content/362/bmj.k4039</a>
+3.  Sixty seconds on ... P-hacking: <a href="https://doi.org/10.1136/bmj.k4039" target="_blank" rel="noopener">https://doi.org/10.1136/bmj.k4039</a>
 
 John Oliver about p-hacking:
 
@@ -381,7 +395,7 @@ fullModel = lm(y~., data = dat)
 We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
 
 ::: callout-tip
-Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that start with the most simple (forward) or the most comples (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::StepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::StepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
 :::
 
 ```{r, echo=T, results='hide'}
@@ -476,11 +490,37 @@ R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, howeve
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satistisfaction. If you want, you can also tune this model in a validation or cross-validation split.
+Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satisfaction. If you want, you can also tune this model in a validation or cross-validation split.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-TODO
+Here the goal is **prediction**, not causal inference, so - unlike the causal analysis in the previous chapter - we are free to throw in all available predictors and interactions and let a selection/validation procedure trim the model. Because we will not interpret the individual coefficients causally, the Table II fallacy does not apply.
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(EcoData); library(MASS)
+dat = soep[complete.cases(soep[,c("lebensz_org","einkommenj1","syear","sex",
+        "alter","anz_pers","bildung","erwerb","gesund_org")]), ]
+
+# large candidate model incl. 2-way interactions
+fullModel = lm(lebensz_org ~ (sqrt(einkommenj1) + syear + sex + alter +
+        anz_pers + bildung + erwerb + gesund_org)^2, data = dat)
+
+predModel = stepAIC(fullModel, trace = 0)   # AIC-optimal predictive model
+```
+
+```{r}
+summary(predModel)
+```
+
+Evaluate the predictive error honestly with cross-validation:
+
+```{r, message=FALSE, warning=FALSE}
+library(boot)
+cvFit = glm(formula(predModel), data = dat)
+cv.glm(dat, cvFit, K = 10)$delta[1]         # 10-fold CV mean squared error
+```
+
+Note that we filtered to `complete.cases` on the modelled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the chapter on missing data). Compare this CV error to that of the simpler causal model from the previous chapter - a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
 :::

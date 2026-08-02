@@ -86,10 +86,10 @@ A common metrics is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M
 The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT), which we already used in the chapter on model selection. An LRT can be used on two nested models, with M0 being the simpler model, and makes the following assumptions:
 
 1.  H~0~ = M~0~ is true
-2.  Test statistic = likelihood ratio -2 \[MLE(M~0~)/MLE(H~1~)\]
-3.  Then, under relatively broad conditions, the test static will be chi-squared distributed, with df = difference residual df (parameters) of the models M~1~, M~0~
+2.  Test statistic = $-2 \log \frac{L(M_0)}{L(M_1)} = -2 \left[\log L(M_0) - \log L(M_1)\right]$, i.e. minus twice the difference in maximized log-likelihoods
+3.  Then, under relatively broad conditions, the test statistic will be chi-squared distributed, with df = difference in residual df (parameters) of the models M~1~, M~0~
 
-This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:
+This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the bootstrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:
 
 The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:
 
@@ -317,7 +317,7 @@ The type III ANOVA also discards the shared fractions between the interactions a
 print(car::Anova(fit, type = "III"))
 ```
 
-Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, it can also run a type I ANVOA.
+Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, you can also run a type I ANOVA.
 
 ```{r}
 summary(aov(fit))

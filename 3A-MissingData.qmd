@@ -25,7 +25,7 @@ The answer is that a standard regression model cannot deal with a missing value 
 options("na.action")
 ```
 
-We see that the default in R is "na.omit", which means that if there is an missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model
+We see that the default in R is "na.omit", which means that if there is a missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model
 
 ```{r, eval=F}
 fit = lm(Ozone ~ Wind + Temp, data = airquality, na.action = "na.fail")
@@ -107,9 +107,11 @@ summary(fit)
 
 The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
 
+Note that for proper multiple imputation the imputations must actually differ from each other - otherwise the pooled standard errors do not reflect imputation uncertainty. With `missRanger`, this is controlled by `pmm.k` (predictive mean matching): with the default `pmm.k = 0` the imputations are essentially deterministic, so we set `pmm.k = 5`, which draws each imputed value from the 5 nearest observed values and thus injects genuine between-imputation variability.
+
 ```{r, warning=F, message=F}
-# run 20 imputations
-airqualityMImp <- replicate(20, missRanger(airquality), simplify = FALSE)
+# run 20 imputations (pmm.k > 0 for genuine between-imputation variability)
+airqualityMImp <- replicate(20, missRanger(airquality, pmm.k = 5), simplify = FALSE)
 # fit 20 models
 models <- lapply(airqualityMImp, function(x) lm(Ozone ~ Wind + Temp, x))
 

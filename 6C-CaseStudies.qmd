@@ -151,7 +151,7 @@ plot(MasFem ~ Year, data = hurricanes)
 
 So, we could either take the earlier data out, which would remove half of our data, or we have to worry about confounding with variables that change over time. The most obvious thing would be to take time itself (Year) in the model, to correct for temporal confounding.
 
-Do we need other variables that are not confounders? There is two reasons to add them:
+Do we need other variables that are not confounders? There are two reasons to add them:
 
 - they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
 - we want to fit interacts.
@@ -197,7 +197,24 @@ The rater variable contains ratings of "two independent raters blind to the rese
 When you're done, have a look at the other modelling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odd ratios**. Are your results within the range of estimates from the 29 teams in Silberzahn et al. (2018)?
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
+#### Base model
+
+There is no single "correct" analysis - that is the whole point of Silberzahn et al. The following is therefore not a fully worked-out solution, but **one defensible base model** to start from. Each row is a player-referee dyad, so red cards are a **count out of the number of games** the two shared; we use that as exposure via a log offset, take the **mean of the two skin-tone ratings** rescaled to 0-1 as the predictor, and add **random effects for player and referee** to respect the non-independence.
+
+```{r}
+library(EcoData); library(glmmTMB); library(DHARMa)
+d = redCards
+d$skin  = ((d$rater1 + d$rater2)/2 - 1) / 4     # mean rating, rescaled to 0..1
+d = d[!is.na(d$skin) & d$games > 0, ]
+
+m = glmmTMB(redCards ~ skin + (1|playerShort) + (1|refNum),
+            offset = log(games), family = poisson, data = d)
+summary(m)
+exp(fixef(m)$cond["skin"])   # rate ratio, darkest (1) vs lightest (0) skin
+res = simulateResiduals(m); plot(res); testDispersion(res)
+```
+
+The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comparable to the paper's odds ratios). Compare it to the 0.89-2.93 range of odds ratios reported across the 29 teams. This bare model actually gives a somewhat *higher* estimate, which nicely illustrates the point of the study: the "researcher degrees of freedom" (choice of exposure, random-effect structure, which rater, count vs. binomial, and - crucially - which confounders are included) move the result substantially. From this base model, you would go on to check residuals and dispersion and to add plausible confounders (league, playing position, player skill, ...), which typically pulls the estimate towards the reported range.
 :::
 
 ## Scouting Ants
@@ -371,7 +388,7 @@ library(tidyverse)
 
 Look at the Snails data set in the `EcoData` package, and find out which environmental and/or seasonal predictors i) explain the total abundance and ii) the infection rate of the three species.
 
-The snails data set in the EcoData package includes observations on the distribution of freshwater snails and their infection rates ( schistosomiasis (a parasit)).
+The snails data set in the EcoData package includes observations on the distribution of freshwater snails and their infection rates ( schistosomiasis (a parasite)).
 
 The first scientific question is that their abundance depends on the water conditions. The second scientific question is that their infection rate depends on the water conditions and seasonal factors
 
@@ -798,7 +815,7 @@ The pattern seems to be caused by sAltitude (check `plot(model2, resid(., rescal
 
 **Random slope model**
 
-Let's add a random slope on sAlitude:
+Let's add a random slope on sAltitude:
 
 ```{r}
 
@@ -1027,9 +1044,34 @@ str(snouter)
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+Fit a base model, then check its residuals for spatial autocorrelation. We use `snouter1.1` (a continuous response) here; the coordinates in this dataset are `X` and `Y`:
+
+```{r}
+library(EcoData); library(glmmTMB); library(DHARMa)
+fit = glmmTMB(snouter1.1 ~ rain + djungle, data = snouter)
+res = simulateResiduals(fit); plot(res)
+testSpatialAutocorrelation(res, x = snouter$X, y = snouter$Y)
+```
+
+If the spatial test is significant, we first de-trend with a 2D spline (as recommended in the spatial-correlation section - always de-trend before reaching for a correlation structure):
+
+```{r}
+library(mgcv)
+fit2 = gam(snouter1.1 ~ rain + djungle + te(X, Y), data = snouter)
+res2 = simulateResiduals(fit2)
+testSpatialAutocorrelation(res2, x = snouter$X, y = snouter$Y)
+```
+
+This changes residuals somewhat, but there is still significant spatial autocorrelation left. Thus, we have to move to a spatial model. 
+
+```{r}
+# TODO 
+```
+
 :::
 
-## Volcanoe Island
+## Volcano Island
 
 Option 2: Analyse ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (including residual checks and everything) to understand the predictors that determine the value of
 
@@ -1038,3 +1080,32 @@ windObs (numeric) lizards (1/0) beetles2 (counts) survived (k/n) There are vario
 Hint: it is possible that the possibility to observe a species depends on wind, and it is possible that lizards eat beetles, so you can also consider these variables (or predictions for these variables) as predictors of the others.
 
 Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survived, all-survived) \~ predictor, data = data, family = "binomial")
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Base model
+
+This is an open, integrative exercise, so the following is not a fully worked-out solution but **a base model to start from** for one of the responses (beetle counts). The other responses (`windObs` -\> Gaussian / gls, `lizards` -\> binomial, `survived` -\> k/n binomial) follow exactly the same recipe.
+
+```{r}
+library(EcoData); library(glmmTMB); library(DHARMa)
+d = volcanoisland
+
+# beetles: counts -> start with Poisson and plot as RE, then diagnose
+m0 = glmmTMB(beetles2 ~ windObs + lizards + (1|plot), family = poisson, data = d)
+res = simulateResiduals(m0); plot(res)
+testDispersion(res); testZeroInflation(res)
+
+# if over-dispersed / zero-inflated -> negative binomial + ZI term
+m1 = glmmTMB(beetles2 ~ windObs + lizards + (1|plot),
+             family = nbinom2, ziformula = ~1, data = d)
+
+# then check for residual spatial autocorrelation on the coordinates
+res1 = simulateResiduals(m1)
+grp  = recalculateResiduals(res1, group = d$plot)
+testSpatialAutocorrelation(grp,
+      x = aggregate(x ~ plot, d, mean)$x,
+      y = aggregate(y ~ plot, d, mean)$y)
+```
+
+Work through the diagnostic ladder in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
+:::
