@@ -458,7 +458,7 @@ F-test described as "technically not exactly a likelihood-ratio test." For norma
 
 Numbered tip callout: both "Constant shrinkage" and "Adaptive shrinkage" are labelled "1." — the second should be "2."
 
-**Proposed solution:**
+**Proposed solution: Fix this**
 
 ------------------------------------------------------------------------
 

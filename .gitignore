@@ -14,3 +14,4 @@ hiddenData/
 **/*.quarto_ipynb
 /.claude
 CLAUDE.md
+open-issues.md
