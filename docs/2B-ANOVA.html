@@ -127,6 +127,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta name="citation_title" content="[3]{.chapter-number}&nbsp; [ANOVA and other tests on the LM]{.chapter-title}">
 <meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels/2B-ANOVA.html">
@@ -420,12 +449,12 @@ div.csl-indent {
 
 <section id="the-idea-of-anova" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="the-idea-of-anova"><span class="header-section-number">3.1</span> The idea of ANOVA</h2>
-<p>ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already short introduced ANOVA in the section on categorical predictors.</p>
-<p>The problem with explaining ANOVA is that the term is overfraught with historical meanings and explanations that are no further relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAS and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:</p>
+<p>ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already briefly introduced ANOVA in the section on categorical predictors.</p>
+<p>The problem with explaining ANOVA is that the term is fraught with historical meanings and explanations that are no longer relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAS and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:</p>
 <p>Modern explanation: ANOVA is not a statistical model, but a hypothesis test that can be performed on top of any regression model. What this test is doing is to measure how much model fit improves when a predictor is added, and if this improvement is significant.</p>
 <section id="an-example" class="level3" data-number="3.1.1">
 <h3 data-number="3.1.1" class="anchored" data-anchor-id="an-example"><span class="header-section-number">3.1.1</span> An example</h3>
-<p>As an example, here is a ANOVA (function <code>aov()</code>) performed on the fit of a linear model</p>
+<p>As an example, here is an ANOVA (function <code>aov()</code>) performed on the fit of a linear model</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -446,22 +475,22 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 <pre><code>[1] 125143.1</code></pre>
 </div>
 </div>
-<p>Thus, we can conclude that the R2 explained by each model component is</p>
+<p>Thus, we can compute the fraction of variance attributed to each model component and to the residuals (note the last entry is the unexplained remainder, not an explained component):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">53973</span><span class="sc">/</span><span class="dv">125143</span> <span class="co"># Wind</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">45284</span><span class="sc">/</span><span class="dv">125143</span> <span class="co"># Wind</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4312906</code></pre>
+<pre><code>[1] 0.361858</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dv">25886</span><span class="sc">/</span><span class="dv">125143</span> <span class="co"># Temp</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2068514</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">45284</span><span class="sc">/</span><span class="dv">125143</span> <span class="co"># Residual</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">53973</span><span class="sc">/</span><span class="dv">125143</span> <span class="co"># Residual</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.361858</code></pre>
+<pre><code>[1] 0.4312906</code></pre>
 </div>
 </div>
-<p>Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant against a null model. This is important because, as mentioned before (particular in the chapter on model selection), adding a predictor always improves model fit.</p>
+<p>Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant against a null model. This is important because, as mentioned before (particularly in the chapter on model selection), adding a predictor always improves model fit.</p>
 <p>To interpret the p-values, consider that H0 = the simpler model is true, thus we test if the improvement of model fit is higher than what we would expect if the predictor has no effect.</p>
 </section>
 <section id="customizing-the-partitioning" class="level3" data-number="3.1.2">
@@ -506,17 +535,17 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="measuring-model-fit"><span class="header-section-number">3.2.1</span> Measuring model fit</h3>
 <p>The definition of model fit via sum of squares makes sense as long as we work with linear models.</p>
 <p>For GLMs, this definition doesn’t make sense any more. A number of so-called pseudo-R<sup>2</sup> metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R<sup>2</sup> for the linear model.</p>
-<p>A common metrics is McFadden pseudo-R<sup>2</sup>, which is defined as 1-[LogL(M)/LogL(M<sub>0</sub>)], where M is our model, and M0 is an intercept only model.</p>
+<p>A common metric is McFadden pseudo-R<sup>2</sup>, which is defined as 1-[LogL(M)/LogL(M<sub>0</sub>)], where M is our model, and M0 is an intercept only model.</p>
 </section>
 <section id="testing-if-the-improvement-is-significant" class="level3" data-number="3.2.2">
 <h3 data-number="3.2.2" class="anchored" data-anchor-id="testing-if-the-improvement-is-significant"><span class="header-section-number">3.2.2</span> Testing if the improvement is significant</h3>
 <p>The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT), which we already used in the chapter on model selection. An LRT can be used on two nested models, with M0 being the simpler model, and makes the following assumptions:</p>
 <ol type="1">
 <li>H<sub>0</sub> = M<sub>0</sub> is true</li>
-<li>Test statistic = likelihood ratio -2 [MLE(M<sub>0</sub>)/MLE(H<sub>1</sub>)]</li>
-<li>Then, under relatively broad conditions, the test static will be chi-squared distributed, with df = difference residual df (parameters) of the models M<sub>1</sub>, M<sub>0</sub></li>
+<li>Test statistic = <span class="math inline">\(-2 \log \frac{L(M_0)}{L(M_1)} = -2 \left[\log L(M_0) - \log L(M_1)\right]\)</span>, i.e.&nbsp;minus twice the difference in maximized log-likelihoods</li>
+<li>Then, under relatively broad conditions, the test statistic will be chi-squared distributed, with df = difference in residual df (parameters) of the models M<sub>1</sub>, M<sub>0</sub></li>
 </ol>
-<p>This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the boostrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:</p>
+<p>This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the bootstrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:</p>
 <p>The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:</p>
 <ol type="1">
 <li>Simulate data from H<sub>0</sub> (= the fitted model M<sub>0</sub>)</li>
@@ -786,7 +815,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </section>
 <section id="correcting-partitions-for-complexity" class="level3" data-number="3.2.4">
 <h3 data-number="3.2.4" class="anchored" data-anchor-id="correcting-partitions-for-complexity"><span class="header-section-number">3.2.4</span> Correcting partitions for complexity</h3>
-<p>A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day:</p>
+<p>A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day is fit:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> <span class="fu">as.factor</span>(Day) , <span class="at">data =</span> airquality)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(m))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -914,7 +943,7 @@ F-statistic: 1.428 on 30 and 85 DF,  p-value: 0.1039</code></pre>
 <ul>
 <li><p>It provides a richer output</p></li>
 <li><p>It provides the same output for all cases, with clear ideas about how to check residuals etc.</p></li>
-<li><p>It allows to adjust for the effects of covariates</p></li>
+<li><p>It allows us to adjust for the effects of covariates</p></li>
 </ul>
 </section>
 <section id="case-studies" class="level2" data-number="3.4">
@@ -1021,7 +1050,7 @@ Residuals   82.089 174
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, it can also run a type I ANVOA.</p>
+<p>Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, you can also run a type I ANOVA.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">aov</span>(fit))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1034,7 +1063,7 @@ Residuals   174  82.09   0.472
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>As a last, add-on, let’s see let’s see what happens when we use the non centered variables:</p>
+<p>As a last, add-on, let’s see what happens when we use the non centered variables:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">=</span> <span class="fu">lm</span>(loght <span class="sc">~</span> temp <span class="sc">*</span> lat, <span class="at">data =</span> plantHeight)</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(car<span class="sc">::</span><span class="fu">Anova</span>(fit2, <span class="at">type =</span> <span class="st">"II"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>

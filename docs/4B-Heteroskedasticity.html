@@ -393,7 +393,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is know as heteroskedasticity.</p>
+<p>Modelling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is known as heteroskedasticity.</p>
 <section id="heteroskedasticity-in-the-linear-model" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="heteroskedasticity-in-the-linear-model"><span class="header-section-number">10.1</span> Heteroskedasticity in the linear model</h2>
 <p>The easiest way to understand heteroskedasticity is in the linear model. Let’s look at an extreme example that we create by simulating some data</p>
@@ -489,12 +489,12 @@ Important
 <p>So, what can we do?</p>
 <section id="transformation" class="level3" data-number="10.1.1">
 <h3 data-number="10.1.1" class="anchored" data-anchor-id="transformation"><span class="header-section-number">10.1.1</span> Transformation</h3>
-<p>One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.</p>
+<p>One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but this is often difficult, because this may also conflict with keeping the distribution normal.</p>
 </section>
 <section id="modelling-the-variance-dispersion" class="level3" data-number="10.1.2">
 <h3 data-number="10.1.2" class="anchored" data-anchor-id="modelling-the-variance-dispersion"><span class="header-section-number">10.1.2</span> Modelling the variance / dispersion</h3>
-<p>The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow to model the dispersion</p>
-<p>The first (traditional) option is to use <code class="sourceCode r">nlme<span class="sc">::</span>gls</code>. GLS = <em>Generalized Least Squares</em>. In the <code>gls</code> function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see <code class="sourceCode r">?varFunc</code>. In our case, we will use the <code>varIdent</code> function, which allows to specify a different variance per treatment.</p>
+<p>The second, more general option, is to model the variance - Modelling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow you to model the dispersion</p>
+<p>The first (traditional) option is to use <code class="sourceCode r">nlme<span class="sc">::</span>gls</code>. GLS = <em>Generalized Least Squares</em>. In the <code>gls</code> function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see <code class="sourceCode r">?varFunc</code>. In our case, we will use the <code>varIdent</code> function, which allows you to specify a different variance per treatment.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -739,7 +739,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 </div>
-<p>Fitting the model, we see that the distribution is to wide:</p>
+<p>Fitting the model, we see that the distribution is too wide:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(growth <span class="sc">~</span> concentration)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
@@ -783,7 +783,7 @@ concentration  2.0724  0.1048    19.7721
 Residual standard error: 0.534 on 98 degrees of freedom</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No p-values and not sure if we can trust the confidence intervals.</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Would need to boostrap by hand!</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Would need to bootstrap by hand!</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># This is another option that gives us p-values directly.</span></span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(robustbase)</span>

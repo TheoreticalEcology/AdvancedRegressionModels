@@ -109,7 +109,7 @@ summary(m3)
 
 Now we see the significant main effect that they report. Note, however, that the significant difference is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot, or to specifically use predict() to calculate differences and CIs at high NDAM values.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(effects)
 plot(allEffects(m3, partial.residuals = T))
 ```
@@ -154,7 +154,7 @@ So, we could either take the earlier data out, which would remove half of our da
 Do we need other variables that are not confounders? There are two reasons to add them:
 
 - they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
-- we want to fit interacts.
+- we want to fit interactions.
 
 I added NDAM to the model, because we saw earlier that it has a strong effect. I think it's not unreasonable to check for an interaction as well.
 
@@ -274,9 +274,9 @@ fit2<-glmer(went.phero ~ ant_group_main * (
 summary(fit2)
 ```
 
-Here we find now that there is an interaction with the main predictor, and there could be effects. We can also look at this visually.
+We now find that there is an interaction with the main predictor, and there could be effects. We can also look at this visually.
 
-```{r}
+```{r, warning=FALSE}
 plot(allEffects(fit2))
 ```
 
@@ -722,7 +722,7 @@ Tasks:
 
 3.  Fit a glm/glmm with SBPA as response (Bonus: add phylogenetic correlation structure)
 
-::: {.callout-caution icon="false"}
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution for SBDensity (lmm)
 
 Prepare+scale data:
@@ -854,7 +854,7 @@ summary(model4)
 
 Prepare phylogeny:
 
-```{r}
+```{r, message=FALSE}
 library(ape)
 library(geiger)
 species = unique(data$Species)
@@ -972,7 +972,7 @@ model1 = glmer(SBPA~
                 sAltitude + sHum +
                 (1|Site) + (sAltitude|Species),
               data = data, family = binomial(),
-              control = glmerControl('bobyqa'))
+              control = glmerControl(optimizer = "bobyqa"))
 summary(model1)
 ```
 

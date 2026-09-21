@@ -122,13 +122,13 @@ To check the properties of other, possibly more complicated pipelines, statistic
 
 ## Experimental design and power analysis
 
-All we have learned in this course directly informs experimental and research design, may it be of controlled experiments, quasi-experiments or observational studies.
+All we have learned in this course directly informs experimental and research design, be it controlled experiments, quasi-experiments or observational studies.
 
 As a start, note our discussions of causality and model selection:
 
 - First of all, research design needs a goal: do you want to design for prediction or (causal) inference
 
-- If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed, adjusting for collinear variable is possible, but cost power.
+- If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed, adjusting for collinear variables is possible, but costs power.
 
 - In experimental settings, blocked designs where blocks will be later treated as a RE are standard
 

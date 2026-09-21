@@ -456,7 +456,7 @@ Note
 [1] "na.omit"</code></pre>
 </div>
 </div>
-<p>We see that the default in R is “na.omit”, which means that if there is an missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model</p>
+<p>We see that the default in R is “na.omit”, which means that if there is a missing value (NA) in either the response or one of the predictors, the entire observation will simply be omitted. You can change way NAs are handled per model</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality, <span class="at">na.action =</span> <span class="st">"na.fail"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -470,7 +470,7 @@ Note
 <li>If you run a model with many variables, each of them with a number of NAs, you might lose a lot of observations and thus power. It may be better to perform an imputation (see below).</li>
 <li>If your NAs are not missing at random, you might actually have a bias in your model if you simply omit</li>
 </ol>
-<p>For all this reason, you should get a good overview about your NAs, and consider what to do with them.</p>
+<p>For all these reasons, you should get a good overview about your NAs, and consider what to do with them.</p>
 </section>
 <section id="summarizing-nas" class="level3" data-number="6.0.2">
 <h3 data-number="6.0.2" class="anchored" data-anchor-id="summarizing-nas"><span class="header-section-number">6.0.2</span> Summarizing NAs</h3>
@@ -498,7 +498,7 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>airquality[<span class="fu">complete.cases</span>(airquality), ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax</p>
+<p>Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy/paste the regression formula syntax</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rows <span class="ot">=</span> <span class="fu">rownames</span>(<span class="fu">model.matrix</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> airquality))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>airquality <span class="ot">=</span> airquality[rows, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -506,13 +506,13 @@ Note
 </section>
 <section id="missing-at-random" class="level3" data-number="6.0.3">
 <h3 data-number="6.0.3" class="anchored" data-anchor-id="missing-at-random"><span class="header-section-number">6.0.3</span> Missing at random</h3>
-<p>After having an overview about the NAs in your data, as second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:</p>
+<p>After having an overview about the NAs in your data, as a second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:</p>
 <ol type="1">
 <li>MCAR = missing completely at random</li>
 <li>MAR = missing at random</li>
 <li>MNAR = missing not at random</li>
 </ol>
-<p>The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly from other values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other variables. See also <span class="citation" data-cites="bhaskaran2014difference">(<a href="5B-References.html#ref-bhaskaran2014difference" role="doc-biblioref">Bhaskaran and Smeeth 2014</a>)</span>.</p>
+<p>The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly on other observed values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other observed variables. See also <span class="citation" data-cites="bhaskaran2014difference">(<a href="5B-References.html#ref-bhaskaran2014difference" role="doc-biblioref">Bhaskaran and Smeeth 2014</a>)</span>.</p>
 </section>
 <section id="imputation" class="level3" data-number="6.0.4">
 <h3 data-number="6.0.4" class="anchored" data-anchor-id="imputation"><span class="header-section-number">6.0.4</span> Imputation</h3>
@@ -548,93 +548,11 @@ F-statistic:  74.5 on 2 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.</p>
+<p>Note that for proper multiple imputation the imputations must actually differ from each other - otherwise the pooled standard errors do not reflect imputation uncertainty. With <code>missRanger</code>, this is controlled by <code>pmm.k</code> (predictive mean matching): with the default <code>pmm.k = 0</code> the imputations are essentially deterministic, so we set <code>pmm.k = 5</code>, which draws each imputed value from the 5 nearest observed values and thus injects genuine between-imputation variability.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Variables to impute:        Solar.R
-Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
-
-iter 1 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 2 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 3 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Variables to impute:        Solar.R
-Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
-
-iter 1 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 2 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Variables to impute:        Solar.R
-Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
-
-iter 1 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 2 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Variables to impute:        Solar.R
-Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
-
-iter 1 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 2 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%
-iter 3 
-
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run 20 imputations (pmm.k &gt; 0 for genuine between-imputation variability)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>airqualityMImp <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">20</span>, <span class="fu">missRanger</span>(airquality, <span class="at">pmm.k =</span> <span class="dv">5</span>), <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Variables to impute:        Solar.R
@@ -705,6 +623,66 @@ iter 2
   |                                                                            
   |                                                                      |   0%
   |                                                                            
+  |======================================================================| 100%
+iter 3 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 4 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 5 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Variables to impute:        Solar.R
+Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
+
+iter 1 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 3 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Variables to impute:        Solar.R
+Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
+
+iter 1 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
@@ -777,6 +755,12 @@ iter 2
   |                                                                            
   |                                                                      |   0%
   |                                                                            
+  |======================================================================| 100%
+iter 3 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
@@ -791,6 +775,12 @@ iter 1
   |                                                                            
   |======================================================================| 100%
 iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 3 
 
   |                                                                            
   |                                                                      |   0%
@@ -855,6 +845,12 @@ iter 2
   |                                                                            
   |                                                                      |   0%
   |                                                                            
+  |======================================================================| 100%
+iter 3 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
   |======================================================================| 100%</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
@@ -869,6 +865,54 @@ iter 1
   |                                                                            
   |======================================================================| 100%
 iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 3 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Variables to impute:        Solar.R
+Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
+
+iter 1 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Variables to impute:        Solar.R
+Variables used to impute:   Ozone, Solar.R, Wind, Temp, Month, Day
+
+iter 1 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 2 
+
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+iter 3 
 
   |                                                                            
   |                                                                      |   0%
@@ -987,7 +1031,7 @@ iter 3
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(airqualityMImp, <span class="cf">function</span>(x) <span class="fu">lm</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> Temp, x))</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># use mice package to compute corrected p-values</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(mice)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pooled_fit <span class="ot">&lt;-</span> <span class="fu">pool</span>(models)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         term   estimate  std.error statistic       df      p.value

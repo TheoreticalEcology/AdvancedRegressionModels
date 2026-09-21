@@ -20,7 +20,7 @@ Assume we look at the effect of coffee consumption on Lung Cancer. Assume furthe
 
 It is common to visualize and analyze such relationships in a causal graph. Here, I use the ggdag package
 
-```{r}
+```{r, message=FALSE}
 library(ggdag)
 library(ggplot2)
 theme_set(theme_dag())
@@ -28,7 +28,7 @@ dag = confounder_triangle(x = "Coffee", y = "Lung Cancer", z = "Smoking")
 ggdag(dag, text = FALSE, use_labels = "label")
 ```
 
-We can use the ggdag package (or to be more exact: the underlying daggitty package) to explore the implications of this graph. The way I created the graph already includes the assumption that we are interested in the effect of Coffee on Lung Cancer. I can use the function `ggdag_dconnected()` to explore if those two are d-connected, which is just a fancy word for correlated.
+We can use the ggdag package (or to be more exact: the underlying daggitty package) to explore the implications of this graph. The way I created the graph already includes the assumption that we are interested in the effect of Coffee on Lung Cancer. I can use the function `ggdag_dconnected()` to explore if those two are d-connected — a technical term for whether two variables may be statistically associated given a particular conditioning set (i.e. which other variables are controlled for).
 
 ```{r}
 ggdag_dconnected(dag, text = FALSE, use_labels = "label")
@@ -90,7 +90,7 @@ abline(fit2, col = "red")
 legend("topleft", c("simple regression", "multiple regression"), col = c(1,2), lwd = 1)
 ```
 
-::: callout-tip
+::: {.callout-tip}
 GAMs are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone \~ Wind, account for the other variables, a good strategy might be:
 
 ```{r, echo=TRUE, eval=TRUE}
@@ -152,7 +152,7 @@ How do we deal with the basic causal structures colliders, mediators and confoun
 
 Note: If other variables are just there to correct our estimates, they are **nuisance parameters** (= we are not interested in them), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy).
 
-::: callout-tip
+::: {.callout-tip}
 The best practical guidance paper I know on estimating causal effects is Lederer et al., 2018, "Control of Confounding and Reporting of Results in Causal Inference Studies. Guidance for Authors from Editors of Respiratory, Sleep, and Critical Care Journals" which is available <a href="https://www.atsjournals.org/doi/full/10.1513/AnnalsATS.201808-564PS" target="_blank" rel="noopener">here</a>.
 
 Another great paper is Laubach, Z. M., Murray, E. J., Hoke, K. L., Safran, R. J., & Perng, W. (2021). A biologist's guide to model selection and causal inference. Proceedings of the Royal Society B, 288(1943), 20202815.
@@ -229,7 +229,7 @@ The blind reporting of the entire regression table is known as Table II fallacy 
 
 But what if we are interested in all the causal relationships? If we have a graph already, the best option is to fit a structural equation model.
 
-Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLMs responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
+Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLM responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.
 
 For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can be modelled latent.
 
@@ -275,7 +275,7 @@ summary(lm(resY.C ~ resX.C))
 
 You can also do this with more variables.
 
-::: callout-note
+::: {.callout-note}
 Strictly speaking, what we did here is the classic Frisch-Waugh-Lovell partialling-out result, not yet full double/debiased machine learning as introduced by Chernozhukov et al. (2018). What turns this trick into "double ML" is two additional ingredients: (i) the two nuisance regressions (x \~ c and y \~ c) are fit with flexible, potentially high-dimensional ML estimators (e.g. random forests, gradient boosting) instead of a simple lm, and (ii) cross-fitting - the nuisance models are trained on one part of the data and the residuals (and thus the effect of interest) are computed on a held-out part. Cross-fitting is what removes the overfitting bias that flexible ML nuisance models would otherwise introduce into the residuals, and it is what gives double ML its statistical guarantees (valid confidence intervals even when the nuisance functions are estimated nonparametrically).
 :::
 
@@ -308,7 +308,7 @@ Perform a causal analysis of the effect of income on life satisfaction, consider
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-- Nearly all other variables are confounders, gesund_org could als be a collider
+- Nearly all other variables are confounders, gesund_org could also be a collider
 - Might consider splitting data into single households, families, as effects could be very different. Alternatively, could add interactions with single, families and / or time to see if effects of income are different
 
 A possible model is

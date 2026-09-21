@@ -27,7 +27,7 @@ summary(fit)
 summary(aov(fit))
 ```
 
-::: callout-important
+::: {.callout-important}
 A subtlety about heteroskedasticity in the normal model is that it mainly affects p-values for the variable that the residual variance is correlated with, as illustrated by the simulation below
 
 ``` r
@@ -67,7 +67,7 @@ So, what can we do?
 
 ### Transformation
 
-One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but often difficult, because this may also conflict with keeping the distribution normal.
+One option is to search for a transformation of the response that improves the problem - If heteroskedasticity correlates with the mean value, one can typically decrease it by some sqrt or log transformation, but this is often difficult, because this may also conflict with keeping the distribution normal.
 
 ### Modelling the variance / dispersion
 
@@ -179,7 +179,7 @@ growth = 2 * concentration + rnorm(n, sd = 0.5) +
 plot(growth ~ concentration)
 ```
 
-Fitting the model, we see that the distribution is to wide:
+Fitting the model, we see that the distribution is too wide:
 
 ```{r chunk_chapter4_chunk17, echo=TRUE, eval=TRUE}
 fit = lm(growth ~ concentration)

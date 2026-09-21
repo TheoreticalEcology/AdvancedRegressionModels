@@ -14,7 +14,7 @@ set.seed(42)
 
 Except for the random effects, we have so far assumed that residual errors are independent. However, that must not always be the case - we may find that residuals show autocorrelation.
 
-::: callout-note
+::: {.callout-note}
 Correlation means that one variable correlates with another. Autocorrelation means that data points of one variable that are close to each other have similar values. This implies that autocorrelation is only defined if there is a "distance relationship" between observations.
 :::
 
@@ -51,11 +51,11 @@ You don't need to memorize this taxonomy for the course, but if you go looking s
 
 If we find autocorrelation in the residuals of our model, there can be several reasons, which we can address by different structures.
 
-::: callout-important
+::: {.callout-important}
 In the context of regression models, we are never interested in the autocorrelation of the response / predictors per se, but only in the residuals. Thus, it doesn't make sense to assume that you need a spatial model only because you have a spatially autocorrelated signal.
 :::
 
-1.  Autocorrelation can occur because we have a spatially correlated misfit, i.e. there is a **trend** in the given space (e.g. time, space, phylogeny). If this is the case, de-trending the model (with a linear regression term or a spline) will remove the residual autocorrelation. We should always de-trend first because we consider moving to a model with a residual correlation structure.
+1.  Autocorrelation can occur because we have a spatially correlated misfit, i.e. there is a **trend** in the given space (e.g. time, space, phylogeny). If this is the case, de-trending the model (with a linear regression term or a spline) will remove the residual autocorrelation. We should always de-trend first before we consider moving to a model with a residual correlation structure.
 
 2.  Only after accounting for the trend, we should test if there is a residual spatial / temporal / phylogenetic **autocorrelation**. If that is the case, we would usually use a so-called **autoregressive structure** (see the box above for the different flavors of these models). In these models, we make parametric assumptions for how the correlation between data points falls off with distance. When we speak about spatial / temporal / phylogenetic regressions, we usually refer to these or similar models.
 
@@ -63,14 +63,14 @@ In the context of regression models, we are never interested in the autocorrelat
 
 To de-trend, you can just use standard regression terms or splines on time or space. For the rest of this chapter, we will concentrate on how to specify "real" correlation structures. However, in the case studies, you should always de-trend first.
 
-To account for "real" autocorrelation of residuals, similar as for the variance modelling, we can add correlation structures
+To account for "real" autocorrelation of residuals, similarly to the variance modelling, we can add correlation structures
 
 - for normal responses in `nlme::gls`{.R}, see <a href="https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html" target="_blank" rel="noopener">https://stat.ethz.ch/R-manual/R-devel/library/nlme/html/corClasses.html</a>
 - for GLMs using `glmmTMB`{.R}, see <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html</a>.
 
 The following pages provide examples and further comments on how to do this.
 
-::: callout-note
+::: {.callout-note}
 Especially for spatial models, both nlme and glmmTMB are relatively slow. There are a large number of specialized packages that deal in particular with the problem of spatial models, including `MASS::glmmPQL`, BRMS, INLA, spaMM, and many more. To keep things simple and concentrate on the principles, however, we will stick with the packages you already know.
 :::
 
@@ -130,7 +130,7 @@ library(DHARMa)
 testTemporalAutocorrelation(fit, time = 1:1000)
 ```
 
-::: callout-note
+::: {.callout-note}
 Remember: in general, for spatial / temporal data, there are two processes that can create residual autocorrelation:
 
 1.  There is a spatial misfit trend in time / space, which creates a correlation in space / time.
@@ -141,7 +141,7 @@ Unfortunately, the distinction between a larger trend and a correlation is quite
 
 Let's see how we can fit the AR1 model to data. First, with nlme
 
-```{r}
+```{r, message=FALSE}
 library(nlme)
 
 fitGLS = gls(obs~1, corr = corAR1(0.771, form = ~ 1))
@@ -150,7 +150,7 @@ summary(fitGLS)
 
 Second, with glmmTMB
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(glmmTMB)
 
 time <- factor(1:1000) # time variable
@@ -165,7 +165,7 @@ If you check the results, you can see that
 1.  Both models correctly estimate the AR1 parameter
 2.  The p-value for the intercept is in both models n.s., as expected
 
-::: callout-note
+::: {.callout-note}
 #### Trend and autocorrelation with glmmTMB
 
 As I mentioned earlier, first detrend and then add correlation structure if there is autocorrelation. After both steps we should no longer see any pattern in the conditional residuals. Unfortunately, checking the conditional residuals is a bit complicated because glmmTMB does not support conditional simulations, while lme4 does, but it does not support correlation structures. However, there is a workaround.
@@ -271,7 +271,7 @@ Now we get the right estimates for the autocorrelation, but of course this is no
 
 ## Spatial Correlation Structures
 
-Spatial models work very similar to the temporal models. This time, we start directly with an example, using a data set with the thickness of coal seams, that we try to predict with a spatial (soil) predictor.
+Spatial models work very similarly to the temporal models. This time, we start directly with an example, using a data set with the thickness of coal seams, that we try to predict with a spatial (soil) predictor.
 
 ```{r}
 library(EcoData)
@@ -302,7 +302,7 @@ tann.dir.vgm = variogram(residuals(fit) ~ 1,
 plot(tann.dir.vgm)
 ```
 
-Both the DHARMa plots and the variograms are more indicative of a spatial trend. Let's remove this with a 2d-spine, called a tensor spline:
+Both the DHARMa plots and the variograms are more indicative of a spatial trend. Let's remove this with a 2d-spline, called a tensor spline:
 
 ```{r chunk_chapter6_chunk5, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(mgcv)
@@ -325,7 +325,7 @@ Almost the same, but simpler:
 fit = lm(thick ~ soil + north + I(north^2), data = thickness)
 ```
 
-If we would have still seen a signal, we should have fit an autoregressive model. Here it's not necessary, but just to show you the syntax - first nlme:
+If we had still seen a signal, we should have fit an autoregressive model. Here it's not necessary, but just to show you the syntax - first nlme:
 
 ```{r chunk_chapter6_chunk7, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 fit2 = gls(thick ~ soil , correlation = corExp(form =~ east + north) , data = thickness)
@@ -559,7 +559,7 @@ Task: Check if there is a relationship between altitude at which a species is fo
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 plot(Lnote~Lnalt, data = dat)
 fit <- lm(Lnote~ scale(Lnalt), data = dat)
 summary(fit)
@@ -569,7 +569,7 @@ plot(allEffects(fit,partial.residuals = T))
 
 Bit of a misfit, to get a good fit, after playing around, I logged the response and added a quadratic and a cubic effect - you can probably also find other solutions.
 
-```{r}
+```{r, warning=FALSE}
 fit <- lm(log(Lnote) ~ scale(Lnalt) + I(scale(Lnalt)^2) + I(scale(Lnalt)^3), data = dat)
 summary(fit)
 plot(allEffects(fit,partial.residuals = T))
@@ -615,7 +615,7 @@ which tells us that Lnalt has a significant effect, even though we can't reject 
 
 Addition: what would happen if we do the same with a misspecified model? Have a look at the p-values of the fitted models. Can you explain what's going on here?
 
-```{r}
+```{r, warning=FALSE}
 fit <- lm(Lnote~ scale(Lnalt), data = dat)
 summary(fit)
 
@@ -637,7 +637,7 @@ The observation is that the PGLS effect estimate is significant while normal lm 
 
 ## Multivariate GLMs
 
-In the recent years, multivariate GLMs, in particular the multivariate probit model, and latent variable versions thereof, have become popular for the analysis of community data. The keyword here is "joint species distribution models" (jSDMs).
+In recent years, multivariate GLMs, in particular the multivariate probit model, and latent variable versions thereof, have become popular for the analysis of community data. The keyword here is "joint species distribution models" (jSDMs).
 
 Briefly, what we want a jSDM to do is to fit a vector of responses (could be abundance or presence / absence data) as a function of environmental predictors and a covariance between the responses. The model is thus
 
@@ -651,7 +651,7 @@ lme4(abundance ~ 0 + species + env:species + (0+species|site)
 glmmTMB(abundance ~ 0 + species + env:species + (0+species|site)
 ```
 
-however, these so-called full-rank models have a lot of degrees of freedom and are slow to compute if the number of species gets large. It has therefore become common to fit rank-reduced versions of the these models using a latent-variable reparameterization of the model above. A latent-variable version of this model can be fit in glmmTMB via this syntax
+however, these so-called full-rank models have a lot of degrees of freedom and are slow to compute if the number of species gets large. It has therefore become common to fit rank-reduced versions of these models using a latent-variable reparameterization of the model above. A latent-variable version of this model can be fit in glmmTMB via this syntax
 
 ```{r, eval = F}
 glmmTMB(abundance ~ 0 + species + env:species + rr(Species + 0|id, d = 2))

@@ -421,15 +421,15 @@ window.Quarto = {
 
 <section id="what-is-a-nonlinear-regression" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="what-is-a-nonlinear-regression"><span class="header-section-number">5.1</span> What is a nonlinear regression?</h2>
-<p>The most important thing first: the main distinction between a linear and a nonlinear regression is NOT if you fit a linear function. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as “polynomial regressions”) are effectively all linear regressions.</p>
-<p>The reason is that as long as the function of the mean can be represented as a polynomial of the form</p>
-<p><span class="math display">\[ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...\]</span> you are considering linear effects of a predictor, which just happens to be <span class="math inline">\(x^2\)</span>, <span class="math inline">\(\sqrt(x)\)</span> or something like that. You can see this by noting that instead of writing the <span class="math inline">\(x^2\)</span> in the regression formula, you could pre-calculate it in the data as <span class="math inline">\(x_2 = x*x\)</span> and it would just look like a multiple regression.</p>
-<p>Because the linear regression is much better supported in R (as in other statistical packages), it is always preferable to consider if the function you want to fit can be expressed as a polynomial by transforming y or x (e.g.&nbsp;by regressing against log(y), logit(y)).</p>
-<p>However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be reduced to a polynomial. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these an other case, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with a normal residuals, which is known as nls(nonlinear least squares).</p>
+<p>The most important thing first: the main distinction between a linear and a nonlinear regression is NOT whether you fit a straight line. The defining criterion is whether the model is <strong>linear in the parameters</strong>. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as “polynomial regressions”) are all still linear regressions, and so are transformations such as <span class="math inline">\(\log(x)\)</span> or spline bases.</p>
+<p>The reason is that as long as the function of the mean is linear in the parameters - for example a polynomial of the form</p>
+<p><span class="math display">\[ y = a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...\]</span> you are considering linear effects (<span class="math inline">\(a_0, a_1, a_2\)</span>), where the predictor just happens to be <span class="math inline">\(x^2\)</span>, <span class="math inline">\(\sqrt(x)\)</span> or something like that. You can see this by noting that instead of writing the <span class="math inline">\(x^2\)</span> in the regression formula, you could pre-calculate it in the data as <span class="math inline">\(x_2 = x*x\)</span> and it would just look like a multiple regression.</p>
+<p>Because the linear regression is much better supported in R (as in other statistical packages), it is usually preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g.&nbsp;by regressing against log(y), logit(y)). Note, however, that transforming the response changes the error structure — for example, regressing against log(y) implies multiplicative errors on the original scale, which is a different model from an NLS fit with log-normal residuals.</p>
+<p>However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be made linear in the parameters. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these and other cases, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with normal residuals, which is known as nls (nonlinear least squares).</p>
 </section>
 <section id="fitting-a-nonlinear-regression-using-nls" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="fitting-a-nonlinear-regression-using-nls"><span class="header-section-number">5.2</span> Fitting a nonlinear regression using nls</h2>
-<p>Here, I will use the Michaelis-Menten model as an example. In this example, we are interested in the development of a reaction rate over time. The data we have are measurements of the reaction rate and substrate concentration</p>
+<p>Here, I will use the Michaelis-Menten model as an example. In this example, we are interested in how the reaction rate depends on the substrate concentration. The data we have are paired measurements of the reaction rate (<span class="math inline">\(v\)</span>) and substrate concentration (<span class="math inline">\(S\)</span>)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlstools)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -450,11 +450,11 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm, </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Alternatively, the helpful nlstools package already provides many functions that you may want to fit, including this particular function under the name ‘michaelis’. We have already loaded this package, so you could can just write</p>
+<p>Alternatively, the helpful nlstools package already provides many functions that you may want to fit, including this particular function under the name ‘michaelis’. We have already loaded this package, so you can just write</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">nls</span>(michaelis,<span class="at">data =</span> vmkm, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Note that in unlike in a lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the MLE for the model, which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).</p>
+<p>Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).</p>
 <p>The model provides a standard summary table.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -475,7 +475,7 @@ Number of iterations to convergence: 6
 Achieved convergence tolerance: 2.477e-06</code></pre>
 </div>
 </div>
-<p>The nlstools package has a bit extended summary table that provides a few useful additional information</p>
+<p>The nlstools package has a slightly extended summary table that provides a few useful additional information</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">overview</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -537,11 +537,11 @@ Vmax 0.9917486 1.0000000</code></pre>
 </div>
 </div>
 </div>
-<p>Of course, all discussions about residuals from the chapter on linear regressions also applies here, so we are checking for iid normal residuals.</p>
+<p>Of course, all discussions about residuals from the chapter on linear regressions also apply here, so we are checking for iid normal residuals.</p>
 </section>
 <section id="uncertainties-and-cis-on-parameters" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="uncertainties-and-cis-on-parameters"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</h2>
-<p>In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.</p>
+<p>In nonlinear models, the sampling distribution of the MLE will often not be well approximated by a multivariate normal distribution, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>nlstools<span class="sc">::</span><span class="fu">confint2</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -550,7 +550,7 @@ Km   1.813418 3.358860
 Vmax 1.242790 1.849303</code></pre>
 </div>
 </div>
-<p>We can also visualize the likelihood contour (again, this is using the normal approximation)</p>
+<p>We can also visualize the RSS contour (under normal errors, minimizing the RSS is equivalent to maximizing the likelihood, so this also traces the likelihood surface)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cont <span class="ot">&lt;-</span> <span class="fu">nlsContourRSS</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -568,7 +568,7 @@ Vmax 1.242790 1.849303</code></pre>
 </div>
 <p>Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mmboot <span class="ot">&lt;-</span> nlstools<span class="sc">::</span><span class="fu">nlsBoot</span>(mm, <span class="at">niter =</span> <span class="dv">200</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mmboot <span class="ot">&lt;-</span> nlstools<span class="sc">::</span><span class="fu">nlsBoot</span>(mm, <span class="at">niter =</span> <span class="dv">1000</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mmboot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
@@ -583,14 +583,14 @@ Vmax 1.242790 1.849303</code></pre>
 ------
 Bootstrap statistics
      Estimate Std. error
-Km   2.643809  0.3941447
-Vmax 1.567486  0.1540766
+Km   2.637783  0.3730425
+Vmax 1.565863  0.1455113
 
 ------
 Median of bootstrap estimates and percentile confidence intervals
        Median     2.5%    97.5%
-Km   2.597163 2.042456 3.577164
-Vmax 1.547605 1.337787 1.942798</code></pre>
+Km   2.602323 2.049972 3.540909
+Vmax 1.547969 1.330331 1.896717</code></pre>
 </div>
 </div>
 <p>In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case.</p>
@@ -612,20 +612,20 @@ Vmax 1.547605 1.337787 1.942798</code></pre>
 </section>
 <section id="interactions-in-nls" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="interactions-in-nls"><span class="header-section-number">5.6</span> Interactions in NLS</h2>
-<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in setion linear regression)</p>
+<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable? Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in section linear regression)</p>
 <p>Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T) <span class="co"># wild type and mutant</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># wild type and mutant</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    S    v type
 1 0.3 0.17    1
 2 0.3 0.15    1
 3 0.4 0.21    1
-4 0.4 0.23    1
-5 0.5 0.26    1
-6 0.5 0.23    1</code></pre>
+4 0.4 0.23    0
+5 0.5 0.26    0
+6 0.5 0.23    0</code></pre>
 </div>
 </div>
 <p>Now I can fit the model</p>
@@ -638,16 +638,16 @@ Formula: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 
 Parameters:
               Estimate Std. Error t value Pr(&gt;|t|)    
-Km             2.44124    0.37664   6.482 3.28e-06 ***
-Vmax           1.50852    0.14329  10.528 2.28e-09 ***
-DeltaMutantKm  0.09166    0.09443   0.971    0.344    
+Km             2.53813    0.35783   7.093 9.54e-07 ***
+Vmax           1.51381    0.14144  10.703 1.74e-09 ***
+DeltaMutantKm -0.09655    0.09737  -0.992    0.334    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.02579 on 19 degrees of freedom
+Residual standard error: 0.02577 on 19 degrees of freedom
 
 Number of iterations to convergence: 6 
-Achieved convergence tolerance: 1.915e-06</code></pre>
+Achieved convergence tolerance: 1.797e-06</code></pre>
 </div>
 </div>
 <p>We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables.</p>
@@ -669,7 +669,7 @@ Achieved convergence tolerance: 1.915e-06</code></pre>
 </section>
 <section id="model-selection" class="level2" data-number="5.7">
 <h2 data-number="5.7" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">5.7</span> Model selection</h2>
-<p>You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn’t distinguish between types, we can either to a LRT</p>
+<p>You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn’t distinguish between types, we can either do a LRT</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mm, mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -679,7 +679,7 @@ Model 1: v ~ S/(S + Km) * Vmax
 Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
   Res.Df Res.Sum Sq Df     Sum Sq F value Pr(&gt;F)
 1     20   0.013234                             
-2     19   0.012635  1 0.00059899  0.9007 0.3545</code></pre>
+2     19   0.012615  1 0.00061883   0.932 0.3465</code></pre>
 </div>
 </div>
 <p>or an AIC comparison</p>
@@ -690,15 +690,15 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -93.73724</code></pre>
+<pre><code>[1] -93.77182</code></pre>
 </div>
 </div>
 <p>Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.</p>
-<p>Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a differece between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.</p>
+<p>Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a difference between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.</p>
 </section>
 <section id="mixed-effects-heteroskedasticity-and-correlations" class="level2" data-number="5.8">
 <h2 data-number="5.8" class="anchored" data-anchor-id="mixed-effects-heteroskedasticity-and-correlations"><span class="header-section-number">5.8</span> Mixed effects, heteroskedasticity and correlations</h2>
-<p>If you want mixed effects to your model (which can often make sense, e.g.&nbsp;consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments</p>
+<p>If you want to add mixed effects to your model (which can often make sense, e.g.&nbsp;consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">=</span> vmkm</span>
@@ -709,14 +709,14 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 <pre><code>Grouped Data: v ~ 1 | group
     S    v group
 1 0.3 0.17     3
-2 0.3 0.15     1
-3 0.4 0.21     2
+2 0.3 0.15     2
+3 0.4 0.21     1
 4 0.4 0.23     2
-5 0.5 0.26     1
-6 0.5 0.23     2</code></pre>
+5 0.5 0.26     3
+6 0.5 0.23     1</code></pre>
 </div>
 </div>
-<p>We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no</p>
+<p>We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no obvious intercept in a nonlinear function.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mm2 <span class="ot">=</span> <span class="fu">nlme</span>(<span class="at">model =</span> michaelis,<span class="at">data =</span> vmkm2, </span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">fixed =</span> Vmax <span class="sc">+</span> Km <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> Km <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, </span>
@@ -732,12 +732,12 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 
 Random effects:
  Formula: Km ~ 1 | group
-                 Km   Residual
-StdDev: 2.60862e-06 0.02452676
+                  Km   Residual
+StdDev: 3.321875e-06 0.02452676
 
 Fixed effects:  Vmax + Km ~ 1 
         Value Std.Error DF   t-value p-value
-Vmax 1.546013 0.1453726 18 10.634832       0
+Vmax 1.546013 0.1453726 18 10.634833       0
 Km   2.586054 0.3704204 18  6.981403       0
  Correlation: 
    Vmax 
@@ -745,7 +745,7 @@ Km 0.992
 
 Standardized Within-Group Residuals:
         Min          Q1         Med          Q3         Max 
--1.84557902 -0.38103069 -0.01901336  0.57185717  2.39956864 
+-1.84557904 -0.38103071 -0.01901336  0.57185718  2.39956862 
 
 Number of Observations: 22
 Number of Groups: 3 </code></pre>

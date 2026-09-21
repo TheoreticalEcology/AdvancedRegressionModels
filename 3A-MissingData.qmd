@@ -15,7 +15,7 @@ summary(fit)
 
 The summary() alerts us that "37 observations deleted due to missingness". So, R has apparently removed observations from the data, but why?
 
-::: callout-note
+::: {.callout-note}
 Missing values in R are coded with the special type `NA`. You can check whether a single variable entry is NA via `is.na()`. More convenient, however, is to use the summary() function to get an overview about the NAs in your dataset.
 :::
 
@@ -43,7 +43,7 @@ Setting na.fail means that you will get an error if there are NAs in the data us
 2.  If you run a model with many variables, each of them with a number of NAs, you might lose a lot of observations and thus power. It may be better to perform an imputation (see below).
 3.  If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
 
-For all this reason, you should get a good overview about your NAs, and consider what to do with them.
+For all these reasons, you should get a good overview about your NAs, and consider what to do with them.
 
 ### Summarizing NAs
 
@@ -72,7 +72,7 @@ To create a dataset with all observations that contain NAs removed, use
 airquality[complete.cases(airquality), ]
 ```
 
-Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy / past the regression formula syntax
+Note that in general, you should only do this for the variables that you actually use in your regression, else you might remove more observations than needed. Either you select the columns by hand, or a small hack is to use the model.matrix, which allows you to copy/paste the regression formula syntax
 
 ```{r, results='hide'}
 rows = rownames(model.matrix(Ozone ~ Wind + Temp, data = airquality))
@@ -81,13 +81,13 @@ airquality = airquality[rows, ]
 
 ### Missing at random
 
-After having an overview about the NAs in your data, as second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:
+After having an overview about the NAs in your data, as a second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:
 
 1.  MCAR = missing completely at random
 2.  MAR = missing at random
 3.  MNAR = missing not at random
 
-The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly from other values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other variables. See also [@bhaskaran2014difference].
+The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly on other observed values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other observed variables. See also [@bhaskaran2014difference].
 
 ### Imputation
 
@@ -111,12 +111,13 @@ Note that for proper multiple imputation the imputations must actually differ fr
 
 ```{r, warning=F, message=F}
 # run 20 imputations (pmm.k > 0 for genuine between-imputation variability)
+set.seed(42)
 airqualityMImp <- replicate(20, missRanger(airquality, pmm.k = 5), simplify = FALSE)
 # fit 20 models
 models <- lapply(airqualityMImp, function(x) lm(Ozone ~ Wind + Temp, x))
 
 # use mice package to compute corrected p-values
-require(mice)
+library(mice)
 summary(pooled_fit <- pool(models)) 
 ```
 

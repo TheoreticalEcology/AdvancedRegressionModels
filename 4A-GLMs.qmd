@@ -30,8 +30,8 @@ A full GLM structure is thus:
 
 $$y \sim family[link^{-1}(f(x) + RE)]$$
 
-::: callout-note
-As you see, in noted the link function as $link^{-1}$ in this equation. The reason is that traditionally, the link function is applied to the left hand side of the equation, i.e.
+::: {.callout-note}
+As you see, I noted the link function as $link^{-1}$ in this equation. The reason is that traditionally, the link function is applied to the left hand side of the equation, i.e.
 
 $$link(y) \sim x$$
 
@@ -70,7 +70,7 @@ The standard model for count data (1,2,3) is the Poisson regression, which imple
 
 - A Poisson distribution
 
-As an example, we use the data set birdfeeding from the EcoData package - the dataset consists of observations of foods given to nestlings to parents as a function of the attractiveness of the nestling.
+As an example, we use the data set birdfeeding from the EcoData package - the dataset consists of observations of food given by parents to nestlings as a function of the attractiveness of the nestling.
 
 ```{r}
 library(EcoData)
@@ -85,13 +85,13 @@ fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the `lm()`, however, as the residuals are not any more assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 [logL(saturated) - logL(fitted)]). So, we have
+The output is very similar to the `lm()`, however, as the residuals are no longer assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 [logL(saturated) - logL(fitted)]). So, we have
 
 - Deviance residuals on top
 
 - Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~)\]
 
-::: callout-note
+::: {.callout-note}
 As already mentioned, the deviance is a generalization of the sum of squares and plays, for example, a similar role as the residual sum of squares in ANOVA.
 
 The deviance of our model M~1~ is defined as $Deviance_{M_1} = 2 \cdot (logL(M_{saturated}) - logL(M_1))$
@@ -187,14 +187,14 @@ par(mfrow = c(2, 2))
 plot(fit)
 ```
 
-Thus, let's move to the logistic regression, which assumes a 0/1 response + logit link. In principle, this is distribution is called Bernoulli, but in R both 0/1 and k/n are called "binomial", as Bernoulli is the special case of binomial where n = 1.
+Thus, let's move to the logistic regression, which assumes a 0/1 response + logit link. In principle, this distribution is called Bernoulli, but in R both 0/1 and k/n are called "binomial", as Bernoulli is the special case of binomial where n = 1.
 
 ```{r}
 m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
 summary(m1)
 ```
 
-::: callout-note
+::: {.callout-note}
 The syntax here is for 0/1 data. If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with k \~ x, weights = n
 :::
 
@@ -242,7 +242,7 @@ If you see large changes in your RE structure, or if you want to select on the R
 
 **Offset:** there is no exact solution for making 0/1 data dependent on a scaling factor via an offset, which is often desirable, for example in the context of survival analysis with different exposure times. An approximate solution is to use an offset together with the log-log link (instead of logit).
 
-**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes in this below.
+**Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See notes on this below.
 
 **Overdispersion:** 0/1 binomial responses cannot be overdispersed, but k/n responses can be. However, 0/1 responses can show overdispersion if grouped to k/n. Note next section on residual checks, as well as comments on testing binomial GLMs in the\
 <a href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data" target="_blank" rel="noopener">DHARMa vignette</a>.
@@ -270,7 +270,7 @@ b)  A causal analysis, trying to understand the effect of roads on Elk presence.
 
 A. Predictive analysis
 
-```{r}
+```{r, message=FALSE}
 library(MASS)
 fit <- glm(presence ~ dist_roads  + dem + ruggedness, data = elk, family = "binomial")
 predictive_model = MASS::stepAIC(fit, direction = "both")
@@ -312,7 +312,7 @@ plotResiduals(res, form = elk$ruggedness, quantreg = TRUE)
 
 The functional forms of our confounders are not perfect.
 
-Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional for of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect.
+Since we are not really interested in them, a cool trick is to use a GAM which automatically adjusts the functional form of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modelled as a linear effect.
 
 ```{r}
 library(mgcv)
@@ -336,7 +336,7 @@ Now, everything looks perfect
 
 The Gamma regression is the natural choice for a **strictly positive, continuous, right-skewed** response whose variance grows with the mean (e.g. concentrations, waiting times, biomass, body sizes). A common alternative is to log-transform and fit an `lm` (as we do first below), but the two are not equivalent: the log-`lm` assumes constant variance *on the log scale* and, if you back-transform predictions, incurs a retransformation bias, whereas the Gamma GLM models the mean on the original scale with a variance that scales as $\text{Var}(y) \propto \mu^2$. With the default log link, coefficients are interpreted multiplicatively - `exp(coef)` is the factor by which the mean changes per unit of the predictor, exactly as in the Poisson regression.
 
-```{r}
+```{r, message=FALSE}
 library(faraway)
 ```
 
@@ -357,7 +357,7 @@ fit <- glm(formula = resist ~ x1 + x2 + x3 + x4,
 summary(fit)
 ```
 
-::: callout-note
+::: {.callout-note}
 For Gamma regression, different link functions are used. The canonical link, which is also the default in R, is the inverse link 1/x. However, also log and identity link are commonly used.
 :::
 
@@ -374,7 +374,7 @@ There are two main ways to fit this data:
 
 For further options, see [here](https://github.com/florianhartig/Statistics/blob/master/Examples/ProportionalData.md). I would generally recommend that the Beta regression is currently the preferred way and the first thing I would try. A good way to fit it is the package glmmTMB.
 
-::: callout-tip
+::: {.callout-tip}
 #### Case study
 
 Here a case study, using the EcoData dataset
@@ -433,7 +433,7 @@ Standard plot:
 plot(res)
 ```
 
-Out of the help page: The function creates a plot with two panels. The left panel is a uniform Q-Q plot (calling <a href="https://rdrr.io/cran/DHARMa/man/plotQQunif.html" target="_blank" rel="noopener">plotQQunif</a>), and the right panel shows residuals against predicted values (calling <a href="hhttps://rdrr.io/cran/DHARMa/man/plotResiduals.html" target="_blank" rel="noopener">plotResiduals</a>), with outliers highlighted in red.
+Out of the help page: The function creates a plot with two panels. The left panel is a uniform Q-Q plot (calling <a href="https://rdrr.io/cran/DHARMa/man/plotQQunif.html" target="_blank" rel="noopener">plotQQunif</a>), and the right panel shows residuals against predicted values (calling <a href="https://rdrr.io/cran/DHARMa/man/plotResiduals.html" target="_blank" rel="noopener">plotResiduals</a>), with outliers highlighted in red.
 
 Very briefly, we would expect that a correctly specified model shows:
 
@@ -473,7 +473,7 @@ Now, residuals look fine. Of course, if your model gets more complicated, you ma
 
 One thing that is different between GLMs and LM is that GLMs can display overall dispersion problems. The most common GLMs to show overdispersion are the Poisson and the logistic regression.
 
-The reason is that simple GLM distributions such as the Poisson or the Binomial (for k/n data) do not have a parameter for adjusting the spread of the observed data around the regression line (dispersion), but their variance is a fixed as function of the mean.
+The reason is that simple GLM distributions such as the Poisson or the Binomial (for k/n data) do not have a parameter for adjusting the spread of the observed data around the regression line (dispersion), but their variance is a fixed function of the mean.
 
 There are good reasons for why this is the case (Poisson and Binomial describe particular processes, e.g. coin flip, for which the variance is a fixed function of the mean), but the fact is that when applying these GLMs on real data, we often find overdispersion (more dispersion than expected), and more rarely, underdispersion (less dispersion than expected).
 
@@ -485,7 +485,7 @@ To remove the assumptions of a fixed dispersion, there are three options, of whi
 
 The reason why we should prefer the 3rd option is that it allows better residual checks and to model the dispersion as a function of the predictors, see next section.
 
-::: callout-note
+::: {.callout-note}
 Overdispersion is often created by model misfit. Thus, before moving to a variable dispersion GLM, you should check for / correct model misfit.
 :::
 
@@ -493,7 +493,7 @@ Overdispersion is often created by model misfit. Thus, before moving to a variab
 
 To understand how to recognize overdispersion, let's look at an example. We'll use the Salamanders dataset from the package glmmTMB, staring with a simple Poisson glm:
 
-```{r}
+```{r, message=FALSE}
 library(glmmTMB)
 library(lme4)
 library(DHARMa)
@@ -556,7 +556,7 @@ Note that the result of 1 can also be zero, so there are two explanations for a 
 
 #### Recognizing zero-inflation
 
-::: callout-caution
+::: {.callout-caution}
 The fact that you have a lot of zeros in your data does not indicate zero-inflation. Zero-inflation is with respect to the fitted model. You can only check for zero-inflation after fitting a model.
 :::
 
@@ -618,7 +618,7 @@ summary(m2)
 plot(allEffects(m2))
 ```
 
-It looks in the effect plots as if the slope is changing as well, but note that this because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.
+It looks in the effect plots as if the slope is changing as well, but note that this is because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.
 
 The reason is simple: if we plot the plogis function, it becomes obvious that at different base levels (which would be controlled by trt in our case), moving a unit in concentration has a different effect.
 
@@ -630,7 +630,7 @@ abline(v = 3, col = "red")
 abline(v = 4, col = "red", lty =2)
 ```
 
-If we turn this around, this means that if want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.
+If we turn this around, this means that if we want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.
 
 Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
 
@@ -638,8 +638,8 @@ Still, this also means that main effects and interactions can change if you chan
 
 There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link
 
-```{r, warnings = F}
-m3 = glm(survival ~ trt * concentration, 
+```{r, warning=FALSE}
+m3 = glm(survival ~ trt * concentration,
             data = dat, family = binomial(link = "identity"))
 summary(m3)
 plot(allEffects(m3))
@@ -649,8 +649,8 @@ Now, we can interpret effects and interactions exactly like in a linear regressi
 
 Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
 
-::: callout-note
-If effect directions change in sign, they will do so under any link function (as they are always monotonous), so changes in effect direction are robust to this problem.
+::: {.callout-note}
+If effect directions change in sign, they will do so under any link function (as they are always monotone), so changes in effect direction are robust to this problem.
 :::
 
 ## New considerations for GLMMs
@@ -709,7 +709,7 @@ Tasks:
 
 - Which variables explain the presence of BT and which have an effect on the infection rates?
 
-::: callout-tip
+::: {.callout-tip}
 #### Hints
 
 Prepare dataset before the analysis:

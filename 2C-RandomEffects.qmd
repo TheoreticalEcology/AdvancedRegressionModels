@@ -26,7 +26,7 @@ plot(allEffects(mod0))
 However, it is reasonable to assume that not all schools are equally good, which has two possible consequences:
 
 - If school identity correlates with sex or standLRT, school could be a confounder (more on this later)
-- Residuals will be correlated in school, thus they are not iid (pseudo-replication)
+- Residuals will be correlated within schools, thus they are not iid (pseudo-replication)
 
 We could solve this problem by fitting a different mean per school
 
@@ -44,7 +44,7 @@ The solution: **Mixed / random effect models**. In a mixed model, we assume (dif
 
 Because of this hierarchical structure, these models are also called "multi-level models" or "hierarchical models".
 
-::: callout-note
+::: {.callout-note}
 Because grouping naturally occurs in any type of experimental data (batches, blocks, observer, subject etc.), random and mixed effect models are the de-facto default for most experimental data! Naming conventions:
 
 - No random effect = fixed effect model
@@ -260,9 +260,9 @@ mgcv::gam(Resp ~ Predictor + s(Group, bs = 're'))
 brms is a very interesting package that allows you to estimate mixed models via Bayesian Inference with STAN.
 
 ```{r, eval = F}
-brms::brm(Resp ~ Predictor + (1|Group),
-         data = Owls , family = poisson)
-summary(mod1)
+brm_mod <- brms::brm(Resp ~ Predictor + (1|Group),
+                     data = Owls , family = poisson)
+summary(brm_mod)
 ```
 
 ### REML vs. MLE
@@ -273,7 +273,7 @@ REML uses a mathematical transformation to first obtain the residuals conditiona
 
 Most packages offer an option to switch between REML and ML estimation of the model. In lme4, this is done via
 
-```{r, echo = F}
+```{r, eval = F}
 m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 m = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam, REML = F)
 ```
@@ -284,8 +284,8 @@ Regarding when to use what, use the following rule of thumb:
 
 - Switch to ML if you use downstream any model functions that use the likelihood, unless you are really sure that the calculation you do is also valid for REML.
 
-::: callout-tip
-In later in this chapter, we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend to stick to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see below).
+::: {.callout-tip}
+In later in this chapter, we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend sticking to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see below).
 :::
 
 ### Exercise
@@ -371,7 +371,7 @@ abline(0,1)
 
 The plot shows that random effect estimates are biased towards the grand mean, i.e. positive values are lower than in the LM, and negative values are higher than in the LM. This is called shrinkage.
 
-::: callout-note
+::: {.callout-note}
 The shrinkage imposed by the RE is equivalent to an L2 (ridge) regression (see section on model selection), or a normally distributed Bayesian prior. You can see this by considering that the log likelihood of a normal distribution is equivalent to a quadratic penalty for deviations from the mean. The difference is that the strength of the penalty, controlled by the RE sd, is estimated. For that reason, the RE shrinkage is also referred to as an example of "adaptive shrinkage".
 :::
 
@@ -399,11 +399,11 @@ The reason is that rare growth forms will be constrained by the RE, while common
 So, to finalize this discussion: there are essentially two main differences between a random vs. fixed effect model
 
 1.  In the RE model, we are fitting a grand mean and differences from the grand mean, while in the fixed effect model, we have to set up contrasts (various options), with treatment contrasts as defaults
-2.  The LM (OLS) is mathematically proven to be the best linear unbiased estimator (BLUE) of the regression problem. In a mixed model, REs (but not fixed effects) are biased towards the grand mean, but the advantage is that the random effect looses less degrees of freedom, i.e. the power on the fixed effects will be higher.
+2.  The LM (OLS) is mathematically proven to be the best linear unbiased estimator (BLUE) of the regression problem. In a mixed model, REs (but not fixed effects) are biased towards the grand mean, but the advantage is that the random effect loses fewer degrees of freedom, i.e. the power on the fixed effects will be higher.
 
 While point 1 is more a choice about how to report results (in principle, we could also calculate the grand mean for fixed effect group estimates), the second point (higher power) is a clear advantage in many cases, in particular if you don't care about the bias on the REs. Therefore, the rule of thumb for REs is:
 
-- If you have a categorical variable, and you're not interested in it's estimates, model it as a RE
+- If you have a categorical variable, and you're not interested in its estimates, model it as a RE
 
 - If you want to get unbiased estimates of the categorical variable (or its interactions), use a fixed effect
 
@@ -452,7 +452,7 @@ qqline(residuals(mod1))
 
 Of course, any time you do a qqnorm plot, you could also run a shapiro.test to get a p-value for the deviation from normality. You can also use the DHARMa plots
 
-```{r}
+```{r, message=FALSE}
 library(DHARMa)
 res <- simulateResiduals(mod1, plot = T)
 ```
@@ -465,7 +465,7 @@ plotResiduals(res, Exam$standLRT)
 plotResiduals(res, Exam$sex)
 ```
 
-::: callout-tip
+::: {.callout-tip}
 When you predict with a random effect model, you can do conditional or marginal predictions. The difference is that conditional predictions include the REs, while marginal predictions only include the fixed effects.
 
 ```{r, eval = F}
@@ -496,7 +496,7 @@ x = ranef(mod1)
 qqnorm(x$school$`(Intercept)`)
 ```
 
-Question is how bad can this be? [@neuhaus2013] report some simulation results that suggest that fixed effect slopes (bias, coverage) are relatively robust to misspecification in the RE distribution, which is re-assuring.
+Question is how bad can this be? [@neuhaus2013] report some simulation results that suggest that fixed effect slopes (bias, coverage) are relatively robust to misspecification in the RE distribution, which is reassuring.
 
 ### Correlation of REs with predictors
 
@@ -525,7 +525,7 @@ Specifying mixed models is quite simple, however, there is a large list of (part
 
 Possibly the most central problem is: How many parameters does a random effect model have?
 
-::: callout-note
+::: {.callout-note}
 Why is it so important to know how many parameters a model has? The answer is that what seems like a very minor point is needed in all the mathematics for calculating p-values, AIC, LRTs and all that, so without knowing the complexity of the model, the mathematics that is used in `lm()` breaks down.
 :::
 
@@ -546,7 +546,7 @@ So, we see that the fixed effect model without school has 3 parameters, and with
 
 The width of this normal distribution is controlled by the estimated variance of the random effect. For a high variance, the normal is very wide, and the mixed model is nearly as complex as mod3; but for a low variance, the normal is very narrow, and the mixed model it is only as complex as mod1.
 
-::: callout-note
+::: {.callout-note}
 Technically, the mixed model mod2 actually has one parameter more than the fixed effect model mod3 - it also estimates the standard deviation of the random effects. Could it thus ever be more flexible than mod3? The answer is no - the RE standard deviation is what is technically called a hyperparameter. It is not an effect that is estimated, but rather a parameter that controls the freedom of the estimated effects. The number of parameters that are used to estimate the response are identical in mod2 and mod3.
 :::
 
@@ -616,7 +616,7 @@ predict(m, re.form = ~ (1|school)) # condition ONLY on 1|school
 
 The third option is in this case identical to the first, but if we would add more REs to the model, it would differ.
 
-::: callout-tip
+::: {.callout-tip}
 Do you know how to get the correct help function for an S3 object? Concretely, how do we get the help for predicting with a fitted mixed model? `?predict` alone will not work, because this will call the general help. What you need is predict.CLASSNAME, where CLASSNAME is the class of the object on which you want to work on. In R, you get the class via
 
 ```{r}
@@ -642,7 +642,7 @@ Note regarding this function that
 
 - We could add the argument newdata if we wanted to predict to newdata
 
-- Here, we have re.form = NA, which is identical to reform = \~0, meaning that we predict the grand mean
+- Here, we have re.form = NA, which is identical to re.form = \~0, meaning that we predict the grand mean
 
 Second, we now bootstrap this prediction to generate an uncertainty of the prediction
 
@@ -664,7 +664,7 @@ For model selection, the degrees of freedom problem means that normal model sele
 
 The easy part is the selection on the fixed effect structure - if we can assume that by changing the fixed effect structure, the flexibility of the REs doesn't change a lot (you would see this by looking at the RE sd), we can use all standard model selection methods (with all their caveats) as before on the fixed effect structure. All I will say about model selection on standard models applies also here: good for predictions, rarely a good idea if your goal is causal inference (see later section).
 
-::: callout-caution
+::: {.callout-caution}
 ##### Careful when selecting on models fit with REML
 
 As discussed, LMMs are per default fit with REML. For model selection, you should use the likelihood of these models. See also [@verbyla2019]
@@ -798,7 +798,7 @@ fit <- lmer(yield ~ irrigation + variety + (1|field), data = irrigation)
 anova(fit)
 ```
 
-Arguably, this method is preferable over the based lme4 method if you are interested in the p-values of the model terms.
+Arguably, this method is preferable over the base lme4 method if you are interested in the p-values of the model terms.
 
 Another common question in ANOVA for mixed models is how much R2 is explained by fixed vs. random effects. Philosophically, the main point of discussion here is: Do you want to count the random effect variance as "explained", or "residual". In any case, a common approach is the hierarchical partitioning proposed by *Nakagawa & Schielzeth 2013, Nakagawa et al. (2017)*, which is implemented in the `MuMIn` package. With this, we can run
 
@@ -864,7 +864,7 @@ x = data.frame(x)
 x$vcov / sum(x$vcov)
 ```
 
-::: callout-important
+::: {.callout-important}
 Note that the results of a VPC can be very different from an ANOVA. In an ANOVA, you look at the variance explained in the response. In VPCs, you compare the variance between different groups in the data. This will tend to be similar to ANOVA if observations are balanced in groups, but it can be very different if they are not. In this behavior, VPCs resemble standardized effect sizes (which can also differ in ranking variables from ANOVA if the distribution of the predictor is very skewed). I would therefore recommend to interpret VPCs as "effect sizes of categorical predictors", rather than as ANOVA shares.
 :::
 
@@ -890,9 +890,9 @@ VarCorr(fit)
 lmerTest::ranova(fit)
 ```
 
-In this case, both methods attribute some variation to the null terms, but also both methods realize that these terms are (mostly) n.s., which is re-assuring! The term V12 is around 0.05, significant in ANOVA and n.s. in VPC, suggesting maybe that the VPC could be a bit more conservative, although I suspect that this is highly context and package dependent (as different packages fit the REs differently). Note that I have suppressed boundary / convergence warnings in the fit of the mixed model, which should be of course solved in a real application.
+In this case, both methods attribute some variation to the null terms, but also both methods realize that these terms are (mostly) n.s., which is reassuring! The term V12 is around 0.05, significant in ANOVA and n.s. in VPC, suggesting maybe that the VPC could be a bit more conservative, although I suspect that this is highly context and package dependent (as different packages fit the REs differently). Note that I have suppressed boundary / convergence warnings in the fit of the mixed model, which should be of course solved in a real application.
 
-::: callout-tip
+::: {.callout-tip}
 #### VPC vs. ANOVA
 
 So, when and why should you prefer VPC over ANOVA?

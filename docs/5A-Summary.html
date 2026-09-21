@@ -545,17 +545,32 @@ window.Quarto = {
 </section>
 <section id="experimental-design-and-power-analysis" class="level2" data-number="12.3">
 <h2 data-number="12.3" class="anchored" data-anchor-id="experimental-design-and-power-analysis"><span class="header-section-number">12.3</span> Experimental design and power analysis</h2>
-<p>All we have learned in this course directly informs experimental and research design, may it be of controlled experiments, quasi-experiments or observational studies.</p>
+<p>All we have learned in this course directly informs experimental and research design, be it controlled experiments, quasi-experiments or observational studies.</p>
 <p>As a start, note our discussions of causality and model selection:</p>
 <ul>
 <li><p>First of all, research design needs a goal: do you want to design for prediction or (causal) inference</p></li>
-<li><p>If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g.&nbsp;by selecting the observations in a way that confouders are at the same value. This can be useful because, as we discussed, adjusting for collinear variable is possible, but cost power.</p></li>
+<li><p>If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g.&nbsp;by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed, adjusting for collinear variables is possible, but costs power.</p></li>
 <li><p>In experimental settings, blocked designs where blocks will be later treated as a RE are standard</p></li>
 </ul>
-<p>If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study [things to be added]</p>
+<p>If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study.</p>
+<p>The cleanest way to do a power analysis for any model - not just the textbook cases - is by simulation: assume an effect size, simulate many datasets, fit your planned model to each, and count how often the effect comes out significant. That fraction <em>is</em> the power.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>getP <span class="ot">=</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">50</span>, <span class="at">effect =</span> <span class="fl">0.3</span>){</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">runif</span>(n)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">=</span> effect <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n)          <span class="co"># assumed true effect + noise</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x))<span class="sc">$</span>coefficients[<span class="dv">2</span>, <span class="dv">4</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">getP</span>(<span class="at">n =</span> <span class="dv">50</span>, <span class="at">effect =</span> <span class="fl">0.3</span>)) <span class="sc">&lt;</span> <span class="fl">0.05</span>)   <span class="co"># power at n = 50</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.115</code></pre>
+</div>
+</div>
+<p>To find the sample size for, say, 80% power, wrap this in a loop over <code>n</code>. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.</p>
 </section>
 <section id="next-steps" class="level2" data-number="12.4">
 <h2 data-number="12.4" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">12.4</span> Next steps</h2>
+<p>This book covered the core GLMM toolbox. Natural next steps are the fully Bayesian treatment of these models (<code>brms</code> / Stan), which sidesteps several of the degrees-of-freedom and p-value problems we flagged along the way; machine-learning approaches when the goal is purely prediction; and domain-specific extensions such as joint species distribution models, survival / time-to-event models, and structural equation models - each of which builds directly on the ideas developed here.</p>
 
 
 </section>

@@ -46,7 +46,7 @@ summary(fullModel)
 
 The effect estimates are relatively unchanged, but the CI has increased, and the p-values are n.s.
 
-::: callout-tip
+::: {.callout-tip}
 ## Precision variables
 
 We have learned that adding variables increases the complexity of the model and thus the variance/uncertainty of the model. However, there are so-called precision variables that, when added to the model, actually reduce the variance/uncertainty of the model! Technically, they explain the response variable so well that they help to improve the overall fit of the model and thus help to reduce the overall variance of the model.
@@ -172,14 +172,14 @@ plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
               lambda = seq(0, 200, 0.1) ) )
 ```
 
-::: callout-tip
+::: {.callout-tip}
 #### (Adaptive) Shrinking with glmmTMB
 
 We can use glmmTMB for shrinkage estimation by changing the slopes into random slopes with only one level in a dummy grouping variable:
 
 1.  **Constant shrinkage**
 
-```{r}
+```{r, message=FALSE}
 library(glmmTMB)
 airquality$group = as.factor(rep(1, nrow(airquality)))
 ridgeGlmmTMB1 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ), 
@@ -206,7 +206,7 @@ ranef(ridgeGlmmTMB1)[[1]]$g
 ranef(ridgeGlmmTMB10)[[1]]$g
 ```
 
-For higher variances they are stronger biased to 0.
+For lower variances they are more strongly biased towards 0 (stronger shrinkage); for higher variances, shrinkage is reduced and estimates are less biased towards 0.
 
 1.  **Adaptive shrinkage**
 
@@ -394,7 +394,7 @@ fullModel = lm(y~., data = dat)
 
 We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
 
-::: callout-tip
+::: {.callout-tip}
 Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::StepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
 :::
 
@@ -403,7 +403,7 @@ library(MASS)
 reduced = stepAIC(fullModel)
 ```
 
-::: callout-note
+::: {.callout-note}
 When you inspect the output of stepAIC, you can see that the function calculates at each step the AIC improvement for each predictor that could be removed, and then chooses to remove the predictor that leads to the strongest AIC improvement first.
 :::
 
@@ -413,7 +413,7 @@ Here is the selected model
 summary(reduced)
 ```
 
-The result ist good and bad. Good is that we now get the effect of y \~ x significant. Bad is that a lot of the other noisy variables are also significant, and the rate at which this occurs is much higher than we should expect (22/80 random predictors significant is much higher than the expected type I error rate).
+The result is good and bad. Good is that we now get the effect of y \~ x significant. Bad is that a lot of the other noisy variables are also significant, and the rate at which this occurs is much higher than we should expect (22/80 random predictors significant is much higher than the expected type I error rate).
 
 The phenomenon is well-known in the stats literature, and the reason is that performing a stepwise / global selection + calculating a regression table for the selected model is **hidden multiple testing** and has inflated Type I error rates! Remember, you are implicitly trying out hundreds or thousand of models, and are taking the one that is showing the strongest effects.
 
@@ -428,7 +428,7 @@ For most advanced models, you will have to program the cross-validation by hand,
 ```{r chunk_chapter7_chunk18, echo=TRUE, eval=TRUE}
 library(boot)
 
-# Leave-one-out and 6-fold cross-validation prediction error for the mammals data set.
+# Leave-one-out and 5-fold cross-validation prediction error for the mammals data set.
 data(mammals, package="MASS")
 mammals.glm = glm(log(brain) ~ log(body), data = mammals)
 cv.err = cv.glm(mammals, mammals.glm, K = 5)$delta

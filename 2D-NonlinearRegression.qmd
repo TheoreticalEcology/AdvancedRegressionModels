@@ -16,15 +16,15 @@ The most important thing first: the main distinction between a linear and a nonl
 
 The reason is that as long as the function of the mean is linear in the parameters - for example a polynomial of the form
 
-$$ y ~ a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$ you are considering linear effects ($a_0, a_1, a_2$), where the predictor just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
+$$ y = a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...$$ you are considering linear effects ($a_0, a_1, a_2$), where the predictor just happens to be $x^2$, $\sqrt(x)$ or something like that. You can see this by noting that instead of writing the $x^2$ in the regression formula, you could pre-calculate it in the data as $x_2 = x*x$ and it would just look like a multiple regression.
 
-Because the linear regression is much better supported in R (as in other statistical packages), it is always preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g. by regressing against log(y), logit(y)).
+Because the linear regression is much better supported in R (as in other statistical packages), it is usually preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g. by regressing against log(y), logit(y)). Note, however, that transforming the response changes the error structure — for example, regressing against log(y) implies multiplicative errors on the original scale, which is a different model from an NLS fit with log-normal residuals.
 
 However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be made linear in the parameters. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these and other cases, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with normal residuals, which is known as nls (nonlinear least squares).
 
 ## Fitting a nonlinear regression using nls
 
-Here, I will use the Michaelis-Menten model as an example. In this example, we are interested in the development of a reaction rate over time. The data we have are measurements of the reaction rate and substrate concentration
+Here, I will use the Michaelis-Menten model as an example. In this example, we are interested in how the reaction rate depends on the substrate concentration. The data we have are paired measurements of the reaction rate ($v$) and substrate concentration ($S$)
 
 ```{r, message = F}
 library(nlstools)
@@ -50,7 +50,7 @@ Alternatively, the helpful nlstools package already provides many functions that
 mm <- nls(michaelis,data = vmkm, start = list(Km=1,Vmax=1)) 
 ```
 
-Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the MLE for the model, which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).
+Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).
 
 The model provides a standard summary table.
 
@@ -58,7 +58,7 @@ The model provides a standard summary table.
 summary(mm)
 ```
 
-The nlstools package has a bit extended summary table that provides a few useful additional information
+The nlstools package has a slightly extended summary table that provides a few useful additional information
 
 ```{r}
 overview(mm)
@@ -79,17 +79,17 @@ res <- nlsResiduals(mm)
 plot(res, which = 0)
 ```
 
-Of course, all discussions about residuals from the chapter on linear regressions also applies here, so we are checking for iid normal residuals.
+Of course, all discussions about residuals from the chapter on linear regressions also apply here, so we are checking for iid normal residuals.
 
 ## Uncertainties and CIs on parameters
 
-In nonlinear models, the MLE curvature will often not be approximately multivariate normal, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.
+In nonlinear models, the sampling distribution of the MLE will often not be well approximated by a multivariate normal distribution, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.
 
 ```{r}
 nlstools::confint2(mm)
 ```
 
-We can also visualize the likelihood contour (again, this is using the normal approximation)
+We can also visualize the RSS contour (under normal errors, minimizing the RSS is equivalent to maximizing the likelihood, so this also traces the likelihood surface)
 
 ```{r}
 cont <- nlsContourRSS(mm)
@@ -99,7 +99,7 @@ plot(cont)
 Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions
 
 ```{r}
-mmboot <- nlstools::nlsBoot(mm, niter = 200)
+mmboot <- nlstools::nlsBoot(mm, niter = 1000)
 plot(mmboot)
 summary(mmboot)
 ```
@@ -129,13 +129,13 @@ The most complete solution to calculating confidence intervals and uncertainties
 
 ## Interactions in NLS
 
-What about interactions, i.e. one variable influencing the parameter value of another variable. Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in section linear regression)
+What about interactions, i.e. one variable influencing the parameter value of another variable? Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e. introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in section linear regression)
 
 Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.
 
 ```{r}
 vmkm1 = vmkm
-vmkm1$type = sample(c(0,1), nrow(vmkm), replace = T) # wild type and mutant
+vmkm1$type = sample(c(0,1), nrow(vmkm), replace = TRUE) # wild type and mutant
 head(vmkm1)
 ```
 
@@ -160,7 +160,7 @@ points(vmkm1$S, vmkm1$v, col = vmkm1$type +1)
 
 ## Model selection
 
-You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn't distinguish between types, we can either to a LRT
+You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn't distinguish between types, we can either do a LRT
 
 ```{r}
 anova(mm, mm1)
@@ -179,7 +179,7 @@ Note that, similar to what is discussed in the ANOVA chapter, the model selectio
 
 ## Mixed effects, heteroskedasticity and correlations
 
-If you want mixed effects to your model (which can often make sense, e.g. consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments
+If you want to add mixed effects to your model (which can often make sense, e.g. consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments
 
 ```{r}
 library(nlme)
@@ -189,7 +189,7 @@ vmkm2 <- groupedData(v ~ 1|group, vmkm2) # transferring to a grouped data object
 head(vmkm2)
 ```
 
-We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no
+We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no obvious intercept in a nonlinear function.
 
 ```{r}
 mm2 = nlme(model = michaelis,data = vmkm2, 

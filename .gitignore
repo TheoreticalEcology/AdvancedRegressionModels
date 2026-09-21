@@ -12,3 +12,5 @@ _book
 hiddenData/
 
 **/*.quarto_ipynb
+/.claude
+CLAUDE.md

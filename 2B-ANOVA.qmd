@@ -12,9 +12,9 @@ set.seed(42)
 
 ## The idea of ANOVA
 
-ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already short introduced ANOVA in the section on categorical predictors.
+ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already briefly introduced ANOVA in the section on categorical predictors.
 
-The problem with explaining ANOVA is that the term is overfraught with historical meanings and explanations that are no further relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAS and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:
+The problem with explaining ANOVA is that the term is fraught with historical meanings and explanations that are no longer relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAS and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:
 
 Modern explanation: ANOVA is not a statistical model, but a hypothesis test that can be performed on top of any regression model. What this test is doing is to measure how much model fit improves when a predictor is added, and if this improvement is significant.
 
@@ -33,15 +33,15 @@ In the standard ANOVA for the LM, model fit is measured by the reduction in resi
 sum((fit$model$Ozone - mean(fit$model$Ozone))^2)
 ```
 
-Thus, we can conclude that the R2 explained by each model component is
+Thus, we can compute the fraction of variance attributed to each model component and to the residuals (note the last entry is the unexplained remainder, not an explained component):
 
 ```{r}
-53973/125143 # Wind
+45284/125143 # Wind
 25886/125143 # Temp
-45284/125143 # Residual
+53973/125143 # Residual
 ```
 
-Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant against a null model. This is important because, as mentioned before (particular in the chapter on model selection), adding a predictor always improves model fit.
+Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant against a null model. This is important because, as mentioned before (particularly in the chapter on model selection), adding a predictor always improves model fit.
 
 To interpret the p-values, consider that H0 = the simpler model is true, thus we test if the improvement of model fit is higher than what we would expect if the predictor has no effect.
 
@@ -79,7 +79,7 @@ The definition of model fit via sum of squares makes sense as long as we work wi
 
 For GLMs, this definition doesn't make sense any more. A number of so-called pseudo-R^2^ metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R^2^ for the linear model.
 
-A common metrics is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~)\], where M is our model, and M0 is an intercept only model.
+A common metric is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~)\], where M is our model, and M0 is an intercept only model.
 
 ### Testing if the improvement is significant
 
@@ -143,7 +143,7 @@ Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it d
 
 -   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test.
 
-::: callout-caution
+::: {.callout-caution}
 Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1\*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has an equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.
 
 For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:
@@ -219,7 +219,7 @@ Identical when variables are scaled.
 
 ### Correcting partitions for complexity
 
-A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day:
+A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day is fit:
 
 ```{r}
 m = lm(Ozone ~ as.factor(Day) , data = airquality)
@@ -323,7 +323,7 @@ Generally, because of its order dependence under collinearity, you should be hes
 summary(aov(fit))
 ```
 
-As a last, add-on, let's see let's see what happens when we use the non centered variables:
+As a last, add-on, let's see what happens when we use the non centered variables:
 
 ```{r}
 fit2 = lm(loght ~ temp * lat, data = plantHeight)
