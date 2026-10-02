@@ -60,11 +60,66 @@ sudo apt update && sudo apt install -y --install-recommends build-essential gfor
 In this book, we will often use data sets from the `EcoData`{.R} package, which is not on CRAN, but on a GitHub page. To install the package, run
 
 ```{r chunk_chapter2_2, eval=FALSE}
-install.packages("pak") # only needed if pak is not yet installed
-pak::pak("TheoreticalEcology/EcoData")
+install.packages("remotes") # only needed if remotes is not yet installed
+remotes::install_github("TheoreticalEcology/EcoData")
 ```
 
-For your convenience, the EcoData installation also forces the installation of most of the packages needed in this book, so this may take a while. If you want to load only the EcoData package without its dependencies, run `pak::pak("TheoreticalEcology/EcoData", dependencies = FALSE)`.
+For your convenience, the EcoData installation also forces the installation of most of the packages needed in this book, so this may take a while. If you want to load only the EcoData package without its dependencies, run `remotes::install_github("TheoreticalEcology/EcoData", dependencies = FALSE)`.
+
+::: {.callout-tip collapse="true"}
+#### Problems installing the EcoData package
+
+**1. R version is too old**
+
+Some packages require a recent version of R. If you see errors such as "package was built under R version X.X" or similar, update R from <https://cran.r-project.org> and try again.
+
+------------------------------------------------------------------------
+
+**2. Missing build tools (macOS / Windows)**
+
+GitHub packages are distributed as source code and need to be compiled locally. For a pure-R package like EcoData this is usually fine, but some of its dependencies do contain compiled code.
+
+*macOS:* If you see "Could not find tools necessary to compile a package", you need the **Xcode Command Line Tools**. Open the macOS **Terminal** (not R) and run:
+
+``` bash
+xcode-select --install
+```
+
+A dialog will appear asking you to install the tools. After installation, restart R and try again. You can verify the tools are present by running `xcode-select -p` in the Terminal — it should print a path rather than an error.
+
+*Windows:* If you see an error mentioning Rtools, a C/C++ compiler, or `make`, install **Rtools** using one of the following approaches:
+
+- Download and install directly from the [Rtools page on CRAN](https://cran.r-project.org/bin/windows/Rtools/)
+- Or install from within R using the `installr` package:
+
+``` r
+install.packages("installr")
+installr::install.Rtools()
+```
+
+After installing the build tools, restart R and try the EcoData installation again.
+
+------------------------------------------------------------------------
+
+**3. A single package fails to install**
+
+If only one or two packages fail, the issue is often an outdated `Matrix` or `Rcpp` package, which many other packages depend on. Update them first and then retry:
+
+``` r
+install.packages(c("Matrix", "Rcpp"))
+```
+
+------------------------------------------------------------------------
+
+**Alternative: install using `pak`**
+
+The `pak` package is a faster alternative installer, but it requires build tools to be present even for pure-R packages and therefore fails more easily than `remotes`. If you prefer to use it:
+
+``` r
+install.packages("pak")
+pak::pak("TheoreticalEcology/EcoData")
+```
+:::
 
 ## Assumed R knowledge
 
@@ -75,7 +130,7 @@ As mentioned in the preface, this book assumes that you have basic knowledge abo
 
 There are many opinions about advantages and disadvantages of the two schools. I'm agnostic about this, or more precisely, I think you should get to know both schools and then decide based on the purpose. I see advantages of tidyverse in particular for data manipulation, while I often prefer baseR plots over ggplot2. To keep it simple, however, all code in this course uses base R.
 
-::: {.callout-note}
+::: callout-note
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
 
@@ -332,7 +387,6 @@ testFunction(10, 20, 30)
 
 testFunction(b = 10, c = 20, a = 30)
 ```
-
 :::
 
 #### The apply() Function
@@ -410,7 +464,6 @@ Remark: The "NULL" statement is the return value of apply. `str`{.R} returns not
 ```{r chunk_chapter2_task_11, eval=TRUE}
 c()
 ```
-
 :::
 
 #### The aggregate() Function
@@ -506,7 +559,7 @@ dat = airquality
 7.  Calculate correlation indices between the numerical variables (e.g. Wind and Temp, Temp and Ozone). What is the difference between Spearman and Pearson correlation?
 :::
 
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+:::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 1.  `str()` helps us to check the data types of the variables, ensure that they are correct, e.g. categorical variables should be factors and continuous variables should be either num (numeric) or int (integer). `summary()`returns important summary statistics of our variables and informs us about NAs in the data
@@ -532,7 +585,7 @@ dat = airquality
     summary(dat)
     ```
 
-::: {.callout-note}
+::: callout-note
 `scale()` returns a one-column **matrix**, not a plain vector. Wrapping it with `as.numeric()` strips the matrix structure before assigning to a data frame column. If you skip `as.numeric()`, the column silently stores a matrix-inside-a-data-frame, which can cause unexpected errors in downstream functions that assume a plain vector (e.g., some plotting helpers).
 :::
 
@@ -554,7 +607,7 @@ dat = airquality
 6.  Single continuous variables can be visualized using a histogram (`hist)` , for two variables, it depends on their data types:
 
     | Scenario | Which plot | R command |
-    |------------------------|------------------------|------------------------|
+    |----|----|----|
     | Numeric | Histogram or boxplot | `hist()` and`boxplot` |
     | Numeric with numeric | Scatterplot | `plot` |
     | Numeric with categorical | Boxplot | `boxplot(numeric~categorical)` |
@@ -583,4 +636,4 @@ dat = airquality
     # Spearman
     cor(dat$Wind, dat$Temp, use = "complete.obs", method = "spearman")
     ```
-:::
+::::
