@@ -8,9 +8,9 @@ editor_options:
 set.seed(42)
 ```
 
-# Case studies
+# Case studies {#sec-cases}
 
-General strategy for analysis:
+General strategy for analysis (see also @sec-summary-strategy):
 
 1.  Define formula via scientific questions + confounders.
 2.  Define type of GLM (lm, logistic, Poisson).
@@ -27,9 +27,12 @@ Fit this base model, then do residual checks for
 
 And adjust the model accordingly.
 
-## Hurricanes
+## Hurricanes {#sec-cases-hurricane}
 
-In <a href="https://www.pnas.org/content/111/24/8782" target="_blank" rel="noopener">https://www.pnas.org/content/111/24/8782</a>, Jung et al. claim that "Female hurricanes are deadlier than male hurricanes".
+::: {#hurricanes}
+:::
+
+In @jung2014female, the authors claim that "Female hurricanes are deadlier than male hurricanes".
 
 Specifically, they analyze the number of hurricane fatalities, and claim that there is an effect of the femininity of the name on the number of fatalities, correcting for several possible confounders. They interpret the result as causal (including mediators), claiming that giving only male names to hurricanes would considerably reduce death toll.
 
@@ -59,17 +62,17 @@ summary(originalModelGAM)
 ```
 
 ::: {.callout-caution icon="false"}
-Tasks:
+#### Tasks
 
 - Confirm that you get the same results as in the paper. It makes sense to translate their model to glmmTMB. Note that the nb parameterization of mgcv corresponds to nbinom2 in glmmTMB. You will get different results when choosing nbinom1
 - Inspect the fitted model for potential problems, in particular perform a residual analysis of the model, including residuals against all predictors, and improve the model if you find problems.
-- Forget what they did. Go back to start, do a causal analysis like we did, and do your own model, diagnosing all residual problems that we discussed. Do you think there is an effect of femininity?
+- Forget what they did. Go back to start, do a causal analysis like we did (@sec-causal), and do your own model, diagnosing all residual problems that we discussed (@sec-lm-residual, @sec-glm-residual, @sec-disp, @sec-corr). Do you think there is an effect of femininity?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-This is the model fit by Jung et al., fit with glmmTMB
+This is the model fit by @jung2014female, fit with glmmTMB
 
 ```{r}
 library(DHARMa)
@@ -81,7 +84,7 @@ m1 = glmmTMB(alldeaths ~ MasFem*
 summary(m1)
 ```
 
-Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability
+Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability (see @sec-lm-interaction-centering)
 
 ```{r}
 m2 = glmmTMB(alldeaths ~ scale(MasFem) *
@@ -90,9 +93,9 @@ m2 = glmmTMB(alldeaths ~ scale(MasFem) *
 summary(m2)
 ```
 
-now main effect is n.s.; it's a bit dodgy, but if you read in the main paper, they do not claim a significant main effect, they mainly argue via ANOVA and significance at high values of NDAM, so let's run an ANOVA:
+now main effect is n.s.; it's a bit dodgy, but if you read in the main paper, they do not claim a significant main effect, they mainly argue via ANOVA and significance at high values of NDAM, so let's run an ANOVA (see @sec-anova-contrast and @cau-anova-typeiii for the dependence of type III tests on centering):
 
-```{r}
+```{r, message=FALSE}
 car::Anova(m2)
 ```
 
@@ -107,18 +110,18 @@ m3 = glmmTMB(alldeaths ~ scale(MasFem) *
 summary(m3)
 ```
 
-Now we see the significant main effect that they report. Note, however, that the significant difference is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot, or to specifically use predict() to calculate differences and CIs at high NDAM values.
+Now we see the significant main effect that they report. Note, however, that the significant difference is only there for high NDAM, i.e. what we do here is to project the effect of the interaction on the main effect. An alternative to do the same thing would be an effects plot (@sec-lm-visualization), or to specifically use predict() (@sec-lm-prediction) to calculate differences and CIs at high NDAM values.
 
 ```{r, message=FALSE, warning=FALSE}
 library(effects)
 plot(allEffects(m3, partial.residuals = T))
 ```
 
-OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results do say that there is a significant difference at high NDAM, and such a difference, if it existed, would be important.
+OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Choosing the evaluation point after looking at the data inflates the false-positive risk, and at the maximum NDAM the estimate rests on very few storms. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results do say that there is a significant difference at high NDAM, and such a difference, if it existed, would be important.
 
 But we haven't done residual checks yet. Let's do that:
 
-```{r}
+```{r, message=FALSE}
 res <- simulateResiduals(originalModelGAM)
 plot(res)
 
@@ -143,7 +146,7 @@ car::Anova(correctedModel)
 
 All gone, only damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.
 
-What if we would have fit our own model? First of all, note that if hurricane names were given randomly, we wouldn't have to worry about confounders. However, this is not the case, hurricanes were only named randomly after 1978 or so.
+What if we would have fit our own model? First of all, note that if hurricane names were given randomly, we wouldn't have to worry about confounders (@sec-causal-experiment). However, this is not the case, hurricanes were only named randomly after 1978 or so.
 
 ```{r}
 plot(MasFem ~ Year, data = hurricanes)
@@ -151,7 +154,7 @@ plot(MasFem ~ Year, data = hurricanes)
 
 So, we could either take the earlier data out, which would remove half of our data, or we have to worry about confounding with variables that change over time. The most obvious thing would be to take time itself (Year) in the model, to correct for temporal confounding.
 
-Do we need other variables that are not confounders? There are two reasons to add them:
+Do we need other variables that are not confounders? There are two reasons to add them (the first is the idea of precision variables, @tip-select-precision):
 
 - they have strong effects on the response - not adding them could lead to residual problems and increase residual variance, which increases uncertainties and cost power
 - we want to fit interactions.
@@ -171,13 +174,16 @@ car::Anova(newModel) # nothing regarding MasFem
 The results remain that there is no effect of MasFem!
 :::
 
-## Researcher Degrees of Freedom --- Skin Color and Red Cards
+## Researcher degrees of freedom --- skin color and red cards {#sec-cases-redcard}
 
-In 2018 Silberzahn et al. published a "meta-analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
+::: {#researcher-degrees-of-freedom-skin-color-and-red-cards}
+:::
+
+@silberzahn2018many published a "meta-analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
 
 **Spoiler**: They found that the "\[a\]nalytic approaches varied widely across the teams, and the estimated effect sizes ranged from 0.89 to 2.93 (Mdn = 1.31) in odds-ratio units", highlighting that different approaches in data analysis can yield significant variation in the results.
 
-You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <a href="https://journals.sagepub.com/doi/10.1177/2515245917747646" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/2515245917747646</a>.
+You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <https://journals.sagepub.com/doi/10.1177/2515245917747646>.
 
 The data is in
 
@@ -194,14 +200,16 @@ Task: Do a re-analysis of the data as if you were the 30th team to contribute th
 
 The rater variable contains ratings of "two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin. Make sure that 'rater1' and 'rater2' are rescaled to the range 0 ... 1 as described in the paper ("This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.")
 
-When you're done, have a look at the other modelling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odd ratios**. Are your results within the range of estimates from the 29 teams in Silberzahn et al. (2018)?
+When you're done, have a look at the other modeling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odd ratios**. Are your results within the range of estimates from the 29 teams in @silberzahn2018many?
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Base model
+#### Solution
 
-There is no single "correct" analysis - that is the whole point of Silberzahn et al. The following is therefore not a fully worked-out solution, but **one defensible base model** to start from. Each row is a player-referee dyad, so red cards are a **count out of the number of games** the two shared; we use that as exposure via a log offset, take the **mean of the two skin-tone ratings** rescaled to 0-1 as the predictor, and add **random effects for player and referee** to respect the non-independence.
+**Base model**
 
-```{r}
+There is no single "correct" analysis - that is the whole point of @silberzahn2018many. The following is therefore not a fully worked-out solution, but **one defensible base model** to start from. Each row is a player-referee dyad, so red cards are a **count out of the number of games** the two shared; we use that as exposure via a log offset, take the **mean of the two skin-tone ratings** rescaled to 0-1 as the predictor, and add **random effects for player and referee** to respect the non-independence.
+
+```{r, message=FALSE}
 library(EcoData); library(glmmTMB); library(DHARMa)
 d = redCards
 d$skin  = ((d$rater1 + d$rater2)/2 - 1) / 4     # mean rating, rescaled to 0..1
@@ -214,10 +222,13 @@ exp(fixef(m)$cond["skin"])   # rate ratio, darkest (1) vs lightest (0) skin
 res = simulateResiduals(m); plot(res); testDispersion(res)
 ```
 
-The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comparable to the paper's odds ratios). Compare it to the 0.89-2.93 range of odds ratios reported across the 29 teams. This bare model actually gives a somewhat *higher* estimate, which nicely illustrates the point of the study: the "researcher degrees of freedom" (choice of exposure, random-effect structure, which rater, count vs. binomial, and - crucially - which confounders are included) move the result substantially. From this base model, you would go on to check residuals and dispersion and to add plausible confounders (league, playing position, player skill, ...), which typically pulls the estimate towards the reported range.
+The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comparable to the paper's odds ratios). Compare it to the 0.89-2.93 range of odds ratios reported across the 29 teams. This bare model actually gives a somewhat *higher* estimate, which nicely illustrates the point of the study: the "researcher degrees of freedom" (choice of exposure, random-effect structure, which rater, count vs. binomial, and - crucially - which confounders are included) move the result substantially. From this base model, you would go on to check residuals and dispersion (@sec-glm-residual) and to add plausible confounders (see @sec-causal; league, playing position, player skill, ...), which typically pulls the estimate towards the reported range.
 :::
 
-## Scouting Ants
+## Scouting ants {#sec-cases-ant}
+
+::: {#scouting-ants}
+:::
 
 Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting ants in *Lasius niger*.
 
@@ -229,14 +240,14 @@ dat = scoutingAnts[scoutingAnts$first.visit == 0,]
 dat$ant_group = as.factor(dat$ant_group)
 dat$ant_group_main = as.factor(dat$ant_group_main)
 
-fit <- glm(went.phero ~ ant_group_main, data = dat)
+fit <- glm(went.phero ~ ant_group_main, data = dat, family = binomial)
 summary(fit)
 ```
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-For me, it made sense to change the contrasts of the possible confounders into something more easily interpretable:
+For me, it made sense to change the contrasts of the possible confounders (see @sec-lm-contrast) into something more easily interpretable:
 
 - Did the side in which the pheromone was stay constant or not (testing for a directional persistence of the ants)
 
@@ -251,7 +262,7 @@ Together with the orientation of the Maze, this makes 3 possible directional con
 
 Adding an RE on colony is logical, and then let's run the model:
 
-```{r}
+```{r, message=FALSE}
 library(lme4)
 fit1<-glmer(went.phero ~ ant_group_main
              + directionConst
@@ -284,7 +295,7 @@ The results are difficult to interpret. I would think that there was some bias i
 
 For our education, we can also look at the residual plots. I will use fit1, because there was a misfit:
 
-```{r}
+```{r, message=FALSE}
 res <- simulateResiduals(fit1, plot = T)
 ```
 
@@ -300,14 +311,14 @@ res2 <- recalculateResiduals(res, group = dat$Colony)
 
 Now, we essentially check k/n data, and we see that there is overdispersion, which is caused by the misfit.
 
-```{r}
+```{r, message=FALSE}
 plot(res2)
 testDispersion(res2)
 ```
 
 Let's do the same for model 2, which included the interactions.
 
-```{r}
+```{r, message=FALSE}
 res <- simulateResiduals(fit2, plot = T)
 res2 <- recalculateResiduals(res, group = dat$Colony)
 
@@ -318,64 +329,10 @@ testDispersion(res2)
 Which largely removes the problem!
 :::
 
-## Owls
+## Snails {#sec-cases-snail}
 
-Look at the Owl data set in the `glmmTMB` package. The initial hypothesis is
-
-```{r chunk_chapter5_task_3, message=FALSE, warning=FALSE}
-library(glmmTMB)
-
-m1 = glm(SiblingNegotiation ~ FoodTreatment*SexParent + offset(log(BroodSize)),
-         data = Owls , family = poisson)
-res = simulateResiduals(m1)
-plot(res)
-```
-
-::: {.callout-caution icon="false"}
-#### Offset
-
-The offset is a special command that can be used in all regression models. It means that we include an effect with effect size 1.
-
-The offset has a special importance in models with a log link function, because with these models, we have y = exp(x ...), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) \* exp(log(BroodSize)) = y = exp(x) \* BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.
+::: {#snails}
 :::
-
-*Task:* try to improve the model with everything we have discussed so far.
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r, message=FALSE, warning=FALSE}
-m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent
-  + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
-  dispformula = ~ FoodTreatment + SexParent,
-  ziformula = ~ FoodTreatment + SexParent)
-summary(m1)
-
-res = simulateResiduals(m1, plot = T)
-
-testDispersion(m1)
-testZeroInflation(m1)
-```
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution using brms
-
-This is not adding dispersion and zero-inflation yet, just to show how such a model could be fit with brms
-
-```{r, message=FALSE, warning=FALSE}
-library(brms)
-m2 = brms::brm(SiblingNegotiation ~ FoodTreatment * SexParent
-  + (1|Nest) + offset(log(BroodSize)), 
-  data = Owls , 
-  family = negbinomial)
-summary(m2)
-
-plot(m2, ask = FALSE)
-```
-:::
-
-## Snails
 
 ```{r, warning=FALSE, message=FALSE}
 library(EcoData)
@@ -410,10 +367,12 @@ Tasks:
 
 3.  Optional: Model the species individually (BP_tot, BF_tot, BT_tot)
 
-4.  Optional: Fit a multivariate (joint) species distribution model
+4.  Optional: Fit a multivariate (joint) species distribution model (see @sec-corr-multivar)
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution for total Abundance of *Bulinus* (glmm)
+#### Solution
+
+**Total abundance of *Bulinus* (GLMM)**
 
 Prepare+scale data:
 
@@ -449,9 +408,9 @@ model1 = glm(Bulinus_tot~
 summary(model1)
 ```
 
-As the sites are nested within localities, we will set a nested random intercept on site_irn within locality. Also potential confounders are collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
+As the sites are nested within localities, we will set a nested random intercept (see @tip-re-nested) on site_irn within locality. Also potential confounders are collection date (coll_date), the season (wet or dry months, seas_wmo), year, and maybe other environmental factors such as the air temperature?.
 
-```{r}
+```{r, message=FALSE}
 model2 = glmer(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + spH +
                  sCond + swmo_prec + swater_speed_ms + swater_depth +
@@ -511,50 +470,47 @@ testDispersion(res)
 testZeroInflation(res)
 ```
 
-We detrended space there could be spatial autocorrelation, let's check for it:
+So far, we have not included a spatial trend, so there could be spatial autocorrelation. Let's check for it. Note that we simulate unconditionally here (`simulateREs = "unconditional"`): with the default conditional simulations, the fitted random effects of the sites would absorb the spatial pattern, and the test could not detect it (see the box on conditional simulations in @sec-corr-temporal).
 
 ```{r}
 ## Spatial
+res = simulateResiduals(model4, simulateREs = "unconditional")
 res2 = recalculateResiduals(res, group = c(data$site_irn))
 groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
 testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
-
 ```
 
-Significant! Let's add a spatial correlation structure:
+Significant! Following the rule from @sec-corr-model, we first try to remove a large-scale spatial trend, here with a quadratic surface in latitude and longitude:
 
 ```{r}
-numFac = numFactor(data$sLat, data$sLon)
-group = factor(rep(1, nrow(data)))
-data$fmonth = as.factor(data$month)
-
 model5 = glmmTMB(Bulinus_tot~
                  offset(log(duration)) + site_type + sTemp_Water + spH +
                  sCond + swmo_prec + swater_speed_ms + swater_depth +
-                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) + exp(0+numFac|group),
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) +
+                 sLat + sLon + I(sLat^2) + I(sLon^2) + sLat:sLon,
                  dispformula = ~swater_speed_ms + swater_depth+sCond,
               data = data,  family = nbinom2)
+summary(model5)
+
+res = simulateResiduals(model5, simulateREs = "unconditional")
+res2 = recalculateResiduals(res, group = c(data$site_irn))
+testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
+AIC(model4, model5)
 ```
+
+After de-trending, there is no significant spatial autocorrelation left, and the AIC also prefers the de-trended model, so we don't need a spatial correlation structure. If autocorrelation had remained, we would add one, e.g. `exp(0 + numFac | group)` (see @sec-corr-spatial). Final residual check:
 
 ```{r}
 res = simulateResiduals(model5, plot = TRUE)
-```
-
-glmmTMB does not support conditional simulations but we can create conditional simulations on our own:
-
-```{r}
-pred = predict(model5, re.form = NULL, type = "response")
-pred_dispersion = predict(model5, re.form = NULL, type = "disp")
-simulations = sapply(1:1000, function(i) rnbinom(length(pred),size = pred_dispersion, mu =  pred))
-res = createDHARMa(simulations, model.frame(model5)[,1], pred)
-plot(res)
 ```
 
 Residuals do not look perfect but I would say that we can stop here now.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution for prevalence of *Bulinus* (glmm)
+#### Solution
+
+**Prevalence of *Bulinus* (GLMM)**
 
 Prepare+scale data:
 
@@ -596,40 +552,41 @@ summary(model1)
 res = simulateResiduals(model1, plot=TRUE)
 ```
 
-We have dispersion problems, but we cannot model the dispersion for binomial models.
+We have dispersion problems (@sec-glm-dispersion), but we cannot model the dispersion for binomial models.
 
-Check for spatial autocorrelation:
+Check for spatial autocorrelation (again with unconditional simulations, as for the abundance model):
 
 ```{r}
 ## Spatial
+res = simulateResiduals(model1, simulateREs = "unconditional")
 res2 = recalculateResiduals(res, group = c(data$site_irn))
 groupLocations = aggregate(cbind(data$sLat, data$sLon ), list( data$site_irn), mean)
 testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
-
 ```
 
-Significant! Let's correct for spatial autocorrelation with a correlation structure:
+Significant! As before, we first try to remove a large-scale spatial trend:
 
 ```{r}
-numFac = numFactor(data$sLat, data$sLon)
-group = factor(rep(1, nrow(data)))
-data$fmonth = as.factor(data$month)
 model2 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
                  offset(log(duration)) + site_type + sTemp_Water + spH +
                  sCond + swmo_prec + swater_speed_ms + swater_depth +
-                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) + exp(0+numFac|group),
+                 sTemp_Air + seas_wmo + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date) +
+                 sLat + sLon + I(sLat^2) + I(sLon^2) + sLat:sLon,
               data = data,  family = binomial)
+
+res = simulateResiduals(model2, simulateREs = "unconditional")
+res2 = recalculateResiduals(res, group = c(data$site_irn))
+testSpatialAutocorrelation(res2, x = groupLocations$V1, y = groupLocations$V2)
+AIC(model1, model2)
 ```
 
-```{r}
-res = simulateResiduals(model2, plot = TRUE)
-```
-
-They look good now!
+After de-trending, the spatial autocorrelation is no longer significant, so we don't need a spatial correlation structure. Note, however, that the AIC does not support the trend terms, i.e. the spatial signal was weak; keeping model1 would also be defensible.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution of multivariate (joint) species distribution model
+#### Solution
+
+**Multivariate (joint) species distribution model**
 
 The species models are connected by their response to latent variable (unobserved environment). For that, we will transform our dataset with respect to species from wide (sp1, sp2, sp3) to long format (species abundances in one column and a second column telling us the group (species)). In the model then, we will separate the species and their responses by using \~0+Species + Species:(predictors).
 
@@ -667,7 +624,6 @@ group = factor(rep(1, nrow(data)))
 
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
-data$fmonth = as.factor(data$month)
 modelJoint = glmmTMB(Abundance~ 0 +
                  offset(log(duration)) + Species + Species:(site_type + 
                   sTemp_Water + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +
@@ -696,7 +652,10 @@ plot(res)
 ```
 :::
 
-## Seed bank
+## Seed bank {#sec-cases-seedbank}
+
+::: {#seed-bank}
+:::
 
 ```{r, warning=FALSE,message=FALSE}
 library(EcoData)
@@ -718,12 +677,14 @@ Tasks:
 
 1.  Fit an lm/lmm with SBDensity as response
 
-2.  Bonus: Add phylogenetic correlation structure
+2.  Bonus: Add phylogenetic correlation structure (see @sec-corr-phylo)
 
 3.  Fit a glm/glmm with SBPA as response (Bonus: add phylogenetic correlation structure)
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution for SBDensity (lmm)
+#### Solution
+
+**SBDensity (LMM)**
 
 Prepare+scale data:
 
@@ -795,23 +756,23 @@ What about the germination temperatures, T50/T95?
 
 **Answer:**
 
-They could be mediators, Seed Shape -\> T95 -\> SBDensity, so it is up to if you want to include them or not!
+They could be mediators (@sec-causal-framework), Seed Shape -\> T95 -\> SBDensity, so it is up to if you want to include them or not!
 
 **Residual checks:**
 
-Check for missing random slopes:
+Check for missing random slopes (@sec-re-slope, @sec-re-pergroup):
 
 ```{r, fig.width=10, fig.height=15}
-plot(model2, resid(., rescale=TRUE) ~ fitted(.) | Species, abline = 1)
+plot(model2, resid(., scaled = TRUE) ~ fitted(.) | Species, abline = 0)
 ```
 
 There seems to be a pattern!
 
 ```{r, fig.width=10, fig.height=15}
-plot(model2, resid(., rescale=TRUE) ~ sAltitude | Species, abline = 1)
+plot(model2, resid(., scaled = TRUE) ~ sAltitude | Species, abline = 0)
 ```
 
-The pattern seems to be caused by sAltitude (check `plot(model2, resid(., rescale=TRUE) ~ sSeedMass | Species, abline = 1)` )
+The pattern seems to be caused by sAltitude (check `plot(model2, resid(., scaled = TRUE) ~ sSeedMass | Species, abline = 0)` )
 
 **Random slope model**
 
@@ -838,6 +799,8 @@ There seems to be dispersion problem.
 
 **Bonus: Modeling variance with glmmTMB**
 
+See @sec-disp-model for modeling the variance.
+
 ```{r}
 model4 = glmmTMB(logSBDensity~
                 sSeedMass + sSeedShape + sSeedN +
@@ -850,7 +813,9 @@ summary(model4)
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Bonus: Solution for SBDensity (lmm) with phylogenetic correlation structure
+#### Solution
+
+**Bonus: SBDensity (LMM) with phylogenetic correlation structure**
 
 Prepare phylogeny:
 
@@ -870,19 +835,6 @@ summary(phyl.upd)
 name.check(phyl.upd, species_df)
 
 phyl.upd2 = multi2di(phyl.upd)
-```
-
-nlme:
-
-```{r}
-library(nlme)
-model4 = gls(logSBDensity ~
-              sSeedMass + sSeedShape + sSeedN +
-                 sAltitude + sHum,
-             correlation = corBrownian(phy = phyl.upd2, form =~ Species),
-             data = data)
-summary(model4)
-
 ```
 
 glmmTMB (not perfect because lack of support of specific phylogenetic correlation structures):
@@ -923,7 +875,9 @@ simulateResiduals(model5, plot = TRUE) # Unconditional simulations
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution for SBPA (glmm)
+#### Solution
+
+**SBPA (GLMM)**
 
 Prepare+scale data:
 
@@ -964,7 +918,7 @@ model1 = glmer(SBPA~
 summary(model1)
 ```
 
-Model did not converge, but there is a trick which often helps. The default optimizer in lme4 is not the best optimizer, changing it to 'bobyqa' often helps with convergence issues
+Model did not converge, but there is a trick which often helps (see @sec-re-convergence). The default optimizer in lme4 is not the best optimizer, changing it to 'bobyqa' often helps with convergence issues
 
 ```{r}
 model1 = glmer(SBPA~
@@ -976,13 +930,13 @@ model1 = glmer(SBPA~
 summary(model1)
 ```
 
-Success, it converged!
+Success, it converged! Note that silencing the warning by switching the optimizer is no evidence that the estimates are good: check that estimates agree across optimizers (`allFit(model1)`) and that the fit is not singular (`isSingular(model1)`).
 
 **Residual checks:**
 
 Check residuals:
 
-```{r}
+```{r, message=FALSE}
 res = simulateResiduals(model1, plot=TRUE)
 ```
 
@@ -1033,9 +987,12 @@ plot(res)
 ```
 :::
 
-## Snouter
+## Snouter {#sec-cases-snouter}
 
-Fit one of the responses in the snouter dataset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed. See the data set's help for details on the variables.
+::: {#snouter}
+:::
+
+Fit one of the responses in the snouter dataset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed (@sec-corr-spatial). See the data set's help for details on the variables.
 
 ```{r eval = F}
 library(EcoData)
@@ -1054,7 +1011,7 @@ res = simulateResiduals(fit); plot(res)
 testSpatialAutocorrelation(res, x = snouter$X, y = snouter$Y)
 ```
 
-If the spatial test is significant, we first de-trend with a 2D spline (as recommended in the spatial-correlation section - always de-trend before reaching for a correlation structure):
+If the spatial test is significant, we first de-trend with a 2D spline (as recommended in @sec-corr-model - always de-trend before reaching for a correlation structure):
 
 ```{r}
 library(mgcv)
@@ -1071,22 +1028,27 @@ This changes residuals somewhat, but there is still significant spatial autocorr
 
 :::
 
-## Volcano Island
+## Volcano Island {#sec-cases-volcano}
 
-Option 2: Analyse ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (including residual checks and everything) to understand the predictors that determine the value of
+::: {#volcano-island}
+:::
 
-windObs (numeric) lizards (1/0) beetles2 (counts) survived (k/n) There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (RE, overdispersion, zero-inflation, spatial autocorrelation) could appear in this data.
+Analyze ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (see @sec-causal; including residual checks and everything) to understand the predictors that determine the value of
+
+windObs (numeric) lizards (1/0) beetles2 (counts) survivedOf20 (k out of 20) There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (random effects, @sec-re; overdispersion, @sec-glm-dispersion; zero-inflation, @sec-glm-zero-inflation; spatial autocorrelation, @sec-corr-spatial) could appear in this data.
 
 Hint: it is possible that the possibility to observe a species depends on wind, and it is possible that lizards eat beetles, so you can also consider these variables (or predictions for these variables) as predictors of the others.
 
-Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survived, all-survived) \~ predictor, data = data, family = "binomial")
+Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survivedOf20, 20 - survivedOf20) \~ predictor, data = data, family = "binomial")
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Base model
+#### Solution
 
-This is an open, integrative exercise, so the following is not a fully worked-out solution but **a base model to start from** for one of the responses (beetle counts). The other responses (`windObs` -\> Gaussian / gls, `lizards` -\> binomial, `survived` -\> k/n binomial) follow exactly the same recipe.
+**Base model**
 
-```{r}
+This is an open, integrative exercise, so the following is not a fully worked-out solution but **a base model to start from** for one of the responses (beetle counts). The other responses (`windObs` -\> Gaussian / gls, `lizards` -\> binomial, `survivedOf20` -\> k/n binomial) follow exactly the same recipe.
+
+```{r, message=FALSE}
 library(EcoData); library(glmmTMB); library(DHARMa)
 d = volcanoisland
 
@@ -1107,5 +1069,5 @@ testSpatialAutocorrelation(grp,
       y = aggregate(y ~ plot, d, mean)$y)
 ```
 
-Work through the diagnostic ladder in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
+Work through the diagnostic ladder (@sec-summary-strategy) in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
 :::

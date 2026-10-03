@@ -2,9 +2,12 @@
 set.seed(42)
 ```
 
-# Summary and concluding thoughts
+# Summary and concluding thoughts {#sec-summary}
 
-## Reminder: Modelling Strategy
+## Reminder: modeling strategy {#sec-summary-strategy}
+
+::: {#reminder-modelling-strategy}
+:::
 
 ```{r chunk_chapter7_chunk0, echo=FALSE}
 knitr::include_graphics(c("images/reminder.jpg"))
@@ -35,19 +38,22 @@ Fit this base model, then do residual checks for
 
 And adjust the model accordingly.
 
-Packages to fit these models (see Appendix: syntax cheat sheet):
+Packages to fit these models (see the cheat sheet in the appendix, @sec-cheat, for the syntax):
 
-- `baseR`: `lm`, `glm`.
+- base R (`stats`): `lm`, `glm`.
 - `lme4`: mixed models, `lmer`, `glmer`.
 - `mgcv`: GAM.
-- `nlme`: Variance and correlations structure modelling for linear (mixed) models, using `gls` + `lme`.
-- `glmmTMB`: Generalized linear mixed models with variance / correlation modelling and zip term.
+- `nlme`: Variance and correlations structure modeling for linear (mixed) models, using `gls` + `lme`.
+- `glmmTMB`: Generalized linear mixed models with variance / correlation modeling and zip term.
 
 Alternatively, you could move to Bayesian estimates with `brms`, which allows all that, easier inclusion of shrinkage, and p-value / df problems less visible
 
-## Thoughts About the Analysis Pipeline
+## Thoughts about the analysis pipeline {#sec-summary-pipeline}
 
-In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the protocol that I sketched above. What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
+::: {#thoughts-about-the-analysis-pipeline}
+:::
+
+In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the protocol that I sketched in @sec-summary-strategy. What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
 
 - What is the typical error of the estimate?
 - What is the Type I error (false positives)?
@@ -81,7 +87,7 @@ hist(out, breaks = 50)
 abline(v = 0.5, col = "red")
 ```
 
-"Unbiased" means that, while each single estimate will have some error, the mean of many estimates will spread around the true value.
+"Unbiased" means that, while each single estimate has some error, the errors average out: the mean of many estimates is the true value (up to simulation error).
 
 ***Explicitly calculating these values***
 
@@ -104,7 +110,7 @@ set.seed(12345)
 
 getEstimate = function(n = 100){  # Mind: Function has changed!
   x = runif(n)
-  y = rnorm(n)  # No dependence of x! Identical: y = 0 * x + rnorm(100).
+  y = rnorm(n)  # No dependence of x! Identical: y = 0 * x + rnorm(n).
   fit = lm(y ~ x)
   x = summary(fit)
   return(x$coefficients[2, 4])  # P-value for H0: Weight of x = 0.
@@ -114,23 +120,26 @@ out = replicate(2000, getEstimate())
 
 hist(out) # Expected: Uniformly distributed p-values. -> Check.
 
-mean(out < 0.05) # Expected: ~0.05. But this is NO p-value... Check H0/H1!
+mean(out < 0.05) # Type I error rate: fraction of p-values < 0.05 when H0 is true; about 0.05 for a calibrated test
 # Explanation of syntax: Logical vectors are interpreted as vectors of 0s and 1s.
 ```
 
 To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
 
-## Experimental design and power analysis
+## Experimental design and power analysis {#sec-summary-design}
+
+::: {#experimental-design-and-power-analysis}
+:::
 
 All we have learned in this course directly informs experimental and research design, be it controlled experiments, quasi-experiments or observational studies.
 
-As a start, note our discussions of causality and model selection:
+As a start, note our discussions of causality (@sec-causal) and model selection (@sec-select):
 
 - First of all, research design needs a goal: do you want to design for prediction or (causal) inference
 
-- If you are after causal inference, try to control confounders, and if not, try to measure them. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed, adjusting for collinear variables is possible, but costs power.
+- If you are after causal inference, randomize or hold constant what you can; measure what you cannot control so that you can adjust for it. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed in the section on collinearity (@sec-lm-collinearity), adjusting for collinear variables is possible, but costs power.
 
-- In experimental settings, blocked designs where blocks will be later treated as a RE are standard
+- In experimental settings, blocked designs where blocks will be later treated as a random effect (see @sec-re) are standard
 
 If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study.
 
@@ -148,6 +157,9 @@ mean(replicate(1000, getP(n = 50, effect = 0.3)) < 0.05)   # power at n = 50
 
 To find the sample size for, say, 80% power, wrap this in a loop over `n`. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.
 
-## Next steps
+## Next steps {#sec-summary-next}
+
+::: {#next-steps}
+:::
 
 This book covered the core GLMM toolbox. Natural next steps are the fully Bayesian treatment of these models (`brms` / Stan), which sidesteps several of the degrees-of-freedom and p-value problems we flagged along the way; machine-learning approaches when the goal is purely prediction; and domain-specific extensions such as joint species distribution models, survival / time-to-event models, and structural equation models - each of which builds directly on the ideas developed here.

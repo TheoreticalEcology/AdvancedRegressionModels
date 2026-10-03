@@ -8,26 +8,33 @@ editor_options:
 set.seed(42)
 ```
 
-# ANOVA and other tests on the LM
+# ANOVA and other tests on the LM {#sec-anova}
 
-## The idea of ANOVA
+## The idea of ANOVA {#sec-anova-idea}
 
-ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already briefly introduced ANOVA in the section on categorical predictors.
+::: {#the-idea-of-anova}
+:::
 
-The problem with explaining ANOVA is that the term is fraught with historical meanings and explanations that are no longer relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAS and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:
+ANOVA stands for ANalysis Of VAriance. The basic idea is to find out how much of the signal (variance) is explained by different factors. We had already briefly introduced ANOVA in the section on ANOVA (@sec-lm-anova) in the chapter on linear regression.
+
+The problem with explaining ANOVA is that the term is fraught with historical meanings and explanations that are no longer relevant. It used to be that ANOVA is a stand-alone method that you use for experimental designs with different treatments, that ANOVA assumes normal distribution and partitions sum of squares, that there are repeated-measure ANOVAs and all that, and those varieties of ANOVA partly still exist, but in general, there is a much simpler and general explanation of ANOVA:
 
 Modern explanation: ANOVA is not a statistical model, but a hypothesis test that can be performed on top of any regression model. What this test is doing is to measure how much model fit improves when a predictor is added, and if this improvement is significant.
 
-### An example
+### An example {#sec-anova-example}
 
-As an example, here is an ANOVA (function `aov()`) performed on the fit of a linear model
+As an example, here is an ANOVA (function `anova()`) performed on the fit of a linear model
 
 ```{r}
 fit = lm(Ozone ~ Wind + Temp, data = airquality)
-summary(aov(fit))
+anova(fit)
 ```
 
-In the standard ANOVA for the LM, model fit is measured by the reduction in residual sum of squares. Let's look at the example above. In the ANOVA table above, we (virtually) start with an intercept only model. Now, what the table tells us is that adding Wind to the model reduces the Sum Sq. by 45284, and adding also Temp reduces the Sum Sq by another 25886, which leaves us with 53973 residual sum sq. From this, we can also conclude that the total variance of the response is 53973 + 25886 + 45284 = 125143. Let's check this:
+::: column-margin
+**`anova()` or `summary(aov())`?** For a linear model, `anova(fit)` and `summary(aov(fit))` give the same sequential (type I) ANOVA table. We use `anova()`, the general R function for comparing models (its use for GLMs and mixed models is discussed in the respective chapters); `aov()` is mainly needed as input for post-hoc tests such as `TukeyHSD()` (see @sec-lm-posthoc).
+:::
+
+In the standard ANOVA for the LM, model fit is measured by the reduction in residual sum of squares. Let's look at the example above. In the ANOVA table above, we (virtually) start with an intercept only model. Now, what the table tells us is that adding Wind to the model reduces the Sum Sq. by 45284, and adding also Temp reduces the Sum Sq by another 25886, which leaves us with 53973 residual sum sq. From this, we can also conclude that the total sum of squares of the response is 53973 + 25886 + 45284 = 125143. Let's check this:
 
 ```{r}
 sum((fit$model$Ozone - mean(fit$model$Ozone))^2)
@@ -36,24 +43,27 @@ sum((fit$model$Ozone - mean(fit$model$Ozone))^2)
 Thus, we can compute the fraction of variance attributed to each model component and to the residuals (note the last entry is the unexplained remainder, not an explained component):
 
 ```{r}
-45284/125143 # Wind
-25886/125143 # Temp
-53973/125143 # Residual
+totalSumSq = 45284 + 25886 + 53973 # total sum of squares
+45284/totalSumSq # R2 Wind
+25886/totalSumSq # R2 Temp
+53973/totalSumSq # unexplained fraction (residual)
 ```
 
-Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant against a null model. This is important because, as mentioned before (particularly in the chapter on model selection), adding a predictor always improves model fit.
+Moreover, the ANOVA table performs tests to see if the improvement of model fit is significant, compared to the model without the respective term. This is important because adding a predictor always improves model fit, even if it has no effect (we will discuss this in more detail in the chapter on model selection, in particular @sec-select-lrt).
 
 To interpret the p-values, consider that H0 = the simpler model is true, thus we test if the improvement of model fit is higher than what we would expect if the predictor has no effect.
 
-### Customizing the partitioning
+### Customizing the partitioning {#sec-anova-custom}
 
-There are a number of cases where it can make sense to perform an ANOVA for larger parts of the model. Consider, for example, the following regression:
+An important thing to note is that in an ANOVA, you don't need to always separate one predictor after the other, you can also work in blocks of predictors, or entire components of the model.
+
+There are a number of cases where this makes a lot of sense. A typical example is, if you are fitting a polynomial of a predictor. Consider, for example, the following regression:
 
 ```{r}
 fit = lm(Ozone ~ Wind + I(Wind^2) + Temp + I(Temp^2), data = airquality)
 ```
 
-Maybe, we would like to ask how much variance is explained by Wind + Wind\^2, and how much by Temp + Temp\^2. In this case, we can perform custom ANOVA, using the `anova()` function that we already introduced in the section on model selection via likelihood ratio tests (LRTs).
+Maybe, we would like to ask how much variance is explained by Wind + Wind\^2, and how much by Temp + Temp\^2. In this case, we can perform custom ANOVA, using the `anova()` function that you may have seen in the solution of the exercise in @sec-lm-regression-syntax, to compare models via a likelihood ratio test (LRT).
 
 ```{r}
 m0 = lm(Ozone ~ 1, data = airquality)
@@ -62,42 +72,68 @@ m2 = lm(Ozone ~ Wind + I(Wind^2) + Temp + I(Temp^2), data = airquality)
 anova(m0, m1, m2)
 ```
 
-## Fundamental issues in ANOVA
+Which separates the R2 between Wind and Temp, but not between the linear and quadratic effects of the two.
 
-There are three basic problems that we will come back again when generalizing this principle across a range of models:
+## Fundamental issues in ANOVA {#sec-anova-issue}
+
+::: {#fundamental-issues-in-anova}
+:::
+
+There are five basic problems that we will come back again when generalizing this principle across a range of models:
 
 1.  How should we measure "improvement of model fit". Traditionally, improvement is measured by the reduction of the residual sum of squares, but for GLMs, we will have to expand this definition
 2.  How should we test if the improvement in fit is significant? For simple models, this is not so much a problem
 3.  How should we partition variance if predictors are collinear, and thus the order in which predictors are included matters
-4.  Should we correct for complexity?
+4.  Related to the previous point, for categorical predictors, the choice of contrasts changes the results of the type III ANOVA (see @sec-anova-contrast).
+5.  Should we correct for complexity?
 
 Let's look at the problem one by one:
 
-### Measuring model fit
+### Measuring model fit {#sec-anova-fit}
 
 The definition of model fit via sum of squares makes sense as long as we work with linear models.
 
 For GLMs, this definition doesn't make sense any more. A number of so-called pseudo-R^2^ metrics have been proposed. Most of them are based on the likelihood (as a measure of model fit) and try to recover as far as possible the properties of an R^2^ for the linear model.
 
-A common metric is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~)\], where M is our model, and M0 is an intercept only model.
+A common metric is McFadden pseudo-R^2^, which is defined as 1-\[LogL(M)/LogL(M~0~)\], where M is our model, and M0 is an intercept only model. However, many other definitions of "importance" are possible, and in the broadest sense, you could say the principle of ANOVA is to separate out the importance of different predictors or model components, however this importance is measured.
 
-### Testing if the improvement is significant
+### Testing if the improvement is significant {#sec-anova-test}
 
-The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT), which we already used in the chapter on model selection. An LRT can be used on two nested models, with M0 being the simpler model, and makes the following assumptions:
+The test used in our example before is an F-test. The F-test is used for models that assume normal distribution. The F-test can be interpreted as a special case of a likelihood ratio test (LRT, for the reason see @tip-anova-ftest), which you may have seen in the solution of the exercise in @sec-lm-regression-syntax; more on LRTs in the section on likelihood-ratio tests (@sec-select-lrt). An LRT compares two nested models, M~0~ (simpler) and M~1~:
 
-1.  H~0~ = M~0~ is true
-2.  Test statistic = $-2 \log \frac{L(M_0)}{L(M_1)} = -2 \left[\log L(M_0) - \log L(M_1)\right]$, i.e. minus twice the difference in maximized log-likelihoods
-3.  Then, under relatively broad conditions, the test statistic will be chi-squared distributed, with df = difference in residual df (parameters) of the models M~1~, M~0~
+1.  H~0~: M~0~ is true
+2.  Test statistic: $-2 \log \frac{L(M_0)}{L(M_1)} = -2 \left[\log L(M_0) - \log L(M_1)\right]$, i.e. minus twice the difference in maximized log-likelihoods
+3.  Under H~0~ and relatively broad regularity conditions, the test statistic is asymptotically chi-squared distributed, with df = difference in the number of free parameters of the models M~1~, M~0~
 
-This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the bootstrap, which is a very general and popular method to generate nonparametric confidence intervals and null distributions. We will talk in detail about these methods in the chapter on nonparametric methods, but because this method is crucial for mixed models, I want to shortly explain it already here:
+::: {#tip-anova-ftest .callout-tip collapse="true"}
+#### Why the F-test is a likelihood ratio test
 
-The difference between a parametric and a nonparametric test is that the latter does not make assumptions about the test statistic (point 3 above), but somehow generates the latter from the data. The parametric bootstrap does this in the following way:
+The general principle behind both tests is the likelihood ratio test, explained in the section on likelihood-ratio tests (@sec-select-lrt). For a linear model with normal residuals, the maximized log-likelihood depends on the data only through the residual sum of squares, $\log L = -\frac{n}{2} \log(RSS/n) + \text{const}$. The LRT statistic for two nested models is therefore
+
+$$-2 \log \frac{L(M_0)}{L(M_1)} = n \log \frac{RSS_0}{RSS_1} = n \log \left(1 + \frac{q \, F}{n - p_1}\right) \quad \text{with} \quad F = \frac{(RSS_0 - RSS_1)/q}{RSS_1/(n - p_1)},$$
+
+where $q$ is the number of additional parameters in M~1~ and $p_1$ the number of regression coefficients of M~1~. The LRT statistic is a monotone function of F, so both tests rank all possible results in the same way: the F-test *is* an LRT. They differ only in the reference distribution. The chi-squared distribution of the LRT is a large-sample approximation, while the F distribution is exact for linear models with normal residuals, because it accounts for the fact that the residual variance is estimated. This is why `anova()` uses the F-test for `lm`, and the chi-squared LRT for GLMs and mixed models, for which no exact distribution exists. For nonlinear least squares (@sec-nls), `anova()` also reports an F-test, but there both distributions are approximations.
+
+```{r}
+datCC = airquality[complete.cases(airquality), ]
+mF0 = lm(Ozone ~ Temp, data = datCC)
+mF1 = lm(Ozone ~ Temp + Wind, data = datCC)
+anova(mF0, mF1) # F-test
+LR = as.numeric(2 * (logLik(mF1) - logLik(mF0)))
+LR # identical to nrow(datCC) * log(1 + F / (nrow(datCC) - 3))
+pchisq(LR, df = 1, lower.tail = FALSE) # LRT with chi-squared approximation
+```
+
+With 111 observations, both p-values are practically the same; for small samples, the F-test is the one to use.
+:::
+
+This setup works for LMs and GLMs, but runs into problems when the definition how many df a model has is unclear. This is in particular the case for mixed models. In this case, one can resort to simulated LRTs. Simulated LRTs are a special case of the bootstrap (see the section on nonparametrics and the bootstrap, @sec-lm-nonparametric, in particular @sec-lm-bootstrap-param). More precisely, they are a parametric bootstrap: instead of assuming that the test statistic follows a chi-squared distribution (point 3 above), we generate its distribution under H~0~ by simulating new data from the fitted model M~0~. Because this method is crucial for mixed models, I want to shortly explain it already here:
 
 1.  Simulate data from H~0~ (= the fitted model M~0~)
 2.  Re-fit M~0~ and M~1~, and calculate likelihood ratios
 3.  Repeat n times to get an idea about the expected increase in likelihood when moving to M~1~ under the assumption that M~0~ is correct
 
-```{r}
+```{r, message=FALSE}
 library(DHARMa)
 m0 = lm(Ozone ~ Wind , data = airquality)
 m1 = lm(Ozone ~ Wind + Temp, data = airquality)
@@ -106,86 +142,102 @@ simulateLRT(m0, m1)
 anova(m0, m1)
 ```
 
-### Partitioning variance if order matters
+A simulated p-value cannot be smaller than about 1/(n+1), where n is the number of simulations (250 by default in `simulateLRT()`, i.e. about 0.004). If none of the simulations reaches the observed value, report p \< 1/(n+1) rather than the p-value printed by the function.
+
+### Collinearity means that order matters {#sec-anova-collinearity}
 
 Another key problem in ANOVA, and a source of much confusion, is how to deal with the fact that often, the order in which model components are added matters. Compare the results of our previous ANOVA with this one, where I only flipped the order of Temp and Wind:
 
 ```{r chunk_chapter3_chunk64, echo=TRUE, eval=TRUE}
-fit = lm(Ozone ~ Temp + Wind, data = airquality)
-summary(aov(fit))
+m1 = lm(Ozone ~ Wind + Temp, data = airquality)
+m2 = lm(Ozone ~ Temp + Wind, data = airquality)
+anova(m1)
+anova(m2)
 ```
 
-The result is markedly different, and reason is that the `aov`{.R} function performs a so-called type I ANOVA. The type I ANOVA adds variables in the order in which they are in the model formula, and because Temp and Wind are collinear, the variable that is added first to the model will absorb variation from the other, and thus seems to explain more of the response.
+The result is markedly different, and the reason is that `anova()` (like `aov()`) performs a so-called type I ANOVA. The type I ANOVA adds variables in the order in which they are in the model formula, and because Temp and Wind are collinear, the variable that is added first to the model will absorb variation from the other, and thus seems to explain more of the response.
 
-There are other types of ANOVA that avoid this problem. The so-called type II ANOVA shows for each variable only the part that is uniquely attributable to the respective variable
+There are other types of ANOVA that avoid this problem. The so-called type II ANOVA shows for each variable only the part that is uniquely attributable to the respective variable. This is done by discarding the R2 part that is shared by the two predictors due to collinearity (see @fig-anova-venn below)
 
-```{r chunk_chapter3_chunk65, echo=TRUE, eval=TRUE}
-car::Anova(fit, type = "II")
+```{r chunk_chapter3_chunk65, echo=TRUE, eval=TRUE, message=FALSE}
+car::Anova(m1, type = "II")
 ```
 
-There is also type III, which is as type II, but avoids a similar problem for interactions, i.e. it discards the variance that is shared between main effects and interactions. Note that numeric variables should be centered and categorical variables should have orthogonal contrast when running a type III ANOVA (see below).
+There is also type III ANOVA, which, unlike type II, adjusts each term for all other terms, including the interactions it is part of. For such terms, the results depend on centering and contrast coding (details in @cau-anova-typeiii and @sec-anova-contrast).
 
 ```{r chunk_chapter3_chunk66, echo=TRUE, eval=TRUE}
-car::Anova(fit, type = "III")
+car::Anova(m1, type = "III")
 ```
 
-Here is an overview of the situation for 2 predictors A and B and their interaction. The upper left figure corresponds to the case where we have no collinearity between either of those variables. The figure on the top right (and similarly types I - III) are the three possible types of ANOVA for variables with collinearity. The "overlap" between the circles depicts the shared part, i.e. the variability that can be expressed by either variable (due to collinearity). Note that the shares in Type II, III do not add up to 1, as there is a kind of "dark variation" that we cannot securely add to either variable.
+::: column-margin
+**Why is there an (Intercept) row in type III, but not in type II?** Type II respects the hierarchy of the model (marginality principle): a term is only tested in models without the terms that build on it, e.g. a main effect A is tested without the interaction A:B. As all terms build on the intercept, the intercept is never tested. Type III, by design, does not follow this hierarchy and tests every term given all others: for the intercept, whether the prediction is zero at Wind = 0 and Temp = 0 (rarely of interest), and for main effects in models with interactions, a hypothesis that depends on centering and coding.
+:::
 
-```{r chunk_chapter3_67, echo=FALSE}
-knitr::include_graphics(c("images/ANOVA.jpg"))
-```
+In this model without interaction, type III is identical to type II. Differences only arise for terms that are part of an interaction, as shown in @cau-anova-typeiii.
 
-Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it depends on what you want to know" and "there is a lot of discussion about this topic". I would say the following:
+::: {#cau-anova-typeiii .callout-caution}
+#### Type III ANOVA and centering of numeric predictors
 
--   If you have an orthogonal, balanced design, it doesn't matter.
+In a model with an interaction `x1 * x2`, the main effect of x1 describes the effect of x1 at x2 = 0 (see @sec-anova-mechanism, @sec-lm-interaction-centering and @schielzeth2010simple). The type III ANOVA tests exactly this. If x2 is uncentered, x2 = 0 may be far outside the data (e.g. Wind = 0 mph), and the type III test of x1 then asks a question you are probably not interested in. Centering x2 moves this point to the mean of x2. Type II, in contrast, is not affected by centering:
 
--   If not, type I is really only appropriate if you explicitly want to have the order-dependence. There may be some rare cases for this, e.g. if you want to say my regression should first explain everything it can by variable A, and then I only want to see if variable B adds something.
-
--   If you want to test for significance and partition R2 in a fair way, you should either choose type II or type III ANOVA. Discussions about which is preferable are ongoing, see e.g. [@hector2010analysis]. As you will see when reading this, most of these discussion evolve around your exact definition of the "R2 of an interaction" and what exactly you want to test.
-
-::: {.callout-caution}
-Note that, apart from collinearity and balance, also centering of the variables can affect the shared component between main effects and interactions, and thus the variance partitioned in a type III ANOVA. To understand this, consider the following: in a regression x1\*x2, where both numeric predictors x1, x2 are centered, the interaction cannot create an average main effect on either x1 or x2, because either predictor has an equal amount of positive and negative values. If x1,x2 are uncentered, however, it is possible to make the regression predict increasing values with increasing x1 on average by setting an intercept value alone.
-
-For that reason, working with uncentered predictors will lead to an increased shared variance between x1, x2 and the interaction x1:x2, and thus to lower SumSq values for the main effects in the type III ANOVA. You can see this by running the following code:
-
-```{r, results='hide'}
+```{r}
 fit = lm(Ozone ~ scale(Temp) * scale(Wind), data = airquality)
 fit2 = lm(Ozone ~ Temp * Wind, data = airquality)
 
 car::Anova(fit, type = "II")
 car::Anova(fit2, type = "II")
 
-
 car::Anova(fit, type = "III")
 car::Anova(fit2, type = "III")
 ```
 
-For categorical variables, the same thing can happen - the choice of contrasts (see section on contrasts) will influence the amount of shared variation between main effects and the interactions. When using orthogonal contrasts, this shared component is minimized, because the interaction cannot explain any of the variance already attributed to the main effects. Let's do a small example, where we compare a regression with treatment contrasts (which are not orthogonal) to Helmert contrasts (which are orthogonal):
+**In short: if you run a type III ANOVA on a model with interactions, center all numeric predictors that are part of an interaction,** so that main effects are tested at a sensible point (instead of the mean, you can also subtract another value that is meaningful for your question, e.g. a reference temperature; for strongly skewed predictors, the mean may be an atypical value, and the median or a biologically meaningful value is often better). Alternatively, use `emmeans::joint_tests()`, which needs no centering (see @nte-anova-emmeans); for the general recommendations, see @sec-anova-choice.
 
-```{r, results='hide'}
-airquality$fMonth = as.factor(airquality$Month)
-fit1 = lm(Ozone ~ Temp * fMonth , data = airquality)
-fit2 = lm(Ozone ~ Temp * fMonth , data = airquality,
-          contrasts = list(fMonth = "contr.helmert"))
+Polynomial terms are a special case: in `x + I(x^2)`, R does not know that `I(x^2)` builds on `x`, so type II and type III both test the linear term at x = 0, and both change with centering. It is usually better to test the polynomial as a whole, e.g. with `poly(x, 2)` (one test with 2 df), or by comparing models as in @sec-anova-custom. `poly()` builds orthogonal polynomial terms whose coefficients are not directly interpretable, so use it for testing, and `x + I(x^2)` if you want to interpret the coefficients.
 
-car::Anova(fit1, type = "III")
-car::Anova(fit2, type = "III")
-```
-
-Let's compare the results to an ANOVA without an interaction (note that in this case, type II / III) are identical for all sensible contrasts.
-
-```{r, results='hide'}
-fit1 = lm(Ozone ~ Temp + fMonth , data = airquality)
-car::Anova(fit1, type = "III")
-```
-
-If you run this, you will see that the Helmert contrasts (any other orthogonal contrasts would do as well) match much better with the results of the model without interaction, because they de-correlate the variance explained by the main effects and the interactions. Because of this, it is usually advised to use orthogonal contrasts (note: the default treatment contrasts are not orthogonal) when running a type III ANOVA with 2-way interactions between two categorical variables.
+For categorical predictors, the same problem arises through the choice of contrasts. This is explained in @sec-anova-contrast.
 :::
+
+#### Visualization of ANOVA fractions
+
+@fig-anova-venn gives an overview of the situation for 2 predictors A and B and their interaction. The upper left figure corresponds to the case where we have no collinearity between either of those variables. The figure on the top right (and similarly types I - III) are the three possible types of ANOVA for variables with collinearity. The "overlap" between the circles depicts the shared part, i.e. the variability that can be expressed by either variable (due to collinearity). Note that the shares in Type II, III do not add up to 1, as there is a kind of "dark variation" that we cannot securely add to either variable. Take the figure as a heuristic: it describes types I and II well, but type III sums of squares are not a partition of variance at all (the "overlaps" can even be negative). Type III is better understood as testing a particular hypothesis, as explained in @sec-anova-mechanism.
+
+```{r, echo=FALSE}
+#| label: fig-anova-venn
+#| fig-cap: "Heuristic view of how type I, II and III ANOVA assign shared variation between predictors A, B and their interaction (A*B in the figure, A:B in R notation). The type III panel holds only approximately, for sum-to-zero coding and centered predictors."
+knitr::include_graphics(c("images/ANOVA.jpg"))
+```
+
+#### General recommendations {#sec-anova-choice}
+
+Which type of ANOVA is most appropriate? Unfortunately, the answer is both "it depends on what you want to know" and "there is a lot of discussion about this topic". I would say the following:
+
+- If you have an orthogonal, balanced design, type I and II are identical. Type III is identical as well but ONLY if categorical predictors use sum-to-zero contrasts (see @tip-lm-contrasts) and numeric predictors that are part of interactions or polynomial terms are centered (see @sec-anova-mechanism).
+
+- If not, choose type II or type III ANOVA. Type I is really only appropriate in this case if you explicitly want to have the order-dependence (e.g. if you assume that one of the predictors always takes precedence for biological reasons).
+
+- To decide between II and III, note that type II can be read as a (partial) partition of the explained variance, at least in models without interactions, whereas type III sums of squares are better understood as tests of specific hypotheses (main effects at the reference level or the mean of the other predictors). The main question is how main effects should be tested when the model also contains an interaction. We look at this in detail for categorical predictors in @sec-anova-contrast. Decide before looking at the results, from your question and design, whether the model contains the interaction and whether you are interested in average or in conditional effects, and report the full model either way. Some general hints:
+
+  - **No interaction in the model:** use type II (`car::Anova(fit)`). Without interactions, type II and III are identical anyway. Test polynomial terms as a whole, e.g. with `poly(x, 2)` (see @cau-anova-typeiii).
+
+  - **Interaction in the model:** a main effect is now an average over an effect that varies, so ask yourself first if such an average is meaningful for your question. Often, it is more informative to describe the interaction directly, i.e. the effect of one predictor at different values of the other (simple effects; for numeric predictors, see @sec-lm-interaction-centering; for factors, see @nte-anova-emmeans). Judge the interaction by its estimated simple effects with confidence intervals, not by its p-value; if they differ strongly, point out that a main effect is only an average over them. If you do want main effects, both types are defensible:
+
+    - **Type II** (the default of `car::Anova()`) tests main effects without the interaction, i.e. respecting the hierarchy of the model [marginality principle, @nelder1977reformulation]. Variance shared between main effects and interaction stays with the main effects, so if the interaction is weak, type II is often the more powerful test. With a substantial interaction, however, the main effect is an average over the other predictor whose weights depend on the cell sizes (but are not simply proportional to them).
+    - **Type III** tests main effects averaged with equal weights over the other predictor, a hypothesis that is independent of the design and remains meaningful if there is an interaction; if the interaction is in fact weak, it has somewhat less power than type II. It requires centered numeric predictors (@cau-anova-typeiii) and, for factors, sum-to-zero contrasts (@sec-anova-contrast).
+    - Which of the two is preferable is debated (e.g. @shaw1993anova favour type III, @langsrud2003anova and @fox2019companion type II; see also @hector2010analysis); report which one you used. The test of the interaction itself is identical in both. Don't remove an interaction only because it is not significant to simplify the ANOVA; this is a model selection step (see the chapter on model selection, in particular @sec-select-problems).
+
+- Note that for reasonably balanced and orthogonal data, as they occur in *controlled experiments*, type II and type III with sum-to-zero contrasts usually give nearly identical results. However, with stronger imbalance or collinearity together with an interaction, differences tend to get larger, even with correct coding and centering (type II then often, but not always, gives the larger F values), and partitioning can get fragile due to the large shared components. Such differences are not a sign of an error, but reflect that the two types test different hypotheses [see the example in @hector2010analysis]. Note that collinearity is not restricted to numeric predictors: a factor can also be correlated with a numeric predictor (e.g. if some islands lie at higher elevations than others), with the same consequences for the order dependence of type I and the differences between type II and III. Check collinearity, e.g. with the correlation between predictors or, with more predictors, with variance inflation factors of the model without interactions (see @sec-lm-collinearity; with interaction terms, `vif()` warns and the values are not meaningful), and center the predictors. Type II is robust to centering and coding, but a main effect is only interpretable as such if the interaction is weak; type III can differ considerably, in particular when predictors are skewed, correlated and interact. Don't read a loss of significance as the loss of an effect, or shared fractions as causal importance, and put more emphasis on effect estimates with confidence intervals, on testing blocks of predictors by model comparison (@sec-anova-custom), or on hierarchical partitioning [@lai2022rdacca; @lai2022glmmhp].
+
+- Note also that, for many cases, there are good alternatives to ANOVA. ANOVA derives its popularity from its long history for balanced experimental designs, and its presence in every textbook. For unbalanced collinear observation data, however, standardized effect sizes, average marginal effects or marginal means (see @nte-anova-emmeans) may be better choices.
+
+**Reporting:** in the methods, state which ANOVA type you used, how it was computed and how predictors were centered (and, for factors, coded). In the results, report effect sizes, not only p-values. If type II and III disagree (e.g. in strongly unbalanced designs with an interaction), report both and explain why.
+
+**Beyond the linear model:** the same logic (type I vs. II vs. III, centering) applies to GLMs and mixed models; specific points are discussed in the chapters on random effects (@sec-re-anova, @cau-re-typeiii) and GLMs (@cau-glm-before).
 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see next section).
+Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see @cau-anova-typeiii).
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -193,7 +245,7 @@ Try out the difference between type I, II, III ANOVA for the airquality data set
 
 Let's use the model with Wind, Temp, Solar.R, and their interactions. Wind and Temp, and Solar.R and Temp are collinear.
 
-```{r chunk_chapter3_68, echo=FALSE}
+```{r chunk_chapter3_68}
 fit = lm(Ozone ~ (scale(Wind) + scale(Temp) + scale(Solar.R))^2 , data = airquality)
 summary(fit)
 
@@ -201,46 +253,341 @@ summary(fit)
 
 **Difference type I and II ANOVA:**
 
-```{r chunk_chapter3_69, echo=FALSE}
-summary(aov(fit))
+```{r chunk_chapter3_69}
+anova(fit)
 print(car::Anova(fit, type = "II"))
 ```
 
-Only the Temp:Solar.R interaction is not affected!
+Only the Temp:Solar.R interaction is not affected, because it is the last term in the formula and is thus adjusted for all other terms in both cases.
 
 **Difference type II and III ANOVA:**
 
-```{r chunk_chapter3_70, echo=FALSE}
+```{r chunk_chapter3_70}
 print(car::Anova(fit, type = "III"))
 ```
 
-Identical when variables are scaled.
+The interactions are identical, and because the variables are centered, the main effects of Wind and Temp are similar. They are not identical though, and for Solar.R the difference is considerable: centering removes the dependence on an arbitrary zero point, but it does not remove all correlation between a main effect and the interactions that contain it (here, Solar.R is skewed, and even after centering it still correlates with its interaction terms: r = 0.29 with Wind:Solar.R and -0.48 with Temp:Solar.R).
 :::
 
-### Correcting partitions for complexity
+### Categorical predictors: contrasts influence ANOVA results {#sec-anova-contrast}
 
-A last problem is that model components with more complexity (df) will always tend to explain more variance. We can see this when a model with a separate mean per day is fit:
+For categorical predictors, a complication occurs that is related, but not identical, to the issues discussed in @sec-anova-collinearity: in case of collinearity, type I, II and III ANOVA can give very different answers (as before), but type III additionally depends on how the factors' contrasts are coded (see @sec-lm-contrast). As this regularly causes confusion, let's look at a typical example.
+
+#### The problem {#sec-anova-problem}
+
+Imagine a field experiment with three fertilizer treatments (control, N, NP), crossed with grazing (plots fenced or open to grazers). The design was planned balanced, but some plots were lost, so the number of plots per treatment combination now differs:
+
+```{r}
+set.seed(1)
+plots = expand.grid(fertilizer = c("control", "N", "NP"),
+                    grazing = c("fenced", "open"))
+plots$n = c(12, 5, 9, 4, 15, 7)     # remaining plots per combination
+plots$mu = c(0, 1, 2, 0.5, 1.5, 4)  # true treatment effects
+plots = plots[rep(1:6, plots$n), ]
+plots$biomass = rnorm(nrow(plots), mean = 5 + plots$mu)
+
+table(plots$fertilizer, plots$grazing)
+```
+
+Before fitting, it is always worth checking the order of the factor levels, because the first level is the reference level for R's default treatment contrasts. Factors created from character vectors (e.g. by `factor()`, or when reading data) are ordered alphabetically, and whether upper or lower case comes first can depend on your computer settings. Here, `expand.grid()` keeps the order we gave, so control is the first level and thus the reference, as we want:
+
+```{r}
+levels(plots$fertilizer)
+# plots$fertilizer = relevel(plots$fertilizer, ref = "control") # if needed
+```
+
+`relevel()` only changes the reference level. To set the order of all levels, e.g. for a treatment none / low / high (which R would sort as high, low, none), use `factor(x, levels = c("none", "low", "high"))`.
+
+Because the design is unbalanced, fertilizer and grazing are no longer independent (orthogonal): e.g. most N plots are open. As a consequence, the type I ANOVA depends on the order of the predictors. Grazing gets F = 18.9 when it is added first, but F = 14.2 when it is added after fertilizer:
+
+```{r}
+fit = lm(biomass ~ grazing * fertilizer, data = plots)
+anova(fit)
+anova(lm(biomass ~ fertilizer * grazing, data = plots))
+```
+
+This is the order problem we discussed in @sec-anova-collinearity.
+
+More surprising, however, is that in this case results of type III ANOVA additionally depend on the choice of contrasts: if we fit the same model once with R's default treatment contrasts, and once with sum-to-zero contrasts:
+
+```{r}
+car::Anova(fit, type = "III")
+
+fitSum = lm(biomass ~ grazing * fertilizer, data = plots,
+            contrasts = list(grazing = contr.sum, fertilizer = contr.sum))
+car::Anova(fitSum, type = "III")
+```
+
+With treatment contrasts, grazing has no significant effect (p = 0.69), with sum-to-zero contrasts, it is highly significant (p = 0.0015).
+
+#### What is going on? {#sec-anova-mechanism}
+
+The key to understanding this is the following:
+
+**The coding of a factor never changes the fitted model. It only changes which hypotheses the individual coefficients and the type III tests examine.**
+
+We can confirm the first part of the statement by looking at the predictions of the two models, which are indeed identical:
+
+```{r}
+all.equal(fitted(fit), fitted(fitSum))
+```
+
+::: column-margin
+This holds as long as the model contains all lower-order terms of each interaction. If you, e.g., remove a main effect but keep its interaction, or use uncorrelated random slopes in a mixed model (see @sec-re), the coding also changes the model itself.
+:::
+
+For the second part, we have to consider what hypothesis / comparisons are expressed by the contrasts. In a model with interactions, every lower-order term (a main effect, or a two-way interaction in a model with a three-way interaction) is estimated and tested at the **zero point** of the variables it interacts with. This zero point is
+
+- for a treatment-coded factor (R default): the reference level
+- for a sum-to-zero coded factor (`contr.sum`, `contr.helmert`, `contr.poly`; see @tip-lm-contrasts): the unweighted average over its levels
+- for a numeric predictor: the value 0, or the centering value if the predictor was centered
+
+Thus, with treatment contrasts, the "main effect" of grazing in the type III ANOVA is the effect of grazing in the control plots (the reference level of fertilizer), where grazing has hardly any effect. With sum-to-zero contrasts, it is the effect of grazing averaged equally over the three fertilizer treatments. Both tests are correct, they just answer different questions. Note that this is the same rule that you already know from the regression table: in `summary(fit)`, the grazing estimate is the effect of grazing at the reference level of fertilizer. The same applies to the (Intercept) row of the type III table: with treatment contrasts, it tests if the mean of fenced control plots is zero, with sum-to-zero contrasts if the unweighted average over all treatment combinations is zero.
+
+The following table summarizes which results are affected by the coding:
+
++-----------------------------------------------------------------------+-----------------------------------+
+| Result                                                                | Depends on coding?                |
++=======================================================================+===================================+
+| Predictions, residuals, R², AIC, likelihood ratio tests               | no                                |
++-----------------------------------------------------------------------+-----------------------------------+
+| Type I and type II ANOVA                                              | no                                |
++-----------------------------------------------------------------------+-----------------------------------+
+| Type III test of the highest-order interaction                        | no                                |
++-----------------------------------------------------------------------+-----------------------------------+
+| Type III test of terms that are part of an interaction                | **yes**                           |
++-----------------------------------------------------------------------+-----------------------------------+
+| Individual coefficients and p-values in `summary()`                   | **yes**                           |
++-----------------------------------------------------------------------+-----------------------------------+
+| Results from `emmeans()` and `joint_tests()` (see @nte-anova-emmeans) | no                                |
++-----------------------------------------------------------------------+-----------------------------------+
+
+Thus, if you want type III tests of main effects that are averaged over the levels of the other factors, use sum-to-zero contrasts for all factors, and center all numeric predictors that are part of an interaction. Centering means subtracting the mean (or another meaningful value), e.g. `dat$cx = dat$x - mean(dat$x)` (see @sec-lm-interaction-centering). Set the contrasts locally in the model call via `contrasts = list(...)`, as we did for `fitSum` above.
+
+You can also change contrasts globally via `options(contrasts = c("contr.sum", "contr.poly"))`, but this silently changes the meaning of all coefficients in every model you fit afterwards (reset with `options(contrasts = c("contr.treatment", "contr.poly"))`). Note also that the coefficients of a sum-coded model (`grazing1`, `fertilizer1`, ...) in `summary()` are deviations from the average over levels and are hard to read. Don't report them, report estimated means instead (see @nte-anova-emmeans).
+
+What about type II? Type II (the default of `car::Anova()`) does not depend on the coding (grazing: F = 14.2, p = 0.0005), but in a model with an interaction, it tests grazing while ignoring the interaction. Roughly speaking, it averages the grazing effect over the fertilizer treatments with weights that depend on the number of plots per combination (but are not simply proportional to it). If the interaction is weak, this is the more powerful test; if it is strong, the result is harder to interpret. Whether type II or type III is preferable in such cases is debated; @sec-anova-choice and @sec-anova-recommend give pragmatic recommendations. Here is the type II ANOVA for our example:
+
+```{r}
+car::Anova(fit)
+```
+
+If the interaction matters, the effect of one factor at each level of the other (simple effects) is usually more informative than any main effect. Such simple effects, as well as comparisons between individual treatments, are best calculated with the `emmeans` package:
+
+::: {#nte-anova-emmeans .callout-note collapse="true"}
+#### The emmeans package
+
+`emmeans` is not an ANOVA, but a general tool to interpret fitted models (lm, glm and mixed models), based on three ideas:
+
+1.  **Estimated marginal means:** predicted means for each factor level or combination of levels, averaged over the other factors, with numeric predictors at their mean (unless specified otherwise). As model predictions, they don't depend on how factors are coded.
+2.  **Equal weights:** by default, all levels that are averaged over get the same weight, which corresponds to the main-effect hypotheses of a type III ANOVA with sum-to-zero contrasts (for alternatives, see below).
+3.  **Adjusted comparisons:** differences between these means are tested as contrasts, adjusted for multiple testing, e.g. Tukey for all pairs, or Dunnett for comparisons against a control.
+
+**Means and comparisons.** Mean biomass per fertilizer level within each grazing treatment, compared all against each other (Tukey) or each against the control (Dunnett):
+
+```{r, message=FALSE}
+library(emmeans)
+emm = emmeans(fit, ~ fertilizer | grazing)
+emm
+pairs(emm)
+contrast(emm, "trt.vs.ctrl", ref = "control")
+plot(emm)
+```
+
+**Simple effects are not an interaction.** At first sight, N seems to increase biomass only on open plots (+1.51, p = 0.004), but not on fenced plots (+0.38, p = 0.60, only 5 plots). But "significant in one group, not significant in the other" is not evidence for an interaction: the difference between significant and not significant is not itself significant [@gelman2006difference]; whether the N effect differs between grazing treatments has to be tested directly:
+
+```{r}
+contrast(emmeans(fit, ~ fertilizer * grazing),
+         interaction = c("trt.vs.ctrl", "pairwise"), ref = "control")
+```
+
+Each row is a difference of differences: the effect of a fertilizer compared to the control (`trt.vs.ctrl`) within each grazing treatment, compared between the treatments (`pairwise`, i.e. fenced minus open; p-values not adjusted for multiple testing). The N effect is 1.14 larger on open plots, but this difference is not significant (p = 0.084): we cannot claim an interaction for N, although this does not prove that the N effects are equal. Indeed, the data were simulated with the same true N effect (+1) in both treatments. The interaction is driven by NP (difference 2.03, p = 0.0025; simulated true effects +2 on fenced and +3.5 on open plots), which is arguably more informative than any main effect.
+
+**F-tests.** `joint_tests()` combines these comparisons into F-tests per model term; with `by`, separately for fenced and open plots:
+
+```{r}
+joint_tests(fit, by = "grazing")
+```
+
+Without `by`, `joint_tests()` gives exactly the type III ANOVA with sum-to-zero contrasts and numeric predictors at their mean, regardless of how the model was coded, i.e. without recoding or centering (see @sec-anova-mechanism and @cau-anova-typeiii; for type II, use `car::Anova(fit)` instead):
+
+```{r}
+joint_tests(fit)
+```
+
+**Main effects in models with interaction.** Means of one factor only, e.g. `emmeans(fit, ~ grazing)`, are averaged over the other factor. The note "Results may be misleading due to involvement in interactions" is not an error, but a reminder that the grazing effect differs between fertilizer treatments.
+
+**Unequal weights.** Equal weights suit designed experiments where group sizes differ by accident, as in our experiment with lost plots. In observational data, group sizes often reflect the population (e.g. a common vs. a rare habitat type), and equal weights then describe a balanced population that may not exist. To average proportional to group sizes, use `weights = "proportional"` (this only matters if you average over another factor):
+
+```{r, eval=FALSE}
+emm = emmeans(fit, ~ grazing, weights = "proportional")
+pairs(emm)
+```
+
+**Factor × numeric interactions.** `emtrends()` gives the slope of the numeric predictor for each factor level, and the `at` argument sets the value of the numeric predictor at which the levels are compared:
+
+```{r}
+airquality$fMonth = factor(airquality$Month)
+fitAQ = lm(Ozone ~ Temp * fMonth, data = airquality)
+emtrends(fitAQ, ~ fMonth, var = "Temp")         # Temp slope per month
+emmeans(fitAQ, ~ fMonth, at = list(Temp = 80))  # months compared at 80 °F
+```
+
+Choose this value deliberately, and within the observed range of each group (`tapply(airquality$Temp, airquality$fMonth, range)`); otherwise you extrapolate.
+
+**Interactions between numeric predictors.** How to describe an interaction between two numeric predictors with `emtrends()` is shown in the section on interactions and centering (@sec-lm-interaction-centering).
+
+**Empty cells.** If a treatment combination has no data at all, `car::Anova(type = "III")` stops with "there are aliased coefficients in the model", while type II and `joint_tests()` run without an error, but test hypotheses that are hard to interpret (look for reduced df, or for "(confounded)" in the output of `joint_tests()`). One option is to fit one mean per existing combination and to test the comparisons you are interested in with custom contrasts, here after removing the fenced N plots:
+
+```{r}
+plots2 = plots[!(plots$fertilizer == "N" & plots$grazing == "fenced"), ]
+plots2$combination = interaction(plots2$fertilizer, plots2$grazing, drop = TRUE)
+levels(plots2$combination)
+
+fitComb = lm(biomass ~ combination, data = plots2)
+emm = emmeans(fitComb, ~ combination)
+contrast(emm, list(NP_vs_control_fenced = c(-1, 1, 0, 0, 0),
+                   NP_vs_control_open   = c(0, 0, -1, 0, 1)))
+```
+
+The weights in the list refer to the levels in the order printed by `levels()`. Simply dropping the interaction instead assumes that the effects of the two factors add up.
+
+**Reporting emmeans results.** Report the estimated means or differences with their CIs (ideally as a plot, e.g. `plot(emm)`), which comparisons you made and how p-values were adjusted (e.g. "Dunnett-adjusted contrasts against the control, calculated with the emmeans package"), and, if you averaged over other factors, whether with equal or proportional weights.
+:::
+
+#### Practical recommendations for categorical predictors {#sec-anova-recommend}
+
+The general recommendations in @sec-anova-choice also apply to categorical predictors. In addition, note the following:
+
+1.  **Reference level and contrasts:** check the order of the factor levels before fitting, and set the reference level deliberately (see @sec-anova-problem). With R's default treatment contrasts, it determines what the coefficients in `summary()` refer to, and also what type III main-effect tests refer to. For a type III ANOVA, therefore set sum-to-zero contrasts locally, e.g. `contrasts = list(fertilizer = contr.sum, grazing = contr.sum)`, and never interpret a type III ANOVA with treatment contrasts as main effects.
+2.  **Interactions between factors:** judge them by the estimated differences between simple effects and their confidence intervals. The interaction test alone tells you neither where effects differ nor, if it is not significant, that they are equal. Separate tests within each group are no substitute: "significant in one group, not in the other" is not an interaction.
+3.  **Unequal group sizes:** with sum-to-zero contrasts, type III weights all treatment combinations equally, which suits designed experiments where cell sizes differ by accident. The weights of type II depend on the cell sizes, but are not proportional to them, so type II does not give population-weighted averages either. If you want averages weighted by group sizes, e.g. in observational data where group sizes reflect the population, use `emmeans` with `weights = "proportional"` (@nte-anova-emmeans).
+4.  **Small and empty cells:** report the number of observations per treatment combination (`table()`), as combinations with very few observations (as a rough rule of thumb, fewer than about 5) give imprecise estimates, which show up as wide confidence intervals; this also makes the difference between type II and III less predictable. If a combination is empty, type III cannot be computed, and type II tests hypotheses that are hard to interpret; dropping the interaction instead assumes that the effects of the two factors add up.
+
+**Alternative: estimated marginal means.** Many of these questions (simple effects, comparisons between individual treatments, the choice of weights, empty cells) can be answered more directly with the `emmeans` package, which may be the better choice, as its results do not depend on contrast coding (see @nte-anova-emmeans).
+
+**Reporting.** An example for the methods: "Biomass was analyzed with a linear model including fertilizer, grazing and their interaction. We tested effects with type III F-tests based on sum-to-zero contrasts (`car::Anova`), and compared fertilizer treatments against the control within each grazing treatment with Dunnett-adjusted contrasts (`emmeans`)." If you use type II, write "type II F-tests (`car::Anova`)" instead. For how to report estimated means and comparisons, see the end of @nte-anova-emmeans.
+
+**Mixed models:** the type III ANOVA of the `lmerTest` package is an exception, as it does not depend on the coding (see @cau-re-typeiii).
+
+::: {.callout-caution icon="false"}
+#### Exercise — Does coding matter?
+
+Use the `ToothGrowth` data (tooth length of guinea pigs for two supplements and three doses of vitamin C), with dose as a factor (`ToothGrowth$fdose = factor(ToothGrowth$dose)`).
+
+1.  Fit `len ~ supp * fdose`. Compare the type II ANOVA with the type III ANOVA under the default treatment contrasts and under sum-to-zero contrasts. Which test for supp is the odd one out, and which hypothesis does it test? (Use the zero-point rule.)
+2.  Remove the rows `c(1:6, 31:33, 41:44)` and repeat. Does the type I ANOVA now depend on the order of the predictors? Do type II and type III with sum-to-zero contrasts still agree?
+3.  Make VC (ascorbic acid) the reference level of supp. Use `emmeans` to estimate the difference between OJ and VC at each dose, and write one sentence that you could put in the results section of a paper.
+4.  (Optional) Now treat dose as numeric and compare `len ~ supp * dose` with `len ~ supp * I(dose - 1)`. At which dose is the supp main effect estimated and tested in each case?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+**1. Balanced data**
+
+```{r}
+tg = ToothGrowth
+tg$fdose = factor(tg$dose)
+table(tg$supp, tg$fdose)
+
+fit = lm(len ~ supp * fdose, data = tg)
+fitSum = lm(len ~ supp * fdose, data = tg,
+            contrasts = list(supp = contr.sum, fdose = contr.sum))
+
+car::Anova(fit, type = "II")
+car::Anova(fit, type = "III")
+car::Anova(fitSum, type = "III")
+```
+
+The design is balanced, and type II and type III with sum-to-zero contrasts are identical. Type III with treatment contrasts gives a different result for supp (and fdose): it tests the supp effect at the reference dose of 0.5 mg, not averaged over all doses.
+
+**2. Unbalanced data**
+
+```{r}
+tg2 = tg[-c(1:6, 31:33, 41:44), ]
+table(tg2$supp, tg2$fdose)
+
+anova(lm(len ~ supp * fdose, data = tg2))
+anova(lm(len ~ fdose * supp, data = tg2))
+
+fit2 = lm(len ~ supp * fdose, data = tg2)
+fit2Sum = lm(len ~ supp * fdose, data = tg2,
+             contrasts = list(supp = contr.sum, fdose = contr.sum))
+car::Anova(fit2, type = "II")
+car::Anova(fit2Sum, type = "III")
+car::Anova(fit2, type = "III")
+```
+
+Now the type I ANOVA depends on the order (supp is n.s. when added first, but significant when added after dose). Type II and type III with sum-to-zero contrasts no longer agree, because they weight the doses differently (type III equally, type II depending on the number of animals per dose, but not proportional to it), but both indicate an effect of supp. Type III with treatment contrasts (supp at dose 0.5) is not significant.
+
+**3. Simple effects**
+
+```{r}
+tg2$supp = relevel(tg2$supp, ref = "VC")
+fit2 = lm(len ~ supp * fdose, data = tg2)
+emm = emmeans(fit2, ~ supp | fdose)
+pairs(emm, reverse = TRUE)
+```
+
+Possible sentence: "Orange juice increased tooth length compared to ascorbic acid at a dose of 1 mg/day (difference 5.6 mm, p = 0.005), while the differences at 0.5 mg/day (2.5 mm, p = 0.27) and 2 mg/day (-0.1 mm, p = 0.96) were not significant."
+
+**4. Numeric dose**
+
+```{r}
+fitNum = lm(len ~ supp * dose, data = tg2)
+fitNum1 = lm(len ~ supp * I(dose - 1), data = tg2)
+coef(fitNum)["suppOJ"]
+coef(fitNum1)["suppOJ"]
+car::Anova(fitNum, type = "III")["supp", ]
+car::Anova(fitNum1, type = "III")["supp", ]
+```
+
+In the first model, the supp effect is estimated and tested at dose = 0, a dose that was never applied. In the second model, it is estimated and tested at a dose of 1 mg/day. Note that "centering" doesn't necessarily mean subtracting the mean: the value you subtract defines the hypothesis, so choose a value that is meaningful for your question. Note also that the mean dose changed when we removed rows, so centering on the mean would have changed the type III test as well.
+:::
+
+### Correcting partitions for complexity {#sec-anova-complexity}
+
+A last problem is that while the calculation of the p-value in the LRT (see @sec-anova-test) corrects for the fact that model components with more complexity (df) will always tend to explain more variance, the naive variance components / R2 that we calculate in the ANOVA are uncorrected for this problem.
+
+We can see this when a model with a separate mean per day is fitted:
 
 ```{r}
 m = lm(Ozone ~ as.factor(Day) , data = airquality)
-summary(aov(m))
+anova(m)
 ```
 
-The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Because of this problem, the `summary.lm()` function reports a raw and an adjusted R^2^ for each model. The adjusted R^2^ tries to correct the R^2^ for the complexity of the model.
+The ANOVA tells us that this variable Day explains around 1/3 of the variation in the data, although it is not even significant. Thus, the "raw" SumSq / R2 calculations in an ANOVA are generally too high.
+
+Because of this problem, the `summary.lm()` function reports raw and adjusted R^2^ for each model. The adjusted R^2^ tries to correct the R^2^ for the complexity of the model.
 
 ```{r}
 summary(m)
 ```
 
-Here, we see that the adjusted R^2^ is considerably lower than the raw R^2^, even though not zero.
+Here, we see that the adjusted R^2^ is considerably lower than the raw R^2^, even though not zero. For a simple LM and a type I ANOVA, a first-order solution would thus be to re-calculate the R^2^ components with adjusted values: compute the adjusted R^2^ for the sequence of nested models, and use the differences between them as components. For example, adding Day to a model with Wind increases the raw R^2^ by 0.23, but the adjusted R^2^ only by 0.08, while the adjustment hardly changes the R^2^ of Wind, which uses only 1 df (0.36 raw and adjusted):
 
-In general, reliably adjusting R^2^ components for complexity in an ANOVA is very complicated. I would recommend that
+```{r}
+R2 = function(f) summary(lm(f, data = airquality))$r.squared
+adjR2 = function(f) summary(lm(f, data = airquality))$adj.r.squared
+R2(Ozone ~ Wind)                                         # raw R2 of Wind
+R2(Ozone ~ Wind + as.factor(Day)) - R2(Ozone ~ Wind)     # raw gain from Day
+adjR2(Ozone ~ Wind)                                      # adjusted R2 of Wind
+adjR2(Ozone ~ Wind + as.factor(Day)) - adjR2(Ozone ~ Wind) # adjusted gain from Day
+```
 
--   If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance
+For more complex models in general (mixed models, hierarchical models), reliably adjusting R^2^ components for complexity in an ANOVA is very complicated. I would recommend that
 
--   Alternatively, if the true variance is really crucial for your study, you can adjust R^2^ by a null expectation, similar to the parametric bootstrap for the LRT. However, because you subtract what is expected under H~0~, this will be a conservative estimate.
+- If you report raw components (which is the default in most papers), consider that this is a description of your model, not an inference about the true variance created by the respective factor, and include in your interpretation that variables or model components with more df will always tend to explain more variance
 
-## Relationship between lm and other hypotheses tests
+- A possibility is to calculate variance explained via a cross-validation on a hold-out data. If a sensible cross-validation can be set up (which is not trivial if there are cluster / correlation structures in your data), this is a relatively stable metric of variance explained.
+
+- Alternatively, you could adjust R^2^ by a null expectation, similar to the parametric bootstrap for the LRT (@sec-anova-test). However, because you subtract what is expected under H~0~, this will be a conservative estimate.
+
+## Relationship between lm and other hypotheses tests {#sec-anova-tests}
+
+::: {#relationship-between-lm-and-other-hypotheses-tests}
+:::
 
 ANOVA is just one example of the close relationship between the lm and other null hypothesis significance tests. ANOVA can either be seen as a special test (traditional view), or as a special evaluation of a fitted lm (modern view). I would recommend taking the modern view, as it easily generalizes to GLMs and other more advanced regression models such as GLMMs.
 
@@ -249,7 +596,7 @@ It is interesting to consider more generally which hypothesis tests can be obtai
 +----------------------------------+---------------------------------------+---------------------------------------------------+
 | Hypothesis                       | R function                            | Equivalent linear model                           |
 +==================================+=======================================+===================================================+
-| Two groups differ in their means | `t.test(y_1, y_2)`                    | `lm(c(y_1, y_2)~c(g_1, g_2))`                     |
+| Two groups differ in their means | `t.test(y_1, y_2, var.equal = TRUE)`  | `lm(c(y_1, y_2)~c(g_1, g_2))`                     |
 |                                  |                                       |                                                   |
 | **unpaired t.test**              |                                       |                                                   |
 +----------------------------------+---------------------------------------+---------------------------------------------------+
@@ -257,7 +604,7 @@ It is interesting to consider more generally which hypothesis tests can be obtai
 |                                  |                                       |                                                   |
 | **paired t.test**                |                                       |                                                   |
 +----------------------------------+---------------------------------------+---------------------------------------------------+
-| y depends on continuous x        | `cor.test(x, y)`                      | `lm(y~x)` note: only near-equivalent              |
+| y depends on continuous x        | `cor.test(x, y)`                      | `lm(y~x)`, identical p-value for the slope        |
 |                                  |                                       |                                                   |
 | **Pearson correlation**          |                                       |                                                   |
 +----------------------------------+---------------------------------------+---------------------------------------------------+
@@ -274,19 +621,22 @@ It is interesting to consider more generally which hypothesis tests can be obtai
 
 Based on this, one could think it doesn't matter then if we use a regression model or a hypothesis test. However, the advantage of the regression model is that
 
--   It provides a richer output
+- It provides a richer output
 
--   It provides the same output for all cases, with clear ideas about how to check residuals etc.
+- It provides the same output for all cases, with clear ideas about how to check residuals etc.
 
--   It allows us to adjust for the effects of covariates
+- It allows us to adjust for the effects of covariates
 
-## Case studies
+## Case studies {#sec-anova-cases}
 
-### Plant Height
+::: {#case-studies}
+:::
 
-Let's look at our plant height case study from the previous chapter. Which type of ANOVA should you run to analyze the model? Compare results to "less appropriate" alternatives.
+### Plant height {#sec-anova-plantheight}
 
-```{r}
+Let's look at our plant height case study from the chapter on linear regression (see the plant height exercise, @cau-lm-plantheight-revisited). Which type of ANOVA should you run to analyze the model? Compare results to "less appropriate" alternatives.
+
+```{r, message=FALSE}
 library(EcoData)
 fit = lm(loght ~ temp * lat, data = plantHeight)
 summary(fit)
@@ -295,7 +645,13 @@ summary(fit)
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-We have correlations between variables and an interaction, so per default, we should probably run a type II or III Anova. Note that for type III, you should center predictors to reduce collinearities (and thus shared fractions between main effects and interactions):
+This is the case of collinear observational data from @sec-anova-choice: temperature and latitude are strongly correlated,
+
+```{r}
+cor(plantHeight$temp, plantHeight$lat)
+```
+
+and the model contains their interaction. We therefore center the predictors, so that type III tests each main effect at the mean of the other predictor (type II is not affected by centering):
 
 ```{r}
 plantHeight$stemp = scale(plantHeight$temp, scale = FALSE) # only center variable
@@ -311,16 +667,16 @@ The type II ANOVA discards shared fractions between main effects. Note that beca
 print(car::Anova(fit, type = "II"))
 ```
 
-The type III ANOVA also discards the shared fractions between the interactions and main effects. For this reason, the main effects are even lower than in type II.
+The type III ANOVA, unlike type II, also adjusts the main effects for the interaction. Here, this changes the sums of squares of the main effects only slightly (temp somewhat lower, lat essentially unchanged), but temp now just misses the 0.05 threshold. The difference arises only because the model contains the (here clearly non-significant, p = 0.80) interaction: without it, type II and III are identical (temp p = 0.046). With r = -0.92 between temp and lat, even the centered interaction term is correlated with the main effects (r = 0.53 with temp and -0.47 with lat), so adjusting for it, as type III does, changes their tests (@sec-anova-choice). Both types are defensible, and the difference mainly shows that the data cannot clearly separate the effects of temperature and latitude, so don't overinterpret the 0.05 threshold.
 
 ```{r}
 print(car::Anova(fit, type = "III"))
 ```
 
-Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor that latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, you can also run a type I ANOVA.
+Generally, because of its order dependence under collinearity, you should be hesitant to run a type I ANOVA. However, there can be reasons to do it. For example, in this case, you may argue that temperature is a more plausible or mechanistic predictor than latitude. For that reason, you could say that you want to explain everything by temperature first, and then see if latitude can explain something on top of temperature. If that is your goal, you can also run a type I ANOVA.
 
 ```{r}
-summary(aov(fit))
+anova(fit)
 ```
 
 As a last, add-on, let's see what happens when we use the non centered variables:
@@ -331,5 +687,5 @@ print(car::Anova(fit2, type = "II"))
 print(car::Anova(fit2, type = "III"))
 ```
 
-Note that in this case, main effects drop stronger between II and III, because there are stronger correlations between the main and interaction effects. This is an example of a more general point: if you run type II / III ANOVAs, you should do everything to reduce correlations between the variables. For categorical variables, one way to do so is to use orthogonal contrasts.
+Type II is unchanged, but type III changes: the main effect of temp is now tested at lat = 0 (the equator) and vice versa, which is a different and, for this dataset, rather meaningless hypothesis. This is an example of a more general point: if you run type III ANOVAs, center numeric predictors and use sum-to-zero contrasts for factors (or use `emmeans::joint_tests()`, see @nte-anova-emmeans).
 :::

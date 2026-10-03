@@ -1,13 +1,16 @@
-# Cheat sheet
+# Cheat sheet {#sec-cheat}
 
-## Formula syntax
+## Formula syntax {#sec-cheat-formula}
+
+::: {#formula-syntax}
+:::
 
 | Formula | Interpretation |
 |----|----|
 | `y ~ x` | Intercept + slope |
 | `y ~ 1` | intercept only |
-| `y ~ x - 1` or `x + 0` | only slope, for categorical |
-| `log(x) ~ sqrt(x)` | predictor and response variable can be transformed |
+| `y ~ x - 1` or `x + 0` | no intercept (numeric x: line through origin; factor: one mean per level) |
+| `log(y) ~ sqrt(x)` | predictor and response variable can be transformed |
 | `y ~ x1 + x2` | multiple predictors can be added |
 | `y ~ x1 * x2` | interaction and main effects |
 | `y ~ x1:x2` | only interaction |
@@ -20,7 +23,10 @@
 
 : Formula syntax
 
-## Random effect syntax
+## Random effect syntax {#sec-cheat-re}
+
+::: {#random-effect-syntax}
+:::
 
 The following formulas are used by many R packages (e.g. glmmTMB and lme4). For a detailed overview, see [Ben Bolkers glmmFAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#model-specification)
 
@@ -30,12 +36,13 @@ The following formulas are used by many R packages (e.g. glmmTMB and lme4). For 
 | `(x|group)` | Random intercept within group and random slope for x within group; correlation between random intercept and random slope |
 | `(0+x|group)` or `(x-1|group)` | Random slope for x within group without random intercept for group |
 | `(0+x|group) + (1|group)` or `(x||group)` | Random intercept and slope but uncorrelated |
-| `(1|group:site)` | Random intercept for sites within group (nested random effect) |
+| `(1|group/site)` | Same as `(1|group) + (1|group:site)`: nested random effect (sites within group) |
+| `(1|group:site)` | Only the group-by-site intercepts, without a group-level intercept |
 | `(1|group) + (1|site)` | Random intercept within groups and within sites (crossed random effects) |
 
-### Correlation structures:
+### Correlation structures {#sec-cheat-corr}
 
-#### glmmTMB
+#### glmmTMB {#sec-cheat-corr-glmmtmb}
 
 glmmTMB supports several correlation structures but we will show here only two common representatives. See also the [glmmTMB vignette](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html) about correlation structures.
 
@@ -44,18 +51,18 @@ glmmTMB supports several correlation structures but we will show here only two c
 +==========+==================================================+========================================================================================+
 | Spatial  | `coords = numFactor(cbind(Latitude, Longitude))` | Use `glmmTMB::numFactor()` function to represent your coordinates as a factor.         |
 |          |                                                  |                                                                                        |
-|          | `y~x + exp(0+coords|group)`                      | Conditional autoregressive random intercepts within group based on the coords (sites). |
+|          | `y~x + exp(0+coords|group)`                      | Random intercepts per location, exponentially decaying covariance (geostatistical).    |
 +----------+--------------------------------------------------+----------------------------------------------------------------------------------------+
 | Temporal | `yearFactor = factor(years)`                     | Change your time variable to factor.                                                   |
 |          |                                                  |                                                                                        |
-|          | `y~x + ar1(0+yearFactor|group)`                  | Conditional autoregressive random intercepts within group based on years.              |
+|          | `y~x + ar1(0+yearFactor|group)`                  | Random intercepts per time point with AR(1) correlation within each group.             |
 +----------+--------------------------------------------------+----------------------------------------------------------------------------------------+
 
-#### lme4
+#### lme4 {#sec-cheat-corr-lme4}
 
 lme4 does not support correlation structures
 
-#### nlme::gls
+#### nlme::gls {#sec-cheat-corr-gls}
 
 | Type | Formula | Interpretation |
 |----|----|----|

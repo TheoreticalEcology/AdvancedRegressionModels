@@ -2,11 +2,11 @@
 set.seed(42)
 ```
 
-## Missing data
+# Missing data {#sec-miss}
 
-### Understanding na.action
+## Understanding na.action {#sec-miss-na-action}
 
-One output of the summary() function that we didn't look at in detail so far is the missing observations. Let's take this regression for example:
+One output of the summary() function that we did not look at in detail in the section on interpreting the fitted model (@sec-lm-interpretation) is the missing observations. Let's take this regression for example:
 
 ```{r}
 fit = lm(Ozone ~ Wind + Temp, data = airquality)
@@ -15,7 +15,7 @@ summary(fit)
 
 The summary() alerts us that "37 observations deleted due to missingness". So, R has apparently removed observations from the data, but why?
 
-::: {.callout-note}
+::: callout-note
 Missing values in R are coded with the special type `NA`. You can check whether a single variable entry is NA via `is.na()`. More convenient, however, is to use the summary() function to get an overview about the NAs in your dataset.
 :::
 
@@ -39,15 +39,15 @@ options(na.action = "na.fail")
 
 Setting na.fail means that you will get an error if there are NAs in the data used for your regression. Why would we want this, if the lm conveniently removes all NA lines? Because na.omit is not always a good idea, or at least you want to think about whether it's a good idea in your case. Possible reasons are:
 
-1.  If you run a model selection, na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
-2.  If you run a model with many variables, each of them with a number of NAs, you might lose a lot of observations and thus power. It may be better to perform an imputation (see below).
-3.  If your NAs are not missing at random, you might actually have a bias in your model if you simply omit
+1.  If you run a model selection (see @sec-select), na.omit could result in different models having different number of observations (as the inclusion of a variable with NAs would reduce the number of observations)
+2.  If you run a model with many variables, each of them with a number of NAs, you might lose a lot of observations and thus power. It may be better to perform an imputation (see @sec-miss-imputation).
+3.  If missingness is related to the outcome (even after accounting for the predictors), omitting incomplete rows can bias the estimates
 
-For all these reasons, you should get a good overview about your NAs, and consider what to do with them.
+For all these reasons, you should get a good overview about your NAs (see @sec-miss-summary), and consider what to do with them.
 
-### Summarizing NAs
+## Summarizing NAs {#sec-miss-summary}
 
-As mentioned, a quick way to get a summary about the NAs in your data is to run the `summary()` function, which will return the number of NAs per predictor. You can check this out via running:
+As mentioned in @sec-miss-na-action, a quick way to get a summary about the NAs in your data is to run the `summary()` function, which will return the number of NAs per predictor. You can check this out via running:
 
 ```{r, eval = F}
 summary(airquality)
@@ -60,7 +60,7 @@ image(is.na(t(airquality)), axes = F)
 axis(3, at = seq(0,1, len = 6), labels = colnames(airquality))
 ```
 
-We see that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are separate. To check if you have a complete row, we can use the function `complete.cases()`, which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
+We see (dark = NA) that NAs are in Ozone and Solar.R, and sometimes they're together, sometimes they are separate. To check if you have a complete row, we can use the function `complete.cases()`, which returns a vector with T/F if a row is complete or not. Here, I check how many complete observations we have
 
 ```{r, eval = F}
 sum(complete.cases(airquality))
@@ -76,50 +76,96 @@ Note that in general, you should only do this for the variables that you actuall
 
 ```{r, results='hide'}
 rows = rownames(model.matrix(Ozone ~ Wind + Temp, data = airquality))
-airquality = airquality[rows, ]
+airqualityCC = airquality[rows, ]
 ```
 
-### Missing at random
+## Missing at random {#sec-miss-mar}
 
-After having an overview about the NAs in your data, as a second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:
+After having an overview about the NAs in your data (@sec-miss-summary), as a second step in the analysis (or ideally already during the design of the experiment) is to ask yourself under which process the missingness was created. We distinguish three crucial classes of processes:
 
 1.  MCAR = missing completely at random
 2.  MAR = missing at random
 3.  MNAR = missing not at random
 
-The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly on other observed values in the dataset. A mix is MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other observed variables. See also [@bhaskaran2014difference].
+The easiest cases is arguably MCAR = missing completely at random - in this case, the occurrences of NAs in variable X are completely random, and do not correlate with either X or other variables. This occurs when the causes of NAs are completely unrelated to the variables in the data. The opposite case is MNAR = missing not at random - in this case, the occurrences of NAs in variable X depend on the (true) value of X and possibly on other observed values in the dataset. In between lies MAR = missing at random - in this case, the occurrences of NAs in variable X do not depend on X, but possibly on other observed variables. See also [@bhaskaran2014difference].
 
-### Imputation
+## Imputation {#sec-miss-imputation}
 
-The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation. Multiple imputation refers to the insight that imputing several times often improves the result. There are a number of packages that do imputations, for example `missRanger`
+The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation.
 
-```{r, warning=F, message=F, results='hide'}
-library(missRanger)
-airqualityImp<- missRanger(airquality)
-```
+In the airquality regression above, however, only the response Ozone has missing values; Wind and Temp are complete. Imputing the response is of little use: if only the response is missing (and the missingness is MAR given the predictors), the imputed values are just predictions from the same predictors, so they add no information about the effects. @vonhippel2007regression therefore recommends to remove observations with imputed responses before fitting the model. The response should, however, be used in the imputation model, to impute missing predictors.
 
-Let's fit the model to this imputed data:
+Imputation pays off when predictors are missing. Let's create such a situation, in which we also know the correct result: we take the 111 complete observations of airquality and delete values of Temp, more often on days with high ozone. This is MAR, because the missingness depends on the observed Ozone values:
 
 ```{r}
-fit = lm(Ozone ~ Wind + Temp, data = airqualityImp)
-summary(fit)
+aq = airquality[complete.cases(airquality), c("Ozone", "Solar.R", "Wind", "Temp")]
+set.seed(1)
+missTemp = runif(nrow(aq)) < plogis(-1.5 + 0.04 * (aq$Ozone - mean(aq$Ozone)))
+aqNA = aq
+aqNA$Temp[missTemp] = NA
+sum(is.na(aqNA$Temp))
 ```
 
-The p-values are smaller now, as one would expect, having more data. The obvious problem with this is that there is uncertainty with the imputed values, which is currently not accounted for. One option to do this is running a multiple imputation.
+Let's compare the model on the full data (our reference, i.e. the "truth") with the complete-case analysis, i.e. the default `na.omit`:
 
-Note that for proper multiple imputation the imputations must actually differ from each other - otherwise the pooled standard errors do not reflect imputation uncertainty. With `missRanger`, this is controlled by `pmm.k` (predictive mean matching): with the default `pmm.k = 0` the imputations are essentially deterministic, so we set `pmm.k = 5`, which draws each imputed value from the 5 nearest observed values and thus injects genuine between-imputation variability.
+```{r}
+fitFull = lm(Ozone ~ Wind + Temp, data = aq)
+fitCC = lm(Ozone ~ Wind + Temp, data = aqNA)
+summary(fitFull)$coefficients
+summary(fitCC)$coefficients
+```
+
+The complete-case analysis is clearly biased: because we mostly lost days with high ozone, the effect of Wind is strongly underestimated. Note that its standard errors are even smaller than for the full data, although we have fewer observations, because the remaining days with low ozone vary less.
+
+**Single imputation.** A fast and flexible option for imputation is the random-forest-based `missRanger` package (with `pmm.k = 5`, each imputed value is drawn from the 5 observed values with the most similar prediction, predictive mean matching):
 
 ```{r, warning=F, message=F}
-# run 20 imputations (pmm.k > 0 for genuine between-imputation variability)
-set.seed(42)
-airqualityMImp <- replicate(20, missRanger(airquality, pmm.k = 5), simplify = FALSE)
-# fit 20 models
-models <- lapply(airqualityMImp, function(x) lm(Ozone ~ Wind + Temp, x))
-
-# use mice package to compute corrected p-values
-library(mice)
-summary(pooled_fit <- pool(models)) 
+library(missRanger)
+aqImp = missRanger(aqNA, pmm.k = 5, seed = 1, verbose = 0)
+fitSI = lm(Ozone ~ Wind + Temp, data = aqImp)
+summary(fitSI)$coefficients
 ```
+
+The imputation removes much of the bias. However, the model treats the imputed values as if they were observed, so its standard errors do not account for the uncertainty of the imputation.
+
+**Multiple imputation.** Multiple imputation creates several completed data sets with different plausible values, fits the model to each of them and pools the results with Rubin's rules, so that the imputation uncertainty is reflected in the standard errors. The standard package for this is `mice`, which, for each imputed data set, also redraws the parameters of the imputation models, so that the variation between the imputations reflects the imputation uncertainty:
+
+```{r, message=FALSE}
+library(mice)
+imp = mice(aqNA, m = 20, method = "pmm", printFlag = FALSE, seed = 1)
+fitMI = with(imp, lm(Ozone ~ Wind + Temp))
+summary(pool(fitMI))
+```
+
+The pooled estimates are similar to the single imputation, but the standard errors now include the variation between the imputations (`pool(fitMI)` also shows the fraction of missing information, `fmi`, for each coefficient).
+
+Note that running `missRanger` several times and pooling the results with `pool()` is a common shortcut, but only an approximate multiple imputation, because the imputation model itself is not re-drawn. Its standard errors therefore tend to be too small.
+
+::: {.callout-tip collapse="true"}
+#### Is this a general result? A small simulation
+
+The example above is a single random deletion of Temp values. Let's repeat it 100 times and compare the average estimate of the Wind effect with the reference value from the full data:
+
+```{r, message=FALSE, warning=FALSE}
+truth = coef(fitFull)["Wind"]
+
+simulateOnce = function(){
+  aqNA = aq
+  aqNA$Temp[runif(nrow(aq)) < plogis(-1.5 + 0.04 * (aq$Ozone - mean(aq$Ozone)))] = NA
+  c(CC = unname(coef(lm(Ozone ~ Wind + Temp, data = aqNA))["Wind"]),
+    SI = unname(coef(lm(Ozone ~ Wind + Temp,
+                        data = missRanger(aqNA, pmm.k = 5, verbose = 0)))["Wind"]),
+    MI = summary(pool(with(mice(aqNA, m = 10, printFlag = FALSE),
+                           lm(Ozone ~ Wind + Temp))))$estimate[2])
+}
+
+set.seed(1)
+estimates = replicate(100, simulateOnce())
+rowMeans(estimates) - truth # average bias of the Wind estimate
+```
+
+Across the repetitions, the complete-case analysis is strongly biased, while both imputation methods remove most of the bias.
+:::
 
 More on missing data and imputation methods in Stef van Buuren's book ["Flexible Imputation of Missing Data"](https://stefvanbuuren.name/fimd/)
 

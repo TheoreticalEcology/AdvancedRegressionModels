@@ -8,16 +8,19 @@ editor_options:
 set.seed(42)
 ```
 
-# Model selection
+# Model selection {#sec-select}
 
-## The Bias-Variance Trade-off
+## The bias-variance trade-off {#sec-select-biasvar}
 
-Apart from causality, the arguably most fundamental idea about modelling choice is the **bias-variance trade-off**, which applies regardless of whether we are interested in causal effects or predictive models. The idea is the following:
+::: {#the-bias-variance-trade-off}
+:::
+
+Apart from causality (see @sec-causal), the arguably most fundamental idea about modeling choice is the **bias-variance trade-off**, which applies regardless of whether we are interested in causal effects or predictive models. The idea is the following:
 
 - The more variables / complexity we include in the model, the better it can (in principle) adjust to the true relationship, thus reducing model error from bias.
 - The more variables / complexity we include in the model, the larger our error (variance) on the fitted coefficients, thus increasing model error from variance. This means, the model adopts to the given data but no longer to the underlying relationship.
 
-If we sum both terms up, we see that at the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
+If we sum both terms up, we see that the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
 
 ```{r chunk_chapter3_71, echo=FALSE, out.width="100%", out.height="100%"}
 knitr::include_graphics(c("images/BiasBarianceTradeOff.jpg"))
@@ -31,7 +34,7 @@ set.seed(123)
 x = runif(100)
 y = 0.25 * x + rnorm(100, sd = 0.3)
 
-summary(lm(y~x))
+coef(summary(lm(y~x)))["x", ]
 ```
 
 As you see, the effect is significant. Now, I add 80 new variables to the model which are just noise
@@ -41,13 +44,13 @@ xNoise = matrix(runif(8000), ncol = 80)
 dat = data.frame(y=y,x=x, xNoise)
 
 fullModel = lm(y~., data = dat)
-summary(fullModel)
+coef(summary(fullModel))["x", ]
 ```
 
 The effect estimates are relatively unchanged, but the CI has increased, and the p-values are n.s.
 
-::: {.callout-tip}
-## Precision variables
+::: {#tip-select-precision .callout-tip}
+#### Precision variables
 
 We have learned that adding variables increases the complexity of the model and thus the variance/uncertainty of the model. However, there are so-called precision variables that, when added to the model, actually reduce the variance/uncertainty of the model! Technically, they explain the response variable so well that they help to improve the overall fit of the model and thus help to reduce the overall variance of the model.
 
@@ -77,23 +80,26 @@ summary(lm(Y~X+P))
 The effect of X on Y is now significant (standard error = 0.15)!
 :::
 
-## Model Selection Methods
+## Model selection methods {#sec-select-methods}
 
-Because of the bias-variance trade-off, we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
+::: {#model-selection-methods}
+:::
 
-1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests
-2.  Optimize a penalized fit to the data -\> AIC selection
-3.  Specify a preference for parameter estimates to be small -\> shrinkage estimation
+Because of the bias-variance trade-off (@sec-select-biasvar), we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
+
+1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests (@sec-select-lrt)
+2.  Optimize a penalized fit to the data -\> AIC selection (@sec-select-aic)
+3.  Specify a preference for parameter estimates to be small -\> shrinkage estimation (@sec-select-shrinkage)
 
 Let's go through them one by one
 
-### Likelihood-ratio tests
+### Likelihood-ratio tests {#sec-select-lrt}
 
 A likelihood-ratio test (LRT) is a hypothesis test that can be used to compare 2 **nested** models. Nested means that the simpler of the 2 models is included in the more complex model.
 
 The more complex model will always fit the data better, i.e. have a higher likelihood. This is the reason why you shouldn't use fit or residual patterns for model selection. The likelihood-ratio test tests whether this improvement in likelihood is significantly larger than one would expect if the simpler model is the correct model.
 
-Likelihood-ratio tests are used to get the p-values in an R ANOVA, and thus you can also use the `anova`{.R} function to perform a likelihood-ratio test between 2 models (Note: For simple models, this will run an F-test, which is technically not exactly a likelihood-ratio test, but the principle is the same):
+Likelihood-ratio tests are used to get the p-values in an R ANOVA (see @sec-anova-test), and thus you can also use the `anova`{.R} function to perform a likelihood-ratio test between 2 models (Note: for linear models with normal residuals, `anova()` runs an F-test. This is not a different principle: the F-test is the special case of the LRT for linear models, with an exact instead of an approximate null distribution, see @tip-anova-ftest):
 
 ```{r chunk_chapter3_chunk74, echo=TRUE, eval=TRUE}
 # Model 1
@@ -106,7 +112,7 @@ m2 = lm(Ozone ~ Wind + Temp, data = airquality)
 anova(m1, m2)
 ```
 
-### AIC model selection
+### AIC model selection {#sec-select-aic}
 
 Another method for model selection, and probably the most widely used, also because it does not require that models are nested, is the AIC = **Akaike Information Criterion**.
 
@@ -124,7 +130,7 @@ AIC(m1)
 AIC(m2)
 ```
 
-**Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation, so what AIC is optimizing is essentially the predictive error of the model on new data.
+**Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation (see @sec-select-cv), so what AIC is optimizing is essentially the predictive error of the model on new data.
 
 **Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
 
@@ -149,12 +155,12 @@ AIC(m1); AIC(m2)   # AIC -> lower is better (predictive ranking)
 
 They routinely disagree. For adding a single parameter, AIC prefers the larger model whenever the deviance drops by more than 2, which corresponds to an LRT p-value of about 0.157 - so AIC is considerably more *liberal* about including predictors than an LRT at $\alpha = 0.05$.
 
-**Rule of thumb:** use the LRT (or F-test) for a confirmatory, pre-specified nested comparison where you want error control; use AIC when the goal is prediction, or to rank many (possibly non-nested) candidate models. For neither should you read the resulting coefficients as unbiased causal effects (see the sections above on model selection and causality).
+**Rule of thumb:** use the LRT (or F-test) for a confirmatory, pre-specified nested comparison where you want error control; use AIC when the goal is prediction, or to rank many (possibly non-nested) candidate models. For neither should you read the resulting coefficients as unbiased causal effects (see the section on problems with model selection for inference, @sec-select-problems, and the chapter on causal inference, @sec-causal).
 :::
 
-### Shrinkage estimation
+### Shrinkage estimation {#sec-select-shrinkage}
 
-A third option for model selection are shrinkage estimators. These include the LASSO and ridge, but also random-effects could be seen as shrinkage estimators.
+A third option for model selection are shrinkage estimators. These include the LASSO and ridge, but also random-effects (see @sec-re-shrinkage) could be seen as shrinkage estimators.
 
 The basic idea behind these estimators is not to reduce the number of parameters, but to reduce the flexibility of the model by introducing a penalty on the regression coefficients that code a preference for smaller or zero coefficient values. Effectively, this can either amount to model selection (because some coefficients are shrunk directly to zero), or it can mean that we can fit very large models while still being able to do good predictions, or avoid overfitting.
 
@@ -165,14 +171,14 @@ library(MASS)
 lm.ridge(Ozone ~ Wind + Temp + Solar.R, data = airquality, lambda = 2)
 ```
 
-We can see how the regression estimates vary for different penalties via
+Here, `lambda` is the strength of the penalty (how to choose it is shown at the end of this section). We can see how the regression estimates vary for different penalties via
 
 ```{r chunk_chapter3_chunk77, echo=TRUE, eval=TRUE}
 plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
               lambda = seq(0, 200, 0.1) ) )
 ```
 
-::: {.callout-tip}
+::: callout-tip
 #### (Adaptive) Shrinking with glmmTMB
 
 We can use glmmTMB for shrinkage estimation by changing the slopes into random slopes with only one level in a dummy grouping variable:
@@ -182,33 +188,33 @@ We can use glmmTMB for shrinkage estimation by changing the slopes into random s
 ```{r, message=FALSE}
 library(glmmTMB)
 airquality$group = as.factor(rep(1, nrow(airquality)))
-ridgeGlmmTMB1 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ), 
+ridgeGlmmTMB01 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ),
                        data = airquality,
-                       start = list(theta = rep(1e-5, 3)),
+                       start = list(theta = rep(log(0.1), 3)),
                        map = list(theta = factor(c(NA, NA, NA))))
 
-ridgeGlmmTMB10 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ), 
+ridgeGlmmTMB10 = glmmTMB(Ozone~(0+ Wind + Temp + Solar.R || group ),
                        data = airquality,
-                       start = list(theta = rep(10, 3)),
+                       start = list(theta = rep(log(10), 3)),
                        map = list(theta = factor(c(NA, NA, NA))))
-summary(ridgeGlmmTMB1)
+summary(ridgeGlmmTMB01)
 summary(ridgeGlmmTMB10)
 ```
 
 *Note: The `(…||…)` syntax will model the individual random slopes individually (the default is to fit a covariance matrix between the random effects).*
 
-We can use the `map` and the `start` arguments to a) mark the variances of the random slopes as constant and b) to set them so specific values (smaller values mean higher regularization).
+We can use the `map` and the `start` arguments to a) mark the variances of the random slopes as constant and b) to set them so specific values (smaller values mean higher regularization). Note that glmmTMB parameterizes `theta` as the log of the random effect standard deviation, so `log(0.1)` fixes the SD of the slopes to 0.1 (strong shrinkage) and `log(10)` to 10 (weak shrinkage).
 
 Random effects are now our slopes:
 
 ```{r}
-ranef(ridgeGlmmTMB1)[[1]]$g
-ranef(ridgeGlmmTMB10)[[1]]$g
+ranef(ridgeGlmmTMB01)[[1]]$group
+ranef(ridgeGlmmTMB10)[[1]]$group
 ```
 
-For lower variances they are more strongly biased towards 0 (stronger shrinkage); for higher variances, shrinkage is reduced and estimates are less biased towards 0.
+For lower variances they are more strongly biased towards 0 (stronger shrinkage); for higher variances, shrinkage is reduced and estimates are less biased towards 0. With SD = 10, the estimates are practically identical to those of the unpenalized `lm(Ozone ~ Wind + Temp + Solar.R, data = airquality)` (the glmmTMB model still includes a fixed intercept).
 
-1.  **Adaptive shrinkage**
+2.  **Adaptive shrinkage**
 
 The next obvious step would be to let the model and the data decide on the variance estimate (the amount of shrinkage), which is called adaptive shrinkage.
 
@@ -266,12 +272,37 @@ cor.test(effects, shrinkageEstimates)
 ```
 :::
 
-### P-hacking {#pHacking}
+**Choosing the amount of shrinkage.** In `lm.ridge()` above, we simply set the penalty `lambda` by hand. In practice, the penalty is usually chosen by cross-validation (see @sec-select-cv), i.e. we pick the value that gives the best out-of-sample predictions. The `glmnet` package does this automatically with `cv.glmnet()`, for ridge (`alpha = 0`), the LASSO (`alpha = 1`), and the elastic net (values in between). Applied to the simulation with 30 observations and 50 predictors from the box above:
 
-The most dubious model selection strategy, actually considered scientific **misconduct**, is **p-hacking**. The purpose of this exercise is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
+```{r, message=FALSE}
+library(glmnet)
+set.seed(1) # the cross-validation folds are random
+cvRidge = cv.glmnet(X, Y, alpha = 0) # ridge
+cvLasso = cv.glmnet(X, Y, alpha = 1) # LASSO
+plot(cvLasso) # prediction error against log(lambda)
+
+ridgeEstimates = as.numeric(coef(cvRidge, s = "lambda.min"))[-1] # [-1] removes the intercept
+lassoEstimates = as.numeric(coef(cvLasso, s = "lambda.min"))[-1]
+cor(effects, ridgeEstimates)
+cor(effects, lassoEstimates)
+sum(lassoEstimates != 0) # number of predictors kept by the LASSO
+```
+
+Which method to use when?
+
+-   **Ridge** shrinks all coefficients towards zero, but keeps all predictors in the model. It works well if there are many predictors with small effects, and with collinear predictors (it spreads the effect over them).
+-   **LASSO** shrinks some coefficients exactly to zero, i.e. it also selects variables. It works well if only a few predictors have relevant effects. With collinear predictors, it tends to pick one of them more or less arbitrarily.
+-   **Elastic net** (`0 < alpha < 1`) is a compromise between the two.
+-   **Random effects** (the glmmTMB trick in the box above) give ridge-type shrinkage, where the amount of shrinkage is estimated from the data instead of by cross-validation. This is convenient if you need other features of mixed models (other distributions, further random effects).
+
+Note that all shrinkage estimators are biased towards zero, and the standard errors and p-values of a normal regression do not apply to them. Use them for prediction, not to test hypotheses (see @sec-select-problems).
+
+### P-hacking {#sec-select-phacking}
+
+The most dubious model selection strategy, a questionable research practice that can amount to scientific **misconduct**, is **p-hacking**. The purpose of this exercise is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
 
 ::: {.callout-caution icon="false"}
-## p-hacking exercise
+#### Exercise — p-hacking
 
 We have (simulated) measurements of plant performance. The goal of the analysis was to find out if Gen1 has an effect on Performance. Various other variables are measured. As you can see, the way I simulated the data, none of the variables has an effect on the response, so this is pure noise
 
@@ -287,7 +318,7 @@ When you run summary(fullModel), you will see that there is no significant effec
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-## Possible solution
+#### Solution
 
 ```{r}
 summary(lm(Performance ~ Gen1 * Humidity, data = dat[20:30,]))
@@ -296,9 +327,9 @@ summary(lm(Performance ~ Gen1 * Humidity, data = dat[20:30,]))
 
 Here some more inspiration on p-hacking:
 
-1.  Hack Your Way To Scientific Glory: <a href="https://projects.fivethirtyeight.com/p-hacking/" target="_blank" rel="noopener">https://projects.fivethirtyeight.com/p-hacking/</a>
-2.  False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant: <a href="https://journals.sagepub.com/doi/full/10.1177/0956797611417632" target="_blank" rel="noopener">https://journals.sagepub.com/doi/full/10.1177/0956797611417632</a>
-3.  Sixty seconds on ... P-hacking: <a href="https://doi.org/10.1136/bmj.k4039" target="_blank" rel="noopener">https://doi.org/10.1136/bmj.k4039</a>
+1.  Hack Your Way To Scientific Glory: <https://projects.fivethirtyeight.com/p-hacking/>
+2.  False-Positive Psychology: Undisclosed Flexibility in Data Collection and Analysis Allows Presenting Anything as Significant: @simmons2011false
+3.  Sixty seconds on ... P-hacking: @hawkes2018sixty
 
 John Oliver about p-hacking:
 
@@ -312,7 +343,10 @@ cat(
 )
 ```
 
-## Problems with model selection for inference
+## Problems with model selection for inference {#sec-select-problems}
+
+::: {#problems-with-model-selection-for-inference}
+:::
 
 Model selection works great to generate predictive models. The big problem with model selection is when we want interpret effect estimates. Here, we have two problems
 
@@ -321,9 +355,9 @@ Model selection works great to generate predictive models. The big problem with 
 
 Let's look at them 1 by one:
 
-### Causality
+### Causality {#sec-select-causality}
 
-In general, model selection does NOT solve the problem of estimating causal effects. Quite the contrary: most model selection methods act against estimating causal effects. Consider the following example, where we create a response that causally depends on two collinear predictors, both with an effect size of 1
+In general, model selection does NOT solve the problem of estimating causal effects. Quite the contrary: most model selection methods act against estimating causal effects. Consider the following example, where we create a response that causally depends on two collinear predictors, both with a direct effect of 1. Moreover, x2 is partly caused by x1, so x1 also affects the response indirectly via x2 (x1 -\> x2 -\> y)
 
 ```{r}
 set.seed(123)
@@ -332,14 +366,14 @@ x2 = 0.8 * x1 + 0.2 *runif(100)
 y = x1 + x2 + rnorm(100)
 ```
 
-Given the structure of the data, we should run a multiple regression, and the multiple regression will get it roughly right: both effects are n.s., but estimates are roughly right and true values are in the 95% CI.
+Given the structure of the data, we should run a multiple regression, and the multiple regression will get the two direct effects roughly right: both effects are n.s. (the CIs are very wide because of the collinearity), but the estimates are roughly right and the true values are in the 95% CI.
 
 ```{r}
 m1 = lm(y ~ x1 + x2)
 summary(m1)
 ```
 
-A model selection (more on the method later) will remove one of the variables and consequently overestimates the effect size (effect size too high, true causal value outside the 95% CI).
+A model selection will remove one of the variables. The remaining x1 then absorbs the effect that runs through x2, i.e. it no longer estimates the direct effect of x1, but its total effect (direct effect 1 plus indirect effect 0.8 × 1 = 1.8). The estimate of about 1.9 is consistent with this total effect, but the true direct effect of 1 is far outside the 95% CI.
 
 ```{r, results='hide'}
 m2 = MASS::stepAIC(m1)
@@ -349,7 +383,9 @@ m2 = MASS::stepAIC(m1)
 summary(m2)
 ```
 
-If you understand what AIC model selection is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
+Which of the two effects is the right one depends on the causal question (see @sec-causal): if we are interested in the total effect of x1, including the part that runs via x2, the reduced model is fine. Note, however, that this is often not what we want. Usually, we include a variable such as x2 because we consider it a confounder, or because we want to separate the direct effect from effects via other variables. The model selection takes this decision for us, based on how much x2 improves the fit and not on causal reasoning, and thereby silently changes the meaning of the remaining estimate.
+
+If you understand what AIC model selection (@sec-select-aic) is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
 
 ```{r}
 set.seed(123)
@@ -377,11 +413,11 @@ anova(m1, m3)
 AIC(m3)
 ```
 
-What we see is that the model selection methods are far more enthusiastic about including x3. And with good reason: x3 is an independent predictor, so adding x3 improves the model a lot. The effect of x2, however, is mostly already included in x1, so adding x2 will only slightly improve the model. Thus, from the point of view of how good the data is explained, it doesn't pay off to add x2. From the causal viewpoint, however, adding x3 is irrelevant, because it is not a confounder, while adding x2 is crucial (assuming the causal direction is such that it is a confounder).
+What we see is that the model selection methods are far more enthusiastic about including x3. And with good reason: x3 is an independent predictor, so adding x3 improves the model a lot. The effect of x2, however, is mostly already included in x1, so adding x2 will only slightly improve the model. Thus, from the point of view of how good the data is explained, it doesn't pay off to add x2. From the causal viewpoint, however, adding x3 is irrelevant for the effect of x1, because it is not a confounder (see @sec-causal-framework), while adding x2 changes the meaning of the effect of x1: in this simulation, x2 is caused by x1, so the model with x1 alone estimates the total effect of x1, and the model with x1 + x2 its direct effect. If x2 were instead a common cause of x1 and the response (a confounder), leaving it out would bias the estimate, and the model selection would make exactly the wrong choice.
 
-### P-values
+### P-values {#sec-select-pvalue}
 
-The second problem with model selection is the calibration of p-values. Let's revisit our simulation example from the bias-variance trade-off, where we added 80 noisy predictors with no effect to a situation where we had one variable with an effect.
+The second problem with model selection is the calibration of p-values. Let's revisit our simulation example from the bias-variance trade-off (@sec-select-biasvar), where we added 80 noisy predictors with no effect to a situation where we had one variable with an effect.
 
 ```{r}
 set.seed(123)
@@ -394,8 +430,10 @@ fullModel = lm(y~., data = dat)
 
 We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
 
-::: {.callout-tip}
-Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::StepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
+::: {#tip-select-stepwise .callout-tip}
+#### Stepwise vs. global model selection
+
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::stepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
 :::
 
 ```{r, echo=T, results='hide'}
@@ -403,7 +441,7 @@ library(MASS)
 reduced = stepAIC(fullModel)
 ```
 
-::: {.callout-note}
+::: callout-note
 When you inspect the output of stepAIC, you can see that the function calculates at each step the AIC improvement for each predictor that could be removed, and then chooses to remove the predictor that leads to the strongest AIC improvement first.
 :::
 
@@ -413,15 +451,18 @@ Here is the selected model
 summary(reduced)
 ```
 
-The result is good and bad. Good is that we now get the effect of y \~ x significant. Bad is that a lot of the other noisy variables are also significant, and the rate at which this occurs is much higher than we should expect (22/80 random predictors significant is much higher than the expected type I error rate).
+The result is good and bad. Good is that we now get the effect of y \~ x significant. Bad is that a lot of the other noisy variables are also significant, and the rate at which this occurs is much higher than we should expect (22 of the 52 retained noise predictors are significant, while about 4 would be expected for 80 noise predictors at alpha = 0.05).
 
 The phenomenon is well-known in the stats literature, and the reason is that performing a stepwise / global selection + calculating a regression table for the selected model is **hidden multiple testing** and has inflated Type I error rates! Remember, you are implicitly trying out hundreds or thousand of models, and are taking the one that is showing the strongest effects.
 
 There are methods to correct for the problem (keyword: post-selection inference), but none of them are readily available in R, and also, mostly those corrected p-values have lower power than the full model.
 
-## Non-parametric R2 - cross-validation
+## Non-parametric R2 - cross-validation {#sec-select-cv}
 
-Cross-validation is the non-parametric alternative to AIC. Note that AIC is asymptotically equal to leave-one-out cross-validation.
+::: {#non-parametric-r2---cross-validation}
+:::
+
+Cross-validation is the non-parametric alternative to AIC. Note that AIC (@sec-select-aic) is asymptotically equal to leave-one-out cross-validation.
 
 For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`, using the `cv.glm`{.R} function:
 
@@ -450,21 +491,24 @@ nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
 (cv.11.err = cv.glm(nodal, nodal.glm, cost, K = 11)$delta)
 ```
 
-Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see Roberts, David R., et al. "Cross‐validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure." *Ecography* 40.8 (2017): 913-929., methods implemented in package `blockCV`{.R}, see <a href="https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html</a>.
+Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see @roberts2017cross, methods implemented in package `blockCV`{.R}, see <https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html>.
 
-## Case studies
+## Case studies {#sec-select-cases}
 
-### Exercise: Global Plant Trait Analysis #3
+::: {#case-studies}
+:::
+
+### Exercise — Global plant trait analysis #3 {#sec-select-plant}
 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Revisit exercises our previous analyses of the dataset plantHeight, and discuss / analyze:
+Revisit our previous analyses of the dataset plantHeight (linear regression: @cau-lm-plantheight, @cau-lm-plantheight-revisited; ANOVA: @sec-anova-plantheight; random effects: @cau-re-plantheight), and discuss / analyze:
 
 Which would be the appropriate model, if we want to get a predictive model for plant height, based on all the variables in the data set? Note: some text-based variables may need to be included, so probably it's the easiest if you start with a large model that you specify by hand. You can also include interactions. The syntax:
 
 ```{r, eval = F}
-fit <- lm((x1 + x2 + x3)^2)
+fit <- lm(y ~ (x1 + x2 + x3)^2, data = dat)
 ```
 
 includes all possible 2nd-order interactions between the variables in your model. You can extend this to x^3^, x^4^ but I would not recommend it, your model will get too large.
@@ -482,21 +526,21 @@ selectedModel = stepAIC(fullModel, trace = 0)
 summary(selectedModel)
 ```
 
-R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodelled correlations in the data, or if you use variables that are (indirectly) identical to your response.
+R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodeled correlations in the data, or if you use variables that are (indirectly) identical to your response.
 :::
 
-### Exercise: Life Satisfaction #3
+### Exercise — Life satisfaction #3 {#sec-select-life}
 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Revisit our previous analysis on life satisfaction in the chapter on causal inference. Now, build a predictive model of life satisfaction. If you want, you can also tune this model in a validation or cross-validation split.
+Revisit our previous analysis on life satisfaction (case study in the chapter on causal inference, @sec-causal-life). Now, build a predictive model of life satisfaction. If you want, you can also tune this model in a validation or cross-validation split.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-Here the goal is **prediction**, not causal inference, so - unlike the causal analysis in the previous chapter - we are free to throw in all available predictors and interactions and let a selection/validation procedure trim the model. Because we will not interpret the individual coefficients causally, the Table II fallacy does not apply.
+Here the goal is **prediction**, not causal inference, so - unlike the causal analysis of life satisfaction (@sec-causal-life) - we are free to throw in all available predictors and interactions and let a selection/validation procedure trim the model. Because we will not interpret the individual coefficients causally, the Table 2 fallacy (@sec-causal-table2) does not apply.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 library(EcoData); library(MASS)
@@ -514,7 +558,7 @@ predModel = stepAIC(fullModel, trace = 0)   # AIC-optimal predictive model
 summary(predModel)
 ```
 
-Evaluate the predictive error honestly with cross-validation:
+Evaluate the predictive error with cross-validation. Note that this CV error is optimistic, because the model was selected on the same data, and rows of the same person are not independent:
 
 ```{r, message=FALSE, warning=FALSE}
 library(boot)
@@ -522,5 +566,5 @@ cvFit = glm(formula(predModel), data = dat)
 cv.glm(dat, cvFit, K = 10)$delta[1]         # 10-fold CV mean squared error
 ```
 
-Note that we filtered to `complete.cases` on the modelled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the chapter on missing data). Compare this CV error to that of the simpler causal model from the previous chapter - a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
+Note that we filtered to `complete.cases` on the modeled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the section on na.action in the chapter on missing data, @sec-miss-na-action). Compare this CV error to that of the simpler causal model (@sec-causal-life) - a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
 :::

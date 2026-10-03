@@ -10,24 +10,24 @@ book:
   date: "Jun 2026"
   site-url: https://TheoreticalEcology.github.io/AdvancedRegressionModels/
   repo-url: https://github.com/TheoreticalEcology/AdvancedRegressionModels
-  repo-branch: master
+  repo-branch: main
   repo-actions: [edit]
   sharing: [twitter, facebook, linkedin]
   chapters:
     - index.qmd
     - 1A-GettingStarted.qmd
-    - part: "Modelling the mean"
+    - part: "Modeling the mean"
       chapters: 
       - 2A-LinearRegression.qmd
       - 2B-ANOVA.qmd
       - 2C-RandomEffects.qmd
       - 2D-NonlinearRegression.qmd
-    - part: "Model Choice"
+    - part: "Model choice"
       chapters: 
       - 3A-MissingData.qmd
       - 3B-CausalInference.qmd
       - 3C-ModelSelection.qmd
-    - part: "Modelling the distribution"
+    - part: "Modeling the distribution"
       chapters: 
       - 4A-GLMs.qmd    
       - 4B-Heteroskedasticity.qmd
@@ -43,6 +43,7 @@ book:
 engine: knitr
   
 bibliography: literature.bib
+csl: csl/harvard-cite-them-right.csl
 google-scholar: true
 
 execute:
@@ -52,6 +53,8 @@ execute:
 format:
   html:
     theme: cosmo
+    citation-location: margin
+    link-external-newwindow: true
 editor: visual
 
 
