@@ -10,6 +10,20 @@ set.seed(42)
 
 # Nonlinear regressions {#sec-nls}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   what makes a regression nonlinear, and how to fit one with `nls()` and starting values (@sec-nls-definition, @sec-nls-fit);
+-   how to check residuals and get CIs for parameters and predictions when the normal approximation may fail (@sec-nls-residual, @sec-nls-ciparameter, @sec-nls-ciprediction);
+-   how to compare groups with interactions (dummy variables) and LRT or AIC, and how to add random effects with `nlme` (@sec-nls-interaction, @sec-nls-selection, @sec-nls-extension).
+
+**Workflow steps** (@sec-intro-workflow): step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
+
+Prerequisites: the linear model (@sec-lm).
+:::
+
 ## What is a nonlinear regression? {#sec-nls-definition}
 
 ::: {#what-is-a-nonlinear-regression}
@@ -141,7 +155,7 @@ out = propagate::predictNLS(mm, nsim = 10000) # nsim must be set much higher for
 
 For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the general boot function described in the section on the bootstrap in the linear regression chapter (@sec-lm-nonparametric). This can also be applied to any derived quantities (i.e. quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.
 
-The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this).
+The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this, and [the chapter on posterior estimation](https://florianhartig.github.io/LearningBayes/2B-PosteriorEstimation.html) in @hartig2024introduction).
 
 ## Interactions in NLS {#sec-nls-interaction}
 
@@ -228,3 +242,14 @@ summary(mm2)
 ```
 
 The estimated SD of Km between groups is close to zero, as expected for randomly assigned groups.
+
+## Take-home messages {#sec-nls-takehome}
+
+::: callout-tip
+
+1.  A regression is nonlinear if the model is not linear in the parameters, not if the curve is not straight: polynomials, `log(x)` and splines are still linear regressions. If the function can be made linear by transforming x or y, consider `lm` (better supported in R), but remember that transforming the response changes the error structure.
+2.  `nls()` needs starting values for the parameters. If the fit fails or converges badly, change the starting values, the algorithm or the control settings.
+3.  `nls` is the maximum-likelihood estimate only for i.i.d. normal residuals. Check the residuals exactly as in a linear regression.
+4.  CIs from the regression table rely on a multivariate normal approximation, which can be poor in nonlinear models. Use profile CIs (`confint()`) or the bootstrap, and treat large differences to the table CIs as a sign that the approximation fails. For derived quantities (e.g. an LD50), use the bootstrap or reparameterize the formula so that the quantity is a parameter.
+5.  To compare groups, code factors as dummy variables inside the formula. The effects on the parameters show which parameter differs; model selection (LRT or AIC) decides whether there is a difference at all.
+:::

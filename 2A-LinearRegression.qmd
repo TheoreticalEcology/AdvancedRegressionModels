@@ -10,6 +10,21 @@ set.seed(42)
 
 # Linear Regression {#sec-lm}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+- how to fit a linear model, read the regression table, visualize the result, and check the residuals and adjust the functional form if the model does not fit the mean (@sec-lm-simple, @sec-lm-visualization, @sec-lm-residual, @sec-lm-functional-form);
+- how categorical predictors are coded (contrasts), and how to follow up with ANOVA, post-hoc tests and compact letter displays (@sec-lm-categorical);
+- how multiple regression, collinearity, centering, scaling and interactions change what the coefficients mean (@sec-lm-multiple, @sec-lm-collinearity, @sec-lm-centering-scaling, @sec-lm-interaction);
+- how to make predictions and get uncertainty from the bootstrap when the analytical results are not available (@sec-lm-prediction, @sec-lm-nonparametric).
+
+**Workflow steps** (@sec-intro-workflow): step 3 (a-priori model), step 5 (residual checks), step 6 (inference and predictions).
+
+Prerequisites: basic R and the idea of a regression (@sec-intro-assumed-knowledge).
+:::
+
 ## Fitting a simple linear regression {#sec-lm-simple}
 
 ::: {#fitting-a-simple-linear-regression}
@@ -59,7 +74,7 @@ The function name lm is short for "linear model". Remember from your basic stats
 So, an lm is any regression of the form $y = \operatorname{f}(x) + \varepsilon$ where $\varepsilon \sim \mathcal{N}(0, \sigma^2)$, with $\operatorname{f}$ linear in the parameters, e.g. ${a}_{0} + {a}_{1} \cdot x + {a}_{2} \cdot {x}^{2}$ (the effects ${a}_{0}, {a}_{1}, {a}_{2}$ enter linearly, even though $x^2$ is a nonlinear transform of $x$). Here, $\varepsilon \sim \mathcal{N}(0, \sigma^2)$ means that the residuals (deviations from $\operatorname{f}(x)$) follow a normal (Gaussian) distribution with unknown variance $\sigma^2$.
 :::
 
-::: {.callout-tip collapse="true"}
+:::: {.callout-tip collapse="true"}
 #### Understanding how the lm works
 
 To understand how the lm works, we will estimate an lm using a custom likelihood function:
@@ -111,7 +126,7 @@ model = lm(Y~Xobs) # 1. Get estimates, MLE
 model
 summary(model) # 2. Calculate standard errors, CI, and p-values
 ```
-:::
+::::
 
 ## Interpreting the fitted model {#sec-lm-interpretation}
 
@@ -126,15 +141,15 @@ summary(fit)
 
 In interpreting this, recall that:
 
--   "**Call**" repeats the regression formula.
--   "**Residuals**" gives you an indication about how far the observed data scatters around the fitted regression line / function.
--   The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second is the standard error (approximate 95% CI: $\hat{\beta} \pm 1.96 \cdot \text{SE}$; for small samples use the exact $t_{n-p}$ quantile instead of 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored.
--   The last section of the summary provides information about the *model fit*.
-    -   Residual error = Standard deviation of the residuals,
-    -   Residual degrees of freedom (here 114) = number of observations used in the fit minus number of fitted mean parameters.
-    -   R-squared $\left({R}^{2}\right)$ = How much of the signal, respective variance is explained by the model, calculated by $\displaystyle 1 - \frac{\text{residual variance}}{\text{total variance}}$.
-    -   Adjusted R-squared = Adjusted for model complexity.
-    -   F-test = Test against intercept only model, i.e. is the fitted model significantly better than the intercept only model (most relevant for models with \> 1 predictor).
+- "**Call**" repeats the regression formula.
+- "**Residuals**" gives you an indication about how far the observed data scatters around the fitted regression line / function.
+- The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second is the standard error (approximate 95% CI: $\hat{\beta} \pm 1.96 \cdot \text{SE}$; for small samples use the exact $t_{n-p}$ quantile instead of 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored.
+- The last section of the summary provides information about the *model fit*.
+  - Residual error = Standard deviation of the residuals,
+  - Residual degrees of freedom (here 114) = number of observations used in the fit minus number of fitted mean parameters.
+  - R-squared $\left({R}^{2}\right)$ = How much of the signal, respective variance is explained by the model, calculated by $\displaystyle 1 - \frac{\text{residual variance}}{\text{total variance}}$.
+  - Adjusted R-squared = Adjusted for model complexity.
+  - F-test = Test against intercept only model, i.e. is the fitted model significantly better than the intercept only model (most relevant for models with \> 1 predictor).
 
 ::: {.callout-caution icon="false"}
 #### Exercise
@@ -211,10 +226,10 @@ plot(fit)
 
 **Interpretation of the panels**:
 
--   **Residuals vs Fitted:** Shows misfits and wrong functional form. Scattering should be uniformly distributed.
--   **Normal Q-Q:** Checks if residuals follow an overall normal distribution. Bullets should lie on the line in the middle of the plot and may scatter a little bit at the ends.
--   **Scale - Location:** Checks for heteroskedasticity. Does the variance change with predictions/changing values? Scattering should be uniformly distributed.
--   **Residuals vs Leverage:** How much impact do outliers have on the regression? Data points with high leverage should not have high residuals and vice versa. Bad points lie in the upper right or in the lower right corner. This is measured via the Cook's distance. Distances higher than 0.5 indicate candidates for relevant outliers or strange effects.
+- **Residuals vs Fitted:** Shows misfits and wrong functional form. Scattering should be uniformly distributed.
+- **Normal Q-Q:** Checks if residuals follow an overall normal distribution. Bullets should lie on the line in the middle of the plot and may scatter a little bit at the ends.
+- **Scale - Location:** Checks for heteroskedasticity. Does the variance change with predictions/changing values? Scattering should be uniformly distributed.
+- **Residuals vs Leverage:** How much impact do outliers have on the regression? Data points with high leverage should not have high residuals and vice versa. Bad points lie in the upper right or in the lower right corner. This is measured via the Cook's distance. Distances higher than 0.5 indicate candidates for relevant outliers or strange effects.
 
 ::: callout-note
 The plot(model) function should ONLY be used for linear models, because it explicitly tests for the assumptions of normally distributed residuals. Unfortunately, it also works for the results of the glm() function, but when used on a GLM beyond the linear model, it is not interpretable. Use the DHARMa residuals instead (@sec-lm-residual-dharma, @sec-glm-dharma).
@@ -262,7 +277,7 @@ Residuals are always getting better for more complex models. They should therefo
 
 ### R regression syntax {#sec-lm-regression-syntax}
 
-If we see a misfit of the mean, we should adjust the functional form of the model. Here a few options (see @tbl-lm-syntax for more details):
+If we see a misfit of the mean, we should adjust the functional form of the model. Here a few options (see @tbl-cheat-formula for more details):
 
 ```{r chunk_chapter3_task_10, message=FALSE, warning=FALSE}
 fit = lm(Ozone ~ Wind, data = airquality) # Intercept + slope.
@@ -347,7 +362,6 @@ In the summary(), you still get significance for the smoothing term (i.e. a p-va
 summary(fit)
 ```
 
-
 ## Categorical predictors {#sec-lm-categorical}
 
 ::: {#categorical-predictors}
@@ -398,12 +412,12 @@ This results in fitting the mean for each factor level (cell means), with p-valu
 
 More generally, the coding of a factor is controlled by its contrasts. The coding never changes the fitted model (predictions, residuals, R² stay the same); it only changes what the intercept and the coefficients mean. For PlantGrowth (group means ctrl = 5.03, trt1 = 4.66, trt2 = 5.53; average of the means $\bar\mu$ = 5.07), the common codings give:
 
-| Coding (R)                          | Intercept       | Coefficients                                         | Typical use                         |
-|-------------------------------------|-----------------|------------------------------------------------------|-------------------------------------|
-| Treatment (`contr.treatment`, default) | $\mu_1$ = 5.03 | $\mu_2-\mu_1$, $\mu_3-\mu_1$                          | regression tables, comparison to a control |
-| Sum-to-zero (`contr.sum`)           | $\bar\mu$ = 5.07 | $\mu_1-\bar\mu$, $\mu_2-\bar\mu$                     | type III ANOVA, effects averaged over levels |
-| Helmert (`contr.helmert`)           | $\bar\mu$ = 5.07 | $(\mu_2-\mu_1)/2$, $(\mu_3-(\mu_1+\mu_2)/2)/3$       | sequential comparisons (note the scaling) |
-| Polynomial (`contr.poly`)           | $\bar\mu$ = 5.07 | linear and quadratic trend (scaled)                  | ordered levels (`ordered()` uses this) |
+| Coding (R) | Intercept | Coefficients | Typical use |
+|----|----|----|----|
+| Treatment (`contr.treatment`, default) | $\mu_1$ = 5.03 | $\mu_2-\mu_1$, $\mu_3-\mu_1$ | regression tables, comparison to a control |
+| Sum-to-zero (`contr.sum`) | $\bar\mu$ = 5.07 | $\mu_1-\bar\mu$, $\mu_2-\bar\mu$ | type III ANOVA, effects averaged over levels |
+| Helmert (`contr.helmert`) | $\bar\mu$ = 5.07 | $(\mu_2-\mu_1)/2$, $(\mu_3-(\mu_1+\mu_2)/2)/3$ | sequential comparisons (note the scaling) |
+| Polynomial (`contr.poly`) | $\bar\mu$ = 5.07 | linear and quadratic trend (scaled) | ordered levels (`ordered()` uses this) |
 
 You can set the contrasts for a factor, or locally in the model call:
 
@@ -458,8 +472,8 @@ For categorical predictors, one nearly always performs an **ANOVA** on top of th
 
 An ANOVA starts with a base model (in this case intercept only) and adds the variable group. It then measures:
 
--   How much the model improves in terms of ${R}^{2}$ (this is in the column Sum Sq).
--   If this increase of model fit is significant.
+- How much the model improves in terms of ${R}^{2}$ (this is in the column Sum Sq).
+- If this increase of model fit is significant.
 
 We can run an ANOVA on the fitted model object using `aov()`. Note that we use `aov()` here rather than the more common `anova(fit)`, because the post-hoc test `TukeyHSD()` used below requires an `aov` object as input:
 
@@ -490,7 +504,7 @@ TukeyHSD(anov)
 In the result, we see, as hinted at in @sec-lm-anova, that there is a significant difference between trt1 and trt2. Note that the p-values of the post-hoc tests are larger than those of the lm `summary()`. This is because post-hoc tests nearly always correct p-values for multiple testing, while regression estimates are usually not corrected for multiple testing (you could of course if you wanted).
 
 ::: callout-note
-Remember: a significance test with a significance threshold of alpha = 0.05 has a type I error rate of 5%. Thus, if you make 20 independent tests, you would expect about one significant result by chance (probability of at least one: 1 - 0.95^20, about 64%), even if there are no effects whatsoever. Corrections for multiple testing are used to compensate for this, usually aiming at controlling the **family-wise error rate** (**FWER**), the probability of making one or more type I errors when performing multiple hypotheses tests.
+Remember: a significance test with a significance threshold of alpha = 0.05 has a type I error rate of 5%. Thus, if you make 20 independent tests, you would expect about one significant result by chance (probability of at least one: 1 - 0.95\^20, about 64%), even if there are no effects whatsoever. Corrections for multiple testing are used to compensate for this, usually aiming at controlling the **family-wise error rate** (**FWER**), the probability of making one or more type I errors when performing multiple hypotheses tests.
 :::
 
 `TukeyHSD()` only works for simple ANOVA models fitted with `aov()`. A more general alternative is the `emmeans` package, which works for lm, glm and mixed models, and also for models with several predictors. `emmeans()` calculates the estimated mean for each factor level, and `pairs()` compares all of them, with Tukey adjustment as default:
@@ -572,7 +586,7 @@ Note that for the multiple regression, that scatter around the regression line d
 :::
 
 | Formula | Meaning | Details |
-|------------------|-------------------------|-----------------------------|
+|----|----|----|
 | `y~x_1` | $y=a_0 +a_1*x_1$ | Slope+Intercept |
 | `y~x_1 - 1` | $y=a_1*x_1$ | Slope, no intercept |
 | `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$ | Quadratic effect |
@@ -580,7 +594,7 @@ Note that for the multiple regression, that scatter around the regression line d
 | `y~x_1:x_2` | $y=a_0+a_1*(x_1*x_2)$ | Interaction between x~1~ and x~2~ |
 | `y~x_1*x_2` | $y=a_0+a_1*x_1+a_2*x_2+a_3*(x_1*x_2)$ | Interaction and main effects |
 
-: Formula syntax {#tbl-lm-syntax}
+: Formula syntax
 
 ## The effect of collinearity {#sec-lm-collinearity}
 
@@ -603,7 +617,7 @@ plot(Wind ~ Temp, data = airquality)
 ```
 
 ::: column-margin
-**How to quantify collinearity?** For two predictors, their correlation (`cor()`) is sufficient (|r| > 0.7 is a common warning sign). With more predictors, variance inflation factors (`car::vif(fit)` on the fitted model) are more informative: they also detect a predictor that is well explained by a combination of the others, and √VIF is the factor by which its standard error is inflated. As a rough guide, values above 5–10 are often considered problematic.
+**How to quantify collinearity?** For two predictors, their correlation (`cor()`) is sufficient (\|r\| \> 0.7 is a common warning sign). With more predictors, variance inflation factors (`car::vif(fit)` on the fitted model) are more informative: they also detect a predictor that is well explained by a combination of the others, and √VIF is the factor by which its standard error is inflated. As a rough guide, values above 5–10 are often considered problematic.
 :::
 
 In such a case, if Temp is not included in the regression, **the effect of Temp will be absorbed in the Wind effect to the extent to which both variables are collinear**. In other words, if one variable is missing, there will be a spillover of the effect of this variable to all collinear variables.
@@ -611,9 +625,9 @@ In such a case, if Temp is not included in the regression, **the effect of Temp 
 ::: callout-tip
 To give a simple example of this spillover, let's say
 
--   Wind has a positive effect of 1
--   Temp has a negative effect of -1
--   Wind and Temp are correlated 50%
+- Wind has a positive effect of 1
+- Temp has a negative effect of -1
+- Wind and Temp are correlated 50%
 
 A multiple regression would estimate 1,-1. In a single regression of the response on Wind alone (with Wind and Temp standardized and correlated at 0.5), the collinear part of the Temp effect would be absorbed by Wind, so we would estimate a Wind effect of 1 + (-1)(0.5) = 0.5.
 :::
@@ -810,7 +824,6 @@ airquality$sSolar.R = scale(airquality$Solar.R)
 
 These are one-column matrices that keep their mean and standard deviation as attributes (see the tip box in @sec-lm-centering).
 
-
 ::: callout-tip
 Here, I create a new variable for each scaled predictor. It is possible to use the `scale()` command inside the regression formula as well, but that sometimes creates problems with downstream plotting functions, so I recommend to create a new variable in your data for scaling.
 :::
@@ -950,10 +963,10 @@ A super important topic when working with numeric interactions is centering. To 
 
 Compare the estimates for Wind / Temp for the following models
 
--   Ozone \~ Wind
--   Ozone \~ Temp
--   Ozone \~ Wind + Temp
--   Ozone \~ Wind \* Temp
+- Ozone \~ Wind
+- Ozone \~ Temp
+- Ozone \~ Wind + Temp
+- Ozone \~ Wind \* Temp
 
 How do you explain the differences in the estimates for the main effects of Wind and Temp? What do you think corresponds most closely to the "true" effect of Wind and Temp?
 :::
@@ -1215,6 +1228,16 @@ b2
 ```
 :::
 
+## Take-home messages {#sec-lm-takehome}
+
+::: callout-tip
+1.  Check the residuals before you interpret any p-value or estimate. If the checks reject the model, do not interpret it, change it: first fix a misfit of the mean (functional form), and only then look at distributional problems.
+2.  A coefficient in a multiple regression is the effect adjusted for the other predictors in the model. If a collinear predictor is missing, part of its effect is absorbed by the remaining predictors. Collinearity itself does not bias the estimates, but it makes them more uncertain.
+3.  For a categorical predictor, the coefficients are differences to the reference level (alphabetically first, change it with `relevel()`). Test the factor as a whole with an ANOVA, and compare levels with post-hoc tests (e.g. `emmeans`) that correct for multiple testing.
+4.  Center numeric predictors, in particular if the model contains interactions, so that the intercept and main effects refer to a meaningful point in the data. Scaling (by 1 SD) puts effects on a common unit and allows comparing their relative importance, unscaled effects stay interpretable in original units; say which one you report.
+5.  Do not conclude "no effect" from a non-significant p-value: say that there is no significant evidence for an effect, and look at the confidence interval to see which effect sizes remain plausible.
+:::
+
 ## Case studies {#sec-lm-cases}
 
 ::: {#case-studies}
@@ -1253,8 +1276,8 @@ plot(model)
 
 We're seeing a bit of heteroskedasticity, maybe a tiny bit of misfit, otherwise it looks OK! If you want to do something:
 
--   Heteroskedasticity - see the chapter on dispersion models (@sec-disp)
--   Misfit: could change functional form (@sec-lm-functional-form) or use a GAM (@sec-lm-gam)
+- Heteroskedasticity - see the chapter on dispersion models (@sec-disp)
+- Misfit: could change functional form (@sec-lm-functional-form) or use a GAM (@sec-lm-gam)
 
 But that doesn't really seem to be a problem, so we can now interpret this model!
 
@@ -1407,8 +1430,7 @@ summary(fit)
 
 Yes, because (some) interactions are significant.
 
-Note that for the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see the chapter on ANOVA, @sec-anova) to see the effect of the variables overall is significant. 
-
+Note that for the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see the chapter on ANOVA, @sec-anova) to see the effect of the variables overall is significant.
 
 ```{r}
 anova(lm(loght ~ growthform2 *  sTemp , data = plantHeight))

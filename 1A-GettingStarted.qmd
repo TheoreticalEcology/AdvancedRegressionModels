@@ -4,16 +4,30 @@ set.seed(42)
 
 # Getting Started {#sec-intro}
 
-## Organization of this book {#sec-intro-organization}
+## Overview and organization of this book {#sec-intro-organization}
 
 ::: {#organization-of-this-book}
 :::
 
-The aim of this book is to introduce you to the main techniques and concepts that are used when performing regression analyses in applied settings. This book is organized in three parts:
+### Learning goals {#sec-intro-model}
+
+Generalized (linear) mixed models are a framework for modeling a wide range of data structures. The aim of this book is to introduce you to this framework, and apply guidance on its use. It is organized in three main parts, followed by a workflow chapter and appendices:
 
 1.  **Modeling the mean:** The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. In this part, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression (@sec-lm), ANOVA (@sec-anova), mixed models (@sec-re) and nonlinear regression (@sec-nls)
 2.  **Model Choice** The second part covers model choice, including how to handle missing data (@sec-miss), causal inference (@sec-causal) and model selection (@sec-select), with cross-validation (@sec-select-cv)
 3.  **Modeling the Distribution** The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (@sec-glm) and modeling variance (@sec-disp) and correlation (@sec-corr) of residuals.
+
+### Implementing this into a data analysis workflow {#sec-intro-workflow}
+
+In a real scientific project, these techniques will (re)appear in several steps along the way. The usual workflow of a scientific analysis is given below, with pointers to which chapter is relevant for the respective step:
+
+1.  **Question and goal:** causal, predictive or exploratory? (@sec-causal, @sec-select)
+2.  **Design and data:** experimental unit, grouping, data checks and missing values (@sec-intro-explore, @tip-re-design)
+3.  **A-priori model:** distribution, predictors, random effects and correlation structures (@sec-glm, @sec-re)
+4.  **Fit the model** with the R packages introduced throughout the book (see the quick reference, @sec-cheat)
+5.  **Check residuals and adjust the model** (@sec-lm-residual, @sec-glm-residual)
+6.  **Inference:** tests, confidence intervals and predictions (@sec-lm-interpretation, @sec-anova)
+7.  **Report** the analysis (@sec-summary-report)
 
 ## Your R system {#sec-intro-r-system}
 
@@ -27,7 +41,7 @@ In this course, we work with the combination of R + RStudio.
 
 Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, [here](https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1) is a good video introducing the basic system and how R and RStudio interact.
 
-## Libraries that you will need {#sec-intro-library}
+### Libraries that you will need {#sec-intro-library}
 
 ::: {#libraries-that-you-will-need}
 :::
@@ -140,12 +154,10 @@ There are many opinions about advantages and disadvantages of the two schools. I
 The tidyverse framework is currently trying to expand to the tasks of statistical / machine learning models as well, trying to streamline statistical workflows. While this certainly has a lot of potential, I don't see it as general / mature enough to recommend it as a default for the statistical workflow.
 :::
 
-## Reminder basic R programming {#sec-intro-r-basics}
-
 ::: {#reminder-basic-r-programming}
 :::
 
-In the remainder of this section, I will summarize basic plots and data manipulations skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. At the end of this section, there is a small exercise about data manipulation (@sec-intro-final-exercise). If you are confident that you can do it, you can also go there directly without reading the content of this section.
+In this section, I will first summarize basic plots and data manipulation skills in R, as they would be taught in an introductory R course (for example [here](https://theoreticalecology.github.io/DataScienceInR/)). Please read through them and make sure you know these commands in advance of the course. If you are confident with them, you can skip this reminder; the subsection on preparing and exploring your data (@sec-intro-explore) summarizes the checks to do before fitting a model, and the final exercise (@sec-intro-final-exercise) practices both.
 
 ### Representing data in R {#sec-intro-representation}
 
@@ -548,6 +560,24 @@ For more help on plotting, I recommend:
 - Read ["Fundamentals of Data Visualization" by Claus O. Wilke](https://clauswilke.com/dataviz/) (explains all standard plots and why / when to use them)
 - [Data to Viz](https://www.data-to-viz.com) provides a decision tree for visualizations and links to the [R graph gallery](https://r-graph-gallery.com/index.html)
 
+### Preparing and exploring your data {#sec-intro-explore}
+
+Before you fit a model to your own data, check the data. These checks correspond to step 2 of the workflow (@sec-intro-workflow): if a check reveals a problem (e.g. many NAs, or factor levels with only one or two observations), decide how to deal with it now, before you fit the model. The following table lists the main checks and where this book discusses their consequences:
+
+| Check | How (examples) | Why it matters |
+|------------------------|------------------------|------------------------|
+| Missing values | `summary()`, `colSums(is.na(dat))` | Observations with NAs are removed from the model (@sec-miss) |
+| Distribution and range of the response | `hist()`, `table()` | Determines the model family (@tbl-summary-response) |
+| Errors and outliers | `summary()`, `plot()`, `boxplot()` | Check extreme values against field notes or raw data and correct obvious entry errors; do not delete values only because they are extreme (@sec-disp-outlier) |
+| Range of and correlations between predictors | `pairs()`, `cor()` | Collinearity reduces the precision of the estimates (@sec-lm-collinearity) |
+| Factor levels | `str()`, `levels()`, `table()` | Reference level and rare levels (@sec-lm-contrast) |
+| Number of observations per group and combination | `table()`, e.g. `table(dat$site, dat$year)` | Unbalanced designs and groups with few observations (@sec-anova-collinearity, @sec-re) |
+| Experimental unit | ask: what is the replicate? Is there one row per unit, or several rows per site, plot or individual? | Several measurements per unit are not independent (@tip-re-design) |
+
+: Checks before fitting a model. {#tbl-intro-explore}
+
+In the final exercise (@sec-intro-final-exercise), you apply these checks to the airquality data, which we will use again in the chapter on linear regression (@sec-lm). The links in @tbl-intro-explore lead to the sections where these points are discussed. Looking at the predictors alone (their ranges, correlations and the number of observations) is safe. Plotting the response against the predictors in order to decide which predictors or functional forms to include, however, is already a form of model selection, with consequences for the p-values (@sec-select-phacking). Decide the model from your question and design first (@sec-summary), and use such plots only to check it.
+
 ### Final exercise {#sec-intro-final-exercise}
 
 ::: {.callout-caution icon="false"}
@@ -559,7 +589,7 @@ We work with the airquality dataset:
 dat = airquality
 ```
 
-1.  Before working with a dataset, you should always get an overview of it. Helpful functions for this are `str()`, `View()`, `summary()`, `head()`, and `tail()`. Apply them to `dat` and make sure to understand what they do.
+1.  Before working with a dataset, you should always get an overview of it. Helpful functions for this are `str()`, `View()`, `summary()`, `head()`, and `tail()`. Apply them to `dat` and make sure to understand what they do. Then go through the checks in @tbl-intro-explore, taking Ozone as the response: missing values, distribution of the response, correlations between the predictors, number of observations per month.
 2.  What is the data type of the variable 'Month'? Transform it to a factor
 3.  Scale the variable Wind and save it as a new variable in `dat`
 4.  Transform the variable 'Temp' (log-transform) and save it as a new variable in `dat`
@@ -568,7 +598,7 @@ dat = airquality
 7.  Calculate correlation indices between the numerical variables (e.g. Wind and Temp, Temp and Ozone). What is the difference between Spearman and Pearson correlation?
 :::
 
-:::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
 1.  `str()` helps us to check the data types of the variables, ensure that they are correct, e.g. categorical variables should be factors and continuous variables should be either num (numeric) or int (integer). `summary()` returns important summary statistics of our variables and informs us about NAs in the data
@@ -578,7 +608,16 @@ dat = airquality
     summary(dat)
     ```
 
-    There are NAs in Ozone and Solar.R! Also, Month is not a factor!
+    There are NAs in Ozone and Solar.R! Also, Month is not a factor! The checks from @tbl-intro-explore:
+
+    ```{r}
+    colSums(is.na(dat))       # missing values per variable
+    hist(dat$Ozone)           # distribution of the response
+    pairs(dat[, c("Solar.R", "Wind", "Temp")])  # predictors only
+    table(dat$Month)          # number of observations per month
+    ```
+
+    Ozone has 37 missing values and is right-skewed, Temp and Wind are negatively correlated, and each month has 30 or 31 observations.
 
 2.  We have to transform Month into a factor:
 
@@ -616,7 +655,7 @@ dat = airquality
 6.  Single continuous variables can be visualized using a histogram (`hist()`), for two variables, it depends on their data types:
 
     | Scenario | Which plot | R command |
-    |----|----|----|
+    |------------------------|------------------------|------------------------|
     | Numeric | Histogram or boxplot | `hist()` and`boxplot` |
     | Numeric with numeric | Scatterplot | `plot` |
     | Numeric with categorical | Boxplot | `boxplot(numeric~categorical)` |
@@ -645,4 +684,4 @@ dat = airquality
     # Spearman
     cor(dat$Wind, dat$Temp, use = "complete.obs", method = "spearman")
     ```
-::::
+:::

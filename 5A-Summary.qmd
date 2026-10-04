@@ -2,58 +2,169 @@
 set.seed(42)
 ```
 
-# Summary and concluding thoughts {#sec-summary}
+# From question to paper: the analysis workflow {#sec-summary}
 
-## Reminder: modeling strategy {#sec-summary-strategy}
+This chapter brings together what we have learned in this book as a workflow for analyzing your own data, from the scientific question to the methods and results sections of a paper. The seven steps are the same as in the overview at the beginning of the book (@sec-intro-workflow). Each step links to the sections where the respective topic is explained. If you have a concrete problem with your analysis, the table in the quick reference (@sec-cheat-lookup) points you to the relevant section.
+
+## The workflow at a glance {#sec-summary-overview}
+
+1.  **Question and goal.** Is your goal to estimate a causal effect, to predict, or to explore? The answer determines which variables you include and whether model selection is appropriate (@sec-causal, @sec-select).
+2.  **Design and data.** What is the replicate (experimental unit), and how are the observations grouped (sites, plots, individuals, years)? Get an overview of the missing values (@sec-miss) and of the data: distribution of the response, range of and correlations between the predictors (@sec-lm-collinearity). If you are still planning the study, see the section on design and power analysis (@sec-summary-design).
+3.  **A-priori model.** Choose the distribution from the type of response (@tbl-summary-response), the predictors from the question (for causal questions with a causal diagram, @sec-causal-framework), and the random effects and correlation structures from the design (@tbl-summary-design). Center and scale numeric predictors if needed (@sec-lm-centering-scaling). Specify this model *before* you look at the results.
+4.  **Fit the model** (@sec-summary-check).
+5.  **Check the residuals and adjust the model** (@tbl-summary-residual). Change the model to remove misfit, not to obtain significance (@sec-select-phacking).
+6.  **Inference:** tests, confidence intervals, predictions (@sec-summary-inference).
+7.  **Report** the analysis so that others can understand and reproduce it (@sec-summary-report).
+
+## From question to model {#sec-summary-strategy}
 
 ::: {#reminder-modelling-strategy}
 :::
 
-```{r chunk_chapter7_chunk0, echo=FALSE}
-knitr::include_graphics(c("images/reminder.jpg"))
+All models in this book are special cases of the general model shown in @sec-intro-model: a linear predictor (fixed effects, possibly with splines or nonlinear functions, plus random effects), a link function, a distribution and, if needed, a correlation structure. Building the a-priori model means choosing each of these components.
+
+**The distribution** follows from the type of response:
+
+| Response | Examples | Model (link) | R functions | Section |
+|----|----|----|----|----|
+| Continuous, roughly symmetric residuals | height, temperature | normal (identity) | `lm`, `lmer`, `glmmTMB`, `gls` | @sec-lm, @sec-re |
+| Continuous, positive, right-skewed | biomass, concentration | log-transformed response with a normal model, or Gamma (log) | `glm(..., family = Gamma(link = "log"))`, `glmmTMB` | @sec-glm-gamma |
+| Counts (0, 1, 2, ...) | number of individuals | Poisson (log); if overdispersed, negative binomial; if needed, zero-inflated | `glm` (Poisson), `MASS::glm.nb`, `glmer`, `glmmTMB(..., family = nbinom2)` | @sec-glm-poisson, @sec-glm-dispersion, @sec-glm-zero-inflation |
+| Binary (0/1) | presence / absence, survived yes / no | binomial (logit; cloglog with an offset for exposure time) | `glm(..., family = binomial)`, `glmer`, `glmmTMB` | @sec-glm-logistic |
+| k out of n | infected out of tested individuals | binomial with `cbind(k, n - k)`; if overdispersed, beta-binomial | `glm`, `glmmTMB(..., family = betabinomial)` | @sec-glm-logistic, @sec-glm-dispersion |
+| Continuous proportions | cover, fraction of time | beta (logit), for values strictly between 0 and 1 (exact 0s and 1s: see the section) | `glmmTMB(..., family = beta_family)` | @sec-glm-beta |
+| Ordered or unordered categories | damage classes, food type chosen | cumulative link model, multinomial regression (only briefly covered) | `ordinal::clm` (`clmm` with random effects), `nnet::multinom` | @sec-glm-logistic-note |
+| Several responses per unit | abundances of several species | multivariate GLM | `glmmTMB` | @sec-corr-multivar |
+| Mechanistic nonlinear relationship | enzyme kinetics, growth curves | nonlinear regression | `nls` | @sec-nls |
+
+: Which model for which type of response? For more R code, see @tbl-cheat-family. {#tbl-summary-response}
+
+**The predictors** follow from the goal of the analysis:
+
+-   For a **causal** question, write down a causal diagram, adjust for confounders, but not for colliders, and for mediators only if you want the direct effect (@sec-causal-framework). Only the effect of interest can be interpreted causally (@sec-causal-table2).
+-   For **prediction**, the goal is the model with the best out-of-sample performance, e.g. via AIC, cross-validation or shrinkage (@sec-select-methods, @sec-select-cv, @sec-select-shrinkage).
+-   An **exploratory** analysis can generate hypotheses, but its p-values are not valid tests of these hypotheses (@sec-select-pvalue).
+
+**The random effects and correlation structures** follow from the design:
+
+| Data structure | Model component | Section |
+|----|----|----|
+| Several observations per site, plot or individual | random intercept for site | @sec-re-intercept |
+| The effect of a predictor varies between groups | random slope of x for site | @sec-re-slope |
+| Groups within groups (plots within sites) | nested random effects (plot within site) | @tip-re-nested |
+| Two independent grouping factors (sites and observers) | crossed random effects (site and observer) | @sec-re-lme4 |
+| A grouping factor with only a few levels | rule of thumb: fixed effect if fewer than about 5-10 levels; but a random effect can also work if you are interested in the population-level effect (simplify after a singular fit) | @tip-re-design, @sec-re-usage |
+| Unequal effort, area or duration (counts) | offset, `offset(log(effort))` | @sec-glm-poisson-note |
+| Repeated measurements over time | trend in time, then possibly a temporal correlation structure | @sec-corr-temporal |
+| Spatial coordinates | spatial trend, then possibly a spatial correlation structure | @sec-corr-spatial |
+| Species related by a phylogeny | phylogenetic correlation structure | @sec-corr-phylo |
+
+: Which random effects and correlation structures for which design? For how to derive the random effects from the study design, see @tip-re-design; for the syntax, see the quick reference (@sec-cheat-re). {#tbl-summary-design}
+
+## Fitting and checking the model {#sec-summary-check}
+
+Packages to fit these models (see the quick reference in the appendix, @sec-cheat, for the syntax):
+
+-   base R (`stats`): `lm`, `glm`.
+-   `lme4`: mixed models, `lmer`, `glmer`.
+-   `mgcv`: GAMs.
+-   `nlme`: variance and correlation structures for linear (mixed) models, using `gls` and `lme`.
+-   `glmmTMB`: generalized linear mixed models with variance and correlation structures and zero-inflation.
+
+Alternatively, you could move to Bayesian estimates with `brms`, which can fit all of these models, makes it easier to include shrinkage, and makes p-value and degrees-of-freedom problems less visible (see [the Bayesian workflow](https://florianhartig.github.io/LearningBayes/3B-Workflow.html) in @hartig2024introduction).
+
+Check the fitted model with residual plots, for GLMs and mixed models with the simulated residuals of DHARMa (@sec-lm-residual-dharma, @sec-glm-dharma), and adjust the model if you find a problem. Work through the problems roughly in the order of the table: a wrong functional form or distribution can create apparent dispersion or correlation problems.
+
+| What you see | Likely cause | What to do | Section |
+|----|----|----|----|
+| Residuals against a predictor show a pattern | wrong functional form | quadratic terms, interactions or splines (GAM) | @sec-lm-functional-form, @sec-lm-gam |
+| Dispersion test significant, ratio \> 1 (counts, k/n data) | overdispersion | negative binomial or beta-binomial family, observation-level random effect, or dispersion model; if excess zeros are the cause, treat zero-inflation first | @sec-glm-dispersion |
+| Spread of residuals changes with a predictor or the fitted values | heteroskedasticity | model the variance (`gls` weights, `glmmTMB` dispformula) | @sec-disp |
+| More zeros than expected under the fitted model | zero-inflation | zero-inflation or hurdle model, compared with the model without via AIC or LRT | @sec-glm-zero-inflation |
+| Residuals correlated in time, space or phylogeny | misfit trend or real autocorrelation | first remove the trend, then add a correlation structure if autocorrelation remains | @sec-corr-model |
+| Random effect estimates not normal, or correlated with predictors | misfit at the group level | check per group, add predictors or random slopes | @sec-re-normality, @sec-re-predictor |
+| Single extreme observations | errors or outliers | check the data; robust regression | @sec-disp-outlier |
+| Convergence warnings, singular fit | model too complex for the data | scale predictors, change the optimizer, simplify the random effects | @sec-re-convergence |
+
+: Typical problems in residual checks and what to do about them. {#tbl-summary-residual}
+
+Note that since version 0.5.0, DHARMa simulates the residuals of mixed models conditional on the fitted random effects by default. To detect patterns at the level of the groups (e.g. spatial autocorrelation between sites), use `simulateResiduals(..., simulateREs = "unconditional")`. Note, however, that unconditional residuals of a model with a fitted correlation structure still contain the full autocorrelation, so they cannot show whether this structure is adequate (see the subsection on conditional residual checks in @sec-corr-temporal).
+
+## Inference {#sec-summary-inference}
+
+Once the model is final, you can test hypotheses and calculate confidence intervals. The main options:
+
+| Model | Tests for single terms | Confidence intervals | Section |
+|----|----|----|----|
+| `lm`, `gls` | t-tests (`summary`), F-tests (`car::Anova`; `anova` is sequential) | `confint()` | @sec-lm-interpretation, @sec-anova |
+| `glm` | z-tests (`summary`; t-tests if the dispersion is estimated, e.g. Gamma), likelihood-ratio tests (`car::Anova`; `anova(..., test = "Chisq")` is sequential) | `confint()` (profile) | @sec-glm-variant (caveats: @cau-glm-before) |
+| `lmer` | t- and F-tests with approximate degrees of freedom (`lmerTest`), likelihood-ratio tests | `confint()` (profile), parametric bootstrap (`bootMer`) | @sec-re-df, @sec-re-selection |
+| `glmer`, `glmmTMB` | z-tests, Wald tests (`car::Anova`), likelihood-ratio tests; for random effects simulated LRTs | `confint()` (`glmer`: profile; `glmmTMB`: Wald by default) | @sec-re-selection, @sec-re-simlrt |
+| Comparisons between groups | `emmeans` with `pairs()` or `contrast()` (Tukey or Dunnett adjustment) | `emmeans` | @sec-lm-posthoc, @nte-anova-emmeans |
+
+: Tests and confidence intervals for the main model types. For mixed models in more detail, see @tbl-re-inference. {#tbl-summary-inference}
+
+Remember that p-values and confidence intervals are only valid for hypotheses that were specified before looking at the data. After model selection, they are too optimistic (@sec-select-pvalue). For nonlinear link functions, report effects on the response scale (@cau-glm-before), and for mixed models, decide whether you want conditional, unconditional or marginal predictions (@tip-re-predterms).
+
+## Reporting {#sec-summary-report}
+
+The methods section should allow others to reproduce your analysis:
+
+-   the question, and whether the analysis was planned in advance or exploratory;
+-   the response, the distribution and link, and the model formula, including the reasons for the random effects;
+-   the handling of missing values, transformations, centering and scaling;
+-   which residual checks you did (e.g. DHARMa simulated residuals: uniformity, dispersion, zero-inflation), and how you adjusted the model;
+-   how model selection was done, if any;
+-   how p-values and confidence intervals were calculated (test type, e.g. Wald or likelihood ratio test, and CI method, e.g. profile or bootstrap; for mixed models also the estimation method, ML or REML);
+-   the software and package versions (and citations, e.g. `citation("glmmTMB")`).
+
+Closely related is the reproducibility of your analysis, which reviewers and journals increasingly expect:
+
+-   Do the entire analysis in a script (or a Quarto / R Markdown document), from reading the raw data to the final figures, not in the console. Never change the raw data by hand; do all corrections in the script. Use relative paths (e.g. with an RStudio project), so that the script also runs on another computer.
+-   Set a seed (`set.seed()`) at the top of the script and before each step that uses random numbers (simulations, bootstrap, simulated LRTs, cross-validation, imputation), so that you and others get the same results. DHARMa fixes its own seed by default (argument `seed` of `simulateResiduals()`), so its residuals are reproducible anyway.
+-   Record the R and package versions with `sessionInfo()` (results can change between versions, even for the same seed). To reproduce them later, use the `renv` package (`renv::init()`, `renv::snapshot()` to write the versions to `renv.lock`, `renv::restore()` to reinstall them).
+-   Deposit the data (with a short description of all columns), the code and the `renv.lock` file together with the paper, e.g. on Zenodo or Dryad, and cite the DOI in a data and code availability statement.
+
+The results section should report effect sizes with confidence intervals, on an interpretable scale, together with the number of observations and groups, and, where appropriate, effect plots with confidence intervals (@sec-lm-visualization). For GLMs, the coefficients are on the scale of the link function, so they should be translated (@tbl-summary-link):
+
+| Link | Meaning of a coefficient $\beta$ | What to report |
+|----|----|----|
+| identity (`lm`, normal) | change of y per unit of x | $\beta$ with CI, in units of y |
+| log (Poisson, negative binomial, Gamma) | y is multiplied by $e^\beta$ per unit of x | rate ratio $e^\beta$ with CI, or the percent change $(e^\beta - 1) \cdot 100$ |
+| logit (binomial) | the odds are multiplied by $e^\beta$ per unit of x | odds ratio $e^\beta$ with CI |
+| any link | predictions on the scale of the response | predicted means with CIs, e.g. `emmeans(fit, ~ x, type = "response")`; for mixed models, say whether these are unconditional (random effects at zero) or marginal predictions (@tip-re-predterms) |
+
+: How to report coefficients for different link functions. {#tbl-summary-link}
+
+For example, for the number of warp breaks in a weaving experiment (negative binomial GLM), the effects as rate ratios with CIs and the predicted means per tension level are:
+
+```{r, message=FALSE}
+library(MASS)
+library(emmeans)
+fit = glm.nb(breaks ~ tension + wool, data = warpbreaks)
+exp(cbind(estimate = coef(fit), confint(fit))) # rate ratios with 95% CI
+emmeans(fit, ~ tension, type = "response")     # means on the response scale
 ```
 
-***Things to note:***
+A results sentence could then read: "Compared to low tension, the number of breaks was 26% lower at medium tension (rate ratio 0.74, 95% CI 0.58-0.94) and 40% lower at high tension (0.60, 0.47-0.76; negative binomial GLM, n = 54, wool type held constant, profile-likelihood CIs)." For a mixed model, also state the number of observations and groups per random effect and the estimated random effect standard deviations (`VarCorr()`), e.g. "480 observations from 24 sites; standard deviation between sites 0.4 on the log scale". For a numeric predictor, calculate predictions with `predict(..., se.fit = TRUE)` on the link scale, add ± 1.96 standard errors, back-transform with the inverse link (e.g. `exp()` for the log link), and plot them together with the data (@sec-lm-prediction; for mixed models, @sec-re-prediction). An example of a methods and results text for an ANOVA is in @sec-anova-recommend.
 
-1.  For an lm, the link function is the identity function.
-2.  Fixed effects $\operatorname{f}(x)$ can be either a polynomial $\left( a \cdot x = b \right)$ = linear regression, a nonlinear function = nonlinear regression, or a smooth spline = generalized additive model (GAM).
-3.  Random effects assume normal distribution for groups.
-4.  Random effects can also act on fixed effects (random slope).
-5.  For an lm with correlation structure, C is integrated in Dist. For all other GLMMs, there is another distribution, plus the additional multivariate normal on the linear predictor.
+::: callout-caution
+#### Common mistakes in reporting
 
-***Strategy for analysis:***
-
-1.  Define formula via scientific questions + confounders.
-2.  Define type of GLM (lm, logistic, Poisson).
-3.  Blocks in data -\> Random effects, start with random intercept.
-
-Fit this base model, then do residual checks for
-
-- Wrong functional form -\> Change fitted function.
-- Wrong distribution-\> Transformation or GLM adjustment.
-- (Over)dispersion -\> Variable dispersion GLM.
-- Heteroskedasticity -\> Model dispersion.
-- Zero-inflation -\> Add ZIP term.
-- Correlation -\> Add correlation structure.
-
-And adjust the model accordingly.
-
-Packages to fit these models (see the cheat sheet in the appendix, @sec-cheat, for the syntax):
-
-- base R (`stats`): `lm`, `glm`.
-- `lme4`: mixed models, `lmer`, `glmer`.
-- `mgcv`: GAM.
-- `nlme`: Variance and correlations structure modeling for linear (mixed) models, using `gls` + `lme`.
-- `glmmTMB`: Generalized linear mixed models with variance / correlation modeling and zip term.
-
-Alternatively, you could move to Bayesian estimates with `brms`, which allows all that, easier inclusion of shrinkage, and p-value / df problems less visible
+-   reporting p-values without effect sizes and confidence intervals;
+-   reading a non-significant result as "no effect" (look at the confidence interval instead);
+-   concluding that an effect differs between groups because it is significant in one group but not in the other, instead of testing the difference (@nte-anova-emmeans);
+-   interpreting GLM coefficients as if they were on the response scale;
+-   reporting a model found by model selection as if it had been planned in advance (@sec-select-pvalue);
+-   using causal language for a predictive or exploratory analysis (@sec-causal).
+:::
 
 ## Thoughts about the analysis pipeline {#sec-summary-pipeline}
 
 ::: {#thoughts-about-the-analysis-pipeline}
 :::
 
-In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the protocol that I sketched in @sec-summary-strategy. What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
+In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the workflow sketched in @sec-summary-overview. What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
 
 - What is the typical error of the estimate?
 - What is the Type I error (false positives)?
@@ -162,4 +273,4 @@ To find the sample size for, say, 80% power, wrap this in a loop over `n`. The s
 ::: {#next-steps}
 :::
 
-This book covered the core GLMM toolbox. Natural next steps are the fully Bayesian treatment of these models (`brms` / Stan), which sidesteps several of the degrees-of-freedom and p-value problems we flagged along the way; machine-learning approaches when the goal is purely prediction; and domain-specific extensions such as joint species distribution models, survival / time-to-event models, and structural equation models - each of which builds directly on the ideas developed here.
+This book covered the core GLMM toolbox. Natural next steps are the fully Bayesian treatment of these models (`brms` / Stan), which sidesteps several of the degrees-of-freedom and p-value problems we flagged along the way, and hierarchical models such as [error-in-variable](https://florianhartig.github.io/LearningBayes/4A-ErrorInVariable.html), [occupancy](https://florianhartig.github.io/LearningBayes/4B-Occupancy.html) and [state-space models](https://florianhartig.github.io/LearningBayes/4C-StateSpaceModels.html) (all covered in @hartig2024introduction); machine-learning approaches when the goal is purely prediction; and domain-specific extensions such as joint species distribution models, survival / time-to-event models, and structural equation models - each of which builds directly on the ideas developed here.

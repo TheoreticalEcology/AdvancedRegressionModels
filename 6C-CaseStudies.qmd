@@ -10,7 +10,7 @@ set.seed(42)
 
 # Case studies {#sec-cases}
 
-General strategy for analysis (see also @sec-summary-strategy):
+General strategy for analysis (see also the workflow in @sec-summary):
 
 1.  Define formula via scientific questions + confounders.
 2.  Define type of GLM (lm, logistic, Poisson).
@@ -182,8 +182,6 @@ The results remain that there is no effect of MasFem!
 @silberzahn2018many published a "meta-analysis" in *Advances in Methods and Practices in Psychological Science*, where they had provided 29 teams with the same data set to answer one research question: "*\[W\]hether soccer players with dark skin tone are more likely than those with light skin tone to receive red cards from referees*".
 
 **Spoiler**: They found that the "\[a\]nalytic approaches varied widely across the teams, and the estimated effect sizes ranged from 0.89 to 2.93 (Mdn = 1.31) in odds-ratio units", highlighting that different approaches in data analysis can yield significant variation in the results.
-
-You can find the paper "Many Analysts, One Data Set: Making Transparent How Variations in Analytic Choices Affect Results" at: <https://journals.sagepub.com/doi/10.1177/2515245917747646>.
 
 The data is in
 
@@ -621,9 +619,6 @@ data =
 
 numFac = numFactor(data$sLat, data$sLon)
 group = factor(rep(1, nrow(data)))
-
-numFac = numFactor(data$sLat, data$sLon)
-group = factor(rep(1, nrow(data)))
 modelJoint = glmmTMB(Abundance~ 0 +
                  offset(log(duration)) + Species + Species:(site_type + 
                   sTemp_Water + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +
@@ -638,7 +633,7 @@ modelJoint = glmmTMB(Abundance~ 0 +
 Unconditional residuals:
 
 ```{r}
-plot(simulateResiduals(modelJoint))
+plot(simulateResiduals(modelJoint, simulateREs = "unconditional"))
 ```
 
 Conditional residuals:
@@ -870,7 +865,7 @@ model5 = glmmTMB(logSBDensity~
               start=list(theta=c(rep(0, 4), rep(0,nsp),corrs)),
               data = data)
 summary(model5)
-simulateResiduals(model5, plot = TRUE) # Unconditional simulations
+simulateResiduals(model5, plot = TRUE, simulateREs = "unconditional") # Unconditional simulations
 ```
 :::
 
@@ -1041,6 +1036,8 @@ Hint: it is possible that the possibility to observe a species depends on wind, 
 
 Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survivedOf20, 20 - survivedOf20) \~ predictor, data = data, family = "binomial")
 
+Hint 3: lizards may be present but not observed (imperfect detection, see Hint 1). Occupancy models, which separate the true presence from the detection process, are introduced with the same data set in [the chapter on occupancy models](https://florianhartig.github.io/LearningBayes/4B-Occupancy.html) of @hartig2024introduction.
+
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
@@ -1069,5 +1066,5 @@ testSpatialAutocorrelation(grp,
       y = aggregate(y ~ plot, d, mean)$y)
 ```
 
-Work through the diagnostic ladder (@sec-summary-strategy) in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
+Work through the diagnostic ladder (@tbl-summary-residual) in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
 :::

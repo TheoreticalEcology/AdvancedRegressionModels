@@ -1,71 +1,193 @@
-# Cheat sheet {#sec-cheat}
+# Quick reference {#sec-cheat}
+
+This appendix collects lookup tables for your own analysis: first, typical problems and where to find help in this book; then the R syntax for the models, checks and outputs used in the book. Each row links to the section where the topic is explained. For the order in which to do things, see the workflow chapter (@sec-summary).
+
+## Where to find what {#sec-cheat-lookup}
+
+| My problem | Where to look |
+|----|----|
+| Which model fits my type of response? | @tbl-summary-response |
+| How do I interpret the regression table? | @sec-lm-interpretation |
+| How do I check the residuals of my model? | @sec-lm-residual, @sec-glm-dharma |
+| The relationship is not linear | @sec-lm-functional-form, @sec-lm-gam, @sec-nls |
+| I have a categorical predictor: how to read the coefficients? | @sec-lm-contrast |
+| Which groups differ from each other? | @sec-lm-posthoc, @nte-anova-emmeans |
+| I have an interaction | @sec-lm-interaction, @sec-glm-interaction |
+| My predictors are correlated | @sec-lm-collinearity |
+| Should I center or scale my predictors? | @sec-lm-centering-scaling |
+| A reviewer asks for type I, II or III ANOVA | @sec-anova-choice, @sec-anova-recommend |
+| My observations are grouped or repeated | @sec-re, @tbl-summary-design |
+| My mixed model does not converge or is singular | @sec-re-convergence |
+| How do I get p-values for a mixed model? | @sec-re-df, @sec-re-selection |
+| Do I need a random slope? | @sec-re-slope, @sec-re-pergroup, @sec-re-simlrt |
+| How much variance is explained by the random effects? | @sec-re-vpc |
+| How much variance does my mixed model explain (R²)? | @sec-re-anova |
+| Log-transform the response or use a GLM (e.g. Gamma)? | @sec-glm-gamma, @sec-disp-transform |
+| Which package: lme4 or glmmTMB? | @sec-re-package |
+| I have missing values | @sec-miss |
+| Which variables should I include to estimate a causal effect? | @sec-causal-framework |
+| Which predictor is most important? | @sec-lm-scaling, @sec-causal-table2 |
+| How do I select between models? | @sec-select-methods, @sec-select-problems |
+| I have many predictors and want to predict | @sec-select-shrinkage, @sec-select-cv |
+| My counts or k/n data are overdispersed | @sec-glm-dispersion |
+| I have many zeros | @sec-glm-zero-inflation |
+| My counts were sampled with different effort or area | @sec-glm-poisson-note |
+| The spread of the residuals is not constant | @sec-disp |
+| I have outliers | @sec-disp-outlier |
+| My residuals are correlated in time, space or phylogeny | @sec-corr |
+| How do I make predictions with confidence intervals? | @sec-lm-prediction, @sec-re-prediction |
+| How large must my study be? | @sec-summary-design |
+| What should I report? | @sec-summary-report |
+| Can I use Bayesian methods instead? | @sec-summary-next |
+
+: Typical problems and where to find help in this book. {#tbl-cheat-lookup}
 
 ## Formula syntax {#sec-cheat-formula}
 
 ::: {#formula-syntax}
 :::
 
-| Formula | Interpretation |
-|----|----|
-| `y ~ x` | Intercept + slope |
-| `y ~ 1` | intercept only |
-| `y ~ x - 1` or `x + 0` | no intercept (numeric x: line through origin; factor: one mean per level) |
-| `log(y) ~ sqrt(x)` | predictor and response variable can be transformed |
-| `y ~ x1 + x2` | multiple predictors can be added |
-| `y ~ x1 * x2` | interaction and main effects |
-| `y ~ x1:x2` | only interaction |
-| `y ~ (x1 + x2)^2` | all 2nd order interactions, works also with 3rd order \^3 etc |
-| `y ~ I(x^2)` | I() forces mathematical interpretation of whatever is in the parenthesis |
-| `y ~ s(x)` | spline (works only for mgcv) |
-| `y ~ te(x1, x2)` | tensor spline (works only for mgcv) |
-| `y ~.` | include all variables as main effects |
-| `y~.^2` | include all variables as main effects and their 2nd order interactions |
+| Formula | Interpretation | Section |
+|----|----|----|
+| `y ~ x` | intercept + slope | @sec-lm-simple |
+| `y ~ 1` | intercept only | @sec-lm-regression-syntax |
+| `y ~ x - 1` or `y ~ x + 0` | no intercept (numeric x: line through origin; factor: one mean per level) | @sec-lm-regression-syntax |
+| `log(y) ~ sqrt(x)` | predictor and response variable can be transformed | @sec-lm-functional-form |
+| `y ~ x1 + x2` | multiple predictors | @sec-lm-multiple |
+| `y ~ x1 * x2` | interaction and main effects | @sec-lm-interaction-syntax |
+| `y ~ x1:x2` | only the interaction | @sec-lm-interaction-syntax |
+| `y ~ (x1 + x2)^2` | all 2nd order interactions; works also with 3rd order (`^3`) etc. | @sec-lm-interaction-syntax |
+| `y ~ x + I(x^2)` | `I()` forces the mathematical interpretation of whatever is in the parentheses (here a quadratic effect) | @sec-lm-regression-syntax |
+| `y ~ s(x)` | spline (mgcv only) | @sec-lm-gam |
+| `y ~ te(x1, x2)` | tensor spline (mgcv only) | @sec-lm-interaction-gam |
+| `y ~ .` | all variables in the data as main effects | @sec-lm-multiple |
+| `y ~ .^2` | all variables as main effects and their 2nd order interactions | @sec-lm-interaction-syntax |
+| `y ~ x + offset(log(effort))` | offset, a term with a fixed coefficient of 1 (e.g. for sampling effort or area in log-link GLMs) | @sec-glm-poisson-note |
 
-: Formula syntax
+: Formula syntax {#tbl-cheat-formula}
+
+## Preparing predictors {#sec-cheat-predictors}
+
+| What | Syntax | Section |
+|----|----|----|
+| Center / scale a predictor (keeps the transformation as attributes) | `data$sx = scale(data$x)`; center only: `scale(data$x, scale = FALSE)` | @sec-lm-centering-scaling |
+| Set the reference level of a factor | `data$f = relevel(factor(data$f), ref = "control")` | @sec-lm-contrast |
+| Sum-to-zero contrasts (e.g. for type III ANOVA) | `lm(y ~ f * x, data = data, contrasts = list(f = contr.sum))` | @sec-anova-contrast |
+| Check collinearity | `cor(data[, c("x1", "x2")])`, `car::vif(fit)` | @sec-lm-collinearity |
+
+: Syntax for preparing predictors. {#tbl-cheat-predictors}
+
+## Model families {#sec-cheat-family}
+
+| Response | R code | Section |
+|----|----|----|
+| Continuous, normal residuals | `lm(y ~ x)`, `lmer(y ~ x + (1|group))`, `glmmTMB(y ~ x)` | @sec-lm, @sec-re |
+| Counts | `glm(y ~ x, family = poisson)` | @sec-glm-poisson |
+| Overdispersed counts | `MASS::glm.nb(y ~ x)`, `glmmTMB(y ~ x, family = nbinom2)` (or `nbinom1`) | @sec-glm-dispersion |
+| Binary (0/1) | `glm(y ~ x, family = binomial)` | @sec-glm-logistic |
+| k out of n | `glm(cbind(k, n - k) ~ x, family = binomial)`; if overdispersed, `glmmTMB(..., family = betabinomial)` | @sec-glm-logistic, @sec-glm-dispersion |
+| Positive continuous | `glm(y ~ x, family = Gamma(link = "log"))` | @sec-glm-gamma |
+| Proportions between 0 and 1 | `glmmTMB(y ~ x, family = beta_family)` | @sec-glm-beta |
+| Ordered categories | `ordinal::clm(y ~ x)`, with random effects `ordinal::clmm()` | @sec-glm-logistic-note |
+| Unordered categories | `nnet::multinom(y ~ x)` | @sec-glm-logistic-note |
+| Nonlinear function | `nls(y ~ a * x / (b + x), start = list(a = 1, b = 1))` | @sec-nls |
+| GAM | `mgcv::gam(y ~ s(x), family = poisson)` | @sec-lm-gam |
+| Mixed models with any of these families | `glmer(..., family = ...)`, `glmmTMB(..., family = ...)` | @sec-re, @sec-glm-glmm |
+
+: Model families and the corresponding R code. For which model to choose, see @tbl-summary-response. {#tbl-cheat-family}
 
 ## Random effect syntax {#sec-cheat-re}
 
 ::: {#random-effect-syntax}
 :::
 
-The following formulas are used by many R packages (e.g. glmmTMB and lme4). For a detailed overview, see [Ben Bolkers glmmFAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#model-specification)
+The following formulas are used by many R packages (e.g. glmmTMB and lme4), explained in the chapter on mixed models (@sec-re-lme4, @tip-re-design). For a detailed overview, see [Ben Bolker's glmmFAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#model-specification).
 
-| Formula | Interpretation |
-|----|----|
-| `(1|group)` | Random intercept within group |
-| `(x|group)` | Random intercept within group and random slope for x within group; correlation between random intercept and random slope |
-| `(0+x|group)` or `(x-1|group)` | Random slope for x within group without random intercept for group |
-| `(0+x|group) + (1|group)` or `(x||group)` | Random intercept and slope but uncorrelated |
-| `(1|group/site)` | Same as `(1|group) + (1|group:site)`: nested random effect (sites within group) |
-| `(1|group:site)` | Only the group-by-site intercepts, without a group-level intercept |
-| `(1|group) + (1|site)` | Random intercept within groups and within sites (crossed random effects) |
-
-### Correlation structures {#sec-cheat-corr}
-
-#### glmmTMB {#sec-cheat-corr-glmmtmb}
-
-glmmTMB supports several correlation structures but we will show here only two common representatives. See also the [glmmTMB vignette](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html) about correlation structures.
-
-+----------+--------------------------------------------------+----------------------------------------------------------------------------------------+
-| Type     | Formula                                          | Interpretation                                                                         |
-+==========+==================================================+========================================================================================+
-| Spatial  | `coords = numFactor(cbind(Latitude, Longitude))` | Use `glmmTMB::numFactor()` function to represent your coordinates as a factor.         |
-|          |                                                  |                                                                                        |
-|          | `y~x + exp(0+coords|group)`                      | Random intercepts per location, exponentially decaying covariance (geostatistical).    |
-+----------+--------------------------------------------------+----------------------------------------------------------------------------------------+
-| Temporal | `yearFactor = factor(years)`                     | Change your time variable to factor.                                                   |
-|          |                                                  |                                                                                        |
-|          | `y~x + ar1(0+yearFactor|group)`                  | Random intercepts per time point with AR(1) correlation within each group.             |
-+----------+--------------------------------------------------+----------------------------------------------------------------------------------------+
-
-#### lme4 {#sec-cheat-corr-lme4}
-
-lme4 does not support correlation structures
-
-#### nlme::gls {#sec-cheat-corr-gls}
-
-| Type | Formula | Interpretation |
+| Formula | Interpretation | Section |
 |----|----|----|
-| Spatial | `gls(y~.., correlation = corExp(form = ~ Lat + Long|group))` | Spatial correlation structure (no random effects) between sites within group (group is optional) |
-| Temporal | `gls(y~.., correlation = corAR1(form = ~ years | group))` | Temporal correlation structure (no random effects) between years within group (group is optional) |
-| Phylogeny | `library(ape); gls(y~.., correlation = corBrownian(phy = phyTree, form = ~ species | group))` | Phylogenetic correlation structure (no random effects) between species within group (group is optional) |
+| `(1|group)` | Random intercept within group | @sec-re-intercept |
+| `(x|group)` | Random intercept within group and random slope for x within group; correlation between random intercept and random slope | @sec-re-slope |
+| `(0+x|group)` or `(x-1|group)` | Random slope for x within group without random intercept for group | @sec-re-slope |
+| `(0+x|group) + (1|group)` or `(x||group)` | Random intercept and slope but uncorrelated | @sec-re-slope |
+| `(1|group/site)` | Same as `(1|group) + (1|group:site)`: nested random effect (sites within group) | @tip-re-nested |
+| `(1|group:site)` | Only the group-by-site intercepts, without a group-level intercept | @tip-re-nested |
+| `(1|group) + (1|site)` | Random intercept within groups and within sites (crossed random effects) | @sec-re-lme4 |
+
+: Random effect syntax in lme4 and glmmTMB. {#tbl-cheat-re}
+
+## Correlation structures {#sec-cheat-corr}
+
+Correlation structures are explained in @sec-corr (temporal: @sec-corr-temporal, spatial: @sec-corr-spatial, phylogenetic: @sec-corr-phylo).
+
+### glmmTMB {#sec-cheat-corr-glmmtmb}
+
+glmmTMB supports several correlation structures; the following table shows two common ones. See also the [glmmTMB vignette](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html) about correlation structures.
+
+| Type | Code | Interpretation | Section |
+|----|----|----|----|
+| Spatial | `data$coords = numFactor(data$x, data$y)`; `data$group = factor(1)`; `glmmTMB(y ~ x + exp(0 + coords | group), data = data)` | random intercepts per location with exponentially decaying covariance (geostatistical); `group = factor(1)` if there is one spatial field | @sec-corr-spatial |
+| Temporal | `data$yearF = factor(data$year)`; `glmmTMB(y ~ x + ar1(0 + yearF | group), data = data)` | random intercepts per time point (time must be a factor) with AR(1) correlation within each group | @sec-corr-temporal |
+
+: Correlation structures in glmmTMB. {#tbl-cheat-corr-glmmtmb}
+
+### lme4 {#sec-cheat-corr-lme4}
+
+lme4 has no correlation structures for residuals (use glmmTMB, or `nlme` for linear models).
+
+### nlme::gls {#sec-cheat-corr-gls}
+
+| Type | Formula | Interpretation | Section |
+|----|----|----|----|
+| Spatial | `gls(y~.., correlation = corExp(form = ~ Lat + Long|group))` | Spatial correlation structure (no random effects) between sites within group (group is optional) | @sec-corr-spatial |
+| Temporal | `gls(y~.., correlation = corAR1(form = ~ years | group))` | Temporal correlation structure (no random effects) between years within group (group is optional) | @sec-corr-temporal |
+| Phylogeny | `library(ape); gls(y~.., correlation = corBrownian(phy = phyTree, form = ~ species | group))` | Phylogenetic correlation structure (no random effects) between species within group (group is optional) | @sec-corr-phylo |
+
+: Correlation structures in `nlme::gls`. {#tbl-cheat-corr-gls}
+
+## Dispersion, zero-inflation and offsets {#sec-cheat-dispersion}
+
+| What | Syntax | Section |
+|----|----|----|
+| Offset for effort or area (log link) | `glm(y ~ x + offset(log(effort)), family = poisson)` | @sec-glm-poisson-note |
+| Exposure time for binary data | `glm(y ~ x + offset(log(time)), family = binomial(link = "cloglog"))` | @sec-glm-logistic-note |
+| Observation-level random effect (overdispersion) | `data$obs = factor(1:nrow(data))`, then `glmer(y ~ x + (1|obs), family = poisson, data = data)` | @sec-glm-dispersion |
+| Zero-inflation | `glmmTMB(y ~ x, ziformula = ~ 1, family = poisson)` (or `ziformula = ~ x`) | @sec-glm-zero-inflation |
+| Dispersion depending on predictors (glmmTMB) | `glmmTMB(y ~ x, dispformula = ~ group)` | @sec-disp-model, @sec-disp-glmm |
+| Variance depending on predictors (gls) | `gls(y ~ x, weights = varIdent(form = ~ 1 | group))` | @sec-disp-model |
+
+: Syntax for dispersion, zero-inflation and offsets. {#tbl-cheat-dispersion}
+
+## Residual checks with DHARMa {#sec-cheat-dharma}
+
+| What | Syntax | Section |
+|----|----|----|
+| Simulate residuals and plot them | `res = simulateResiduals(fit, plot = TRUE)` | @sec-lm-residual-dharma, @sec-glm-dharma |
+| Residuals against a predictor | `plotResiduals(res, form = data$x)` | @sec-glm-dharma |
+| Dispersion | `testDispersion(res)` | @sec-glm-overdispersion-detect |
+| Zero-inflation | `testZeroInflation(res)` | @sec-glm-zero-inflation-detect |
+| Residuals aggregated per group (e.g. per year or site) | `res2 = recalculateResiduals(res, group = data$year)` | @sec-corr-hurricane |
+| Temporal autocorrelation | `testTemporalAutocorrelation(res2, time = unique(data$year))` | @sec-corr-temporal |
+| Spatial autocorrelation | `testSpatialAutocorrelation(res, x = data$x, y = data$y)` | @sec-corr-spatial |
+| Re-simulate the random effects (default: conditional on the fitted ones) | `simulateResiduals(fit, simulateREs = "unconditional")` | @sec-corr-temporal |
+| Simulated likelihood ratio test | `simulateLRT(m0, m1)` | @sec-re-simlrt |
+
+: Main DHARMa functions. {#tbl-cheat-dharma}
+
+## Tests, effects and predictions {#sec-cheat-inference}
+
+| What | Syntax | Section |
+|----|----|----|
+| ANOVA table (type II / III) | `car::Anova(fit)`, `car::Anova(fit, type = "III")` | @sec-anova-collinearity, @sec-anova-contrast |
+| Likelihood ratio test of nested models | `anova(m0, m1)` | @sec-select-lrt |
+| p-values for `lmer` models | load `lmerTest` before fitting | @sec-re-df |
+| Confidence intervals of parameters | `confint(fit)` | @tbl-summary-inference |
+| Group means and comparisons | `emm = emmeans(fit, ~ treatment)`, then `pairs(emm)` or `contrast(emm, "trt.vs.ctrl")` | @sec-lm-posthoc, @nte-anova-emmeans |
+| Means on the response scale (GLMs) | `emmeans(fit, ~ treatment, type = "response")` | @cau-glm-before |
+| Predictions with standard errors | `predict(fit, newdata = newData, se.fit = TRUE)` | @sec-lm-prediction |
+| Conditional / unconditional predictions of mixed models | `predict(fit, re.form = NULL)` / `predict(fit, re.form = NA)` | @tip-re-predterms, @sec-re-prediction |
+| Confidence intervals for predictions of mixed models | `bootMer(fit, FUN = function(m) predict(m, re.form = NA), nsim = 100)` | @sec-re-prediction |
+| AIC comparison | `AIC(m1, m2)` | @sec-select-aic |
+| Random effect variances and variance partitioning | `VarCorr(fit)` | @sec-re-vpc |
+| Marginal and conditional R² of a mixed model | `MuMIn::r.squaredGLMM(fit)` | @sec-re-anova |
+
+: Functions for tests, effects and predictions. For an overview of tests and CIs for mixed models, see @tbl-re-inference. {#tbl-cheat-inference}

@@ -10,6 +10,20 @@ set.seed(42)
 
 # Model selection {#sec-select}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   why a model can be too simple or too complex, and how adding variables affects bias and variance (@sec-select-biasvar);
+-   how to select models with likelihood-ratio tests, AIC and shrinkage, and what each of them answers (@sec-select-lrt, @sec-select-aic, @sec-select-shrinkage);
+-   why model selection is a problem when you want to interpret effects and p-values, and how to evaluate predictions with cross-validation (@sec-select-problems, @sec-select-cv).
+
+**Workflow steps** (@sec-intro-workflow): step 1 (question and goal), step 3 (choice of predictors), step 6 (inference after model selection).
+
+Prerequisites: causal inference (@sec-causal), the linear model (@sec-lm).
+:::
+
 ## The bias-variance trade-off {#sec-select-biasvar}
 
 ::: {#the-bias-variance-trade-off}
@@ -132,7 +146,11 @@ AIC(m2)
 
 **Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation (see @sec-select-cv), so what AIC is optimizing is essentially the predictive error of the model on new data.
 
-**Note 2:** There are other information criteria, such as BIC, DIC, WAIC etc., as well as sample-size corrected versions of either of them (e.g. AICc). The difference between the methods is beyond the scope of this course. For the most common one (BIC), just note that this penalizes more strongly for large data sets, and thus corrects a tendency of AIC to overfit for large data sets.
+::: {#nte-select-bic .callout-note}
+#### AIC or BIC?
+
+The most common alternative to the AIC is the BIC (Bayesian information criterion), $-2 \ln(\text{likelihood}) + \ln(n) \, k$. Instead of 2 per parameter, BIC adds $\ln(n)$ per parameter, which is more than 2 for any data set with at least 8 observations, so BIC selects smaller models, and the more so the larger the data. The two criteria answer different questions: AIC aims at the model that predicts best, BIC at the true model, assuming it is among the candidates [@aho2014model]. If they disagree, the extra parameters improve the fit, but not enough to pass BIC's stronger penalty: the larger model probably predicts better, but whether the extra structure really exists remains uncertain. State which of the two questions you ask. Note also that in mixed models, $n$ is ambiguous (number of observations or number of groups?); R uses the number of observations (for an example where this matters, see the case study on species cover, @sec-corr-multivar-cover). Other criteria (AICc, WAIC, DIC) exist, but are beyond the scope of this course; Bayesian model selection is covered in [the chapter on Bayesian model selection](https://florianhartig.github.io/LearningBayes/3A-ModelSelection.html) of @hartig2024introduction.
+:::
 
 ::: {.callout-caution icon="false"}
 #### Exercise
@@ -492,6 +510,17 @@ nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
 ```
 
 Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see @roberts2017cross, methods implemented in package `blockCV`{.R}, see <https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html>.
+
+## Take-home messages {#sec-select-takehome}
+
+::: callout-tip
+
+1.  Do not fit the most complex model you can imagine: added variables usually increase the variance of the estimates (bias-variance trade-off). The exception are precision variables that explain much of the response and thereby reduce the uncertainty (@tip-select-precision).
+2.  Choose the method by the question. An LRT tests a pre-specified comparison of nested models with error control; AIC ranks models (also non-nested) by expected predictive performance and is more liberal than an LRT at alpha = 0.05; shrinkage and cross-validation serve prediction.
+3.  If you want to estimate an effect, choose the variables from causal reasoning (@sec-causal), not by model selection: it can silently change the meaning of the remaining estimates.
+4.  Do not interpret p-values and CIs of a model that was selected on the same data: stepwise or global selection is hidden multiple testing and inflates the type I error. Fix your hypothesis before looking at the data to avoid p-hacking.
+5.  Evaluate predictive models on data that were not used for fitting (cross-validation). For non-independent data (e.g. repeated measures, space), block the cross-validation, otherwise the error is too optimistic.
+:::
 
 ## Case studies {#sec-select-cases}
 

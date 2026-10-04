@@ -10,6 +10,21 @@ set.seed(42)
 
 # ANOVA and other tests on the LM {#sec-anova}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   that an ANOVA is a test on top of a regression model, how it measures and tests the improvement of model fit, and how to partition the model into custom blocks (@sec-anova-idea, @sec-anova-test, @sec-anova-custom);
+-   why the order of the predictors matters for collinear predictors, and how to choose between type I, II and III ANOVA (@sec-anova-collinearity, @sec-anova-choice);
+-   why contrast coding and centering change type III results for terms in interactions, and how `emmeans` gives results that do not depend on the coding, including simple effects (@sec-anova-contrast, @nte-anova-emmeans);
+-   why raw variance fractions are too high for terms with many df (@sec-anova-complexity).
+
+**Workflow steps** (@sec-intro-workflow): step 3 (coding of factors), step 6 (tests on the fitted model).
+
+Prerequisites: the linear model and its handling of categorical predictors (@sec-lm, @sec-lm-categorical).
+:::
+
 ## The idea of ANOVA {#sec-anova-idea}
 
 ::: {#the-idea-of-anova}
@@ -626,6 +641,17 @@ Based on this, one could think it doesn't matter then if we use a regression mod
 - It provides the same output for all cases, with clear ideas about how to check residuals etc.
 
 - It allows us to adjust for the effects of covariates
+
+## Take-home messages {#sec-anova-takehome}
+
+::: callout-tip
+
+1.  An ANOVA is not a model but a test that is run on a fitted model: it asks how much the fit improves when a term is added, and whether this improvement is larger than expected if the term had no effect.
+2.  With collinear or unbalanced data, the type I ANOVA depends on the order of the terms in the formula. Use type II if the model has no interaction; with interactions, think about which hypothesis you want to test. Report which type you used.
+3.  The coding of a factor never changes the fitted model, but it changes type III tests of terms that are part of an interaction. With type III, use sum-to-zero contrasts and center numeric predictors in interactions, or use `emmeans::joint_tests()`, which does not depend on the coding.
+4.  If the model has an interaction, describe the effect of one predictor at the levels (or values) of the other, with estimates and confidence intervals (`emmeans`). "Significant in one group, not significant in the other" is not evidence for an interaction; test the difference of the effects.
+5.  Raw sums of squares and R2 fractions describe your fitted model, are not the true importance of a predictor, and are too high for terms with many df (e.g. a factor with many levels). For a simple lm use the adjusted R2; for more complex models report the raw fractions as a description only, or use cross-validation on hold-out data.
+:::
 
 ## Case studies {#sec-anova-cases}
 

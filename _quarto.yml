@@ -32,7 +32,7 @@ book:
       - 4A-GLMs.qmd    
       - 4B-Heteroskedasticity.qmd
       - 4C-CorrelationStructures.qmd
-    - part: "Summary and references"
+    - part: "Workflow"
       chapters: 
       - 5A-Summary.qmd   
   appendices:
@@ -53,7 +53,9 @@ execute:
 format:
   html:
     theme: cosmo
+    css: styles.css
     citation-location: margin
+    include-after-body: margin-refs.html
     link-external-newwindow: true
 editor: visual
 

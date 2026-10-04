@@ -10,6 +10,20 @@ set.seed(42)
 
 # Causal inference {#sec-causal}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   what a causal effect is, and how experiments and statistical control (adjustment) remove confounding (@sec-causal-correlation, @sec-causal-control);
+-   which variables to include in a regression: confounders yes, colliders no, mediators depending on the question, using causal graphs to decide (@sec-causal-framework, @sec-causal-graph);
+-   how to report the result without the Table 2 fallacy, how to estimate whole graphs with structural equation models, and how to partial out confounders (@sec-causal-table2, @sec-causal-sem, @sec-causal-partialling).
+
+**Workflow steps** (@sec-intro-workflow): step 1 (question and goal), step 3 (choice of predictors).
+
+Prerequisites: the linear model (@sec-lm), in particular multiple regression (@sec-lm-multiple).
+:::
+
 ## Correlations != causality {#sec-causal-correlation}
 
 ::: {#correlations-causality}
@@ -245,7 +259,7 @@ Structural equation models (SEMs) are models that are designed to estimate entir
 
 For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can be modeled latent.
 
-If you have REs (@sec-re) or GLM-type dependencies (@sec-glm), the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN. However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.
+If you have REs (@sec-re) or GLM-type dependencies (@sec-glm), the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN (for examples, see [the chapter on Bayesian causal models](https://florianhartig.github.io/LearningBayes/4F-BayesianSEMs.html) in @hartig2024introduction). However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.
 
 ```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(piecewiseSEM)
@@ -292,6 +306,17 @@ You can also do this with more variables.
 
 ::: callout-note
 Strictly speaking, what we did here is the classic Frisch-Waugh-Lovell partialling-out result, not yet full double/debiased machine learning as introduced by @chernozhukov2018double. What turns this trick into "double ML" is two additional ingredients: (i) the two nuisance regressions (x \~ conf and y \~ conf) are fit with flexible, potentially high-dimensional ML estimators (e.g. random forests, gradient boosting) instead of a simple lm, and (ii) cross-fitting - the nuisance models are trained on one part of the data and the residuals (and thus the effect of interest) are computed on a held-out part. Cross-fitting is what removes the overfitting bias that flexible ML nuisance models would otherwise introduce into the residuals, and it is what gives double ML its statistical guarantees (valid confidence intervals even when the nuisance functions are estimated nonparametrically).
+:::
+
+## Take-home messages {#sec-causal-takehome}
+
+::: callout-tip
+
+1.  Decide before you model whether you want to estimate an effect or to predict. For effects, state the causal question (which predictor, which response), draw the assumed causal graph and choose the variables from it. Randomization removes confounding by design; in observational data, adjustment only works if the graph is right.
+2.  Control for confounders (common causes of predictor and response). A variable that merely correlates with both is not necessarily a confounder: the direction of the arrows decides.
+3.  Do not control for colliders (variables influenced by both predictor and response): including them creates a spurious association, so do not simply include all available variables.
+4.  Mediators depend on the question: leave them out for the total effect, include them for the direct effect, so state which one you target.
+5.  Report only the effect of the target predictor. The coefficients of the other variables were adjusted only for the target relationship, not for their own confounders (Table 2 fallacy).
 :::
 
 ## Case studies {#sec-causal-cases}

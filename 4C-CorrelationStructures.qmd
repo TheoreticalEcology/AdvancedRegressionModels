@@ -10,6 +10,20 @@ set.seed(42)
 
 # Correlation structures {#sec-corr}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   how to distinguish a trend from a true residual autocorrelation, and how to add a correlation structure to `gls` or `glmmTMB` (@sec-corr-idea);
+-   how to detect and model temporal, spatial and phylogenetic correlation (@sec-corr-temporal, @sec-corr-spatial, @sec-corr-phylo);
+-   how multivariate GLMs describe the correlation between several responses (@sec-corr-multivar).
+
+**Workflow steps** (@sec-intro-workflow): step 3 (correlation structures from the design), step 5 (residual checks: autocorrelation).
+
+Prerequisites: random effects (@sec-re), modeling the variance (@sec-disp-model), GLMs (@sec-glm).
+:::
+
 ## General idea {#sec-corr-idea}
 
 ::: {#general-idea}
@@ -74,7 +88,7 @@ To account for "real" autocorrelation of residuals, similarly to the variance mo
 The following sections (@sec-corr-temporal, @sec-corr-spatial, @sec-corr-phylo) provide examples and further comments on how to do this.
 
 ::: callout-note
-Especially for spatial models, both nlme and glmmTMB are relatively slow. There are a large number of specialized packages that deal in particular with the problem of spatial models, including `MASS::glmmPQL`, BRMS, INLA, spaMM, and many more. To keep things simple and concentrate on the principles, however, we will stick with the packages you already know.
+Especially for spatial models, both nlme and glmmTMB are relatively slow. There are a large number of specialized packages that deal in particular with the problem of spatial models, including `MASS::glmmPQL`, BRMS, INLA, spaMM, and many more. Bayesian autoregressive models, and state-space models that separate process and observation error, are covered in @hartig2024introduction ([autoregressive models](https://florianhartig.github.io/LearningBayes/4D-AutoregressiveModels.html), [state-space models](https://florianhartig.github.io/LearningBayes/4C-StateSpaceModels.html)). To keep things simple and concentrate on the principles, however, we will stick with the packages you already know.
 :::
 
 ## Temporal correlation structures {#sec-corr-temporal}
@@ -550,7 +564,7 @@ summary(pglsModel3)
 anova(pglsModel3)
 ```
 
-The gls function also allows other models of trait evolution than **Brownian motion**, e.g. an **Ornstein-Uhlenbeck** process. When trying this, however, I noted that the model does not converge due to a scaling problem. 
+The gls function also allows other models of trait evolution than **Brownian motion**, e.g. an **Ornstein-Uhlenbeck** process. When trying this, however, I noted that the model does not converge due to a scaling problem.
 
 ```{r chunk_chapter6_chunk15, echo=TRUE, eval=F}
 tempTree = anolisTree
@@ -667,7 +681,7 @@ fit <- gls(Lnote~ scale(Lnalt),
 summary(fit)
 ```
 
-Here, it is the other way round: the PGLS effect estimate is significant (p = 0.017), while the normal lm is not (p = 0.17). The residuals of the lm are strongly phylogenetically correlated (Moran's I, p < 0.001), and the AIC clearly prefers the PGLS (-77.7, compared to -45.4 for the lm), so here, too, the lm is the model that violates its assumptions. The PGLS changes the slope because it effectively compares differences between related species (as the PICs above) instead of treating all species as independent.
+Here, it is the other way round: the PGLS effect estimate is significant (p = 0.017), while the normal lm is not (p = 0.17). The residuals of the lm are strongly phylogenetically correlated (Moran's I, p \< 0.001), and the AIC clearly prefers the PGLS (-77.7, compared to -45.4 for the lm), so here, too, the lm is the model that violates its assumptions. The PGLS changes the slope because it effectively compares differences between related species (as the PICs above) instead of treating all species as independent.
 
 What we learn from these examples is that phylogenetic correlation can make the p-values of an lm too small or too large, so it should not be ignored. Instead of only testing the residuals, you can also estimate the strength of the phylogenetic signal together with the model, e.g. with Pagel's $\lambda$ (`corPagel()`, $\lambda = 0$ means no phylogenetic signal, $\lambda = 1$ corresponds to Brownian motion):
 
@@ -682,6 +696,17 @@ coef(fitPagel$modelStruct$corStruct, unconstrained = FALSE)
 Here, $\lambda$ is estimated to be about 1, i.e. a strong phylogenetic signal, consistent with the Brownian motion model that we used in the PGLS.
 :::
 
+## Take-home messages {#sec-corr-takehome}
+
+::: callout-tip
+
+1.  Only the autocorrelation of the residuals matters, not that of the response or the predictors. Ignoring it makes p-values unreliable, so check the residuals of a model without a correlation structure (`acf`, variogram, DHARMa) to see whether you need one.
+2.  De-trend first (e.g. with a spline), and add a correlation structure only if autocorrelation remains. A correlation structure fitted on top of a misspecified trend absorbs the misfit and wrongly suggests a random correlation.
+3.  To check a fitted correlation structure, use the normalized residuals of `gls` (`acf(residuals(fit, type = "normalized"))`); DHARMa's autocorrelation test is mainly useful for the model without correlation structure.
+4.  Phylogenetic correlation can make the p-values of an `lm` too small or too large. Check the residuals for phylogenetic signal and use a PGLS if there is some.
+5.  Do not interpret a model that has not converged; take warnings seriously and compare several starting values. Residual correlations between responses are not evidence of causal interactions.
+:::
+
 ## Multivariate GLMs {#sec-corr-multivar}
 
 ::: {#multivariate-glms}
@@ -691,8 +716,7 @@ In recent years, multivariate GLMs, in particular the multivariate probit model,
 
 Briefly, what we want a jSDM to do is to fit a vector of responses (could be abundance or presence / absence data) as a function of environmental predictors and a covariance between the responses. The model is thus
 
-$$y \sim f(x) + \Sigma$$
-where y is a response vector, f(x) is a matrix with effects, and $\Sigma$ is a covariance matrix that we want to estimate.
+$$y \sim f(x) + \Sigma$$ where y is a response vector, f(x) is a matrix with effects, and $\Sigma$ is a covariance matrix that we want to estimate.
 
 You can fit these models directly in lme4 or glmmTMB via implementing an RE per species
 
@@ -704,9 +728,107 @@ glmmTMB(abundance ~ 0 + species + env:species + (0 + species | site), family = p
 however, these so-called full-rank models have a lot of degrees of freedom and are slow to compute if the number of species gets large. It has therefore become common to fit rank-reduced versions of these models using a latent-variable reparameterization of the model above. A latent-variable version of this model can be fit in glmmTMB via this syntax
 
 ```{r, eval = F}
-glmmTMB(abundance ~ 0 + species + env:species + rr(Species + 0|id, d = 2))
+glmmTMB(abundance ~ 0 + species + env:species + rr(0 + species | site, d = 2),
+        family = poisson, data = dat)
 ```
 
-The parameter d controls the number of latent variables.
+The parameter d controls the number of latent variables. With d latent variables, all correlations between the responses are generated by d hidden gradients across the sampling units (here: sites), and each response has one loading per gradient; with small d, correlations close to ±1 therefore occur by construction.
 
-Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to place these models within the general topic of correlations, and to realize that we can fit them with the same methods and packages as all other correlation structures.
+Of course, there are many more specialized packages for fitting latent-variable jSDMs in R right now, including hmsc, gllvm or sjSDM, but I find it nice to place these models within the general topic of correlations, and to realize that we can fit them with the same methods and packages as all other correlation structures. The `rr()` structure in glmmTMB is described by @mcgillycuddy2025parsimoniously.
+
+### Case study: cover of understory species {#sec-corr-multivar-cover}
+
+If a species has more cover than expected in a plot, do other species have more cover too, or less? Separate models for each species cannot answer this (@sec-glm-shares). We use the `varespec` data from the plant cover case study in the GLM chapter (@sec-glm-cover). To keep the model estimable with only 24 plots, we keep the 21 species that occur in at least 14 plots; the rarer half of the species is dropped, so all correlations refer to the common species. The cover is absolute (plot totals range from 64 to 126%), so a Dirichlet model does not apply. With 24 plots, this is a small data set: take the analysis as a demonstration, not a template.
+
+```{r, message=FALSE}
+library(vegan)
+data(varespec)
+data(varechem)
+summary(rowSums(varespec))
+
+keep <- names(which(colSums(varespec > 0) >= 14))
+wide <- data.frame(site = factor(rownames(varespec)), varespec[, keep] / 100,
+                   Al = scale(varechem$Al)[, 1], N = scale(varechem$N)[, 1])
+long <- reshape(wide, direction = "long", varying = keep, v.names = "cover",
+                timevar = "species", times = keep, idvar = "site")
+long$species <- factor(long$species)
+```
+
+As a baseline, we fit an ordered beta model in which each species has its own intercept, its own response to aluminum and nitrogen, and its own precision (`dispformula = ~ 0 + species`, see @sec-disp-model; with a common precision for all species, the residual checks fail clearly). The plot effect `(1 | site)` accounts for plots with more or less vegetation overall. We use the ordered beta rather than the hurdle beta because the hurdle would double the number of parameters per species, too many for 24 plots.
+
+```{r}
+ctl <- glmmTMBControl(optCtrl = list(iter.max = 2000, eval.max = 2000))
+m_base <- glmmTMB(cover ~ 0 + species + species:Al + species:N + (1 | site),
+                  dispformula = ~ 0 + species, family = ordbeta(),
+                  data = long, control = ctl)
+plot(simulateResiduals(m_base))
+```
+
+Now we add two latent variables. The larger number of iterations (`ctl`) is needed for convergence:
+
+```{r}
+m_rr <- update(m_base, . ~ . + rr(0 + species | site, d = 2))
+m_rr$sdr$pdHess
+m_rr$fit$message
+```
+
+Do the species co-vary beyond what the predictors and the plot effect `(1 | site)` explain? We compare the two models with AIC and BIC (@nte-select-bic):
+
+```{r}
+ll <- sapply(list(m_base, m_rr), logLik)
+k <- sapply(list(m_base, m_rr), function(m) attr(logLik(m), "df"))
+data.frame(model = c("baseline", "baseline + rr(d = 2)"), df = k,
+           AIC = -2 * ll + 2 * k,
+           BIC_obs = -2 * ll + log(nrow(long)) * k,
+           BIC_plots = -2 * ll + log(nlevels(long$site)) * k)
+```
+
+AIC clearly favors the joint model. BIC depends on what we count as $n$: R uses the 504 observations (21 species × 24 plots), but the latent variables are estimated from only 24 plots. With $n$ = 24, BIC agrees with AIC. We conclude that the species co-vary beyond the common plot effect. We use two latent variables because they can be displayed; more would improve AIC further, but 24 plots cannot support many more parameters.
+
+::: {.callout-tip collapse="true"}
+#### Checking convergence
+
+Latent-variable models often have several local optima, and optimizers can stop early. Refit the model from random starting values of the variance parameters (`theta`) and compare the log-likelihoods of the fits that converged:
+
+```{r, warning=FALSE}
+set.seed(4)
+nth <- length(m_rr$obj$env$parList()$theta)
+sapply(1:6, function(i) {
+  m <- update(m_rr, start = list(theta = rnorm(nth, 0, 0.5)))
+  if (m$sdr$pdHess && m$fit$convergence == 0) as.numeric(logLik(m)) else NA
+})
+as.numeric(logLik(m_rr))
+```
+
+Two of six starts reach the same optimum as our model; the others stop without convergence (`NA`). Rules: count a fit only if `pdHess` is `TRUE` and the message reports convergence; if converged fits reach different optima, take the best and be cautious; if none converge, reduce d or the number of species. Never interpret a model that has not converged.
+:::
+
+We check the residuals by simulating new latent variables (`simulateREs = "unconditional"`, see the explanation of conditional and unconditional simulations in @sec-corr-temporal), which checks the overall fit of the model:
+
+```{r, warning=FALSE}
+plot(simulateResiduals(m_rr, simulateREs = "unconditional"))
+```
+
+Finally, the estimated correlations. In `VarCorr()`, `site` is the plot effect and `site.1` the `rr()` term. For readability, we show only species with a latent standard deviation above 0.5:
+
+```{r}
+S <- VarCorr(m_rr)$cond$site.1
+dimnames(S) <- list(keep, keep)
+round(sort(sqrt(diag(S)), decreasing = TRUE), 2)
+sel <- sqrt(diag(S)) > 0.5
+heatmap(cov2cor(S[sel, sel]), symm = TRUE, scale = "none")
+```
+
+These are correlations of the latent plot effects on the logit scale, after removing the plot's overall cover level; they are not correlations of the observed cover. Read them as groups of species that tend to have more (or less) cover in the same plots, not as single values. The fixed effects are now conditional on the latent variables, so some of them change compared with the baseline model (e.g. for *Calluna*).
+
+::: callout-important
+#### Residual correlation is not a causal link
+
+A residual correlation between two responses means that they are higher (or lower) in the same units than the predictors explain. This can be caused by unmeasured conditions of the units, by spatial structure (@sec-corr-spatial), or by a direct effect of one response on the other; the model cannot tell these apart. For species, this means that co-occurrence is not evidence of interactions [@blanchet2020cooccurrence].
+:::
+
+::: callout-note
+#### Community data in practice
+
+In ecology, data on many species are often analyzed with ordination (NMDS or PCoA with PERMANOVA, RDA, CCA), which describes the species composition as a whole but gives no model for single species. Model-based alternatives are `mvabund::manyglm`, `gllvm` (which also offers ordered and hurdle beta for cover data, as compared by @korhonen2024comparison), `Hmsc` (Bayesian) and `sjSDM`. If the hypothesis is about diversity, species richness may be the simpler response.
+:::

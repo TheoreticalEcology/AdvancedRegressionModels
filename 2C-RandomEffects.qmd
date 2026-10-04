@@ -4,6 +4,21 @@ set.seed(42)
 
 # Linear mixed models {#sec-re}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   how to specify random intercepts, random slopes, nested and crossed random effects in lme4 and glmmTMB, and why REML is the default (@sec-re-specify);
+-   when to model a grouping variable as a random rather than a fixed effect, and what shrinkage means (@sec-re-advantage);
+-   how to check a mixed model, including convergence, the random effects and residuals per group (@sec-re-check);
+-   how to get p-values, predictions, model comparisons and variance partitioning from a mixed model (@sec-re-downstream).
+
+**Workflow steps** (@sec-intro-workflow): step 2 (design and data), step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
+
+Prerequisites: the linear model (@sec-lm), ANOVA for the part on variance partitioning (@sec-anova).
+:::
+
 ## Motivation {#sec-re-motivation}
 
 ::: {#motivation}
@@ -120,6 +135,22 @@ $$\begin{aligned}
     \alpha_{j}  &\sim N \left(\mu_{\alpha_{j}}, \sigma^2_{\alpha_{j}} \right)
     \text{, for school j = 1,} \dots \text{,J}
 \end{aligned}$$
+:::
+
+::: {#tip-re-design .callout-tip}
+#### From study design to random effects
+
+The random effect structure should follow from the design of the study, not from the data. Ask yourself:
+
+-   **What is the experimental unit**, i.e. the unit to which a treatment was applied, or at which a predictor varies? If you have several measurements per unit (several plants per plot, several visits per site), these measurements are not independent replicates. Treating them as if they were is called **pseudoreplication** [@hurlbert1984pseudoreplication] and makes p-values too small. A random intercept for the unit (here `(1|plot)`) accounts for this when the treatment varies between units: the effective sample size is then roughly the number of plots, not the number of plants. The same applies to any predictor that is constant within a unit, e.g. the elevation of a site that was surveyed repeatedly.
+-   **How are the units grouped?** Typical designs and their random effects:
+    -   randomized blocks: `y ~ treatment + (1|block)`
+    -   several measurements per plot (subsampling): `y ~ treatment + (1|plot)`
+    -   split-plot (factor A on main plots, factor B on subplots within the main plots): `y ~ A * B + (1|block/mainplot)` (`/` means nested: main plots within blocks, see @tip-re-nested)
+    -   repeated measurements of the same units over time: `y ~ treatment * time + (1|site)`, possibly with a temporal correlation structure (@sec-corr-temporal)
+    -   two independent grouping factors, e.g. sites and observers: `y ~ x + (1|site) + (1|observer)` (crossed random effects, @tip-re-nested)
+-   **Does the grouping factor have enough levels?** The variance of a random effect is estimated from its levels. A common rule of thumb is therefore that a random effect needs at least about 5-10 levels, and that a grouping variable with fewer levels is better modeled as a fixed effect [@bolker2015linear; @harrison2018brief]. The discussion is, however, nuanced (see @sec-re-usage): with few levels, singular fits (variance estimated as zero) are common, but simulations suggest that the tests of the population-level effects can still be reliable [@oberpriller2022fixed].
+-   **Is there structure left after that?** Correlation within units over time (@sec-corr-temporal) or changing variance (@sec-disp) can be modeled in addition. The college student case study (@sec-re-college) shows a worked example.
 :::
 
 ### The random slope model {#sec-re-slope}
@@ -272,7 +303,7 @@ brm_mod <- brms::brm(Resp ~ Predictor + (1|Group),
 summary(brm_mod)
 ```
 
-A complete brms GLMM is shown in the owls case study (@sec-glm-owl).
+A complete brms GLMM is shown in the owls exercise (@cau-glm-owls). For an introduction to Bayesian mixed models, see [the chapter on linear and linear mixed models](https://florianhartig.github.io/LearningBayes/2C-LMM.html) in @hartig2024introduction.
 
 ### REML vs. MLE {#sec-re-reml}
 
@@ -417,7 +448,9 @@ While point 1 is more a choice about how to report results (in principle, we cou
 
 - If you want to get unbiased estimates of the categorical variable (or its interactions), use a fixed effect
 
-This is just a rule of thumb, as said, in data-poor situations, it is common to use random slope models and interpret the estimates as well. In this case, we are using the RE to optimize the bias-variance trade-off (see the section on the bias-variance trade-off in the model selection chapter, @sec-select-biasvar).
+A common question is how many levels a grouping variable needs to be modeled as a random effect. Because the variance of a random effect is estimated from its levels, a common rule of thumb is to use at least about 5-10 levels, and to model a grouping variable with fewer levels as a fixed effect [@bolker2015linear; @harrison2018brief]. With few levels, the variance estimate is indeed imprecise and biased towards zero, and singular fits are common. However, if you are interested in the population-level effect of a predictor rather than in the individual levels, simulations by @oberpriller2022fixed suggest that a mixed model can still give reliable tests, provided that singular fits are handled. They recommend to start with a mixed model regardless of the number of levels. If the effect of the predictor varies between groups, start with a correlated random slope and intercept; after a singular fit, remove the correlation (`||`, see @sec-re-convergence), and if the fit is still singular, switch to a fixed effect. In their simulations, singular mixed models had inflated type I error rates, similar to a model that omits the grouping variable, and omitting random slopes that are present in the data also inflated the type I error. In short, with few levels both options can be defended, and more levels are clearly better, so when planning a study, aim for more than the minimum.
+
+The choice between a random and a fixed effect based on whether you are interested in the estimates is just a rule of thumb; in data-poor situations, it is common to use random slope models and interpret the estimates as well. In this case, we are using the RE to optimize the bias-variance trade-off (see the section on the bias-variance trade-off in the model selection chapter, @sec-select-biasvar).
 
 ## Model checks {#sec-re-check}
 
@@ -445,7 +478,7 @@ If there is a convergence problem, you should usually get a warning. Other signs
 There are different types of convergence problems that you can encounter:
 
 - Warnings about scaling and centering -\> just do it, it doesn't cost you!
-- The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -\> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. In random slope models, it often helps to move from \| to \|\| (suppressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
+- The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -\> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. With few levels in the grouping variable, however, a singular fit can inflate the type I error of the fixed effects [@oberpriller2022fixed]; see the recommendations in @sec-re-usage. In random slope models, it often helps to move from \| to \|\| (suppressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
 - Optimizer / convergence warnings: use `lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e5))` (`glmerControl()` for `glmer`) to change the optimizer to bobyqa and possibly increase the number of iterations, e.g. `lmer(..., control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e5)))`.
 
 ### Observation-level residual plots {#sec-re-residual}
@@ -508,7 +541,7 @@ Exam$normexam - predict(mod1, re.form = NULL) # conditional, same as residuals(m
 Exam$normexam - predict(mod1, re.form = ~0) # unconditional
 ```
 
-while the default in DHARMa is to calculate unconditional predictions. Both have advantages and disadvantages:
+DHARMa offers both: since version 0.5.0, `simulateResiduals()` simulates conditional on the fitted random effects by default, and with `simulateREs = "unconditional"` it re-simulates them. Both have advantages and disadvantages:
 
 1.  Conditional predictions are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
 2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but unconditional \~ pred does not. For that reason, if you use unconditional predictions, you should also check REs \~ pred (see @sec-re-predictor)
@@ -549,7 +582,22 @@ Looks still good to me, but if we think we see a pattern here, we should introdu
 ::: {#downstream-analysis-of-mixed-models}
 :::
 
-Specifying mixed models is quite simple, however, there is a large list of (partly quite complicated) issues in their practical application. Here, a (incomplete) list:
+Specifying mixed models is quite simple, but their practical application raises several issues (degrees of freedom, model selection, ANOVA, predictions). The following table gives an overview of how to obtain tests and confidence intervals for mixed models; the subsections of this section explain the details. The columns for `glmer` and `glmmTMB` become relevant for generalized linear mixed models (@sec-glm-glmm).
+
+| Question | `lmer` | `glmer` | `glmmTMB` | Section |
+|----|----|----|----|----|
+| Test a single fixed effect | t-test with approximate df (`summary()` after loading `lmerTest`) | Wald z-test (`summary()`) | Wald z-test (`summary()`) | @sec-re-df |
+| Test a term with several df (e.g. a factor) | F-test with approximate df (`anova()` after loading `lmerTest`, type III); alternatives in @sec-re-anova | `car::Anova()` (Wald $\chi^2$) | `car::Anova()` (Wald $\chi^2$) | @sec-re-anova |
+| Compare groups or treatments (contrasts) | `emmeans()` with `pairs()` or `contrast()` | `emmeans()` | `emmeans()` | @nte-anova-emmeans |
+| Compare nested models with different fixed effects | likelihood ratio test, `anova(m0, m1)` (refits REML models with ML) | `anova(m0, m1)` | `anova(m0, m1)` | @sec-re-fixed |
+| Test a random effect | simulated LRT (`DHARMa::simulateLRT()`); `lmerTest::ranova()` is approximate and conservative | simulated LRT | simulated LRT | @sec-re-simlrt |
+| CIs for fixed effects | `confint()` (profile); for few groups (fewer than about 10-20), parametric bootstrap (`confint()` of a `bootMer()` result) | `confint()` (profile; `method = "Wald"` is faster) | `confint()` (Wald; `method = "profile"` is also available) | @sec-re-df |
+| CIs for random effect standard deviations | `confint()` (profile) | `confint()` (profile) | `confint()` (Wald, listed as `Std.Dev.`) | @sec-re-df |
+| CIs for predictions | parametric bootstrap with `bootMer()` (the prediction function also needs `re.form = NA`); approximate: `predict(..., se.fit = TRUE)` (lme4 2.0 or later) | as for `lmer` | `predict(..., se.fit = TRUE, re.form = NA)`; compute the CI on the link scale and back-transform | @sec-re-prediction |
+
+: Tests and confidence intervals for mixed models. {#tbl-re-inference}
+
+All of these are approximations, because the degrees of freedom of a mixed model are not clearly defined (@sec-re-df). With few groups (as a rule of thumb, fewer than about 10-20), Wald tests and also likelihood ratio tests with the standard $\chi^2$ distribution give p-values for fixed effects that are too small. For linear mixed models, the approximate degrees of freedom of `lmerTest` (Satterthwaite) or Kenward-Roger (`car::Anova(m, test.statistic = "F")`) are then more reliable; for GLMMs, use a parametric bootstrap or a simulated LRT (`DHARMa::simulateLRT()`, `pbkrtest::PBmodcomp()`), and profile instead of Wald CIs. In contrast, a standard likelihood ratio test for a random effect is conservative, because the null hypothesis (variance = 0) lies at the boundary of the parameter space, which is another reason to use the simulated LRT. Finally, note that `anova()` after loading `lmerTest` gives type III tests, while `car::Anova()` gives type II tests by default; with interactions, they test different hypotheses (@sec-anova-collinearity, @cau-re-typeiii), so say which one you report.
 
 ### Degrees of freedom for a random effect {#sec-re-df}
 
@@ -580,7 +628,7 @@ The width of this normal distribution is controlled by the estimated variance of
 Technically, the mixed model mod2 actually has one parameter more than the fixed effect model mod3 - it also estimates the standard deviation of the random effects. Could it thus ever be more flexible than mod3? The answer is no - the RE standard deviation is what is technically called a hyperparameter. It is not an effect that is estimated, but rather a parameter that controls the freedom of the estimated effects. The number of parameters that are used to estimate the response are identical in mod2 and mod3.
 :::
 
-Because of these issues, `lmer`{.R} by default does not return p-values. The help advises you to use bootstrapping to generate valid confidence intervals and p-values on parameters. This is possible indeed, but very cumbersome.
+Because of these issues, `lmer`{.R} by default does not return p-values (for an overview of the options, see @tbl-re-inference). The help advises you to use bootstrapping to generate valid confidence intervals and p-values on parameters. This is possible indeed, but very cumbersome.
 
 However, you can calculate p-values based on approximate degrees of freedom via the `lmerTest`{.R} package, which also corrects ANOVA for random effects, but not AIC.
 
@@ -589,6 +637,12 @@ library(lmerTest)
 
 m2 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 summary(m2)
+```
+
+Confidence intervals for the fixed effects and the random effect standard deviations (`.sig01` is the standard deviation between schools, `.sigma` the residual standard deviation) can be calculated by profiling the likelihood:
+
+```{r, message=FALSE}
+confint(m2)
 ```
 
 (Refit with `REML = FALSE` only if you want to run LRTs or AIC comparisons on fixed effects.)
@@ -662,7 +716,7 @@ So, a model fitted with lme4 is of class lmerMod. If we want to get the help for
 ```
 :::
 
-A second issue with predictions is that, unlike for lm and glm objects, lme4 again does not calculate a standard error on the predictions due to the degrees of freedom problem (@sec-re-df). Unfortunately, the lmerTest package does not help us in this case either, so now we have to resort to the parametric bootstrap, which is implemented in lme4
+A second issue with predictions is their uncertainty. Because of the degrees of freedom problem (@sec-re-df), lme4 calculated no standard errors on predictions for a long time; since version 2.0, `predict(..., se.fit = TRUE)` gives approximate standard errors (with a warning). The more reliable option is the parametric bootstrap, which is implemented in lme4
 
 For this, we generate first a function that generates predictions
 
@@ -942,6 +996,17 @@ A considerable advantage of the VPCs over ANOVA is that they compute orders of m
 Disadvantages are measures of uncertainty (p-values, CIs) may be problematic to obtain. Moreover, you should also note that the estimation of the VPCs depends on the ability of the mixed models to estimate the correct RE variance. To obtain unbiased estimates of the RE variance is notoriously difficult, as evidenced by the different methods to estimate the RE variances in different packages, as well as the REML / ML estimation debate (see @sec-re-reml). The issues are usually not a primary concern, because we usually do not interpret the RE variances directly, but they are only indirectly used to account for the group level effects. In the VPC analysis, however, they are directly used, and thus particular care should be taken, e.g., in checking if RE distributions are indeed normal etc. (see, e.g., @sec-re-normality).
 :::
 
+## Take-home messages {#sec-re-takehome}
+
+::: callout-tip
+
+1.  Model a grouping variable as a random effect if you are not interested in its individual estimates: it accounts for the correlation within groups and uses fewer df than a fixed effect. Use a fixed effect if you need unbiased group estimates, because random effect estimates are shrunk towards the grand mean.
+2.  Fix the random effect structure a priori (random intercepts for all grouping variables; random slopes if expected or if the residuals per group suggest them). Do not select it with AIC or standard LRTs, because the df of a random effect are unclear; use a simulated LRT if you need a test.
+3.  Check that group IDs are unique across higher-level groups, or use the nested syntax `(1 | group / subgroup)`; otherwise different groups are merged.
+4.  Fit with REML, but refit with ML when you compare models with different fixed effects by LRT or AIC. `lmer()` reports no p-values because of the df problem; use `lmerTest` (approximate df) or the parametric bootstrap.
+5.  Check the residuals as for an lm, plus convergence (center and scale predictors; a singular fit often means a variance estimated at zero; for grouping variables with few levels, see @sec-re-usage) and the random effects (normality, correlation with predictors). State whether predictions and residuals are conditional or unconditional, and use the parametric bootstrap for confidence intervals of predictions.
+:::
+
 ## Case studies {#sec-re-cases}
 
 ::: {#case-studies}
@@ -1029,43 +1094,90 @@ Analyze if the student's GPA improves over time (**occasion**)! Here a few hints
 - Student is the grouping variable -\> RE. Which RE structure do you want to fit? A residual plot may help
 - For your benefit, have a look at the difference in the regression table (confidence intervals, coefficients and p-values) of mixed and corresponding fixed effects model. You can also look at the estimates of the mixed effects model (hint: `?ranef`{.R}).
 - After having specified the mixed model, have a look at residuals.
+- Which predictors vary between students, and which within students over time? What does this mean for the random effect structure (see @tip-re-design)?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-```{r chunk_chapter4_task_2, eval = F, message=FALSE}
+**1. Design.** Sex and the high school GPA are constant within a student, i.e. they are student-level predictors, replicated only 200 times. Occasion and job vary within students. The 6 measurements of a student are not independent, so we need (at least) a random intercept for student (see @tip-re-design). In general: (1) for each predictor, decide whether it varies between or within the grouping units; (2) add a random intercept for every grouping unit; (3) add random slopes for within-unit predictors whose effect plausibly differs between units; (4) check the residuals for correlation over time and for changing variance.
+
+```{r chunk_chapter4_task_2, message=FALSE}
 library(lme4)
-library(glmmTMB)
 library(EcoData)
-# initial model with a random intercept and fixed effect structure based on
-# causal assumptions
-
-gpa$sOccasion = scale(gpa$occasion)
-gpa$nJob = as.numeric(gpa$job)
-
-fit <- lmer(gpa ~ sOccasion*sex + nJob + (1|student), data = gpa)
-summary(fit)
-
-# plot seems to show a lot of differences still, so add random slope
-plot(fit, 
-     resid(., scaled=TRUE) ~ fitted(.) | student, 
-     abline = 0)
-
-# slope + intercept model
-fit <- lmer(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa)
-
-# checking residuals - heteroskedasticity 
-plot(fit)
-
-# We only learn later how to specify a variable, dispersion, but as a teaser - I'm modeling this using glmmTMB, alternatively could add weights nlme::lme, which also allows specifying mixed models with the variance modeling options for gls that are discussed in the chapter on dispersion models, but random effect specification is different than here
-fit <- glmmTMB(gpa ~ sOccasion*sex + nJob + (sOccasion|student), data = gpa, dispformula = ~ sOccasion)
-summary(fit)
-
-# unfortunately, the dispersion in this model cannot be reliably checked, because the functions for this are not (yet) implemented in glmmTMB
-plot(residuals(fit, type = "pearson") ~ predict(fit)) # not implemented
-library(DHARMa)
-simulateResiduals(fit, plot = T) 
-# still, the variable dispersion model is highly supported by the data and clearly preferable over a fixed dispersion model
+gpa$nJob = as.numeric(gpa$job) - 1 # hours worked per week (0 to 4), assuming equal distances between categories
+table(table(gpa$student))      # 200 students with 6 measurements each
 ```
+
+**2. Why the random intercept is needed.** Let's compare a model that ignores the grouping with the mixed model:
+
+```{r}
+fitLM = lm(gpa ~ occasion * sex + nJob, data = gpa)
+fitRI = lmer(gpa ~ occasion * sex + nJob + (1|student), data = gpa)
+summary(fitLM)$coefficients[, 1:2]
+summary(fitRI)$coefficients[, 1:2]
+```
+
+The standard error of sex, a student-level predictor, is too small in the lm, because the lm treats the 6 measurements per student as independent observations (pseudoreplication). For occasion, which varies within students, the mixed model is even more precise than the lm, because each student is compared with themselves (the occasion effect is estimated within students). Also the estimate for job changes: in the lm, it partly reflects differences between students (students who work more have lower grades overall).
+
+**3. How to code time.** If we fit occasion as a factor, we see how the mean GPA changes from semester to semester:
+
+```{r}
+fitF = lmer(gpa ~ factor(occasion) + sex + nJob + (1|student), data = gpa)
+fixef(fitF)
+```
+
+The increase per semester is roughly constant, so a linear effect of occasion is adequate (and needs fewer parameters).
+
+**4. Random slope for time.** It is plausible that students differ in their trends over time. The residuals of the random intercept model for the first 20 students confirm this:
+
+```{r}
+lattice::xyplot(residuals(fitRI) ~ occasion | student, data = gpa,
+                subset = as.numeric(student) <= 20, type = c("p", "r"))
+```
+
+So we add a random slope for occasion (if you want a formal test, use a simulated LRT, see @sec-re-simlrt):
+
+```{r}
+fitRS = lmer(gpa ~ occasion * sex + nJob + (occasion|student), data = gpa)
+summary(fitRS)$coefficients[, 1:2]
+```
+
+Note that the standard error of occasion increases compared to the random intercept model: if students differ in their trends, a model with a random intercept only is overconfident about the average trend (see @sec-re-usage).
+
+Steps 5 and 6 use tools from the chapters on correlation structures (@sec-corr) and dispersion models (@sec-disp); read them as a preview of how the checks continue. Both matter, because correlation over time and changing variance can make standard errors and p-values wrong.
+
+**5. Is a temporal correlation structure needed?** The measurements of a student are a short time series. We can add an AR1 structure within students (see @sec-corr-temporal) and compare the models:
+
+```{r, message=FALSE}
+library(glmmTMB)
+gpa$fOccasion = factor(gpa$occasion)
+fitRS2 = glmmTMB(gpa ~ occasion * sex + nJob + (occasion|student), data = gpa)
+# AR1: correlation between neighboring semesters (time must be a factor)
+fitAR = glmmTMB(gpa ~ occasion * sex + nJob + (occasion|student) +
+                  ar1(fOccasion + 0 | student), data = gpa)
+AIC(fitRS2, fitAR)
+```
+
+The AR1 structure lowers the AIC by about 4, but glmmTMB warns that the fit did not converge properly (singular convergence), and the estimates are degenerate (look at the random effect variances and their correlation in `summary(fitAR)`). With only 6 time points per student, the random intercept and slope already capture most of the temporal dependence, and the AR1 parameter is hard to estimate on top of them. We therefore keep the simpler model; this decision rests on the fit problems and the short series, not on the AIC.
+
+**6. Heteroskedasticity.** The residual spread decreases in the later semesters:
+
+```{r}
+boxplot(residuals(fitRS) ~ gpa$occasion, xlab = "occasion", ylab = "residuals")
+```
+
+How to model this is explained in the chapter on dispersion models (@sec-disp). As a teaser, glmmTMB allows a formula for the dispersion; `dispformula = ~ occasion` means that the residual standard deviation may change with occasion:
+
+```{r, message=FALSE}
+fitDisp = glmmTMB(gpa ~ occasion * sex + nJob + (occasion|student),
+                  dispformula = ~ occasion, data = gpa)
+summary(fitDisp)
+AIC(fitRS2, fitDisp)
+
+library(DHARMa)
+plot(simulateResiduals(fitDisp))
+```
+
+The variable dispersion model is strongly supported by the AIC (this compares variance structures, not random effects), and the residuals are much better, though the quantile tests still show slight deviations. The answer to the question: GPA increases over time, by about 0.09 points per semester for male students, and somewhat more for female students (see the `occasion:sexfemale` interaction).
 :::

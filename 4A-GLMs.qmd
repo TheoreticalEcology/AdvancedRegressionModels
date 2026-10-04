@@ -10,6 +10,20 @@ set.seed(42)
 
 # GL(M)Ms {#sec-glm}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   how a GLM connects the linear predictor to the response via a link function and a distribution, and which variant to use for which type of response (@sec-glm-variant);
+-   how to check GLMs with simulated residuals and fix the typical problems: overdispersion and zero-inflation (@sec-glm-residual);
+-   why effects and interactions depend on the scale (link vs. response scale) (@sec-glm-interaction), and what changes when you add random effects (@sec-glm-glmm).
+
+**Workflow steps** (@sec-intro-workflow): step 3 (choice of the distribution), step 5 (residual checks), step 6 (inference on the response scale).
+
+Prerequisites: the linear model (@sec-lm), random effects (@sec-re) for the GLMM parts.
+:::
+
 ## Introduction to GLMs {#sec-glm-intro}
 
 ::: {#introduction-to-glms}
@@ -91,19 +105,19 @@ fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the `lm()`, however, as the residuals are no longer assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 [logL(saturated) - logL(fitted)], but note that the term is used with different definitions, see @nte-glm-deviance). So, we have
+The output is very similar to the `lm()`, however, as the residuals are no longer assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 \[logL(saturated) - logL(fitted)\], but note that the term is used with different definitions, see @nte-glm-deviance). So, we have
 
 - Deviance residuals on top
 
-- Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~)\]
+- Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the log-likelihood or the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~)\] (see the box below)
 
 ::: {#nte-glm-deviance .callout-note}
 #### Different definitions of deviance
 
 The term *deviance* is used with two related, but different definitions, which is a common source of confusion:
 
-1. **Deviance of a GLM (general definition):** $D = 2\,[\log L(\text{saturated}) - \log L(\text{fitted})]$. The saturated model has one parameter per observation and fits the data (almost) perfectly, so $D$ measures how far the fitted model is from the best possible fit. This is what `deviance()` returns for `glm` objects, and what is shown as null and residual deviance in `summary()` and in the `anova()` tables of GLMs. For a normal linear model, $D$ is the residual sum of squares (RSS; divided by $\sigma^2$ for the scaled deviance), which is why the deviance plays the role of the sum of squares in GLMs (see @sec-anova-example for the sums of squares in ANOVA). For 0/1 binomial data, $\log L(\text{saturated}) = 0$, and thus $D = -2 \log L$.
-2. **Deviance as $-2 \log L$:** in many mixed-model contexts, $-2 \log L(\text{fitted})$ is called the deviance (older versions of `lme4` did this in their `anova()` tables, and `deviance()` for `lmer` fits still returns it; newer `lme4` versions and `glmmTMB` print it as `-2*log(L)`). It is the same as $D$ without the term $2 \log L(\text{saturated})$. AIC is built on this quantity, $\mathrm{AIC} = -2 \log L + 2k$.
+1.  **Deviance of a GLM (general definition):** $D = 2\,[\log L(\text{saturated}) - \log L(\text{fitted})]$. The saturated model has one parameter per observation and fits the data (almost) perfectly, so $D$ measures how far the fitted model is from the best possible fit. This is what `deviance()` returns for `glm` objects, and what is shown as null and residual deviance in `summary()` and in the `anova()` tables of GLMs. For a normal linear model, $D$ is the residual sum of squares (RSS; divided by $\sigma^2$ for the scaled deviance), which is why the deviance plays the role of the sum of squares in GLMs (see @sec-anova-example for the sums of squares in ANOVA). For 0/1 binomial data, $\log L(\text{saturated}) = 0$, and thus $D = -2 \log L$.
+2.  **Deviance as** $-2 \log L$: in many mixed-model contexts, $-2 \log L(\text{fitted})$ is called the deviance (older versions of `lme4` did this in their `anova()` tables, and `deviance()` for `lmer` fits still returns it; newer `lme4` versions and `glmmTMB` print it as `-2*log(L)`). It is the same as $D$ without the term $2 \log L(\text{saturated})$. AIC is built on this quantity, $\mathrm{AIC} = -2 \log L + 2k$.
 
 The two definitions differ by $2 \log L(\text{saturated})$, which is the same for all models fitted to the same data. Therefore, *differences* between models agree for both definitions as long as the dispersion is fixed (e.g. Poisson, binomial), and likelihood ratio tests and AIC comparisons give the same results. The *absolute values* are different, and numbers calculated with the two definitions must not be compared. For normal linear models, differences in RSS and differences in $-2 \log L$ are not identical, because the variance is estimated: at the maximum likelihood estimate, $-2 \log L = n \log(\mathrm{RSS}/n) + n (1 + \log 2\pi)$.
 :::
@@ -243,7 +257,7 @@ anova(m1, test = "Chisq")
 
 note that anova works for glm and glmmTMB, but not for lme4::glmer.
 
-The function car::Anova works for all models and uses a ChiSq test automatically (for glm this is a likelihood-ratio test; for glmer/glmmTMB, `car::Anova` computes Wald chi-squared tests, which are approximate). Given that you probably want to use a type II or III Anova anyway, you should prefer it.
+The function car::Anova works for most model classes and uses a ChiSq test automatically (for glm this is a likelihood-ratio test; for glmer/glmmTMB, `car::Anova` computes Wald chi-squared tests, which are approximate). Given that you probably want to use a type II or III Anova anyway, you should prefer it.
 
 ```{r, message=FALSE}
 car::Anova(m1)
@@ -252,12 +266,13 @@ car::Anova(m1)
 ::: {#cau-glm-before .callout-caution}
 #### Before testing a GLM
 
--   **Check dispersion first.** For Poisson and k/n binomial models, overdispersion (see the section on dispersion problems, @sec-glm-dispersion) makes all p-values of `car::Anova()` and `summary()` too small. It is not unusual that a seemingly highly significant effect disappears once the dispersion is accounted for. If you use a quasi-family (see below) as a quick fix, use `car::Anova(m, test = "F")`.
--   **Coding and centering.** Everything that was said in the chapter on ANOVA (@sec-anova) about type II vs. III (@sec-anova-collinearity), contrasts (@sec-anova-contrast) and centering also applies to GLMs, with the difference that averages are taken on the link scale.
--   **Reporting on the response scale.** `emmeans()` works for GLMs as well. With `type = "response"`, means are back-transformed to the response scale. Comparisons with `pairs()` are then reported as ratios (Poisson, log link) or odds ratios (binomial, logit link), while the tests are still performed on the link scale.
+- **Check dispersion first.** For Poisson and k/n binomial models, overdispersion (see the section on dispersion problems, @sec-glm-dispersion) makes all p-values of `car::Anova()` and `summary()` too small. It is not unusual that a seemingly highly significant effect disappears once the dispersion is accounted for. If you use a quasi-family (see @sec-glm-dispersion) as a quick fix, use `car::Anova(m, test = "F")`.
+- **Coding and centering.** Everything that was said in the chapter on ANOVA (@sec-anova) about type II vs. III (@sec-anova-collinearity), contrasts (@sec-anova-contrast) and centering also applies to GLMs, with the difference that averages are taken on the link scale.
+- **Reporting on the response scale.** `emmeans()` works for GLMs as well. With `type = "response"`, means are back-transformed to the response scale. Comparisons with `pairs()` are then reported as ratios (Poisson, log link) or odds ratios (binomial, logit link), while the tests are still performed on the link scale.
+- **Mixed models.** For tests and confidence intervals of GLMMs fitted with `glmer` or `glmmTMB`, see the overview in @tbl-re-inference.
 :::
 
-Of course, when using this with random effects, the caveats that we discussed in the section on degrees of freedom of random effects (@sec-re-df) apply: this function does not account for changes in the degrees of freedom created by changing the fixed effect structure. Something like the lmerTest package which uses a df approximation does not exist for GLMMs. Thus, the values that you obtain here are calculated under the assumption that the RE structure is the same.
+Of course, when using `car::Anova` with random effects, the caveats that we discussed in the section on degrees of freedom of random effects (@sec-re-df) apply: it does not account for changes in the degrees of freedom created by changing the fixed effect structure. Something like the lmerTest package which uses a df approximation does not exist for GLMMs. Thus, the values that you obtain here are calculated under the assumption that the RE structure is the same.
 
 If you see large changes in your RE structure, or if you want to select on the REs, you can move to a simulated LRT (see @sec-re-simlrt).
 
@@ -269,6 +284,8 @@ If you see large changes in your RE structure, or if you want to select on the R
 
 **Overdispersion:** 0/1 binomial responses cannot be overdispersed, but k/n responses can be. However, 0/1 responses can show overdispersion if grouped to k/n. Note the section on residual checks (@sec-glm-residual), in particular the dispersion problems (@sec-glm-dispersion), as well as comments on testing binomial GLMs in the\
 [DHARMa vignette](https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#binomial-data).
+
+**More than two categories:** if the response is one of several unordered categories (e.g. land-use type, type of food chosen), the logistic regression generalizes to the multinomial logistic regression (`nnet::multinom`; with random effects, `brms` with family `categorical`). It estimates one set of coefficients for each category, as log odds ratios relative to a reference category. The response can be one category per observation or the counts per category for each unit (e.g. number of food items of each type). If the categories are ordered (e.g. damage classes, Likert scales), use a cumulative link model (`ordinal::clm`, or `clmm` with random effects), which assumes that each predictor has the same effect on all thresholds between categories (check with `ordinal::nominal_test()`). If several categories can apply at the same time, the response is not multinomial, but several binary responses (see the multivariate GLMs, @sec-corr-multivar). Variants exist for choices with alternative-specific predictors (`mlogit`) and for matched case-control designs (`survival::clogit`).
 
 ::: {.callout-caution icon="false"}
 #### Exercise — Elk data
@@ -388,43 +405,57 @@ summary(fit)
 For Gamma regression, different link functions are used. The canonical link, which is also the default in R, is the inverse link 1/x. However, also log and identity link are commonly used.
 :::
 
-### Continuous proportions - Beta regression and other options {#sec-glm-beta}
+### Continuous proportions: beta regression and alternatives {#sec-glm-beta}
 
-We already covered discrete proportions, which can be modeled with a logistic regression (@sec-glm-logistic). For continuous proportions, this model is not suitable, because we don't know how many "trials" we have. There are a few other options to model this data, in particular the beta regression. Let's have a look.
+We already covered discrete proportions (k successes out of n trials), which can be modeled with a logistic regression (@sec-glm-logistic). Many proportions, however, are continuous: a fraction of an area, a concentration, a share of time spent in an activity. For these, there is no number of trials, so the binomial does not apply.
 
-Use a Beta regression when the response is a **continuous proportion strictly inside (0, 1)** - a fraction, a percentage cover, a probability - as opposed to $k$ successes out of $n$ trials (that is the binomial case). The Beta distribution is bounded on (0, 1) and naturally heteroskedastic (its variance is largest near 0.5 and shrinks towards the boundaries), which the logit-normal `lm` and the arcsine transform handle poorly. One caveat: the Beta density is undefined at exactly 0 or 1, so responses containing 0s or 1s need either a small squeeze towards the interior or a zero-/one-inflated (ordered Beta) model. As with the logistic regression, effects are interpreted on the logit scale.
+Before choosing a model, check how the proportion was measured:
 
-There are two main ways to fit this data:
+- **Counts out of a known total** (e.g. germinated seeds out of seeds sown) are k/n data: use a binomial GLM, or a beta-binomial (`family = betabinomial` in glmmTMB) if they are overdispersed [@douma2019beta].
+- **Ordered classes** (e.g. 0-5%, 5-25%, 25-50%, ...) are ordinal data (see the notes on the logistic regression, @sec-glm-logistic-note). Analyzing class midpoints as if they were measured values ignores how coarse the classes are.
+- **Continuous values** are the topic of this section.
 
-1.  Transform the response, or fit the GLM with a logit link or the arcsine transformation on the response
-2.  A Beta regression
+For continuous proportions, there are several reasonable options. The most common are presented in the following table:
 
-For further options, see [here](https://github.com/florianhartig/Statistics/blob/master/Examples/ProportionalData.md). I would generally recommend that the Beta regression is currently the preferred way and the first thing I would try. A good way to fit it is the package glmmTMB.
+| Model | R | Can handle 0/1 | Use when |
+|------------------|------------------|------------------|------------------|
+| transformation + `lm` | `qlogis(y)` | only after adding a constant | quick analysis with few 0/1 [@warton2011arcsine]; check sensitivity to the constant |
+| beta regression | `beta_family()` | only after squeezing into (0, 1); with many 0/1, ordered or hurdle beta are better | all values strictly between 0 and 1 |
+| ordered beta | `ordbeta()` | yes | 0 and 1 are the ends of the same scale (e.g. values below a detection limit) |
+| hurdle beta | `beta_family()` + `ziformula`; with 1s: `brms` | 0 only (`ziformula`); 0 and 1: `brms` (`zero_one_inflated_beta`) | the zeros arise from a different process than the other values |
+
+The logit transform is a quick fix. The standard distribution for continuous proportions, however, is the beta distribution. It is bounded between 0 and 1 and has two parameters: the mean and the precision $\phi$. A large $\phi$ means that values scatter little around the mean. glmmTMB prints $\phi$ as "Dispersion parameter", which is confusing: for the beta, a large value means a narrow distribution. Like the binomial, the beta is naturally heteroskedastic: its variance is largest for a mean of 0.5 and shrinks towards 0 and 1. As in the logistic regression, the mean is modeled with a logit link, so coefficients are on the logit scale.
 
 ::: callout-tip
-#### Case study
+#### Example: nitrogen in leaves
 
-Here a case study, using the EcoData dataset
+We use the `elemental` data from EcoData (`?elemental`), which contain the nitrogen content of leaves as a proportion (`N_dec`; `N_arc` is its arcsine square root transformation, included in the data). There are no zeros or ones, so a standard beta regression applies.
 
-```{r}
-?elemental
-```
-
-traditional lm, arc sine transformed response of proportions, see critique in @warton2011arcsine
+The arcsine transformation was long the standard approach for proportions, but @warton2011arcsine showed that it should be avoided; we fit it here only for comparison:
 
 ```{r}
-m1 <- lm(N_arc ~ Year + Site , data = elemental[elemental$Species == "ABBA", ])
+abba <- elemental[elemental$Species == "ABBA", ]
+m1 <- lm(N_arc ~ Year + Site, data = abba)
 summary(m1)
 ```
 
-Now a beta regression
+Now a beta regression:
 
 ```{r}
 library(glmmTMB)
-m2 <- glmmTMB(N_dec ~ Year + Site, family = beta_family, data = elemental[elemental$Species == "ABBA", ] )
+m2 <- glmmTMB(N_dec ~ Year + Site, family = beta_family, data = abba)
 summary(m2)
+plot(simulateResiduals(m2))
 ```
+
+Both models find an increase of leaf nitrogen over the years. The beta regression models the bounded response directly, and its residuals show no problems.
 :::
+
+**Dealing with 0/1 observations:** The beta distribution is defined only strictly between 0 and 1, so exact zeros or ones need an extension. The **hurdle beta** (in glmmTMB: zero-inflated beta) works like zero-inflation for counts (@sec-glm-zero-inflation), but because a beta never produces an exact 0, the zero part is a separate logistic model for the zeros. A predictor can therefore affect whether a value is zero and how large it is otherwise in different ways [@douma2019beta]. The **ordered beta** [@kubinec2023ordered] uses a single linear predictor plus two thresholds on the logit scale that decide when a value is exactly 0 or 1. It assumes that a predictor that raises the mean of the continuous part also lowers the probability of a 0, and it needs fewer parameters when there are several predictors. The ordered beta was introduced only in 2022, so applied studies more often use zero/one-inflated or hurdle models. Other options are to squeeze the data into (0, 1) before a beta regression [@smithson2006better], a quasibinomial GLM (no likelihood, so no AIC and no DHARMa residuals), or quantile regression (@sec-disp-quantile). The beta models in glmmTMB (beta, ordered beta, hurdle beta) can include random effects, and their precision can depend on predictors (`dispformula`, @sec-disp-model). An example with zeros follows in the case study on plant cover (@sec-glm-cover).
+
+#### Several proportions from the same unit {#sec-glm-shares}
+
+If you analyze several proportions measured on the same unit (e.g. cover of several plant species in a plot, the time an animal spends on different activities, land-use shares of a region), their residuals are usually correlated, for example because they share unmeasured conditions of that unit. Separate models are fine for questions about one response at a time, but comparisons or sums across responses need a joint model (@sec-corr-multivar). If the proportions are shares of a whole that sum to exactly 1 (e.g. diet composition), Dirichlet regression respects this constraint (e.g. `brms` family `dirichlet`). The Dirichlet does not allow exact zeros: zeros must be squeezed into (0, 1) or modeled with a zero-augmented Dirichlet; if the shares come from counts (e.g. number of food items), use a multinomial model instead [@douma2019beta].
 
 ## Residuals and their solutions in GLMs {#sec-glm-residual}
 
@@ -509,7 +540,7 @@ There are good reasons for why this is the case (Poisson and Binomial describe p
 
 To remove the assumptions of a fixed dispersion, there are three options, of which I usually prefer the third one:
 
-1.  **Quasi-distributions**, which are available in glm. Those add a term to the likelihood that corrects the p-values for the dispersion, but they are not distributions .-\> Can't check residuals, no AIC. -\> Discouraged.
+1.  **Quasi-distributions**, which are available in glm. Those add a term to the likelihood that corrects the p-values for the dispersion, but they are not distributions, so there are no residual checks and no AIC. Therefore discouraged.
 2.  **Observation-level random effect (OLRE)** - Add a separate random effect per observation. This effectively creates a normal random variate at the level of the linear predictor, increases variance on the responses.
 3.  A **GLM distribution with variable dispersion**, for Poisson usually the negative binomial.
 
@@ -571,7 +602,7 @@ m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamander
 res = simulateResiduals(m4, plot = T)
 ```
 
-Now, the test is fine. 
+Now, the test is fine.
 
 ### Zero-inflation {#sec-glm-zero-inflation}
 
@@ -598,7 +629,7 @@ testZeroInflation(res)
 
 This shows no sign of zero-inflation. There are, however, two problems with this test:
 
-1.  glmmTMB models only allow unconditional residuals, which means that dispersion and zero-inflation tests are less powerful
+1.  For some model structures (e.g. spatial correlation structures in glmmTMB), DHARMa can only simulate unconditionally, i.e. it re-simulates the random effects; with unconditional residuals, dispersion and zero-inflation tests are less powerful (see the subsection on conditional residual checks in @sec-corr-temporal)
 2.  When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.
 
 Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. Compare the models with and without `ziformula` via AIC or likelihood ratio test. Do not use the p-value of the zero-inflation intercept for this, as it tests a zero-inflation probability of 0.5, not the absence of zero-inflation.
@@ -608,73 +639,7 @@ m5 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, ziformula = ~1,  
 summary(m5)
 ```
 
-In this case, we have no evidence for zero-inflation (AIC 1674.4 with vs. 1672.4 without zero-inflation, i.e. the simpler model is preferred; the estimated zero-inflation intercept of about -16 on the logit scale, i.e. a probability of about 0, with a huge standard error is a boundary estimate). To see an example where you can find zero-inflation, see the owls case study (@sec-glm-owl).
-
-### Case study: owls {#sec-glm-owl}
-
-::: {#owls}
-:::
-
-Look at the Owl data set in the `glmmTMB` package (`?Owls`). The initial hypothesis is
-
-```{r chunk_chapter5_task_3, message=FALSE, warning=FALSE}
-library(glmmTMB)
-
-m1 = glm(SiblingNegotiation ~ FoodTreatment*SexParent + offset(log(BroodSize)),
-         data = Owls , family = poisson)
-res = simulateResiduals(m1)
-plot(res)
-```
-
-::: {.callout-caution icon="false"}
-#### Offset
-
-The offset is a special command that can be used in all regression models (see the log offset in @sec-glm-poisson-note). It means that we include an effect with effect size 1.
-
-The offset has a special importance in models with a log link function, because with these models, we have y = exp(x ...), so if you do y = exp(x + log(BroodSize) ) and use exp rules, this is y = exp(x) \* exp(log(BroodSize)) = y = exp(x) \* BroodSize, so this makes the response proportional to BroodSize. This trick is often used in log link GLMs to make the response proportional to Area, Sampling effort, etc.
-:::
-
-::: {.callout-caution icon="false"}
-#### Exercise
-
-Try to improve the model with everything we have discussed so far (offset, dispersion, zero-inflation, random effects).
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-```{r, message=FALSE, warning=FALSE}
-m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent
-  + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
-  dispformula = ~ FoodTreatment + SexParent,
-  ziformula = ~ FoodTreatment + SexParent)
-summary(m1)
-
-res = simulateResiduals(m1, plot = T)
-
-testDispersion(m1)
-testZeroInflation(m1)
-```
-:::
-
-::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
-#### Solution
-
-**Using brms**
-
-This is not adding dispersion and zero-inflation yet, just to show how such a model could be fit with brms
-
-```{r, message=FALSE, warning=FALSE}
-library(brms)
-m2 = brms::brm(SiblingNegotiation ~ FoodTreatment * SexParent
-  + (1|Nest) + offset(log(BroodSize)), 
-  data = Owls , 
-  family = negbinomial)
-summary(m2)
-
-plot(m2, ask = FALSE)
-```
-:::
+In this case, we have no evidence for zero-inflation (AIC 1674.4 with vs. 1672.4 without zero-inflation, i.e. the simpler model is preferred; the estimated zero-inflation intercept of about -16 on the logit scale, i.e. a probability of about 0, with a huge standard error is a boundary estimate). To see an example where you can find zero-inflation, see the owls exercise (@cau-glm-owls).
 
 ## Interpreting interactions in GLMs {#sec-glm-interaction}
 
@@ -735,7 +700,7 @@ Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One c
 
 Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.
 
-There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link (note that identity-link binomial models may predict outside [0, 1] and may need start values via `start = ...`; use with care)
+There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link (note that identity-link binomial models may predict outside \[0, 1\] and may need start values via `start = ...`; use with care)
 
 ```{r, warning=FALSE}
 m3 = glm(survival ~ trt * concentration,
@@ -783,9 +748,196 @@ The value (about 0.70) is lower than the unconditional prediction (0.73), and th
 
 Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effects on top as above (with the estimated variances) and push them through the corresponding link function.
 
+## Take-home messages {#sec-glm-takehome}
+
+::: callout-tip
+
+1.  Choose the distribution from the type of response data (counts, 0/1, k/n, positive continuous, proportions), and then check the residuals of the fitted model.
+2.  The estimates are on the scale of the link function. Report effects on the response scale: rate ratios for log links, odds ratios for logit links, or back-transformed predictions with CIs (`emmeans(..., type = "response")`).
+3.  Check dispersion before you interpret p-values: with overdispersed Poisson or k/n binomial data, p-values are too small. Overdispersion is often caused by model misfit, so check the model structure first; then use a negative binomial or beta-binomial family, an observation-level random effect, or a dispersion model.
+4.  Many zeros do not mean zero-inflation; zero-inflation is relative to the fitted model. Compare models with and without `ziformula` instead of relying on the residual test alone.
+5.  With a nonlinear link, interactions and effects depend on the scale. In a GLMM, predictions from the fixed effects alone (unconditional) need not match the average prediction over the random effects (marginal) or the mean of your data.
+:::
+
 ## Case studies {#sec-glm-case}
 
 ::: {#case-studies}
+:::
+
+The following case studies apply the models of this chapter to real data, including residual checks and fixes for dispersion and zero-inflation problems (@sec-glm-residual). Try to solve the exercises yourself before looking at the solutions.
+
+### Count data - owls {#sec-glm-owl}
+
+::: {#owls}
+:::
+
+::: {#cau-glm-owls .callout-caution icon="false"}
+#### Exercise — Owls
+
+Look at the `Owls` data set in the `glmmTMB` package (`?Owls`). We want to know whether the begging of owl nestlings (`SiblingNegotiation`, the number of calls) depends on the food treatment and on the sex of the parent. A first model is
+
+```{r chunk_chapter5_task_3, message=FALSE, warning=FALSE}
+library(glmmTMB) # for the Owls data
+
+m1 = glm(SiblingNegotiation ~ FoodTreatment*SexParent + offset(log(BroodSize)),
+         data = Owls , family = poisson)
+res = simulateResiduals(m1)
+plot(res)
+```
+
+The offset `log(BroodSize)` makes the expected number of calls proportional to the number of nestlings (see the log offset in @sec-glm-poisson-note).
+
+Try to improve the model with everything we have discussed so far (offset, dispersion, zero-inflation, random effects). Hint: besides `nbinom2`, glmmTMB offers `nbinom1`, and the dispersion can depend on predictors (`dispformula`, see @sec-disp-model).
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r, message=FALSE, warning=FALSE}
+m1 = glmmTMB::glmmTMB(SiblingNegotiation ~ FoodTreatment * SexParent
+  + (1|Nest) + offset(log(BroodSize)), data = Owls , family = nbinom1,
+  dispformula = ~ FoodTreatment + SexParent,
+  ziformula = ~ FoodTreatment + SexParent)
+summary(m1)
+
+res = simulateResiduals(m1, plot = T)
+
+testDispersion(m1)
+testZeroInflation(m1)
+```
+
+**Using brms** (optional, requires Stan and takes several minutes)
+
+The same model can also be fit with brms (here without dispersion and zero-inflation terms, just to show the syntax). A step-by-step Bayesian GLMM with posterior predictive checks, overdispersion and zero-inflation (in JAGS) is developed in [the chapter on GLMMs](https://florianhartig.github.io/LearningBayes/3C-GLMM.html) of @hartig2024introduction. The brms code:
+
+```{r, message=FALSE, warning=FALSE}
+library(brms)
+m2 = brms::brm(SiblingNegotiation ~ FoodTreatment * SexParent
+  + (1|Nest) + offset(log(BroodSize)), 
+  data = Owls , 
+  family = negbinomial)
+summary(m2)
+
+plot(m2, ask = FALSE)
+```
+:::
+
+### Continuous proportions - plant cover {#sec-glm-cover}
+
+Plant cover is one of the most common continuous proportions in ecology, and it comes with some special issues [@damgaard2019beta]:
+
+- **How was cover measured?** Pin-point (point-intercept) data are hits out of N pins, i.e. k/n data; as plants grow in clumps, they are often overdispersed (beta-binomial). Cover classes (Braun-Blanquet, Londo, ...) are ordinal. Visual estimates in % are continuous, but often rounded to 1, 5 or 10%.
+- **Zeros:** if a zero means "too little to be recorded", the ordered beta fits the idea of one continuous scale; if it means that the species cannot grow there, the hurdle beta separates presence from cover where present.
+- **Totals:** because plants overlap and there is bare ground, the cover of all species in a plot does not sum to 100%. Only relative cover (share of total vegetation) sums to 1.
+- **Several species:** the cover of species in the same plot is usually correlated (@sec-glm-shares). For joint models of many species, @korhonen2024comparison found the hurdle beta most accurate in simulations, with no noticeable difference to ordered beta for real data.
+
+The data set `varespec` (package vegan) contains visually estimated cover (in %) of 44 species in 24 reindeer-grazed lichen pastures in Finland; `varechem` contains soil chemistry for the same plots. We ask whether the cover of heather (*Calluna vulgaris*, `Callvulg`) depends on soil aluminum. Heather is absent in 9 of the 24 plots:
+
+```{r, message=FALSE}
+library(vegan)
+data(varespec)
+data(varechem)
+d <- data.frame(cover = varespec$Callvulg / 100, Al = scale(varechem$Al)[, 1])
+table(d$cover == 0)
+```
+
+A beta regression fails because of the zeros:
+
+```{r, error=TRUE}
+glmmTMB(cover ~ Al, family = beta_family, data = d)
+```
+
+A logit transform needs a constant to deal with the zeros. The result depends on this arbitrary choice:
+
+```{r}
+sapply(c(0.001, 0.01, 0.05), function(eps) {
+  coef(lm(qlogis((d$cover + eps) / (1 + 2 * eps)) ~ Al, data = d))["Al"]
+})
+```
+
+The ordered beta handles the zeros directly:
+
+```{r}
+m_ord <- glmmTMB(cover ~ Al, family = ordbeta(), data = d)
+summary(m_ord)
+plot(simulateResiduals(m_ord))
+```
+
+The hurdle beta separates presence and cover. Note that the zero part (`ziformula`) models the probability of *absence*:
+
+```{r}
+m_hurdle <- glmmTMB(cover ~ Al, ziformula = ~ Al, family = beta_family, data = d)
+summary(m_hurdle)
+```
+
+The data hint that more aluminum raises the probability that heather is present (negative coefficient on absence, p = 0.10), with no sign of an effect on its cover where it is present.
+
+For the expected cover at low, mean and high aluminum (-1, 0, 1 SD), we can use `predict()` for the hurdle model:
+
+```{r}
+newd <- data.frame(Al = c(-1, 0, 1))
+predict(m_hurdle, newdata = newd, type = "response")
+```
+
+For the ordered beta, `predict(type = "response")` gives only the mean of the continuous part, ignoring the zeros; the expected cover has to be computed from the thresholds with a small helper function (see the box):
+
+::: {.callout-tip collapse="true"}
+#### Expected values for the ordered beta
+
+The ordered beta has a linear predictor $\eta$ and two thresholds $\psi_1 < \psi_2$ (stored as `psi`). The probability of an exact 0 is $1 - \text{logit}^{-1}(\eta - \psi_1)$, of an exact 1 it is $\text{logit}^{-1}(\eta - \psi_2)$, and in between the values follow a beta with mean $\text{logit}^{-1}(\eta)$. The expected value combines the three parts:
+
+```{r}
+ordbeta_mean <- function(m, newdata) {
+  eta <- predict(m, newdata = newdata, type = "link", re.form = NA)
+  psi <- m$fit$par[names(m$fit$par) == "psi"]   # the two thresholds
+  p0 <- 1 - plogis(eta - psi[1])                  # P(y = 0)
+  p1 <- plogis(eta - psi[2])                      # P(y = 1)
+  p1 + (1 - p0 - p1) * plogis(eta)
+}
+```
+
+`re.form = NA` sets random effects to zero, so the function also works for mixed models. If the data contain no 1s, the upper threshold cannot be estimated well and gets a very large value (here about 19), which does no harm.
+:::
+
+```{r}
+ordbeta_mean(m_ord, newd)
+```
+
+Both models give similar predictions; the hurdle beta additionally shows where the effect acts.
+
+::: {.callout-caution icon="false"}
+#### Exercise — Bilberry
+
+Bilberry (*Vaccinium myrtillus*, `Vaccmyrt`) is absent in 14 of the 24 plots. Analyze whether its cover depends on the depth of the humus layer (`varechem$Humdepth`). Fit an ordered beta and a hurdle beta, check the residuals, and compare the results: does humus depth act on the presence of bilberry, on its cover where present, or on both?
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r}
+d2 <- data.frame(cover = varespec$Vaccmyrt / 100,
+                 Hum = scale(varechem$Humdepth)[, 1])
+table(d2$cover == 0)
+
+m_ord2 <- glmmTMB(cover ~ Hum, family = ordbeta(), data = d2)
+summary(m_ord2)
+plot(simulateResiduals(m_ord2))
+
+m_hur2 <- glmmTMB(cover ~ Hum, ziformula = ~ Hum, family = beta_family, data = d2)
+summary(m_hur2)
+plot(simulateResiduals(m_hur2))
+```
+
+The residuals of both models show no problems. The ordered beta finds a clear positive effect of humus depth. The hurdle beta shows where it acts: deeper humus lowers the probability that bilberry is absent (zero part, p = 0.02), but has no clear effect on its cover where it is present. The predicted probability of presence and the expected cover at shallow, mean and deep humus (-1, 0, 1 SD):
+
+```{r}
+newd2 <- data.frame(Hum = c(-1, 0, 1))
+1 - predict(m_hur2, newdata = newd2, type = "zprob")  # probability of presence
+predict(m_hur2, newdata = newd2, type = "response")   # expected cover, hurdle
+ordbeta_mean(m_ord2, newd2)                           # expected cover, ordered beta
+```
+
+Both models predict that the expected cover increases with humus depth (about tenfold, but from very low values; it stays below 5%), but only the hurdle beta tells us that this is mainly because bilberry occurs more often on deep humus.
 :::
 
 ### Binomial GLM - snails {#sec-glm-snail}

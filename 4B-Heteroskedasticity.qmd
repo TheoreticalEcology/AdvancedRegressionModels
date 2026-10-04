@@ -4,6 +4,20 @@ set.seed(42)
 
 # Dispersion models {#sec-disp}
 
+::: callout-note
+#### In this chapter
+
+In this chapter, you will learn
+
+-   why heteroskedasticity makes p-values of the linear model and ANOVA unreliable, and how to fix it by a transformation or by modeling the variance with `gls` or `glmmTMB` (@sec-disp-lm);
+-   how to model a variable dispersion in GLMMs (@sec-disp-glmm);
+-   what to do about outliers and non-normal residuals: robust and quantile regression (@sec-disp-outlier).
+
+**Workflow steps** (@sec-intro-workflow): step 5 (residual checks: changing variance).
+
+Prerequisites: the linear model and its residual checks (@sec-lm), GLMMs (@sec-glm) for the second part.
+:::
+
 Modeling dispersion means that we describe how the expected variance changes as a function of the mean or predictor variables. The residual problem that we address by that is known as heteroskedasticity (see @sec-lm-mean-variance and @sec-lm-residual-lm).
 
 ## Heteroskedasticity in the linear model {#sec-disp-lm}
@@ -235,3 +249,14 @@ dat = data.frame(growth = growth, concentration = concentration)
 fit = qgam(growth ~ concentration, data = dat, qu = 0.5) 
 summary(fit)
 ```
+
+## Take-home messages {#sec-disp-takehome}
+
+::: callout-tip
+
+1.  Check the residuals against the predicted values and against each predictor. With heteroskedasticity, p-values and confidence intervals of `lm()` and ANOVA can be badly wrong, mainly for the predictor the variance is related to; in our example, a non-significant ANOVA became significant once the variance was modeled.
+2.  A transformation (e.g. sqrt or log) can remove the problem, but may conflict with normality. The more general solution is to model the variance: `gls` with `varIdent` or `varPower`, or `glmmTMB` with `dispformula`. For the Gaussian family, `dispformula` models the residual standard deviation on the log scale.
+3.  In GLMMs, the dispersion can also depend on predictors (`dispformula`, e.g. with the negative binomial). Check again with simulated residuals plotted against the predictors.
+4.  Do not simply remove outliers; if you do, show the results with and without them. Better: change the distribution, or use robust or quantile regression.
+5.  Quantile regression assumes no particular residual distribution, but the functional form and independence still matter, and a median regression describes the median, not the mean.
+:::
