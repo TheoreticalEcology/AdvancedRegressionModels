@@ -43,7 +43,7 @@ plot(allEffects(mod0))
 
 However, it is reasonable to assume that not all schools are equally good, which has two possible consequences:
 
-- If school identity correlates with sex or standLRT, school could be a confounder (more on confounding in the chapter on causal inference, @sec-causal)
+- If school identity correlates with sex or standLRT, school could be a confounder (see @sec-re-predictor for a check, and the chapter on causal inference, @sec-causal)
 - Residuals will be correlated within schools, thus they are not iid (pseudo-replication)
 
 We could solve this problem by fitting a different mean per school
@@ -95,7 +95,7 @@ mod1 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 summary(mod1)
 ```
 
-If we look at the outputs, you will probably note that the `summary()` function doesn't return p-values. More on this in @sec-re-df. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools. However, you can obtain the individual school effects via
+If we look at the outputs, you will probably note that the `summary()` function doesn't return p-values. More on this in @sec-re-df. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools (Random effects block: the school sd of 0.30 compares with the residual sd of 0.75, i.e. school accounts for about 14% of the variance that the fixed effects do not explain, the intraclass correlation). However, you can obtain the individual school effects via
 
 ```{r, eval=F}
 ranef(mod1)
@@ -164,7 +164,7 @@ mod2 = lmer(normexam ~ standLRT + sex +  (standLRT | school), data = Exam)
 summary(mod2)
 ```
 
-Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes comes from a normal distribution. The result is similar to the random intercept model, except that we have an additional variance term for the slopes, and a term for the interaction between slopes and intercepts.
+Again, the difference to the fixed effect model is that in the random effect model, we assume that the variance between slopes comes from a normal distribution. The result is similar to the random intercept model, except that we have an additional variance term for the slopes, and a correlation between random intercepts and random slopes (Corr in the output).
 
 ::: {.callout-tip collapse="true"}
 #### Generate equation with the `equatiomatic` package
@@ -231,7 +231,7 @@ There are a large number of packages to fit mixed models in R. The main packages
 - ONLY random slope for a given fixed effect: `(0 + fixedEffect | group)`{.R}.
 - Random slope + intercept + correlation (default): `(fixedEffect | group)`{.R}.
 - Random slope + intercept without correlation: `(fixedEffect || group)`{.R}, identical to\
-  `(1 | group) + (0 + fixedEffect | group)`{.R}.
+  `(1 | group) + (0 + fixedEffect | group)`{.R} (for a numeric fixedEffect; for a factor, lme4 still estimates the correlations between its levels).
 - Nested random effects: `(1 | group / subgroup)`{.R}. If groups are labeled A, B, C, ... and subgroups 1, 2, 3, ..., this will create labels A1, A2 ,B1, B2, so that you effectively group in subgroups. Useful for the many experimental people that do not label subgroups uniquely, but otherwise no statistical difference to a normal (crossed) random effect.
 - Crossed random effects: You can add random effects independently, as in\
   `(1 | group1) + (1 | group2)`{.R}.
@@ -261,7 +261,7 @@ m2 = lmer(normexam ~ standLRT + sex +  (1 | school/student), data = Exam)
 summary(m2)
 ```
 
-Compare the number of RE groups in the summary: in m1, you have 650 students. In m2, you have 4055 student:school levels for the RE. Thus, the nested syntax makes sure each individual student gets his/her own estimated value.
+Compare the number of RE groups in the summary: in m1, you have 650 students. In m2, you have 4055 student:school levels for the RE. Thus, the nested syntax makes sure that students with the same ID in different schools are treated as different individuals.
 
 You could fit the same mod by changing the coding of student. To do this, we create a new variable, combining school and student into a unique ID
 
@@ -274,6 +274,8 @@ summary(m3)
 ```
 
 If you check the summary of m3, now we also have 4055 levels for uniqueStudent, and the results are identical to the nested model version.
+
+Caution: in the Exam data, almost every student appears only once (4055 student:school levels for 4059 observations), so a student-level RE cannot be separated from the residual error; the fit is singular (sd of student:school = 0). The example only illustrates the coding. Nested REs make sense if the lower level is replicated.
 :::
 
 #### nlme {#sec-re-nlme}
@@ -322,10 +324,10 @@ Regarding when to use what, use the following rule of thumb:
 
 - Per default, use REML
 
-- Switch to ML if you use downstream any model functions that use the likelihood, unless you are really sure that the calculation you do is also valid for REML.
+- Switch to ML (`REML = FALSE`) if you compare models with different fixed effects, or a mixed model with a model without random effects, via LRTs or AIC. For comparing RE structures with identical fixed effects, REML is fine.
 
 ::: callout-tip
-Later in this chapter (@sec-re-selection), we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that, because REML estimates the REs conditional on the fixed effects, REML likelihoods are not directly comparable if fixed effects are changed. I would recommend sticking to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see @sec-re-df).
+Later in this chapter (@sec-re-selection), we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that the REML likelihood refers to linear combinations of the data that do not depend on the fixed effects, i.e. to different data when the fixed-effect structure changes, so REML likelihoods are not comparable between models with different fixed effects. I would recommend sticking to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see @sec-re-df).
 :::
 
 ::: {#cau-re-plantheight .callout-caution icon="false"}
@@ -426,14 +428,14 @@ fit <- lm(loght ~ sTemp * growthform2 , data = plantHeight)
 summary(fit)
 ```
 
-If you run the same thing as a random slope model, you will see that we can estimate a random intercept and slope for each species, even those that have only one observation
+If you run the same thing as a random slope model, you will see that we can estimate a random intercept and slope for each growth form, even those that have only one observation
 
 ```{r}
 fit <- lmer(loght ~ sTemp + (sTemp | growthform2) , data = plantHeight)
 ranef(fit)
 ```
 
-The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, estimates are biased towards zero, so if you want to interpret these estimates that is a cost that you have to take into account.
+The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, the estimates are biased towards the grand mean, so if you want to interpret these estimates that is a cost that you have to take into account.
 
 ### When to use what? {#sec-re-usage}
 
@@ -543,8 +545,8 @@ Exam$normexam - predict(mod1, re.form = ~0) # unconditional
 
 DHARMa offers both: since version 0.5.0, `simulateResiduals()` simulates conditional on the fitted random effects by default, and with `simulateREs = "unconditional"` it re-simulates them. Both have advantages and disadvantages:
 
-1.  Conditional predictions are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
-2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but unconditional \~ pred does not. For that reason, if you use unconditional predictions, you should also check REs \~ pred (see @sec-re-predictor)
+1.  Conditional residuals are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
+2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but unconditional \~ pred does not. For that reason, if you only check conditional residuals, you should also check REs \~ pred (see @sec-re-predictor)
 :::
 
 ### Normality of REs {#sec-re-normality}
@@ -563,9 +565,11 @@ Question is how bad can this be? [@neuhaus2013] report some simulation results t
 As mentioned in @tip-re-predtype, REs can sometimes absorb misfit of the fixed effect structure. It can therefore be useful to check if there is a correlation with the predictors, especially if you only check conditional residuals. Example:
 
 ```{r}
-y = aggregate(cbind(standLRT, sex) ~ school, FUN = mean, data = Exam)
+y = aggregate(standLRT ~ school, FUN = mean, data = Exam)
 plot(x$school$`(Intercept)` ~ y$standLRT)
 ```
+
+A trend of the school intercepts with the school mean of a predictor means that the RE absorbs an effect that should be in the fixed part. Here, there is a weak positive trend (correlation about 0.35): schools with a higher average reading score tend to have higher intercepts. A common remedy is to add the school mean of the predictor as an additional fixed effect (in Exam it already exists as `schavg`), which separates the within-school from the between-school effect.
 
 ### Residual pattern per group {#sec-re-pergroup}
 
@@ -610,22 +614,22 @@ Why is it so important to know how many parameters a model has? The answer is th
 We can make some guesses about the complexity of an LMM by looking at its fixed effect version counterparts:
 
 ```{r eval=F}
-mod1 = lm(normexam ~ standLRT + sex , data = Exam)
-mod1$rank # 3 parameters.
+mFix0 = lm(normexam ~ standLRT + sex , data = Exam)
+mFix0$rank # 3 parameters.
 
-mod2 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
+mRE = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 # No idea how many parameters.
 
-mod3 = lm(normexam ~ standLRT + sex + school, data = Exam)
-mod3$rank # 67 parameters.
+mFixSchool = lm(normexam ~ standLRT + sex + school, data = Exam)
+mFixSchool$rank # 67 parameters.
 ```
 
-So, we see that the fixed effect model without school has 3 parameters, and with school 67. It is reasonable to assume that the complexity of the mixed model is somewhere in-between, because it fits the same effects as mod3, but they are constrained by the normal distribution.
+So, we see that the fixed effect model without school has 3 parameters, and with school 67. It is reasonable to assume that the complexity of the mixed model is somewhere in-between, because it fits the same effects as mFixSchool, but they are constrained by the normal distribution.
 
-The width of this normal distribution is controlled by the estimated variance of the random effect. For a high variance, the normal is very wide, and the mixed model is nearly as complex as mod3; but for a low variance, the normal is very narrow, and the mixed model it is only as complex as mod1.
+The width of this normal distribution is controlled by the estimated variance of the random effect. For a high variance, the normal is very wide, and the mixed model is nearly as complex as mFixSchool; but for a low variance, the normal is very narrow, and the mixed model it is only as complex as mFix0. The shrinkage plot in @sec-re-shrinkage shows this directly: the more the random estimates are pulled towards the grand mean, the fewer effective parameters the model uses.
 
 ::: callout-note
-Technically, the mixed model mod2 actually has one parameter more than the fixed effect model mod3 - it also estimates the standard deviation of the random effects. Could it thus ever be more flexible than mod3? The answer is no - the RE standard deviation is what is technically called a hyperparameter. It is not an effect that is estimated, but rather a parameter that controls the freedom of the estimated effects. The number of parameters that are used to estimate the response are identical in mod2 and mod3.
+Technically, the mixed model mRE estimates the same 65 school effects as the fixed effect model mFixSchool, plus one more parameter, the standard deviation of the random effects. Could it thus ever be more flexible than mFixSchool? The answer is no - the RE standard deviation is what is technically called a hyperparameter. It is not an effect that is estimated, but rather a parameter that controls the freedom of the estimated effects, so the effective number of parameters of the mixed model can never exceed that of mFixSchool.
 :::
 
 Because of these issues, `lmer`{.R} by default does not return p-values (for an overview of the options, see @tbl-re-inference). The help advises you to use bootstrapping to generate valid confidence intervals and p-values on parameters. This is possible indeed, but very cumbersome.
@@ -669,7 +673,7 @@ summary(fixedSlopeInterceptModel)
 summary(randomSlopeModel)
 ```
 
-So, for the model with a different intercept per Family, the p-value decreases, and for intercept + interaction, it even becomes n.s. (although it should be noted that we get a different p-values for each family here).
+So, for the model with a different intercept per Family, the p-value of temp is lower in the mixed model than in the fixed effect model (2.5e-11 vs 2.8e-5). With a different slope per Family, the temp effect of the fixed effect model is n.s. (p = 0.69; note that this is the slope of the reference family only, and that lm cannot even estimate all family slopes: 31 coefficients are NA), while the random slope model still gives p = 1.2e-5.
 
 The reason for the generally lower p-values (= higher power) of the mixed model is the lower flexibility of the mixed model:
 
@@ -707,11 +711,12 @@ Do you know how to get the correct help function for an S3 object? Concretely, h
 
 ```{r}
 class(m)
+is(m)
 ```
 
-So, a model fitted with lme4 is of class lmerMod. If we want to get the help for predicting from such a class, we have to type
+So, a model fitted with lme4 is of class lmerMod (with lmerTest attached, as here, lmerModLmerTest). The `predict` method is not defined for this class itself, but for its parent class merMod (see `is(m)`), which is why the help page is called `predict.merMod`:
 
-```{r}
+```{r, eval=FALSE}
 ?predict.merMod
 ```
 :::
@@ -729,6 +734,8 @@ Note regarding this function that
 - We could add the argument newdata if we wanted to predict to newdata
 
 - Here, we have re.form = NA, which is identical to re.form = \~0, meaning that we make unconditional predictions, i.e. the population-level curve from the fixed effects
+
+- In the call to `bootMer()` below, `re.form = NA` (the default) has another role: it is passed to the simulation of the new data, and `NA` means that new random effects are drawn for each simulated data set (see `?bootMer`)
 
 Second, we now bootstrap this prediction to generate an uncertainty of the prediction
 
@@ -753,7 +760,7 @@ The easy part is the selection on the fixed effect structure - if we can assume 
 ::: callout-caution
 #### Careful when selecting on models fit with REML
 
-As discussed in @sec-re-reml, LMMs are per default fit with REML, whose likelihoods are not comparable between models with different fixed effects. When comparing models with different fixed effects via LRTs or AIC, refit the models with ML. See also [@verbyla2019]
+As discussed in @sec-re-reml, LMMs are per default fit with REML, whose likelihoods are not comparable between models with different fixed effects. When comparing models with different fixed effects via LRTs or AIC, refit the models with ML; `anova()` does this automatically (it prints "refitting model(s) with ML"), `AIC()` and `logLik()` do not. See also [@verbyla2019]
 :::
 
 #### A priori selection on random effects {#sec-re-randomsel}
@@ -955,7 +962,7 @@ Which pretty much already looks like an ANOVA table. If you standardize the RE v
 
 ```{r}
 x = data.frame(x)
-x$vcov / sum(x$vcov)
+setNames(x$vcov / sum(x$vcov), x$grp)
 ```
 
 ::: callout-important
@@ -984,7 +991,7 @@ VarCorr(fit)
 lmerTest::ranova(fit)
 ```
 
-In this case, both methods attribute some variation to the null terms, but also both methods realize that these terms are (mostly) n.s., which is reassuring! The term Var12 is around 0.05, significant in ANOVA and n.s. in VPC, suggesting maybe that the VPC could be a bit more conservative, although I suspect that this is highly context and package dependent (as different packages fit the REs differently). Note that I have suppressed boundary / convergence warnings in the fit of the mixed model, which should be of course solved in a real application.
+In this case, both methods attribute some variation to the null terms, but also both methods realize that these terms are (mostly) n.s., which is reassuring! The term Var12 has a p-value of about 0.04 in the ANOVA and 0.10 in `ranova()`. This is expected: the LRT of `ranova()` is conservative for variance terms, because the null value 0 lies on the boundary of the parameter space (@sec-re-downstream); halving its p-value is a rough correction. Note that I have suppressed boundary / convergence warnings in the fit of the mixed model, which should be of course solved in a real application.
 
 ::: callout-tip
 #### VPC vs. ANOVA
@@ -1016,7 +1023,7 @@ Disadvantages are measures of uncertainty (p-values, CIs) may be problematic to 
 
 We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. The study measured spores of the bacterium "Paenibacillus larvae" (variable Spobee) that infect honeybee larvae, as well as the degree of the infection of the colony (integer: 0 (none), 1 (minor), 2 (moderate), 3 (major)).
 
-The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive. (integer, 1 - 24).)
+The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive, 1 - 24). The data has 72 samples from 24 hives (3 per hive); the degree of infection and the number of bees are measured per hive, and only 4 of the 24 hives are infected.
 
 ::: {.callout-caution icon="false"}
 #### Exercise
@@ -1028,7 +1035,7 @@ library(EcoData)
 str(bees)
 ```
 
-Perform the data analysis, according to the hypothesis discussed in the course.
+Perform the data analysis for this question.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -1036,13 +1043,15 @@ Perform the data analysis, according to the hypothesis discussed in the course.
 
 - Because of the skewed distribution of Spobee, it is better to use log(Spobee + 1) or something similar as response (else you will not get nice residuals)
 - I decided to add BeesN in the regression because it could be a confounder (more on confounding in the chapter on causal inference, @sec-causal)
-- It is natural to model hive as a random intercept (1\|Hive). I don't expect that the infection \~ spores relationship should be different between hives, but can test for this after fitting the model
+- It is natural to model hive as a random intercept (1\|Hive), because the three samples per hive are not independent. A random slope for Infection by Hive is not possible, because Infection is constant within each hive.
 
 ```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 library(lme4)
 fit <- lmer(log(Spobee + 1) ~ Infection + BeesN + (1|Hive), data = bees)
 summary(fit)
 ```
+
+The log spore count increases with the degree of infection (about +2.7 per infection degree, 95% CI 1.6 to 3.7); BeesN has no clear effect. Note that only 4 of the 24 hives are infected, so this conclusion rests on few hives.
 
 Standard residual plots look fine, possible minor evidence for heteroskedasticity
 
@@ -1065,7 +1074,7 @@ Looks good. Could also check with DHARMa.
 simulateResiduals(fit, plot = T)
 ```
 
-It doesn't make sense to add a random slope here: Infection is constant within each hive, so a random slope for Infection by Hive cannot be estimated.
+Finally, the residuals per hive (a check for hive-specific patterns):
 
 ```{r}
 plot(fit, 
@@ -1083,7 +1092,7 @@ library(EcoData)
 str(gpa)
 ```
 
-In this data set, there are GPA measures on 6 consecutive **occasions**, with a **job** status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: The **sex** (1 = male, 2 = female) and the high school **gpa**. There is also a dichotomous student-level outcome variable, which indicates whether a student has been **admitted** to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each **student** and each **year** of observation have an id.
+In this data set, there are GPA measures on 6 consecutive **occasions**, with a **job** status variable (how many hours worked) for the same 6 occasions. The response is the college **gpa**. There are two student-level explanatory variables: the **sex** (male / female) and the high school GPA (**highgpa**). There is also a dichotomous student-level outcome variable, which indicates whether a student has been **admitted** to the university of their choice. Since not every student applies to a university, this variable has many missing values. Each **student** has an id; **year** (1-3) and **semester** (1-2) together define the six occasions.
 
 ::: {.callout-caution icon="false"}
 #### Exercise

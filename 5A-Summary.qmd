@@ -257,16 +257,16 @@ If you have decided on the selection of variables, treat your analysis as fixed.
 The cleanest way to do a power analysis for any model - not just the textbook cases - is by simulation: assume an effect size, simulate many datasets, fit your planned model to each, and count how often the effect comes out significant. That fraction *is* the power.
 
 ```{r chunk_chapter7_chunk7, echo=TRUE, eval=TRUE}
-getP = function(n = 50, effect = 0.3){
+getP = function(n = 50, effect = 1){
   x = runif(n)
   y = effect * x + rnorm(n)          # assumed true effect + noise
   summary(lm(y ~ x))$coefficients[2, 4]
 }
 
-mean(replicate(1000, getP(n = 50, effect = 0.3)) < 0.05)   # power at n = 50
+mean(replicate(1000, getP(n = 50, effect = 1)) < 0.05)   # power at n = 50 (about 0.5)
 ```
 
-To find the sample size for, say, 80% power, wrap this in a loop over `n`. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.
+To find the sample size for, say, 80% power, wrap this in a loop over `n` (here, roughly 100 observations are needed). Note that the assumed effect should be the smallest biologically relevant effect (or a plausible one from the literature), not the effect observed in the data: power calculated from an observed effect is uninformative. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.
 
 ## Next steps {#sec-summary-next}
 

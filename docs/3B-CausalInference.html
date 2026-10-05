@@ -58,7 +58,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -114,34 +133,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/grViz-binding-1.0.12/grViz.js"></script>
 
 
-<meta name="citation_title" content="[7]{.chapter-number}&nbsp; [Causal inference]{.chapter-title}">
+<link rel="stylesheet" href="styles.css">
+<meta name="citation_title" content="[[7]{.chapter-number}&nbsp; [Causal inference]{.chapter-title}]{#sec-causal .quarto-section-identifier}">
 <meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels/3B-CausalInference.html">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_publisher=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
-<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_publisher=CRC Press;">
-<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_publisher=https://www.statlearning.com/; Springer;">
+<meta name="citation_reference" content="citation_title=Grundlagen der Statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
+<meta name="citation_reference" content="citation_title=Statistical rethinking: A Bayesian course with examples in R and Stan;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;">
+<meta name="citation_reference" content="citation_title=An introduction to statistical learning: With applications in R;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.statlearning.com/;">
 <meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;,citation_publisher=Oxford University Press;">
 <meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_journal_title=Vignette for lme4;">
-<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.R-project.org/;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;">
-<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;">
-<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_editor=Victoria Stodden;,citation_editor=Friedrich Leisch;,citation_editor=Roger D. Peng;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_inbook_title=Implementing reproducible computational research;">
-<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;">
-<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;,citation_publisher=BioMed Central;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_journal_title=Journal of Ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=The difference between “significant” and “not significant” is not itself statistically significant;,citation_author=Andrew Gelman;,citation_author=Hal Stern;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=4;,citation_doi=10.1198/000313006X152649;,citation_volume=60;,citation_journal_title=The American Statistician;">
 <meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: Use type II instead of type III sums of squares;,citation_author=Øyvind Langsrud;,citation_publication_date=2003;,citation_cover_date=2003;,citation_year=2003;,citation_issue=2;,citation_doi=10.1023/A:1023260610025;,citation_volume=13;,citation_journal_title=Statistics and Computing;">
+<meta name="citation_reference" content="citation_title=How to capitalize on a priori contrasts in linear (mixed) models: A tutorial;,citation_author=Daniel J. Schad;,citation_author=Shravan Vasishth;,citation_author=Sven Hohenstein;,citation_author=Reinhold Kliegl;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_doi=10.1016/j.jml.2019.104038;,citation_volume=110;,citation_journal_title=Journal of Memory and Language;">
+<meta name="citation_reference" content="citation_title=An R companion to applied regression;,citation_author=John Fox;,citation_author=Sanford Weisberg;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;">
 <meta name="citation_reference" content="citation_title=A biologist’s guide to model selection and causal inference;,citation_author=Zachary M Laubach;,citation_author=Eleanor J Murray;,citation_author=Kim L Hoke;,citation_author=Rebecca J Safran;,citation_author=Wei Perng;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_issue=1943;,citation_volume=288;,citation_journal_title=Proceedings of the Royal Society B;,citation_publisher=The Royal Society;">
 <meta name="citation_reference" content="citation_title=Control of confounding and reporting of results in causal inference studies. Guidance for authors from editors of respiratory, sleep, and critical care journals;,citation_author=David J Lederer;,citation_author=Scott C Bell;,citation_author=Richard D Branson;,citation_author=James D Chalmers;,citation_author=Rachel Marshall;,citation_author=David M Maslove;,citation_author=David E Ost;,citation_author=Naresh M Punjabi;,citation_author=Michael Schatz;,citation_author=Alan R Smyth;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=16;,citation_journal_title=Annals of the American Thoracic Society;,citation_publisher=American Thoracic Society;">
 <meta name="citation_reference" content="citation_title=A note on model selection using information criteria for general linear models estimated using REML;,citation_author=Arunas Petras Verbyla;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/anzs.12254;,citation_issue=1;,citation_doi=10.1111/anzs.12254;,citation_volume=61;,citation_language=en;,citation_journal_title=Australian &amp;amp;amp; New Zealand Journal of Statistics;">
 <meta name="citation_reference" content="citation_title=Estimation of covariate effects in generalized linear mixed models with a misspecified distribution of random intercepts and slopes;,citation_author=John M. Neuhaus;,citation_author=Charles E. McCulloch;,citation_author=Ross Boylan;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.5682;,citation_issue=14;,citation_doi=10.1002/sim.5682;,citation_volume=32;,citation_language=en;,citation_journal_title=Statistics in Medicine;">
 <meta name="citation_reference" content="citation_title=Major axes of variation in tree demography across global forests;,citation_author=Melina de Souza Leite;,citation_author=Sean M. McMahon;,citation_author=Paulo Inácio Prado;,citation_author=Stuart J. Davies;,citation_author=Alexandre Adalardo Oliveira;,citation_author=Hannes P. De Deurwaerder;,citation_author=Salomón Aguilar;,citation_author=Kristina J. Anderson-Teixeira;,citation_author=Nurfarah Aqilah;,citation_author=Norman A. Bourg;,citation_author=Warren Y. Brockelman;,citation_author=Nicolas Castaño;,citation_author=Chia-Hao Chang-Yang;,citation_author=Yu-Yun Chen;,citation_author=George Chuyong;,citation_author=Keith Clay;,citation_author=Álvaro Duque;,citation_author=Sisira Ediriweera;,citation_author=Corneille E. N. Ewango;,citation_author=Gregory Gilbert;,citation_author=I. a. U. N. Gunatilleke;,citation_author=C. V. S. Gunatilleke;,citation_author=Robert Howe;,citation_author=Walter Huaraca Huasco;,citation_author=Akira Itoh;,citation_author=Daniel J. Johnson;,citation_author=David Kenfack;,citation_author=Kamil Král;,citation_author=Yao Tze Leong;,citation_author=James A. Lutz;,citation_author=Jean-Remy Makana;,citation_author=Yadvinder Malhi;,citation_author=William J. McShea;,citation_author=Mohizah Mohamad;,citation_author=Musalmah Nasardin;,citation_author=Anuttara Nathalang;,citation_author=Geoffrey Parker;,citation_author=Renan Parmigiani;,citation_author=Rolando Pérez;,citation_author=Richard P. Phillips;,citation_author=Pavel Šamonil;,citation_author=I-Fang Sun;,citation_author=Sylvester Tan;,citation_author=Duncan Thomas;,citation_author=Jill Thompson;,citation_author=María Uriarte;,citation_author=Amy Wolf;,citation_author=Jess Zimmerman;,citation_author=Daniel Zuleta;,citation_author=Marco D. Visser;,citation_author=Lisa Hülsmann;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/ecog.07187;,citation_issue=6;,citation_doi=10.1111/ecog.07187;,citation_volume=2024;,citation_language=en;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=Causality: Models, reasoning, and inference;,citation_author=Judea Pearl;,citation_publication_date=2009;,citation_cover_date=2009;,citation_year=2009;,citation_isbn=9780521895606;">
+<meta name="citation_reference" content="citation_title=A structural equation model analysis of postfire plant diversity in California shrublands;,citation_author=James B. Grace;,citation_author=Jon E. Keeley;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=2;,citation_doi=10.1890/1051-0761(2006)016[0503:ASEMAO]2.0.CO;2;,citation_volume=16;,citation_journal_title=Ecological Applications;">
+<meta name="citation_reference" content="citation_title=Double/debiased machine learning for treatment and structural parameters;,citation_author=Victor Chernozhukov;,citation_author=Denis Chetverikov;,citation_author=Mert Demirer;,citation_author=Esther Duflo;,citation_author=Christian Hansen;,citation_author=Whitney Newey;,citation_author=James Robins;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=1;,citation_doi=10.1111/ectj.12097;,citation_volume=21;,citation_journal_title=The Econometrics Journal;">
+<meta name="citation_reference" content="citation_title=Sixty seconds on … P-hacking;,citation_author=Nigel Hawkes;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.1136/bmj.k4039;,citation_volume=362;,citation_journal_title=BMJ;">
+<meta name="citation_reference" content="citation_title=Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure;,citation_author=David R. Roberts;,citation_author=Volker Bahn;,citation_author=Simone Ciuti;,citation_author=Mark S. Boyce;,citation_author=Jane Elith;,citation_author=Gurutzeta Guillera-Arroita;,citation_author=Severin Hauenstein;,citation_author=José J. Lahoz-Monfort;,citation_author=Boris Schröder;,citation_author=Wilfried Thuiller;,citation_author=David I. Warton;,citation_author=Brendan A. Wintle;,citation_author=Florian Hartig;,citation_author=Carsten F. Dormann;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=8;,citation_doi=10.1111/ecog.02881;,citation_volume=40;,citation_journal_title=Ecography;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The arcsine is asinine: The analysis of proportions in ecology;,citation_author=David I. Warton;,citation_author=Francis K. C. Hui;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=1;,citation_doi=10.1890/10-0340.1;,citation_volume=92;,citation_journal_title=Ecology;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Spatial interaction and the statistical analysis of lattice systems;,citation_author=Julian Besag;,citation_publication_date=1974;,citation_cover_date=1974;,citation_year=1974;,citation_issue=2;,citation_doi=10.1111/j.2517-6161.1974.tb00999.x;,citation_volume=36;,citation_journal_title=Journal of the Royal Statistical Society: Series B (Methodological);,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Phylogenies and the comparative method;,citation_author=Joseph Felsenstein;,citation_publication_date=1985;,citation_cover_date=1985;,citation_year=1985;,citation_issue=1;,citation_doi=10.1086/284325;,citation_volume=125;,citation_journal_title=The American Naturalist;">
+<meta name="citation_reference" content="citation_title=Simple means to improve the interpretability of regression coefficients;,citation_author=Holger Schielzeth;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_doi=10.1111/j.2041-210X.2010.00012.x;,citation_volume=1;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Female hurricanes are deadlier than male hurricanes;,citation_author=Kiju Jung;,citation_author=Sharon Shavitt;,citation_author=Madhu Viswanathan;,citation_author=Joseph M. Hilbe;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=24;,citation_doi=10.1073/pnas.1402786111;,citation_volume=111;,citation_journal_title=Proceedings of the National Academy of Sciences;,citation_publisher=National Academy of Sciences;">
+<meta name="citation_reference" content="citation_title=Many analysts, one data set: Making transparent how variations in analytic choices affect results;,citation_author=R. Silberzahn;,citation_author=E. L. Uhlmann;,citation_author=D. P. Martin;,citation_author=P. Anselmi;,citation_author=F. Aust;,citation_author=E. Awtrey;,citation_author=Š. Bahník;,citation_author=F. Bai;,citation_author=C. Bannard;,citation_author=E. Bonnier;,citation_author=R. Carlsson;,citation_author=F. Cheung;,citation_author=G. Christensen;,citation_author=R. Clay;,citation_author=M. A. Craig;,citation_author=A. Dalla Rosa;,citation_author=L. Dam;,citation_author=M. H. Evans;,citation_author=I. Flores Cervantes;,citation_author=N. Fong;,citation_author=M. Gamez-Djokic;,citation_author=A. Glenz;,citation_author=S. Gordon-McKeon;,citation_author=T. J. Heaton;,citation_author=K. Hederos;,citation_author=M. Heene;,citation_author=A. J. Hofelich Mohr;,citation_author=F. Högden;,citation_author=K. Hui;,citation_author=M. Johannesson;,citation_author=J. Kalodimos;,citation_author=E. Kaszubowski;,citation_author=D. M. Kennedy;,citation_author=R. Lei;,citation_author=T. A. Lindsay;,citation_author=S. Liverani;,citation_author=C. R. Madan;,citation_author=D. Molden;,citation_author=E. Molleman;,citation_author=R. D. Morey;,citation_author=L. B. Mulder;,citation_author=B. R. Nijstad;,citation_author=N. G. Pope;,citation_author=B. Pope;,citation_author=J. M. Prenoveau;,citation_author=F. Rink;,citation_author=E. Robusto;,citation_author=H. Roderique;,citation_author=A. Sandberg;,citation_author=E. Schlüter;,citation_author=F. D. Schönbrodt;,citation_author=M. F. Sherman;,citation_author=S. A. Sommer;,citation_author=K. Sotak;,citation_author=S. Spain;,citation_author=C. Spörlein;,citation_author=T. Stafford;,citation_author=L. Stefanutti;,citation_author=S. Tauber;,citation_author=J. Ullrich;,citation_author=M. Vianello;,citation_author=E.-J. Wagenmakers;,citation_author=M. Witkowiak;,citation_author=S. Yoon;,citation_author=B. A. Nosek;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=3;,citation_doi=10.1177/2515245917747646;,citation_volume=1;,citation_journal_title=Advances in Methods and Practices in Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=A general and simple method for obtaining $R^2$ from generalized linear mixed-effects models;,citation_author=Shinichi Nakagawa;,citation_author=Holger Schielzeth;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=2;,citation_doi=10.1111/j.2041-210x.2012.00261.x;,citation_volume=4;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The coefficient of determination $R^2$ and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded;,citation_author=Shinichi Nakagawa;,citation_author=Paul C. D. Johnson;,citation_author=Holger Schielzeth;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=134;,citation_doi=10.1098/rsif.2017.0213;,citation_volume=14;,citation_journal_title=Journal of The Royal Society Interface;,citation_publisher=The Royal Society;">
+<meta name="citation_reference" content="citation_title=Analysing data using linear models: With applications in R;,citation_author=Stéphanie M. Berg;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://bookdown.org/pingapang9/linear_models_bookdown/;">
+<meta name="citation_reference" content="citation_title=False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant;,citation_author=Joseph P. Simmons;,citation_author=Leif D. Nelson;,citation_author=Uri Simonsohn;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=11;,citation_doi=10.1177/0956797611417632;,citation_volume=22;,citation_journal_title=Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: An overview;,citation_author=Ruth G. Shaw;,citation_author=Thomas Mitchell-Olds;,citation_publication_date=1993;,citation_cover_date=1993;,citation_year=1993;,citation_issue=6;,citation_doi=10.2307/1939922;,citation_volume=74;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Collinearity: A review of methods to deal with it and a simulation study evaluating their performance;,citation_author=Carsten F. Dormann;,citation_author=Jane Elith;,citation_author=Sven Bacher;,citation_author=Carsten Buchmann;,citation_author=Gudrun Carl;,citation_author=Gabriel Carré;,citation_author=Jaime R. García Marquéz;,citation_author=Bernd Gruber;,citation_author=Bruno Lafourcade;,citation_author=Pedro J. Leitão;,citation_author=Tamara Münkemüller;,citation_author=Colin McClean;,citation_author=Patrick E. Osborne;,citation_author=Björn Reineking;,citation_author=Boris Schröder;,citation_author=Andrew K. Skidmore;,citation_author=Damaris Zurell;,citation_author=Sven Lautenbach;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=1;,citation_doi=10.1111/j.1600-0587.2012.07348.x;,citation_volume=36;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=A reformulation of linear models;,citation_author=John A. Nelder;,citation_publication_date=1977;,citation_cover_date=1977;,citation_year=1977;,citation_issue=1;,citation_doi=10.2307/2344517;,citation_volume=140;,citation_journal_title=Journal of the Royal Statistical Society: Series A (General);">
+<meta name="citation_reference" content="citation_title=Generalizing hierarchical and variation partitioning in multiple regression and canonical analyses using the rdacca.hp R package;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Jinlong Zhang;,citation_author=Pedro R. Peres-Neto;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=4;,citation_doi=10.1111/2041-210X.13800;,citation_volume=13;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Glmm.hp: An R package for computing individual effect of predictors in generalized linear mixed models;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Shuang Zhang;,citation_author=Xiaoguang Zhang;,citation_author=Lingfeng Mao;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=6;,citation_doi=10.1093/jpe/rtac096;,citation_volume=15;,citation_journal_title=Journal of Plant Ecology;">
+<meta name="citation_reference" content="citation_title=Regression with missing Ys: An improved strategy for analyzing multiply imputed data;,citation_author=Paul T. Hippel;,citation_publication_date=2007;,citation_cover_date=2007;,citation_year=2007;,citation_issue=1;,citation_doi=10.1111/j.1467-9531.2007.00180.x;,citation_volume=37;,citation_journal_title=Sociological Methodology;">
+<meta name="citation_reference" content="citation_title=Ordered beta regression: A parsimonious, well-fitting model for continuous data with lower and upper bounds;,citation_author=Robert Kubinec;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_issue=4;,citation_doi=10.1017/pan.2022.20;,citation_volume=31;,citation_journal_title=Political Analysis;">
+<meta name="citation_reference" content="citation_title=Analysing continuous proportions in ecology and evolution: A practical introduction to beta and dirichlet regression;,citation_author=Jacob C. Douma;,citation_author=James T. Weedon;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=9;,citation_doi=10.1111/2041-210X.13234;,citation_volume=10;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=A comparison of joint species distribution models for percent cover data;,citation_author=Pekka Korhonen;,citation_author=Francis K. C. Hui;,citation_author=Jenni Niku;,citation_author=Sara Taskinen;,citation_author=Bert Veen;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=12;,citation_doi=10.1111/2041-210X.14437;,citation_volume=15;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Using the beta distribution to analyse plant cover data;,citation_author=Christian F. Damgaard;,citation_author=Kathryn M. Irvine;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=6;,citation_doi=10.1111/1365-2745.13200;,citation_volume=107;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=A better lemon squeezer? Maximum-likelihood regression with beta-distributed dependent variables;,citation_author=Michael Smithson;,citation_author=Jay Verkuilen;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=1;,citation_doi=10.1037/1082-989X.11.1.54;,citation_volume=11;,citation_journal_title=Psychological Methods;">
+<meta name="citation_reference" content="citation_title=Co-occurrence is not evidence of ecological interactions;,citation_author=F. Guillaume Blanchet;,citation_author=Kevin Cazelles;,citation_author=Dominique Gravel;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_issue=7;,citation_doi=10.1111/ele.13525;,citation_volume=23;,citation_journal_title=Ecology Letters;">
+<meta name="citation_reference" content="citation_title=Parsimoniously fitting large multivariate random effects in glmmTMB;,citation_author=Maeve McGillycuddy;,citation_author=Gordana Popovic;,citation_author=Benjamin M. Bolker;,citation_author=David I. Warton;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=1;,citation_doi=10.18637/jss.v112.i01;,citation_volume=112;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=Model selection for ecologists: The worldviews of AIC and BIC;,citation_author=Ken Aho;,citation_author=DeWayne Derryberry;,citation_author=Teri Peterson;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=3;,citation_doi=10.1890/13-1452.1;,citation_volume=95;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Introduction to Bayesian statistics with R;,citation_author=Florian Hartig;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://florianhartig.github.io/LearningBayes/;">
+<meta name="citation_reference" content="citation_title=Pseudoreplication and the design of ecological field experiments;,citation_author=Stuart H. Hurlbert;,citation_publication_date=1984;,citation_cover_date=1984;,citation_year=1984;,citation_issue=2;,citation_doi=10.2307/1942661;,citation_volume=54;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=Fixed or random? On the reliability of mixed-effects models for a small number of levels in grouping variables;,citation_author=Johannes Oberpriller;,citation_author=Melina Souza Leite;,citation_author=Maximilian Pichler;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=7;,citation_doi=10.1002/ece3.9062;,citation_volume=12;,citation_journal_title=Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Linear and generalized linear mixed models;,citation_author=Benjamin M. Bolker;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_doi=10.1093/acprof:oso/9780199672547.003.0014;,citation_inbook_title=Ecological statistics;">
+<meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
+<meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
+<meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating slimcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -150,7 +201,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3A-MissingData.html">Model Choice</a></li><li class="breadcrumb-item"><a href="./3B-CausalInference.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3A-MissingData.html">Model choice</a></li><li class="breadcrumb-item"><a href="./3B-CausalInference.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -216,7 +267,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the mean</span></a>
+ <span class="menu-text">Modeling the mean</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -251,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Model Choice</span></a>
+ <span class="menu-text">Model choice</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -280,7 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the distribution</span></a>
+ <span class="menu-text">Modeling the distribution</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -309,7 +360,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Summary and references</span></a>
+ <span class="menu-text">Workflow</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -318,7 +369,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">From question to paper: the analysis workflow</span></span></a>
   </div>
 </li>
       </ul>
@@ -341,7 +392,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Quick reference</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -362,33 +413,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#correlations-causality" id="toc-correlations-causality" class="nav-link active" data-scroll-target="#correlations-causality"><span class="header-section-number">7.1</span> Correlations != Causality</a></li>
-  <li><a href="#how-to-control" id="toc-how-to-control" class="nav-link" data-scroll-target="#how-to-control"><span class="header-section-number">7.2</span> How to control?</a>
+  <li><a href="#sec-causal-correlation" id="toc-sec-causal-correlation" class="nav-link active" data-scroll-target="#sec-causal-correlation"><span class="header-section-number">7.1</span> Correlations != causality</a></li>
+  <li><a href="#sec-causal-control" id="toc-sec-causal-control" class="nav-link" data-scroll-target="#sec-causal-control"><span class="header-section-number">7.2</span> How to control?</a>
   <ul class="collapse">
-  <li><a href="#experimental-control" id="toc-experimental-control" class="nav-link" data-scroll-target="#experimental-control"><span class="header-section-number">7.2.1</span> Experimental control</a></li>
-  <li><a href="#synthetic-control" id="toc-synthetic-control" class="nav-link" data-scroll-target="#synthetic-control"><span class="header-section-number">7.2.2</span> Synthetic control</a></li>
+  <li><a href="#sec-causal-experiment" id="toc-sec-causal-experiment" class="nav-link" data-scroll-target="#sec-causal-experiment"><span class="header-section-number">7.2.1</span> Experimental control</a></li>
+  <li><a href="#sec-causal-adjustment" id="toc-sec-causal-adjustment" class="nav-link" data-scroll-target="#sec-causal-adjustment"><span class="header-section-number">7.2.2</span> Statistical control (adjustment)</a></li>
   </ul></li>
-  <li><a href="#a-framework-for-causal-analysis" id="toc-a-framework-for-causal-analysis" class="nav-link" data-scroll-target="#a-framework-for-causal-analysis"><span class="header-section-number">7.3</span> A framework for causal analysis</a></li>
-  <li><a href="#graphs-and-models-on-graphs" id="toc-graphs-and-models-on-graphs" class="nav-link" data-scroll-target="#graphs-and-models-on-graphs"><span class="header-section-number">7.4</span> Graphs and models on graphs</a>
+  <li><a href="#sec-causal-framework" id="toc-sec-causal-framework" class="nav-link" data-scroll-target="#sec-causal-framework"><span class="header-section-number">7.3</span> A framework for causal analysis</a></li>
+  <li><a href="#sec-causal-graph" id="toc-sec-causal-graph" class="nav-link" data-scroll-target="#sec-causal-graph"><span class="header-section-number">7.4</span> Graphs and models on graphs</a>
   <ul class="collapse">
-  <li><a href="#table-ii-fallacy" id="toc-table-ii-fallacy" class="nav-link" data-scroll-target="#table-ii-fallacy"><span class="header-section-number">7.4.1</span> Table II fallacy</a></li>
-  <li><a href="#structural-equation-models-sems" id="toc-structural-equation-models-sems" class="nav-link" data-scroll-target="#structural-equation-models-sems"><span class="header-section-number">7.4.2</span> Structural equation models (SEMs)</a></li>
+  <li><a href="#sec-causal-table2" id="toc-sec-causal-table2" class="nav-link" data-scroll-target="#sec-causal-table2"><span class="header-section-number">7.4.1</span> Table 2 fallacy</a></li>
+  <li><a href="#sec-causal-sem" id="toc-sec-causal-sem" class="nav-link" data-scroll-target="#sec-causal-sem"><span class="header-section-number">7.4.2</span> Structural equation models (SEMs)</a></li>
   </ul></li>
-  <li><a href="#double-ml" id="toc-double-ml" class="nav-link" data-scroll-target="#double-ml"><span class="header-section-number">7.5</span> Double ML</a></li>
-  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"><span class="header-section-number">7.6</span> Case studies</a>
+  <li><a href="#sec-causal-partialling" id="toc-sec-causal-partialling" class="nav-link" data-scroll-target="#sec-causal-partialling"><span class="header-section-number">7.5</span> Partialling out confounders (Frisch-Waugh-Lovell)</a></li>
+  <li><a href="#sec-causal-takehome" id="toc-sec-causal-takehome" class="nav-link" data-scroll-target="#sec-causal-takehome"><span class="header-section-number">7.6</span> Take-home messages</a></li>
+  <li><a href="#sec-causal-cases" id="toc-sec-causal-cases" class="nav-link" data-scroll-target="#sec-causal-cases"><span class="header-section-number">7.7</span> Case studies</a>
   <ul class="collapse">
-  <li><a href="#case-study-swiss-fertility" id="toc-case-study-swiss-fertility" class="nav-link" data-scroll-target="#case-study-swiss-fertility"><span class="header-section-number">7.6.1</span> Case study: Swiss fertility</a></li>
-  <li><a href="#case-study-life-satisfaction" id="toc-case-study-life-satisfaction" class="nav-link" data-scroll-target="#case-study-life-satisfaction"><span class="header-section-number">7.6.2</span> Case study: Life satisfaction</a></li>
+  <li><a href="#sec-causal-swiss" id="toc-sec-causal-swiss" class="nav-link" data-scroll-target="#sec-causal-swiss"><span class="header-section-number">7.7.1</span> Case study: Swiss fertility</a></li>
+  <li><a href="#sec-causal-life" id="toc-sec-causal-life" class="nav-link" data-scroll-target="#sec-causal-life"><span class="header-section-number">7.7.2</span> Case study: life satisfaction</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/3B-CausalInference.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/3B-CausalInference.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3A-MissingData.html">Model Choice</a></li><li class="breadcrumb-item"><a href="./3B-CausalInference.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3A-MissingData.html">Model choice</a></li><li class="breadcrumb-item"><a href="./3B-CausalInference.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></h1>
+<h1 class="title"><span id="sec-causal" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Causal inference</span></span></h1>
 </div>
 
 
@@ -405,10 +457,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="correlations-causality" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="correlations-causality"><span class="header-section-number">7.1</span> Correlations != Causality</h2>
-<p>The most fundamental distinction in strategies for model choice is if we want to estimate effects, or if we want to predict. If we want to estimate effects, we nearly always want to estimate causal effects.</p>
-<p>Let me first define what we mean by “a causal effect”: if we have a system with a number of variables, the causal effect of A on B is the change in B that would happen if we changed A, but kept all other aspects of this system constant.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>In this chapter
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this chapter, you will learn</p>
+<ul>
+<li>what a causal effect is, and how experiments and statistical control (adjustment) remove confounding (<a href="#sec-causal-correlation" class="quarto-xref"><span>Section 7.1</span></a>, <a href="#sec-causal-control" class="quarto-xref"><span>Section 7.2</span></a>);</li>
+<li>which variables to include in a regression: confounders yes, colliders no, mediators depending on the question, using causal graphs to decide (<a href="#sec-causal-framework" class="quarto-xref"><span>Section 7.3</span></a>, <a href="#sec-causal-graph" class="quarto-xref"><span>Section 7.4</span></a>);</li>
+<li>how to report the result without the Table 2 fallacy, how to estimate whole graphs with structural equation models, and how to partial out confounders (<a href="#sec-causal-table2" class="quarto-xref"><span>Section 7.4.1</span></a>, <a href="#sec-causal-sem" class="quarto-xref"><span>Section 7.4.2</span></a>, <a href="#sec-causal-partialling" class="quarto-xref"><span>Section 7.5</span></a>).</li>
+</ul>
+<p><strong>Workflow steps</strong> (<a href="1A-GettingStarted.html#sec-intro-workflow" class="quarto-xref"><span>Section 1.1.2</span></a>): step 1 (question and goal), step 3 (choice of predictors).</p>
+<p>Prerequisites: the linear model (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>), in particular multiple regression (<a href="2A-LinearRegression.html#sec-lm-multiple" class="quarto-xref"><span>Section 2.7</span></a>).</p>
+</div>
+</div>
+<section id="sec-causal-correlation" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-causal-correlation"><span class="header-section-number">7.1</span> Correlations != causality</h2>
+<div id="correlations-causality">
+
+</div>
+<p>The most fundamental distinction in strategies for model choice is if we want to estimate effects, or if we want to predict. If we want to estimate effects, we nearly always want to estimate causal effects. Prediction is treated in the chapter on model selection (<a href="3C-ModelSelection.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+<p>Let me first define what we mean by “a causal effect”: if we have a system with a number of variables, the causal effect of A on B is the change in B that would happen if we intervened on A (set it to a different value), while everything not caused by A is left unchanged. This total effect includes paths through mediators; the direct effect excludes them.</p>
 <p>Assume we look at the effect of coffee consumption on Lung Cancer. Assume further that there is no such effect. However, there is an effect of smoking on lung cancer, and for some reason, smoking also affects coffee consumption.</p>
 <p>It is common to visualize and analyze such relationships in a causal graph. Here, I use the ggdag package</p>
 <div class="cell">
@@ -436,7 +511,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>In this case, the plot highlights me to the fact that Coffee and Lung cancer d-connected. What that means is: if I plot coffee against lung cancer, I will see a correlation between them, even though coffee consumption does not influence lung cancer at all. We can easily confirm via a simulation that this is true:</p>
+<p>In this case, the plot highlights me to the fact that Coffee and Lung cancer are d-connected (with an empty conditioning set, i.e.&nbsp;without controlling for anything). What that means is: if I plot coffee against lung cancer, I will see a correlation between them, even though coffee consumption does not influence lung cancer at all. Note that d-connection is a property of the graph: it tells us which associations we should expect in the data, not that there is a causal link between the two variables — here, the association is entirely created by the common cause Smoking. We can easily confirm via a simulation that this is true:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>smoking <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Coffee <span class="ot">&lt;-</span> smoking <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
@@ -465,11 +540,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The result conforms with our intuition - once we control for smoking, there will be no correlation between Coffee and Lung Cancer (because there is no causal effect between them). In causal lingo, we say the two are now d-separated.</p>
 </section>
-<section id="how-to-control" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="how-to-control"><span class="header-section-number">7.2</span> How to control?</h2>
+<section id="sec-causal-control" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-causal-control"><span class="header-section-number">7.2</span> How to control?</h2>
+<div id="how-to-control">
+
+</div>
 <p>But how do we control for the confounder smoking?</p>
-<section id="experimental-control" class="level3" data-number="7.2.1">
-<h3 data-number="7.2.1" class="anchored" data-anchor-id="experimental-control"><span class="header-section-number">7.2.1</span> Experimental control</h3>
+<section id="sec-causal-experiment" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-causal-experiment"><span class="header-section-number">7.2.1</span> Experimental control</h3>
 <p>The conceptually easiest approach is: we perform a controlled experiment. The entire idea experiments is that we vary only one (or a few) factors, keeping the others constant, and thus we are able to “see” causal effects directly. So, if we did an experiment with people that all smoke the same, varying coffee, we would get the right result:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>smoking <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">50</span>)</span>
@@ -486,11 +564,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>This leads us to an important point: people that run controlled experiments always estimate causal effects, unless something went wrong with the control. Actually, all advice regarding experimental design (control, randomization) is aimed at removing any possible confounding with other factors, so that we can isolate causal effects.</p>
+<p>This leads us to an important point: randomized controlled experiments estimate causal effects, provided the randomization (and compliance, blinding) worked. Actually, all advice regarding experimental design (control, randomization) is aimed at removing any possible confounding with other factors, so that we can isolate causal effects.</p>
 </section>
-<section id="synthetic-control" class="level3" data-number="7.2.2">
-<h3 data-number="7.2.2" class="anchored" data-anchor-id="synthetic-control"><span class="header-section-number">7.2.2</span> Synthetic control</h3>
-<p>In observational data, we have to use statistical methods to achieve synthetic control. Luckily, we have a great tool for that: the multiple regression.</p>
+<section id="sec-causal-adjustment" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="sec-causal-adjustment"><span class="header-section-number">7.2.2</span> Statistical control (adjustment)</h3>
+<p>In observational data, we have to use statistical methods to achieve statistical control. Luckily, we have a great tool for that: the multiple regression (see <a href="2A-LinearRegression.html#sec-lm-multiple" class="quarto-xref"><span>Section 2.7</span></a>).</p>
 <p>The multiple regression can estimate the effect of coffee, corrected for the effect of smoking. Thus, by including smoking in the multiple regression, we are “virtually” holding smoking constant, thus allowing us to estimate the causal effect of coffee. Let’s try this out:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>smoking <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
@@ -500,8 +578,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(LungCancer <span class="sc">~</span> Coffee <span class="sc">+</span> smoking)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(LungCancer <span class="sc">~</span> Coffee)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(fit1)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(fit2, <span class="at">col =</span> <span class="st">"red"</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="fu">c</span>(<span class="st">"simple regression"</span>, <span class="st">"multiple regression"</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">lwd =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(Coffee), <span class="fu">max</span>(Coffee), <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xs, <span class="fu">predict</span>(fit2, <span class="fu">data.frame</span>(<span class="at">Coffee =</span> xs, <span class="at">smoking =</span> <span class="fu">mean</span>(smoking))), <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="fu">c</span>(<span class="st">"simple regression"</span>, <span class="st">"multiple regression"</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">lwd =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -510,6 +589,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>The red line shows the effect of coffee with smoking held at its mean: it is much flatter than the simple regression, i.e.&nbsp;most of the apparent coffee effect disappears once we control for smoking.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -520,17 +600,11 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>GAMs are particularly useful for confounders. If you have confounders, you usually don’t care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone ~ Wind, account for the other variables, a good strategy might be:</p>
+<p>GAMs (see <a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a>) are particularly useful for confounders. If you have confounders, you usually don’t care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone ~ Wind, account for the other variables, a good strategy might be:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: nlme</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>This is mgcv 1.9-4. For overview type '?mgcv'.</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">gam</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> <span class="fu">s</span>(Temp) <span class="sc">+</span> <span class="fu">s</span>(Solar.R) , <span class="at">data =</span> airquality)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">gam</span>(Ozone <span class="sc">~</span> Wind <span class="sc">+</span> <span class="fu">s</span>(Temp) <span class="sc">+</span> <span class="fu">s</span>(Solar.R) , <span class="at">data =</span> airquality)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Family: gaussian 
@@ -562,13 +636,16 @@ GCV = 402.11  Scale est. = 372.4     n = 111</code></pre>
 </div>
 </section>
 </section>
-<section id="a-framework-for-causal-analysis" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="a-framework-for-causal-analysis"><span class="header-section-number">7.3</span> A framework for causal analysis</h2>
-<p>What we have just seen is an example of a causal analysis. The goal of a causal analysis is to control for other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn’t if we just want to predict.</p>
-<p>You probably have learned in your intro stats class that, to do so, we have to control for <strong>confounders.</strong> I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. Imagine that there is a third variable that is included</p>
+<section id="sec-causal-framework" class="level2 page-columns page-full" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="sec-causal-framework"><span class="header-section-number">7.3</span> A framework for causal analysis</h2>
+<div id="a-framework-for-causal-analysis">
+
+</div>
+<p>What we have just seen in the section on statistical control (<a href="#sec-causal-adjustment" class="quarto-xref"><span>Section 7.2.2</span></a>) is an example of a causal analysis. The goal of a causal analysis is to control for other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn’t if we just want to predict (see the chapter on model selection, <a href="3C-ModelSelection.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+<p>You probably have learned in your intro stats class that, to do so, we have to control for <strong>confounders.</strong> I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. Imagine that there is a third variable (nervousness) that is influenced by both coffee and lung cancer:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">=</span> <span class="fu">collider_triangle</span>(<span class="at">x =</span> <span class="st">"Coffee"</span>, <span class="at">y =</span> <span class="st">"Lung Cancer"</span>, <span class="at">m =</span> <span class="st">"Nervousness"</span>) </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag</span>(dag, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">"label"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">=</span> <span class="fu">collider_triangle</span>(<span class="at">x =</span> <span class="st">"Coffee"</span>, <span class="at">y =</span> <span class="st">"Lung Cancer"</span>, <span class="at">m =</span> <span class="st">"Nervousness"</span>) </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag</span>(dag, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">"label"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -579,15 +656,15 @@ GCV = 402.11  Scale est. = 372.4     n = 111</code></pre>
 </div>
 <p>Let’s simulate some data according to this structure</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Coffee <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>LungCancer <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>nervousness <span class="ot">=</span> Coffee <span class="sc">+</span> LungCancer <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>Coffee <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>LungCancer <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>nervousness <span class="ot">=</span> Coffee <span class="sc">+</span> LungCancer <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>If we fit a multiple regression on this structure, we erroneously conclude that there is an effect of coffee on lung cancer</p>
+<p>If we fit a multiple regression on this structure, we erroneously conclude that there is an effect of coffee on lung cancer (note the strongly negative coefficient: conditioning on a collider induces a spurious negative association)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(LungCancer <span class="sc">~</span> Coffee <span class="sc">+</span> nervousness)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(LungCancer <span class="sc">~</span> Coffee <span class="sc">+</span> nervousness)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -612,8 +689,8 @@ F-statistic: 359.5 on 2 and 97 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>this time, the univariate regression gets it right:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(LungCancer <span class="sc">~</span> Coffee)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(LungCancer <span class="sc">~</span> Coffee)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -636,8 +713,10 @@ F-statistic: 0.7521 on 1 and 98 DF,  p-value: 0.3879</code></pre>
 </div>
 </div>
 <p>What we’ve seen here is a collider bias - a collider is a variable that is influenced by predictor and response. Although it correlates with predictor and response, correcting for it (or including it) in a multiple regression will create a bias on the causal link we are interested in (Corollary: Including all variables is not always a good thing).</p>
-<p>There is an entire framework to analyze which variables you need to include in the regression to achieve proper control (Pearl 2000, 2009). In the following picture, I have summarized the three basic structures. The one that we haven’t discussed yet is a mediation structure. A mediator is an intermediate variable that “mediates” an effect between exposure and response.</p>
-<div class="cell">
+<p>There is an entire framework to analyze which variables you need to include in the regression to achieve proper control <span class="citation" data-cites="pearl2009causality">(<a href="5B-References.html#ref-pearl2009causality" role="doc-biblioref">Pearl, 2009</a>)</span>. In the following picture, I have summarized the three basic structures. The one that we haven’t discussed yet is a mediation structure. A mediator is an intermediate variable that “mediates” an effect between exposure and response.</p>
+<div class="no-row-height column-margin column-container"><div id="ref-pearl2009causality" class="csl-entry" role="listitem">
+Pearl, J. (2009) <em>Causality: Models, reasoning, and inference</em>. 2nd ed. Cambridge University Press.
+</div></div><div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -646,13 +725,13 @@ F-statistic: 0.7521 on 1 and 98 DF,  p-value: 0.3879</code></pre>
 </div>
 </div>
 </div>
-<p>How do we deal with the basic causal structures colliders, mediators and confounders in a regression analysis? Start by writing down the hypothesis / structure that you want to estimate causally (for example, in A, B “Plant diversity” -&gt; Ecosystem productivity). Then</p>
+<p>How do we deal with the basic causal structures colliders, mediators and confounders in a regression analysis? Start by writing down the hypothesis / structure that you want to estimate causally (for example, “Plant diversity” -&gt; Ecosystem productivity in the figure above). Then</p>
 <ol type="1">
 <li>Control for all confounding structures</li>
 <li>Do not control for colliders and other similar relationships, e.g.&nbsp;“M-Bias” (red paths).</li>
 <li>It depends on the question whether we should control for <strong>mediators</strong> (yellow paths).</li>
 </ol>
-<p>Note: If other variables are just there to correct our estimates, they are <strong>nuisance parameters</strong> (= we are not interested in them), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy).</p>
+<p>Note: If other variables are just there to correct our estimates, they are <strong>nuisance parameters</strong> (= we are not interested in them), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy, see <a href="#sec-causal-table2" class="quarto-xref"><span>Section 7.4.1</span></a>).</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -663,25 +742,29 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The best practical guidance paper I know on estimating causal effects is Lederer et al., 2018, “Control of Confounding and Reporting of Results in Causal Inference Studies. Guidance for Authors from Editors of Respiratory, Sleep, and Critical Care Journals” which is available <a href="https://www.atsjournals.org/doi/full/10.1513/AnnalsATS.201808-564PS" target="_blank" rel="noopener">here</a>.</p>
-<p>Another great paper is Laubach, Z. M., Murray, E. J., Hoke, K. L., Safran, R. J., &amp; Perng, W. (2021). A biologist’s guide to model selection and causal inference. Proceedings of the Royal Society B, 288(1943), 20202815.</p>
+<p>The best practical guidance paper I know on estimating causal effects is <span class="citation" data-cites="lederer2019control"><span class="nocase">Lederer <em>et al.</em></span> (<a href="5B-References.html#ref-lederer2019control" role="doc-biblioref">2019</a>)</span>.</p>
+<p>Another great paper is <span class="citation" data-cites="laubach2021biologist">Laubach <em>et al.</em> (<a href="5B-References.html#ref-laubach2021biologist" role="doc-biblioref">2021</a>)</span>.</p>
 </div>
 </div>
-<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="no-row-height column-margin column-container"><div id="ref-laubach2021biologist" class="csl-entry" role="listitem">
+Laubach, Z.M. <em>et al.</em> (2021) <span>“A biologist’s guide to model selection and causal inference,”</span> <em>Proceedings of the Royal Society B</em>, 288(1943), p. 20202815.
+</div></div><div class="no-row-height column-margin column-container"><div id="ref-lederer2019control" class="csl-entry" role="listitem">
+<span class="nocase">Lederer, D.J. <em>et al.</em></span> (2019) <span>“Control of confounding and reporting of results in causal inference studies. Guidance for authors from editors of respiratory, sleep, and critical care journals,”</span> <em>Annals of the American Thoracic Society</em>, 16(1), pp. 22–28.
+</div></div><div class="callout callout-style-default callout-caution no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Caution</span>Case study 1
+<span class="screen-reader-only">Caution</span>Exercise — Causal effect of temperature on ozone
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Take the example of the past exercise (airquality) and assume, the goal is to understand the causal effect of Temperature on Ozone (primary hypothesis). Draw a causal diagram to decide which variables to take into the regression (i.e.&nbsp;noting which are confounders, mediators or colliders), and fit the model.</p>
+<p>Take the airquality data and assume the goal is to understand the causal effect of Temperature on Ozone (primary hypothesis). Draw a causal diagram to decide which variables to take into the regression (i.e.&nbsp;noting which are confounders, mediators or colliders), and fit the model.</p>
 </div>
 </div>
 <div class="callout callout-style-simple callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -690,33 +773,38 @@ Tip
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>Solar.R could affect both Temp, Ozone -&gt; Confounder, include</li>
 <li>Wind could affect Temp, Ozone -&gt; Confounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it’s a mediator</li>
-<li>I would not include Month, as the Month itself should not affect Ozone, it’s the Temp, Solar.R of the month that must have the effect. It’s more like a placeholder, but if you include it, it will nearly act as a collider, because it can snitch away some of the effects of the other variables.</li>
+<li>I would not include Month: Month itself should not affect Ozone, it should act only through the Temp, Solar.R and Wind of the month, so adjusting for Solar.R and Wind already blocks the paths via Month. Including it is largely redundant with Temp and costs precision.</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
-<section id="graphs-and-models-on-graphs" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="graphs-and-models-on-graphs"><span class="header-section-number">7.4</span> Graphs and models on graphs</h2>
-<p>https://www.andrewheiss.com/blog/2020/02/25/closing-backdoors-dags/</p>
-<p>Let’s take a more complicated example. We will use data from Grace &amp; Keeley (2006), who try to understand plant diversity following wildfires in fire-prone shrublands of California. The authors have measured various variables, and they have a specific hypothesis how those are related (see below).</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(piecewiseSEM)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_dag</span>())</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu">dagify</span>(rich <span class="sc">~</span> distance <span class="sc">+</span> elev <span class="sc">+</span> abiotic <span class="sc">+</span> age <span class="sc">+</span> hetero <span class="sc">+</span> firesev <span class="sc">+</span> cover,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  firesev <span class="sc">~</span> elev <span class="sc">+</span> age <span class="sc">+</span> cover,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  cover <span class="sc">~</span> age <span class="sc">+</span> elev <span class="sc">+</span> abiotic ,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">"cover"</span>,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcome =</span> <span class="st">"rich"</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="sec-causal-graph" class="level2 page-columns page-full" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="sec-causal-graph"><span class="header-section-number">7.4</span> Graphs and models on graphs</h2>
+<div id="graphs-and-models-on-graphs">
+
+</div>
+<p>A nice walk-through of finding adjustment sets with ggdag is the blog post <a href="https://www.andrewheiss.com/blog/2020/02/25/closing-backdoors-dags/">Closing backdoors with DAGs</a> by Andrew Heiss.</p>
+<p>Let’s take a more complicated example. We will use data from <span class="citation" data-cites="grace2006structural">Grace and Keeley (<a href="5B-References.html#ref-grace2006structural" role="doc-biblioref">2006</a>)</span>, who try to understand plant diversity following wildfires in fire-prone shrublands of California. The authors have measured various variables, and they have a specific hypothesis how those are related (see below).</p>
+<div class="no-row-height column-margin column-container"><div id="ref-grace2006structural" class="csl-entry" role="listitem">
+Grace, J.B. and Keeley, J.E. (2006) <span>“A structural equation model analysis of postfire plant diversity in <span>California</span> shrublands,”</span> <em>Ecological Applications</em>, 16(2), pp. 503–514. Available at: <a href="https://doi.org/10.1890/1051-0761(2006)016[0503:ASEMAO]2.0.CO;2">https://doi.org/10.1890/1051-0761(2006)016[0503:ASEMAO]2.0.CO;2</a>.
+</div></div><div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(piecewiseSEM)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_dag</span>())</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>dag <span class="ot">&lt;-</span> <span class="fu">dagify</span>(rich <span class="sc">~</span> distance <span class="sc">+</span> elev <span class="sc">+</span> abiotic <span class="sc">+</span> age <span class="sc">+</span> hetero <span class="sc">+</span> firesev <span class="sc">+</span> cover,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  firesev <span class="sc">~</span> elev <span class="sc">+</span> age <span class="sc">+</span> cover,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  cover <span class="sc">~</span> age <span class="sc">+</span> elev <span class="sc">+</span> abiotic ,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">"cover"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">outcome =</span> <span class="st">"rich"</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -727,7 +815,7 @@ Tip
 </div>
 <p>For this exercise, I want to assume that we are particularly interested in the causal effect of cover on species richness. I have specified this in the dag above already. With the <code>ggdag_paths()</code> command, I can isolate all paths that would create a correlation between cover and richness</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_paths</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_paths</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -738,7 +826,7 @@ Tip
 </div>
 <p>Looking at the paths, I can see confounding structures, for example for age, abiotic and elevation. So I should definitely control for them. The function</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_adjustment_set</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_adjustment_set</span>(dag)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -749,7 +837,7 @@ Tip
 </div>
 <p>helps me by suggesting which confounders I should control for. Note that the function doesn’t suggest to adjust for mediation structures per default, but keeps them in the graph, so you have to decide what to do with them. You can directly ask to include adjustment for mediation if you run</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_adjustment_set</span>(dag, <span class="at">effect=</span><span class="st">"direct"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggdag_adjustment_set</span>(dag, <span class="at">effect=</span><span class="st">"direct"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -761,8 +849,8 @@ Tip
 <p>in this case, plot suggest to adjust for fire severity, to isolate the direct effect of cover on richness.</p>
 <p>So, the model we should fit is</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(rich <span class="sc">~</span> cover <span class="sc">+</span> abiotic <span class="sc">+</span> elev <span class="sc">+</span> firesev <span class="sc">+</span> age, <span class="at">data =</span> keeley)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">=</span> <span class="fu">lm</span>(rich <span class="sc">~</span> cover <span class="sc">+</span> abiotic <span class="sc">+</span> elev <span class="sc">+</span> firesev <span class="sc">+</span> age, <span class="at">data =</span> keeley)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -788,27 +876,29 @@ Multiple R-squared:  0.3815,    Adjusted R-squared:  0.3446
 F-statistic: 10.36 on 5 and 84 DF,  p-value: 9.213e-08</code></pre>
 </div>
 </div>
-<section id="table-ii-fallacy" class="level3" data-number="7.4.1">
-<h3 data-number="7.4.1" class="anchored" data-anchor-id="table-ii-fallacy"><span class="header-section-number">7.4.1</span> Table II fallacy</h3>
+<section id="sec-causal-table2" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="sec-causal-table2"><span class="header-section-number">7.4.1</span> Table 2 fallacy</h3>
 <p>When reporting this, note that we have only corrected the relationship rich ~ cover for confounding. Consequently, we should not report the entire regression table above, or at least make a clear distinction about which variables have been corrected, and which haven’t.</p>
-<p>The blind reporting of the entire regression table is known as Table II fallacy (because regression tables are often Table II in a paper).</p>
+<p>The blind reporting of the entire regression table is known as Table 2 fallacy (because regression tables are often Table 2 in a paper).</p>
 </section>
-<section id="structural-equation-models-sems" class="level3" data-number="7.4.2">
-<h3 data-number="7.4.2" class="anchored" data-anchor-id="structural-equation-models-sems"><span class="header-section-number">7.4.2</span> Structural equation models (SEMs)</h3>
-<p>But what if we are interested in all the causal relationships? If we have a graph already, the best option is to fit a structural equation model.</p>
-<p>Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLM responses, you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g.&nbsp;with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html" target="_blank" rel="noopener">https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html</a>.</p>
-<p>For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is <code>lavaan</code>. The advantage of lavaan is that you can also have unobserved covariates which can be modelled latent.</p>
-<p>If you have REs or GLM-type dependencies, the only way to fit everything in one go is to go to use Bayesian Inference, e.g.&nbsp;STAN. However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(piecewiseSEM)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">psem</span>(</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(rich <span class="sc">~</span> distance <span class="sc">+</span> elev <span class="sc">+</span> abiotic <span class="sc">+</span> age <span class="sc">+</span> hetero <span class="sc">+</span> firesev <span class="sc">+</span> cover, <span class="at">data =</span> keeley),</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(firesev <span class="sc">~</span> elev <span class="sc">+</span> age <span class="sc">+</span> cover, <span class="at">data =</span> keeley), </span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(cover <span class="sc">~</span> age <span class="sc">+</span> elev <span class="sc">+</span> hetero <span class="sc">+</span> abiotic, <span class="at">data =</span> keeley)</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="sec-causal-sem" class="level3 page-columns page-full" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="sec-causal-sem"><span class="header-section-number">7.4.2</span> Structural equation models (SEMs)</h3>
+<p>But what if we are interested in all the causal relationships? If we have a graph already and are interested in all relationships in it (not just one effect, for which the adjustment-set regression above suffices), a good option is to fit a structural equation model.</p>
+<p>Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLM responses (see <a href="4A-GLMs.html" class="quarto-xref"><span>Chapter 9</span></a>), you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g.&nbsp;with <a href="https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html">piecewiseSEM</a>.</p>
+<p>For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is <code>lavaan</code>. The advantage of lavaan is that you can also have unobserved covariates which can be modeled latent.</p>
+<p>If you have REs (<a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>) or GLM-type dependencies (<a href="4A-GLMs.html" class="quarto-xref"><span>Chapter 9</span></a>), the only way to fit everything in one go is to go to use Bayesian Inference, e.g.&nbsp;STAN (for examples, see <a href="https://florianhartig.github.io/LearningBayes/4F-BayesianSEMs.html">the chapter on Bayesian causal models</a> in <span class="citation" data-cites="hartig2024introduction">Hartig (<a href="5B-References.html#ref-hartig2024introduction" role="doc-biblioref">2024</a>)</span>). However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM (see the package documentation for the supported model classes).</p>
+<div class="no-row-height column-margin column-container"><div id="ref-hartig2024introduction" class="csl-entry" role="listitem">
+Hartig, F. (2024) <span>“Introduction to <span>Bayesian</span> statistics with <span>R</span>.”</span> Available at: <a href="https://florianhartig.github.io/LearningBayes/">https://florianhartig.github.io/LearningBayes/</a>.
+</div></div><div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(piecewiseSEM)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">psem</span>(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(rich <span class="sc">~</span> distance <span class="sc">+</span> elev <span class="sc">+</span> abiotic <span class="sc">+</span> age <span class="sc">+</span> hetero <span class="sc">+</span> firesev <span class="sc">+</span> cover, <span class="at">data =</span> keeley),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(firesev <span class="sc">~</span> elev <span class="sc">+</span> age <span class="sc">+</span> cover, <span class="at">data =</span> keeley), </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(cover <span class="sc">~</span> age <span class="sc">+</span> elev <span class="sc">+</span> hetero <span class="sc">+</span> abiotic, <span class="at">data =</span> keeley)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
   |                                                                            
@@ -878,29 +968,33 @@ Individual R-squared:
    firesev   none      0.30
      cover   none      0.26</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="grViz html-widget html-fill-item" id="htmlwidget-d61150ed94cb3d2dc0e8" style="width:100%;height:464px;"></div>
 <script type="application/json" data-for="htmlwidget-d61150ed94cb3d2dc0e8">{"x":{"diagram":"digraph {\n\ngraph [layout = \"neato\",\n       outputorder = \"edgesfirst\",\n       bgcolor = \"white\"]\n\nnode [fontname = \"Helvetica\",\n      fontsize = \"10\",\n      shape = \"circle\",\n      fixedsize = \"true\",\n      width = \"0.5\",\n      style = \"filled\",\n      fillcolor = \"aliceblue\",\n      color = \"gray70\",\n      fontcolor = \"gray50\"]\n\nedge [fontname = \"Helvetica\",\n     fontsize = \"8\",\n     len = \"1.5\",\n     color = \"gray80\",\n     arrowsize = \"0.5\"]\n\n  \"1\" [label = \"rich\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"2\" [label = \"firesev\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"3\" [label = \"cover\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"4\" [label = \"distance\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"5\" [label = \"elev\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"6\" [label = \"abiotic\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"7\" [label = \"age\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n  \"8\" [label = \"hetero\", shape = \"rectangle\", color = \"black\", fillcolor = \"#FFFFFF\", fontcolor = \"#000000\"] \n\"4\"->\"1\" [style = \"solid\", color = \"black\", label = \" 0.36 \"] \n\"5\"->\"1\" [style = \"dashed\", color = \"black\", label = \" -0.157 \"] \n\"6\"->\"1\" [style = \"solid\", color = \"black\", label = \" 0.248 \"] \n\"7\"->\"1\" [style = \"dashed\", color = \"black\", label = \" 0.02 \"] \n\"8\"->\"1\" [style = \"solid\", color = \"black\", label = \" 0.338 \"] \n\"2\"->\"1\" [style = \"dashed\", color = \"black\", label = \" -0.111 \"] \n\"3\"->\"1\" [style = \"solid\", color = \"black\", label = \" 0.26 \"] \n\"5\"->\"2\" [style = \"dashed\", color = \"black\", label = \" -0.087 \"] \n\"7\"->\"2\" [style = \"solid\", color = \"black\", label = \" 0.36 \"] \n\"3\"->\"2\" [style = \"solid\", color = \"black\", label = \" -0.292 \"] \n\"7\"->\"3\" [style = \"solid\", color = \"black\", label = \" -0.399 \"] \n\"5\"->\"3\" [style = \"solid\", color = \"black\", label = \" 0.3 \"] \n\"8\"->\"3\" [style = \"solid\", color = \"black\", label = \" -0.285 \"] \n\"6\"->\"3\" [style = \"dashed\", color = \"black\", label = \" 0.05 \"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
+<p>The output of <code>summary(mod)</code> has three parts: (1) the d-separation tests, each of which tests one arrow that is missing in the DAG (here 4 tests, none significant); (2) Fisher’s C statistic, which combines these tests: a p-value above 0.05 means that there is no evidence against the DAG, a small p-value would indicate a missing arrow or a wrong structure; (3) the path coefficients of all regressions (use the standardized coefficients to compare the strength of different paths).</p>
 </section>
 </section>
-<section id="double-ml" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="double-ml"><span class="header-section-number">7.5</span> Double ML</h2>
-<p>There is another trick to remove confounders, which is often used in machine learning. Consider the following example, where we have a main effect x-&gt;y, and a confounder c.</p>
+<section id="sec-causal-partialling" class="level2 page-columns page-full" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="sec-causal-partialling"><span class="header-section-number">7.5</span> Partialling out confounders (Frisch-Waugh-Lovell)</h2>
+<div id="double-ml">
+
+</div>
+<p>There is another trick to remove confounders, which is often used in machine learning. Consider the following example, where we have a main effect x-&gt;y, and a confounder (see <a href="#sec-causal-framework" class="quarto-xref"><span>Section 7.3</span></a>) conf.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>c <span class="ot">=</span> <span class="fu">runif</span>(<span class="dv">500</span>) <span class="co"># confounder</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fl">0.5</span> <span class="sc">*</span> c <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span><span class="fu">runif</span>(<span class="dv">500</span>) <span class="co"># main predictor</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fl">1.2</span><span class="sc">*</span> x <span class="sc">+</span> c <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">500</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>conf <span class="ot">=</span> <span class="fu">runif</span>(<span class="dv">500</span>) <span class="co"># confounder</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fl">0.5</span> <span class="sc">*</span> conf <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span><span class="fu">runif</span>(<span class="dv">500</span>) <span class="co"># main predictor</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> <span class="fl">1.2</span><span class="sc">*</span> x <span class="sc">+</span> conf <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">500</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A multiple regression identifies the correct effect for x.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> c ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> conf))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = y ~ x + c)
+lm(formula = y ~ x + conf)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -910,7 +1004,7 @@ Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
 (Intercept)  0.04007    0.02480   1.616    0.107    
 x            1.07328    0.06709  15.998   &lt;2e-16 ***
-c            1.01756    0.04692  21.688   &lt;2e-16 ***
+conf         1.01756    0.04692  21.688   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -919,12 +1013,12 @@ Multiple R-squared:  0.8316,    Adjusted R-squared:  0.831
 F-statistic:  1227 on 2 and 497 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>Another way to get those effects is the following, where we fit all variables against the confounder. This essentially conditions on the confounder. If we then regress the residuals without the confounder, we get the original effect.</p>
+<p>Another way to get those effects is the following, where we fit all variables against the confounder. This essentially conditions on the confounder. If we then regress the residuals without the confounder, we get the original effect. The point estimate equals that of the multiple regression; the standard error of this second stage is not exactly valid, as it ignores that the residuals were estimated.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>resX.C <span class="ot">=</span> <span class="fu">resid</span>(<span class="fu">lm</span>(x<span class="sc">~</span>c))</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>resY.C <span class="ot">=</span> <span class="fu">resid</span>(<span class="fu">lm</span>(y<span class="sc">~</span>c))</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(resY.C <span class="sc">~</span> resX.C))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>resX.C <span class="ot">=</span> <span class="fu">resid</span>(<span class="fu">lm</span>(x<span class="sc">~</span>conf))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>resY.C <span class="ot">=</span> <span class="fu">resid</span>(<span class="fu">lm</span>(y<span class="sc">~</span>conf))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(resY.C <span class="sc">~</span> resX.C))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -957,17 +1051,56 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Strictly speaking, what we did here is the classic Frisch-Waugh-Lovell partialling-out result, not yet full double/debiased machine learning as introduced by Chernozhukov et al.&nbsp;(2018). What turns this trick into “double ML” is two additional ingredients: (i) the two nuisance regressions (x ~ c and y ~ c) are fit with flexible, potentially high-dimensional ML estimators (e.g.&nbsp;random forests, gradient boosting) instead of a simple lm, and (ii) cross-fitting - the nuisance models are trained on one part of the data and the residuals (and thus the effect of interest) are computed on a held-out part. Cross-fitting is what removes the overfitting bias that flexible ML nuisance models would otherwise introduce into the residuals, and it is what gives double ML its statistical guarantees (valid confidence intervals even when the nuisance functions are estimated nonparametrically).</p>
+<p>Strictly speaking, what we did here is the classic Frisch-Waugh-Lovell partialling-out result, not yet full double/debiased machine learning as introduced by <span class="citation" data-cites="chernozhukov2018double">Chernozhukov <em>et al.</em> (<a href="5B-References.html#ref-chernozhukov2018double" role="doc-biblioref">2018</a>)</span>. What turns this trick into “double ML” is two additional ingredients: (i) the two nuisance regressions (x ~ conf and y ~ conf) are fit with flexible, potentially high-dimensional ML estimators (e.g.&nbsp;random forests, gradient boosting) instead of a simple lm, and (ii) cross-fitting - the nuisance models are trained on one part of the data and the residuals (and thus the effect of interest) are computed on a held-out part. Cross-fitting is what removes the overfitting bias that flexible ML nuisance models would otherwise introduce into the residuals, and it is what gives double ML its statistical guarantees (valid confidence intervals even when the nuisance functions are estimated nonparametrically).</p>
+</div>
+</div>
+<div class="no-row-height column-margin column-container"><div id="ref-chernozhukov2018double" class="csl-entry" role="listitem">
+Chernozhukov, V. <em>et al.</em> (2018) <span>“Double/debiased machine learning for treatment and structural parameters,”</span> <em>The Econometrics Journal</em>, 21(1), pp. C1–C68. Available at: <a href="https://doi.org/10.1111/ectj.12097">https://doi.org/10.1111/ectj.12097</a>.
+</div></div></section>
+<section id="sec-causal-takehome" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="sec-causal-takehome"><span class="header-section-number">7.6</span> Take-home messages</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Decide before you model whether you want to estimate an effect or to predict. For effects, state the causal question (which predictor, which response), draw the assumed causal graph and choose the variables from it. Randomization removes confounding by design; in observational data, adjustment only works if the graph is right.</li>
+<li>Control for confounders (common causes of predictor and response). A variable that merely correlates with both is not necessarily a confounder: the direction of the arrows decides.</li>
+<li>Do not control for colliders (variables influenced by both predictor and response): including them creates a spurious association, so do not simply include all available variables.</li>
+<li>Mediators depend on the question: leave them out for the total effect, include them for the direct effect, so state which one you target.</li>
+<li>Report only the effect of the target predictor. The coefficients of the other variables were adjusted only for the target relationship, not for their own confounders (Table 2 fallacy).</li>
+</ol>
 </div>
 </div>
 </section>
-<section id="case-studies" class="level2" data-number="7.6">
-<h2 data-number="7.6" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">7.6</span> Case studies</h2>
-<section id="case-study-swiss-fertility" class="level3" data-number="7.6.1">
-<h3 data-number="7.6.1" class="anchored" data-anchor-id="case-study-swiss-fertility"><span class="header-section-number">7.6.1</span> Case study: Swiss fertility</h3>
-<p>Perform a causal, a predictive and an exploratory analysis of the Swiss fertility data set called “swiss”, available in the standard R data sets. Target for the causal analysis is to estimate the causal (separate direct and indirect effects) of education on fertility, i.e.&nbsp;<code class="sourceCode r"><span class="fu">lm</span>(Fertility <span class="sc">~</span> Education, <span class="at">data =</span> swiss)</code>.</p>
+<section id="sec-causal-cases" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="sec-causal-cases"><span class="header-section-number">7.7</span> Case studies</h2>
+<div id="case-studies">
+
+</div>
+<section id="sec-causal-swiss" class="level3" data-number="7.7.1">
+<h3 data-number="7.7.1" class="anchored" data-anchor-id="sec-causal-swiss"><span class="header-section-number">7.7.1</span> Case study: Swiss fertility</h3>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Exercise — Swiss fertility
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Perform a causal, a predictive and an exploratory analysis of the Swiss fertility data set called “swiss”, available in the standard R data sets. Target for the causal analysis is to estimate the causal effect of education on fertility (separating direct and indirect effects), i.e.&nbsp;<code class="sourceCode r"><span class="fu">lm</span>(Fertility <span class="sc">~</span> Education, <span class="at">data =</span> swiss)</code>.</p>
+</div>
+</div>
 <div class="callout callout-style-simple callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -976,27 +1109,39 @@ Note
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>Agriculture, Catholic could be seen as confounders or mediators, depending on whether you think Education affects the number of people being in Agriculture or Catholic, or vice versa</li>
 <li>Infant mortality could be a mediator or a collider, depending on whether you think fertility -&gt; infant mortality or infant mortality -&gt; fertility. I would tend to see it as a mediator.</li>
 </ul>
-<p>For all mediators: remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included.</p>
+<p>For all mediators (see <a href="#sec-causal-framework" class="quarto-xref"><span>Section 7.3</span></a>): remember that if you want to get the total (indirect + direct) effect of education on fertility, you should not include mediators. If you want to get the direct effect only, they should be included.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="case-study-life-satisfaction" class="level3" data-number="7.6.2">
-<h3 data-number="7.6.2" class="anchored" data-anchor-id="case-study-life-satisfaction"><span class="header-section-number">7.6.2</span> Case study: Life satisfaction</h3>
+<section id="sec-causal-life" class="level3" data-number="7.7.2">
+<h3 data-number="7.7.2" class="anchored" data-anchor-id="sec-causal-life"><span class="header-section-number">7.7.2</span> Case study: life satisfaction</h3>
 <p>The following data set contains information about life satisfaction (lebensz_org) in Germany, based on the socio-economic panel.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>?soep</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EcoData)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ?soep  # see the help page for the variables</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Exercise — Life satisfaction
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Perform a causal analysis of the effect of income on life satisfaction, considering possible confounding / mediation / colliders.</p>
+</div>
+</div>
 <div class="callout callout-style-simple callout-tip no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -1005,7 +1150,7 @@ Note
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>Nearly all other variables are confounders, gesund_org could also be a collider</li>
@@ -1013,9 +1158,9 @@ Note
 </ul>
 <p>A possible model is</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(lebensz_org <span class="sc">~</span> <span class="fu">sqrt</span>(einkommenj1) <span class="sc">+</span> syear <span class="sc">+</span> sex <span class="sc">+</span> alter <span class="sc">+</span> anz_pers <span class="sc">+</span> </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>            bildung <span class="sc">+</span> erwerb <span class="sc">+</span> gesund_org, <span class="at">data =</span> soep)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(lebensz_org <span class="sc">~</span> <span class="fu">sqrt</span>(einkommenj1) <span class="sc">+</span> syear <span class="sc">+</span> sex <span class="sc">+</span> alter <span class="sc">+</span> anz_pers <span class="sc">+</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>            bildung <span class="sc">+</span> erwerb <span class="sc">+</span> gesund_org, <span class="at">data =</span> soep)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1046,16 +1191,72 @@ Multiple R-squared:  0.2172,    Adjusted R-squared:  0.2169
 F-statistic: 749.6 on 8 and 21611 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>Note that you shouldn’t interpret the other variables (Table II fallacy) in a causal analysis, unless the other variables are analyzed / corrected for confounders / colliders.</p>
+<p>Note that you shouldn’t interpret the other variables (Table 2 fallacy, see <a href="#sec-causal-table2" class="quarto-xref"><span>Section 7.4.1</span></a>) in a causal analysis, unless the other variables are analyzed / corrected for confounders / colliders.</p>
 </div>
 </div>
 </div>
+
 
 
 </section>
 </section>
 
 </main> <!-- /main -->
+<script>
+/* Margin references (citation-location: margin).
+   Quarto puts the references of a block (paragraph, list, callout) into one margin box that starts
+   at the top of that block. For long lists and callouts the references are then far above or below
+   the sentence that cites them. This script moves every reference down to the first visible
+   citation of that work and stacks references that would overlap.
+   - Narrow screens (margin content is shown inline): nothing is changed.
+   - Blocks with a citation inside a collapsed callout: Quarto's default layout is kept.
+   - Re-run after load, resize and when callouts are opened or closed. */
+(function () {
+  function align() {
+    var boxes = Array.prototype.filter.call(document.querySelectorAll('.column-margin'), function (b) {
+      return b.querySelector('.csl-entry');
+    });
+    boxes.forEach(function (box) {                       // reset first (resize, callout toggled)
+      box.style.position = ''; box.style.minHeight = '';
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        e.style.position = ''; e.style.top = ''; e.style.left = ''; e.style.right = '';
+      });
+    });
+    boxes.forEach(function (box) {
+      var block = box.previousElementSibling, rect = box.getBoundingClientRect();
+      if (!block || rect.height === 0) return;
+      if (rect.left < block.getBoundingClientRect().right - 20) return;   // inline mode on narrow screens
+      var items = [], ok = true;
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        var key = e.id.replace(/^ref-/, '');
+        var cites = Array.prototype.filter.call(block.querySelectorAll('span.citation'), function (c) {
+          return (c.getAttribute('data-cites') || '').split(' ').indexOf(key) >= 0 && c.getBoundingClientRect().height > 0;
+        });
+        if (!cites.length) { ok = false; return; }
+        items.push({ e: e, anchor: cites[0].getBoundingClientRect().top - rect.top, h: e.getBoundingClientRect().height });
+      });
+      if (!ok || !items.length) return;                  // a citation is hidden (collapsed callout): keep default
+      box.style.position = 'relative'; box.style.minHeight = '1px';
+      items.sort(function (a, b) { return a.anchor - b.anchor; });
+      var bottom = -Infinity;
+      items.forEach(function (i) {
+        var top = Math.max(i.anchor, bottom + 6);
+        i.e.style.position = 'absolute'; i.e.style.left = '0'; i.e.style.right = '0'; i.e.style.top = top + 'px';
+        bottom = top + i.h;
+      });
+    });
+  }
+  var timer;
+  function later() { clearTimeout(timer); timer = setTimeout(align, 100); }
+  window.addEventListener('load', function () {
+    align(); setTimeout(align, 1000);                    // second pass after fonts, images and math have settled
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(later);
+  });
+  window.addEventListener('resize', later);
+  document.addEventListener('shown.bs.collapse', later);
+  document.addEventListener('hidden.bs.collapse', later);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1143,6 +1344,11 @@ F-statistic: 749.6 on 8 and 21611 DF,  p-value: &lt; 2.2e-16</code></pre>
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -1473,4 +1679,4 @@ F-statistic: 749.6 on 8 and 21611 DF,  p-value: &lt; 2.2e-16</code></pre>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/3B-CausalInference.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/3B-CausalInference.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

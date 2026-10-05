@@ -109,7 +109,7 @@ What this means for the analysis:
 | Mechanism | Complete-case analysis (na.omit) | What to do |
 |:----------|:---------------------------------|:-----------|
 | MCAR | unbiased, but loses observations and power | complete cases are fine; imputation can recover the power |
-| MAR, depends on predictors in the model | unbiased | complete cases are fine (imputation can recover power) |
+| MAR, depends on predictors in the model | unbiased (if the model is correctly specified) | complete cases are fine (imputation can recover power) |
 | MAR, depends on the response (e.g. NAs in a predictor that are more likely for high values of the response) | biased (see the example in @sec-miss-imputation) | use multiple imputation with the variables that predict the missingness in the imputation model, or likelihood methods |
 | MNAR | usually biased | model the missingness process (beyond this book, see van Buuren's book linked in @sec-miss-imputation) or run a sensitivity analysis (@nte-miss-sensitivity) |
 
@@ -117,7 +117,7 @@ Note that "observed variables" in the definition of MAR includes the response: M
 
 ### Can we find out which mechanism applies? {#sec-miss-test}
 
-Only partly. The difference between MAR and MNAR concerns the values we do not see, so it **cannot be tested with the data**: a pattern of NAs that depends on an observed variable (e.g. older people refuse more often to state their income) looks the same under MAR and MNAR, because we cannot know whether, within the older people, it is the rich who stay silent. MAR is therefore an assumption that you have to justify with knowledge about how the data were generated, ideally already when planning the data collection.
+Only partly. The difference between MAR and MNAR concerns the values we do not see, so it **cannot be tested with the data**: a pattern of NAs that depends on an observed variable (e.g. older people refuse more often to state their income) looks the same under MAR and MNAR, because we cannot know whether, within the older people, it is the rich who stay silent. MAR is therefore an assumption that you have to justify with knowledge about how the data were generated (a causal question about what produced the NAs, @sec-causal), ideally already when planning the data collection.
 
 What we can check is whether the NAs depend on observed variables: if they do, they are not MCAR. The simplest way is a logistic regression of the missingness indicator (1 if the value is NA, 0 otherwise; this is the response here, not the response of your regression model!) on all other observed variables, including the response of your regression model if the NAs are in a predictor. In `airquality`, the NAs in Ozone depend on the month:
 
@@ -125,7 +125,7 @@ What we can check is whether the NAs depend on observed variables: if they do, t
 summary(glm(is.na(Ozone) ~ Wind + Temp + Month, data = airquality, family = binomial))$coefficients
 ```
 
-Month has a clear effect, so Ozone is not MCAR (the p-value of Temp is borderline). If any observed variable predicts the NAs, complete-case analysis may be biased (@sec-miss-mar), and these variables should go into the imputation model; if nothing predicts them, MCAR is plausible, but not proven. There are also formal tests of MCAR, e.g. Little's test (`naniar::mcar_test()`, which assumes normally distributed variables and is not suitable for categorical data). Note the limits: a significant result shows that the NAs are not MCAR, but cannot tell MAR from MNAR, and a non-significant result is only weak evidence for MCAR (the test has little power if there are few NAs). To read Little's test, note that its null hypothesis is MCAR: a small p-value means that the NAs are not MCAR. If MNAR is plausible, do not rely on the imputation alone, but check how much your conclusions change under different assumptions about the missing values (@nte-miss-sensitivity).
+Month has a clear effect, so Ozone is not MCAR (the p-value of Temp is borderline). If any observed variable predicts the NAs, complete-case analysis may be biased (@sec-miss-mar), and these variables should go into the imputation model; if nothing predicts them, MCAR is plausible, but not proven. There are also formal tests of MCAR, e.g. Little's test (`naniar::mcar_test()`, which assumes normally distributed variables and is not suitable for categorical data). Note the limits: a significant result shows that the NAs are not MCAR, but cannot tell MAR from MNAR, and a non-significant result is only weak evidence for MCAR (the test has little power if there are few NAs). If MNAR is plausible, do not rely on the imputation alone, but check how much your conclusions change under different assumptions about the missing values (@nte-miss-sensitivity).
 
 ## Imputation {#sec-miss-imputation}
 
@@ -208,7 +208,7 @@ Across the repetitions, the complete-case analysis is strongly biased, while bot
 ::: {#nte-miss-sensitivity .callout-note collapse="true"}
 #### Sensitivity analysis: what if the data are MNAR?
 
-Imputation assumes MAR, and this cannot be tested (@sec-miss-test). A common check is a delta adjustment: after each imputation, shift the imputed values by a fixed amount delta that represents a plausible departure from MAR (here: the days with missing Temp were, on average, 5 degrees F cooler or warmer than a MAR imputation predicts, i.e. a negative delta lowers the imputed values). Choose the deltas with expert knowledge about the data collection, and ask which shift would be needed to change your conclusion, and see how the pooled estimates change. In `mice`, this is done with the `post` argument:
+Imputation assumes MAR, and this cannot be tested (@sec-miss-test). A common check is a delta adjustment: after each imputation, shift the imputed values by a fixed amount delta that represents a plausible departure from MAR (here: the days with missing Temp were, on average, 5 degrees F cooler or warmer than a MAR imputation predicts, i.e. a negative delta lowers the imputed values). Choose the deltas with expert knowledge about the data collection, see how the pooled estimates change, and ask which shift would be needed to change your conclusion. In `mice`, this is done with the `post` argument:
 
 ```{r, message=FALSE}
 deltas = c(-5, 0, 5)
@@ -240,7 +240,7 @@ summary(MIcombine(models))
 ::: callout-tip
 
 1.  By default (`na.omit`), R drops every row with an NA in the response or in any predictor, and only reports the number of deleted observations in the `summary()`. Look at the combinations of NAs (`complete.cases()`), not only at the NAs per variable.
-2.  Ask how the NAs were created. Omitting incomplete rows is safe under MCAR, but can bias the estimates (not only reduce power) if the probability of an NA depends on the response (MAR) or on the missing value itself (MNAR).
+2.  Ask how the NAs were created. Omitting incomplete rows is safe under MCAR, but can bias the estimates (not only reduce power) if the probability of an NA in a predictor depends on the response (MAR) or on the missing value itself (MNAR); if it depends only on other predictors in the model, complete cases stay unbiased.
 3.  MAR and MNAR cannot be told apart from the data; only deviations from MCAR can be detected (e.g. logistic regression of the NA indicator on the observed variables). MAR is an assumption that you justify with knowledge about the data collection, and if MNAR is plausible, run a sensitivity analysis.
 4.  When you compare models, make sure they use the same observations (e.g. with `na.action = "na.fail"` or by subsetting to rows that are complete for all variables used), because adding a variable with NAs changes the data.
 5.  If predictors have NAs and deleting rows loses many observations or biases the estimates, impute the missing predictors, and use the response in the imputation model. Do not analyze imputed responses.

@@ -1,0 +1,55 @@
+<script>
+/* Margin references (citation-location: margin).
+   Quarto puts the references of a block (paragraph, list, callout) into one margin box that starts
+   at the top of that block. For long lists and callouts the references are then far above or below
+   the sentence that cites them. This script moves every reference down to the first visible
+   citation of that work and stacks references that would overlap.
+   - Narrow screens (margin content is shown inline): nothing is changed.
+   - Blocks with a citation inside a collapsed callout: Quarto's default layout is kept.
+   - Re-run after load, resize and when callouts are opened or closed. */
+(function () {
+  function align() {
+    var boxes = Array.prototype.filter.call(document.querySelectorAll('.column-margin'), function (b) {
+      return b.querySelector('.csl-entry');
+    });
+    boxes.forEach(function (box) {                       // reset first (resize, callout toggled)
+      box.style.position = ''; box.style.minHeight = '';
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        e.style.position = ''; e.style.top = ''; e.style.left = ''; e.style.right = '';
+      });
+    });
+    boxes.forEach(function (box) {
+      var block = box.previousElementSibling, rect = box.getBoundingClientRect();
+      if (!block || rect.height === 0) return;
+      if (rect.left < block.getBoundingClientRect().right - 20) return;   // inline mode on narrow screens
+      var items = [], ok = true;
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        var key = e.id.replace(/^ref-/, '');
+        var cites = Array.prototype.filter.call(block.querySelectorAll('span.citation'), function (c) {
+          return (c.getAttribute('data-cites') || '').split(' ').indexOf(key) >= 0 && c.getBoundingClientRect().height > 0;
+        });
+        if (!cites.length) { ok = false; return; }
+        items.push({ e: e, anchor: cites[0].getBoundingClientRect().top - rect.top, h: e.getBoundingClientRect().height });
+      });
+      if (!ok || !items.length) return;                  // a citation is hidden (collapsed callout): keep default
+      box.style.position = 'relative'; box.style.minHeight = '1px';
+      items.sort(function (a, b) { return a.anchor - b.anchor; });
+      var bottom = -Infinity;
+      items.forEach(function (i) {
+        var top = Math.max(i.anchor, bottom + 6);
+        i.e.style.position = 'absolute'; i.e.style.left = '0'; i.e.style.right = '0'; i.e.style.top = top + 'px';
+        bottom = top + i.h;
+      });
+    });
+  }
+  var timer;
+  function later() { clearTimeout(timer); timer = setTimeout(align, 100); }
+  window.addEventListener('load', function () {
+    align(); setTimeout(align, 1000);                    // second pass after fonts, images and math have settled
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(later);
+  });
+  window.addEventListener('resize', later);
+  document.addEventListener('shown.bs.collapse', later);
+  document.addEventListener('hidden.bs.collapse', later);
+})();
+</script>

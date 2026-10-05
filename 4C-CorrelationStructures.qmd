@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -29,15 +28,14 @@ Prerequisites: random effects (@sec-re), modeling the variance (@sec-disp-model)
 ::: {#general-idea}
 :::
 
-Except for the random effects (@sec-re), we have so far assumed that residual errors are independent. However, that must not always be the case - we may find that residuals show autocorrelation.
+Except for the random effects (@sec-re), we have so far assumed that residual errors are independent. However, this is not always the case - we may find that residuals show autocorrelation.
 
 ::: callout-note
 Correlation means that one variable correlates with another. Autocorrelation means that data points of one variable that are close to each other are more similar (positive autocorrelation, the usual case) or more different (negative autocorrelation) than expected for independent data. This implies that autocorrelation is only defined if there is a "distance relationship" between observations.
 :::
 
-Autocorrelation can always occur if we have a distance relationship between observations. Apart from random effects, where distance is expressed by group, common examples of continuous distance relationships include:
+Autocorrelation can always occur if we have a distance relationship between observations. In random effects, distance is expressed by group, and all members of a group are equally correlated. Common examples of continuous distances, where the correlation decays with distance, include:
 
-- Random effects (distance = group)
 - Spatial distance.
 - Temporal distance.
 - Phylogenetic distance.
@@ -53,7 +51,7 @@ knitr::include_graphics(c("images/correlation.png"))
 
 The word "autoregressive" is used for several related, but mathematically distinct, constructions. It's worth knowing the differences, even though the practical recipe (de-trend first, then add a correlation structure) is the same for all of them.
 
-- **(Simultaneous) autoregressive models (SAR)**: the classic time-series AR(1) model, $x_{t+1} = a \cdot x_t + (1-a) \cdot \epsilon$, defines each value *recursively* from the previous one plus noise. This is what `corAR1` / `ar1()` implement, and the same idea generalizes to space as spatial SAR models ($Y = BY + \epsilon$).
+- **(Simultaneous) autoregressive models (SAR)**: the classic time-series AR(1) model, $x_{t+1} = a \cdot x_t + \epsilon$, defines each value *recursively* from the previous one plus noise. This is what `corAR1` / `ar1()` implement, and the same idea generalizes to space as spatial SAR models ($Y = BY + \epsilon$).
 
 - **Conditional autoregressive models (CAR)** [@besag1974spatial]: instead of a recursive equation, you specify the distribution of each point *conditional on its neighbors*, $Y_i \mid Y_{-i} \sim N(\sum_{j \sim i} c_{ij} Y_j,\ \tau_i^2)$. This requires a discrete neighborhood structure (e.g. an adjacency matrix for areal/lattice data, as used in packages like `CARBayes` or INLA's `besag` model) and is common in spatial epidemiology. CAR and SAR are both Markovian and closely related, but they are built differently and generally do not induce the same joint distribution.
 
@@ -72,7 +70,7 @@ If we find autocorrelation in the residuals of our model, there can be several r
 In the context of regression models, we are never interested in the autocorrelation of the response / predictors per se, but only in the residuals. Thus, it doesn't make sense to assume that you need a spatial model only because you have a spatially autocorrelated signal.
 :::
 
-1.  Autocorrelation can occur because we have a spatially correlated misfit, i.e. there is a **trend** in the given space (e.g. time, space, phylogeny). If this is the case, de-trending the model (with a linear regression term or a spline) will remove the residual autocorrelation. We should always de-trend first before we consider moving to a model with a residual correlation structure.
+1.  Autocorrelation can occur because we have a correlated misfit, i.e. there is a **trend** along the distance axis (time, space, or phylogeny). If this is the case, de-trending the model (with a linear regression term or a spline) will remove the residual autocorrelation. We should always de-trend first before we consider moving to a model with a residual correlation structure.
 
 2.  Only after accounting for the trend, we should test if there is a residual spatial / temporal / phylogenetic **autocorrelation**. If that is the case, we would usually use a so-called **autoregressive structure** (see @tip-corr-zoo for the different flavors of these models). In these models, we make parametric assumptions for how the correlation between data points falls off with distance. When we speak about spatial / temporal / phylogenetic regressions, we usually refer to these or similar models.
 
@@ -96,9 +94,9 @@ Especially for spatial models, both nlme and glmmTMB are relatively slow. There 
 ::: {#temporal-correlation-structures}
 :::
 
-To introduce temporal autoregressive models, let's simulate some data first. The most simple (and common) temporal structure is the AR1 model, aka autoregressive model with lag 1. The AR1 assumes that the next data point (or residual) originates from a weighted mean of the last data point and a residual normal distribution in the form
+To introduce temporal autoregressive models, let's simulate some data first. The most simple (and common) temporal structure is the AR1 model, aka autoregressive model with lag 1. The AR1 assumes that the next data point (or residual) originates from the last data point, multiplied by a factor a (with \|a\| \< 1), plus a normally distributed residual, in the form
 
-$$x_{t+1} = a \cdot x_t + (1-a) \cdot \epsilon$$
+$$x_{t+1} = a \cdot x_t + \epsilon$$
 
 Let's simulate some data according to this model
 
@@ -108,7 +106,7 @@ AR1sim<-function(n, a){
   x = rep(NA, n)
   x[1] = 0
   for(i in 2:n){
-    x[i] = a * x[i-1] + (1-a) * rnorm(1)
+    x[i] = a * x[i-1] + rnorm(1)
   }
   return(x)
 }
@@ -125,7 +123,7 @@ fit = lm(obs~1)
 summary(fit)
 ```
 
-Note that the estimate of the intercept is significant, although we started the simulation at zero. Let's look at the residuals, which have the same autocorrelation as the data.
+Note that the estimate of the intercept is significant, although we started the simulation at zero: because neighboring points are similar, the data contain less independent information than n = 1000 suggests, so the standard error of the lm is too small and its p-value too optimistic. Let's look at the residuals, which have the same autocorrelation as the data.
 
 ```{r}
 plot(residuals(fit))
@@ -153,8 +151,8 @@ testTemporalAutocorrelation(fit, time = 1:1000)
 ::: callout-note
 Remember (@sec-corr-model): in general, for spatial / temporal data, there are two processes that can create residual autocorrelation:
 
-1.  There is a spatial misfit trend in time / space, which creates a correlation in space / time.
-2.  There truly is a spatial correlation, after accounting for the trend.
+1.  There is a misfit trend in time (or space), which creates residual correlation.
+2.  There truly is autocorrelation after accounting for the trend.
 
 Unfortunately, the distinction between a larger trend and a correlation is quite fluid. Nevertheless, one should always first check for and remove the trend, typically by including time/space as a predictor, potentially in a flexible way (GAMs come in handy). After this is done, we can fit a model with a temporally/spatially correlated error.
 :::
@@ -260,7 +258,7 @@ The AR1 model estimates a considerable autocorrelation (Phi), although there is 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Look at the hurricane study that we used before, which is, after all, temporal data. This data set is located in `DHARMa`{.R}.
+Look at the hurricane study that we also analyze in the case studies (@sec-cases-hurricane), which is, after all, temporal data. This data set is located in `DHARMa`{.R}.
 
 ```{r}
 library(DHARMa)
@@ -277,7 +275,7 @@ res2 = recalculateResiduals(res, group = hurricanes$Year)
 testTemporalAutocorrelation(res2, time = unique(hurricanes$Year))
 ```
 
-We see that there is a tiny bit of autocorrelation. Note that this autocorrelation is negative, so if we have a higher residual in one year, it is lower in the next year. Normally, we would expect temporal autocorrelation to be positive, so this is a bit weird. It could be an effect of people being more careful if there mere many fatalities in the previous year, but it could also be a statistical fluke.
+We see that there is a tiny bit of autocorrelation. Note that this autocorrelation is negative, so if we have a higher residual in one year, it is lower in the next year. Normally, we would expect temporal autocorrelation to be positive, so this is a bit weird. It could be an effect of people being more careful if there were many fatalities in the previous year, but it could also be a statistical fluke.
 
 In any case, as an exercise, we want to address the issue - add an AR1 term to the model!
 :::
@@ -298,7 +296,9 @@ fit = glmmTMB(alldeaths ~ scale(MasFem) *
 summary(fit)
 ```
 
-Careful, we are getting a convergence warning here! You should take these warnings seriously! If we look at the fitted values, we see that we estimate positive temporal autocorrelation, although the plots showed negative autocorrelation. Let's fit a reduced model:
+Note that `ar1` on a factor treats consecutive years in the data as lag 1, although there are gaps between the years (49 distinct years between 1950 and 2012); for irregular times, glmmTMB offers the continuous-time analogue `ou(numFactor(Year) + 0 | group)`.
+
+Careful, we are getting a convergence warning here! You should take these warnings seriously! The estimated variance of the AR1 term is practically zero (a boundary estimate), so the reported correlation (positive, although the residual test indicated negative autocorrelation) is meaningless. Let's fit a reduced model:
 
 ```{r}
 fit = glmmTMB(alldeaths ~ scale(MasFem) 
@@ -307,7 +307,7 @@ fit = glmmTMB(alldeaths ~ scale(MasFem)
 summary(fit)
 ```
 
-Now we get the right estimates for the autocorrelation, but of course this is not the model we want. You should now go to the optimizer settings (see @sec-re-convergence) and see if you can fix this. If you can't fix it, you could try simplifying the random-effect structure, or fall back to the reduced model above.
+The reduced model converges and estimates a weak negative autocorrelation (about -0.24), but of course this is not the model we want. Changing the optimizer (see @sec-re-convergence) does not help for the full model: the variance of the AR1 term stays at the boundary. With only a borderline residual test (and we ran many tests) and a negligible AIC gain in the reduced model (707.6 with vs 708.6 without the AR1 term), there is no convincing evidence for temporal autocorrelation, so we would stay with the model without AR1 term. A correlation structure that the data do not support typically shows up as convergence problems.
 :::
 
 ## Spatial correlation structures {#sec-corr-spatial}
@@ -346,7 +346,7 @@ tann.dir.vgm = variogram(residuals(fit) ~ 1,
 plot(tann.dir.vgm)
 ```
 
-Both the DHARMa plots and the variograms are more indicative of a spatial trend. Let's remove this with a 2d-spline, called a tensor spline:
+How to read a variogram: the x-axis is the distance between pairs of points, the y-axis the semivariance (half the mean squared difference between the residuals of pairs at that distance); for independent residuals the curve is flat, autocorrelation shows as a low semivariance at short distances that increases with distance and then levels off. A curve that keeps rising without leveling off, or that differs between the four directions, indicates a large-scale trend. Both the DHARMa plots and the variograms are more indicative of a spatial trend. Let's remove this with a 2d-spline, called a tensor spline:
 
 ```{r chunk_chapter6_chunk5, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(mgcv)
@@ -356,17 +356,11 @@ summary(fit1)
 plot(fit1, pages = 0, lwd = 2)
 ```
 
-We can check the model again, and the problem is gone
+We can check the model again, and the problem is gone (the test is no longer significant)
 
 ```{r, message=FALSE}
 res = simulateResiduals(fit1)
 testSpatialAutocorrelation(res, x = thickness$north, y = thickness$east)
-```
-
-Almost the same, but simpler:
-
-```{r}
-fit = lm(thick ~ soil + north + I(north^2), data = thickness)
 ```
 
 If we had still seen a signal, we should have fit an autoregressive model. Here it's not necessary, but just to show you the syntax - first nlme:
@@ -375,6 +369,8 @@ If we had still seen a signal, we should have fit an autoregressive model. Here 
 fit2 = gls(thick ~ soil , correlation = corExp(form =~ east + north) , data = thickness)
 summary(fit2)
 ```
+
+The range parameter is the distance scale of the exponential decay (correlation = exp(-distance / range)). Note the huge range here (about 700, larger than the study area): without a trend term, the correlation structure absorbs the large-scale trend, and the soil effect changes accordingly. This is only to show the syntax; in a real analysis, de-trend first.
 
 Second, for glmmTMB. Here, we again have to prepare the data first
 
@@ -457,7 +453,9 @@ testSpatialAutocorrelation(res, x = plants_sf$lon, y =  plants_sf$lat)
 ::: {#phylogenetic-structures-pgls}
 :::
 
-This is mostly taken from <https://lukejharmon.github.io/ilhabela/instruction/2015/07/03/PGLS/>. The two datasets associated with this example are in the `EcoData`{.R} package.
+Closely related species share evolutionary history, so their trait values are not independent. Under Brownian motion, the covariance of two species is proportional to the length of the branch they share (`vcv(tree)`); a PGLS is simply a `gls` with this covariance structure, where the distance in the correlation structure is the phylogenetic distance. We fit with `method = "ML"` so that models with different fixed effects or correlation structures can be compared by AIC / LRT (@sec-re-reml).
+
+This section is mostly taken from <https://lukejharmon.github.io/ilhabela/instruction/2015/07/03/PGLS/>. The two datasets associated with this example are in the `EcoData`{.R} package.
 
 Perform analysis:
 
@@ -582,7 +580,7 @@ In this case, if we insist on an OU process, we would have to search for a more 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-The following exercise uses data from a study by Corboda et al., 2017, which examined the influence of environmental factors on the evolution of song in a group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
+The following exercise uses data from the 2017 Latin American Macroevolution Workshop in Córdoba (<http://www.phytools.org/Cordoba2017/>), which examined the influence of environmental factors on the evolution of song in a group of Asian bird species called "barbets." The following code cleans the raw data available from the EcoData package:
 
 ```{r, eval = T}
 library(ape)
@@ -626,7 +624,7 @@ summary(fit)
 plot(allEffects(fit,partial.residuals = T))
 ```
 
-Now, with a more complex polynomial for Lnalt, how to we see if there is an overall effect of Lnalt? Easiest option is to do a LRT:
+Now, with a more complex polynomial for Lnalt, how do we see if there is an overall effect of Lnalt? Easiest option is to do a LRT:
 
 ```{r}
 fit0 = lm(log(Lnote)~ 1, data = dat)

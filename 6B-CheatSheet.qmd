@@ -126,7 +126,7 @@ glmmTMB supports several correlation structures; the following table shows two c
 | Type | Code | Interpretation | Section |
 |----|----|----|----|
 | Spatial | `data$coords = numFactor(data$x, data$y)`; `data$group = factor(1)`; `glmmTMB(y ~ x + exp(0 + coords | group), data = data)` | random intercepts per location with exponentially decaying covariance (geostatistical); `group = factor(1)` if there is one spatial field | @sec-corr-spatial |
-| Temporal | `data$yearF = factor(data$year)`; `glmmTMB(y ~ x + ar1(0 + yearF | group), data = data)` | random intercepts per time point (time must be a factor) with AR(1) correlation within each group | @sec-corr-temporal |
+| Temporal | `data$yearF = factor(data$year)`; `glmmTMB(y ~ x + ar1(0 + yearF | group), data = data)` | random intercepts per time point (time must be a factor) with AR(1) correlation within each group; `group` is required, use `data$group = factor(1)` for a single time series | @sec-corr-temporal |
 
 : Correlation structures in glmmTMB. {#tbl-cheat-corr-glmmtmb}
 

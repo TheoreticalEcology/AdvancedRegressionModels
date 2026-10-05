@@ -1,11 +1,6 @@
 # Preface {.unnumbered}
 
 ```{r, eval=TRUE, include=FALSE}
-# Automatically create a bib database for R packages.
-knitr::write_bib(c(.packages(), 'bookdown', 'knitr', 'rmarkdown'),
-                 'packages.bib')
-
-knitr::opts_chunk$set(cache = TRUE)
 set.seed(123)
 ```
 
@@ -19,7 +14,9 @@ If we have a response variable and want to understand how this response variable
 
 This is what we will mainly train in this course. Don't worry if you think that this sounds too simple. We could spend an entire week on understanding the p-value alone, and still only scratch the surface. If you have an overview of what can be done with regression models, and are confident to run a realistic scientific analysis on your own, we have achieved a lot.
 
-This course assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelors Biology Lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. There is also an appendix in this book which covers the most common functions for data manipulation and plotting in R.
+This book uses frequentist (maximum likelihood) estimation, with only brief Bayesian (brms) examples. My companion course @hartig2024introduction covers the Bayesian approach to these models, as well as hierarchical models that go beyond GLMMs, such as error-in-variable (measurement error), occupancy, state-space and integrated models. Some other response types that are common in ecology, such as ordinal responses and survival (time-to-event) data, are only mentioned briefly in this book.
+
+This course assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelors Biology Lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. The first chapter of this book (@sec-intro) lists the R knowledge that is assumed (@sec-intro-assumed-knowledge).
 
 If you have comments, questions or suggestions regarding this book, please submit them [here](https://github.com/TheoreticalEcology/AdvancedRegressionModels/issues).
 

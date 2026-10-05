@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Appendix B — Cheat sheet – Applied Regression Analysis for Empirical Research: Inference, Causality, and Model Choice with GLMMs in R</title>
+<title>Appendix B — Quick reference – Applied Regression Analysis for Empirical Research: Inference, Causality, and Model Choice with GLMMs in R</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -74,31 +74,63 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<meta name="citation_title" content="Appendix B — Cheat sheet">
+<link rel="stylesheet" href="styles.css">
+<meta name="citation_title" content="[Appendix B — Quick reference]{#sec-cheat .quarto-section-identifier}">
 <meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels/6B-CheatSheet.html">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_publisher=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
-<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_publisher=CRC Press;">
-<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_publisher=https://www.statlearning.com/; Springer;">
+<meta name="citation_reference" content="citation_title=Grundlagen der Statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
+<meta name="citation_reference" content="citation_title=Statistical rethinking: A Bayesian course with examples in R and Stan;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;">
+<meta name="citation_reference" content="citation_title=An introduction to statistical learning: With applications in R;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.statlearning.com/;">
 <meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;,citation_publisher=Oxford University Press;">
 <meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_journal_title=Vignette for lme4;">
-<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.R-project.org/;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;">
-<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;">
-<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_editor=Victoria Stodden;,citation_editor=Friedrich Leisch;,citation_editor=Roger D. Peng;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_inbook_title=Implementing reproducible computational research;">
-<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;">
-<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;,citation_publisher=BioMed Central;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_journal_title=Journal of Ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=The difference between “significant” and “not significant” is not itself statistically significant;,citation_author=Andrew Gelman;,citation_author=Hal Stern;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=4;,citation_doi=10.1198/000313006X152649;,citation_volume=60;,citation_journal_title=The American Statistician;">
 <meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: Use type II instead of type III sums of squares;,citation_author=Øyvind Langsrud;,citation_publication_date=2003;,citation_cover_date=2003;,citation_year=2003;,citation_issue=2;,citation_doi=10.1023/A:1023260610025;,citation_volume=13;,citation_journal_title=Statistics and Computing;">
+<meta name="citation_reference" content="citation_title=How to capitalize on a priori contrasts in linear (mixed) models: A tutorial;,citation_author=Daniel J. Schad;,citation_author=Shravan Vasishth;,citation_author=Sven Hohenstein;,citation_author=Reinhold Kliegl;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_doi=10.1016/j.jml.2019.104038;,citation_volume=110;,citation_journal_title=Journal of Memory and Language;">
+<meta name="citation_reference" content="citation_title=An R companion to applied regression;,citation_author=John Fox;,citation_author=Sanford Weisberg;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;">
 <meta name="citation_reference" content="citation_title=A biologist’s guide to model selection and causal inference;,citation_author=Zachary M Laubach;,citation_author=Eleanor J Murray;,citation_author=Kim L Hoke;,citation_author=Rebecca J Safran;,citation_author=Wei Perng;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_issue=1943;,citation_volume=288;,citation_journal_title=Proceedings of the Royal Society B;,citation_publisher=The Royal Society;">
 <meta name="citation_reference" content="citation_title=Control of confounding and reporting of results in causal inference studies. Guidance for authors from editors of respiratory, sleep, and critical care journals;,citation_author=David J Lederer;,citation_author=Scott C Bell;,citation_author=Richard D Branson;,citation_author=James D Chalmers;,citation_author=Rachel Marshall;,citation_author=David M Maslove;,citation_author=David E Ost;,citation_author=Naresh M Punjabi;,citation_author=Michael Schatz;,citation_author=Alan R Smyth;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=16;,citation_journal_title=Annals of the American Thoracic Society;,citation_publisher=American Thoracic Society;">
 <meta name="citation_reference" content="citation_title=A note on model selection using information criteria for general linear models estimated using REML;,citation_author=Arunas Petras Verbyla;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/anzs.12254;,citation_issue=1;,citation_doi=10.1111/anzs.12254;,citation_volume=61;,citation_language=en;,citation_journal_title=Australian &amp;amp;amp; New Zealand Journal of Statistics;">
 <meta name="citation_reference" content="citation_title=Estimation of covariate effects in generalized linear mixed models with a misspecified distribution of random intercepts and slopes;,citation_author=John M. Neuhaus;,citation_author=Charles E. McCulloch;,citation_author=Ross Boylan;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.5682;,citation_issue=14;,citation_doi=10.1002/sim.5682;,citation_volume=32;,citation_language=en;,citation_journal_title=Statistics in Medicine;">
 <meta name="citation_reference" content="citation_title=Major axes of variation in tree demography across global forests;,citation_author=Melina de Souza Leite;,citation_author=Sean M. McMahon;,citation_author=Paulo Inácio Prado;,citation_author=Stuart J. Davies;,citation_author=Alexandre Adalardo Oliveira;,citation_author=Hannes P. De Deurwaerder;,citation_author=Salomón Aguilar;,citation_author=Kristina J. Anderson-Teixeira;,citation_author=Nurfarah Aqilah;,citation_author=Norman A. Bourg;,citation_author=Warren Y. Brockelman;,citation_author=Nicolas Castaño;,citation_author=Chia-Hao Chang-Yang;,citation_author=Yu-Yun Chen;,citation_author=George Chuyong;,citation_author=Keith Clay;,citation_author=Álvaro Duque;,citation_author=Sisira Ediriweera;,citation_author=Corneille E. N. Ewango;,citation_author=Gregory Gilbert;,citation_author=I. a. U. N. Gunatilleke;,citation_author=C. V. S. Gunatilleke;,citation_author=Robert Howe;,citation_author=Walter Huaraca Huasco;,citation_author=Akira Itoh;,citation_author=Daniel J. Johnson;,citation_author=David Kenfack;,citation_author=Kamil Král;,citation_author=Yao Tze Leong;,citation_author=James A. Lutz;,citation_author=Jean-Remy Makana;,citation_author=Yadvinder Malhi;,citation_author=William J. McShea;,citation_author=Mohizah Mohamad;,citation_author=Musalmah Nasardin;,citation_author=Anuttara Nathalang;,citation_author=Geoffrey Parker;,citation_author=Renan Parmigiani;,citation_author=Rolando Pérez;,citation_author=Richard P. Phillips;,citation_author=Pavel Šamonil;,citation_author=I-Fang Sun;,citation_author=Sylvester Tan;,citation_author=Duncan Thomas;,citation_author=Jill Thompson;,citation_author=María Uriarte;,citation_author=Amy Wolf;,citation_author=Jess Zimmerman;,citation_author=Daniel Zuleta;,citation_author=Marco D. Visser;,citation_author=Lisa Hülsmann;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/ecog.07187;,citation_issue=6;,citation_doi=10.1111/ecog.07187;,citation_volume=2024;,citation_language=en;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=Causality: Models, reasoning, and inference;,citation_author=Judea Pearl;,citation_publication_date=2009;,citation_cover_date=2009;,citation_year=2009;,citation_isbn=9780521895606;">
+<meta name="citation_reference" content="citation_title=A structural equation model analysis of postfire plant diversity in California shrublands;,citation_author=James B. Grace;,citation_author=Jon E. Keeley;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=2;,citation_doi=10.1890/1051-0761(2006)016[0503:ASEMAO]2.0.CO;2;,citation_volume=16;,citation_journal_title=Ecological Applications;">
+<meta name="citation_reference" content="citation_title=Double/debiased machine learning for treatment and structural parameters;,citation_author=Victor Chernozhukov;,citation_author=Denis Chetverikov;,citation_author=Mert Demirer;,citation_author=Esther Duflo;,citation_author=Christian Hansen;,citation_author=Whitney Newey;,citation_author=James Robins;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=1;,citation_doi=10.1111/ectj.12097;,citation_volume=21;,citation_journal_title=The Econometrics Journal;">
+<meta name="citation_reference" content="citation_title=Sixty seconds on … P-hacking;,citation_author=Nigel Hawkes;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.1136/bmj.k4039;,citation_volume=362;,citation_journal_title=BMJ;">
+<meta name="citation_reference" content="citation_title=Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure;,citation_author=David R. Roberts;,citation_author=Volker Bahn;,citation_author=Simone Ciuti;,citation_author=Mark S. Boyce;,citation_author=Jane Elith;,citation_author=Gurutzeta Guillera-Arroita;,citation_author=Severin Hauenstein;,citation_author=José J. Lahoz-Monfort;,citation_author=Boris Schröder;,citation_author=Wilfried Thuiller;,citation_author=David I. Warton;,citation_author=Brendan A. Wintle;,citation_author=Florian Hartig;,citation_author=Carsten F. Dormann;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=8;,citation_doi=10.1111/ecog.02881;,citation_volume=40;,citation_journal_title=Ecography;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The arcsine is asinine: The analysis of proportions in ecology;,citation_author=David I. Warton;,citation_author=Francis K. C. Hui;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=1;,citation_doi=10.1890/10-0340.1;,citation_volume=92;,citation_journal_title=Ecology;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Spatial interaction and the statistical analysis of lattice systems;,citation_author=Julian Besag;,citation_publication_date=1974;,citation_cover_date=1974;,citation_year=1974;,citation_issue=2;,citation_doi=10.1111/j.2517-6161.1974.tb00999.x;,citation_volume=36;,citation_journal_title=Journal of the Royal Statistical Society: Series B (Methodological);,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Phylogenies and the comparative method;,citation_author=Joseph Felsenstein;,citation_publication_date=1985;,citation_cover_date=1985;,citation_year=1985;,citation_issue=1;,citation_doi=10.1086/284325;,citation_volume=125;,citation_journal_title=The American Naturalist;">
+<meta name="citation_reference" content="citation_title=Simple means to improve the interpretability of regression coefficients;,citation_author=Holger Schielzeth;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_doi=10.1111/j.2041-210X.2010.00012.x;,citation_volume=1;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Female hurricanes are deadlier than male hurricanes;,citation_author=Kiju Jung;,citation_author=Sharon Shavitt;,citation_author=Madhu Viswanathan;,citation_author=Joseph M. Hilbe;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=24;,citation_doi=10.1073/pnas.1402786111;,citation_volume=111;,citation_journal_title=Proceedings of the National Academy of Sciences;,citation_publisher=National Academy of Sciences;">
+<meta name="citation_reference" content="citation_title=Many analysts, one data set: Making transparent how variations in analytic choices affect results;,citation_author=R. Silberzahn;,citation_author=E. L. Uhlmann;,citation_author=D. P. Martin;,citation_author=P. Anselmi;,citation_author=F. Aust;,citation_author=E. Awtrey;,citation_author=Š. Bahník;,citation_author=F. Bai;,citation_author=C. Bannard;,citation_author=E. Bonnier;,citation_author=R. Carlsson;,citation_author=F. Cheung;,citation_author=G. Christensen;,citation_author=R. Clay;,citation_author=M. A. Craig;,citation_author=A. Dalla Rosa;,citation_author=L. Dam;,citation_author=M. H. Evans;,citation_author=I. Flores Cervantes;,citation_author=N. Fong;,citation_author=M. Gamez-Djokic;,citation_author=A. Glenz;,citation_author=S. Gordon-McKeon;,citation_author=T. J. Heaton;,citation_author=K. Hederos;,citation_author=M. Heene;,citation_author=A. J. Hofelich Mohr;,citation_author=F. Högden;,citation_author=K. Hui;,citation_author=M. Johannesson;,citation_author=J. Kalodimos;,citation_author=E. Kaszubowski;,citation_author=D. M. Kennedy;,citation_author=R. Lei;,citation_author=T. A. Lindsay;,citation_author=S. Liverani;,citation_author=C. R. Madan;,citation_author=D. Molden;,citation_author=E. Molleman;,citation_author=R. D. Morey;,citation_author=L. B. Mulder;,citation_author=B. R. Nijstad;,citation_author=N. G. Pope;,citation_author=B. Pope;,citation_author=J. M. Prenoveau;,citation_author=F. Rink;,citation_author=E. Robusto;,citation_author=H. Roderique;,citation_author=A. Sandberg;,citation_author=E. Schlüter;,citation_author=F. D. Schönbrodt;,citation_author=M. F. Sherman;,citation_author=S. A. Sommer;,citation_author=K. Sotak;,citation_author=S. Spain;,citation_author=C. Spörlein;,citation_author=T. Stafford;,citation_author=L. Stefanutti;,citation_author=S. Tauber;,citation_author=J. Ullrich;,citation_author=M. Vianello;,citation_author=E.-J. Wagenmakers;,citation_author=M. Witkowiak;,citation_author=S. Yoon;,citation_author=B. A. Nosek;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=3;,citation_doi=10.1177/2515245917747646;,citation_volume=1;,citation_journal_title=Advances in Methods and Practices in Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=A general and simple method for obtaining $R^2$ from generalized linear mixed-effects models;,citation_author=Shinichi Nakagawa;,citation_author=Holger Schielzeth;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=2;,citation_doi=10.1111/j.2041-210x.2012.00261.x;,citation_volume=4;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The coefficient of determination $R^2$ and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded;,citation_author=Shinichi Nakagawa;,citation_author=Paul C. D. Johnson;,citation_author=Holger Schielzeth;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=134;,citation_doi=10.1098/rsif.2017.0213;,citation_volume=14;,citation_journal_title=Journal of The Royal Society Interface;,citation_publisher=The Royal Society;">
+<meta name="citation_reference" content="citation_title=Analysing data using linear models: With applications in R;,citation_author=Stéphanie M. Berg;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://bookdown.org/pingapang9/linear_models_bookdown/;">
+<meta name="citation_reference" content="citation_title=False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant;,citation_author=Joseph P. Simmons;,citation_author=Leif D. Nelson;,citation_author=Uri Simonsohn;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=11;,citation_doi=10.1177/0956797611417632;,citation_volume=22;,citation_journal_title=Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: An overview;,citation_author=Ruth G. Shaw;,citation_author=Thomas Mitchell-Olds;,citation_publication_date=1993;,citation_cover_date=1993;,citation_year=1993;,citation_issue=6;,citation_doi=10.2307/1939922;,citation_volume=74;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Collinearity: A review of methods to deal with it and a simulation study evaluating their performance;,citation_author=Carsten F. Dormann;,citation_author=Jane Elith;,citation_author=Sven Bacher;,citation_author=Carsten Buchmann;,citation_author=Gudrun Carl;,citation_author=Gabriel Carré;,citation_author=Jaime R. García Marquéz;,citation_author=Bernd Gruber;,citation_author=Bruno Lafourcade;,citation_author=Pedro J. Leitão;,citation_author=Tamara Münkemüller;,citation_author=Colin McClean;,citation_author=Patrick E. Osborne;,citation_author=Björn Reineking;,citation_author=Boris Schröder;,citation_author=Andrew K. Skidmore;,citation_author=Damaris Zurell;,citation_author=Sven Lautenbach;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=1;,citation_doi=10.1111/j.1600-0587.2012.07348.x;,citation_volume=36;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=A reformulation of linear models;,citation_author=John A. Nelder;,citation_publication_date=1977;,citation_cover_date=1977;,citation_year=1977;,citation_issue=1;,citation_doi=10.2307/2344517;,citation_volume=140;,citation_journal_title=Journal of the Royal Statistical Society: Series A (General);">
+<meta name="citation_reference" content="citation_title=Generalizing hierarchical and variation partitioning in multiple regression and canonical analyses using the rdacca.hp R package;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Jinlong Zhang;,citation_author=Pedro R. Peres-Neto;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=4;,citation_doi=10.1111/2041-210X.13800;,citation_volume=13;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Glmm.hp: An R package for computing individual effect of predictors in generalized linear mixed models;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Shuang Zhang;,citation_author=Xiaoguang Zhang;,citation_author=Lingfeng Mao;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=6;,citation_doi=10.1093/jpe/rtac096;,citation_volume=15;,citation_journal_title=Journal of Plant Ecology;">
+<meta name="citation_reference" content="citation_title=Regression with missing Ys: An improved strategy for analyzing multiply imputed data;,citation_author=Paul T. Hippel;,citation_publication_date=2007;,citation_cover_date=2007;,citation_year=2007;,citation_issue=1;,citation_doi=10.1111/j.1467-9531.2007.00180.x;,citation_volume=37;,citation_journal_title=Sociological Methodology;">
+<meta name="citation_reference" content="citation_title=Ordered beta regression: A parsimonious, well-fitting model for continuous data with lower and upper bounds;,citation_author=Robert Kubinec;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_issue=4;,citation_doi=10.1017/pan.2022.20;,citation_volume=31;,citation_journal_title=Political Analysis;">
+<meta name="citation_reference" content="citation_title=Analysing continuous proportions in ecology and evolution: A practical introduction to beta and dirichlet regression;,citation_author=Jacob C. Douma;,citation_author=James T. Weedon;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=9;,citation_doi=10.1111/2041-210X.13234;,citation_volume=10;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=A comparison of joint species distribution models for percent cover data;,citation_author=Pekka Korhonen;,citation_author=Francis K. C. Hui;,citation_author=Jenni Niku;,citation_author=Sara Taskinen;,citation_author=Bert Veen;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=12;,citation_doi=10.1111/2041-210X.14437;,citation_volume=15;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Using the beta distribution to analyse plant cover data;,citation_author=Christian F. Damgaard;,citation_author=Kathryn M. Irvine;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=6;,citation_doi=10.1111/1365-2745.13200;,citation_volume=107;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=A better lemon squeezer? Maximum-likelihood regression with beta-distributed dependent variables;,citation_author=Michael Smithson;,citation_author=Jay Verkuilen;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=1;,citation_doi=10.1037/1082-989X.11.1.54;,citation_volume=11;,citation_journal_title=Psychological Methods;">
+<meta name="citation_reference" content="citation_title=Co-occurrence is not evidence of ecological interactions;,citation_author=F. Guillaume Blanchet;,citation_author=Kevin Cazelles;,citation_author=Dominique Gravel;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_issue=7;,citation_doi=10.1111/ele.13525;,citation_volume=23;,citation_journal_title=Ecology Letters;">
+<meta name="citation_reference" content="citation_title=Parsimoniously fitting large multivariate random effects in glmmTMB;,citation_author=Maeve McGillycuddy;,citation_author=Gordana Popovic;,citation_author=Benjamin M. Bolker;,citation_author=David I. Warton;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=1;,citation_doi=10.18637/jss.v112.i01;,citation_volume=112;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=Model selection for ecologists: The worldviews of AIC and BIC;,citation_author=Ken Aho;,citation_author=DeWayne Derryberry;,citation_author=Teri Peterson;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=3;,citation_doi=10.1890/13-1452.1;,citation_volume=95;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Introduction to Bayesian statistics with R;,citation_author=Florian Hartig;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://florianhartig.github.io/LearningBayes/;">
+<meta name="citation_reference" content="citation_title=Pseudoreplication and the design of ecological field experiments;,citation_author=Stuart H. Hurlbert;,citation_publication_date=1984;,citation_cover_date=1984;,citation_year=1984;,citation_issue=2;,citation_doi=10.2307/1942661;,citation_volume=54;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=Fixed or random? On the reliability of mixed-effects models for a small number of levels in grouping variables;,citation_author=Johannes Oberpriller;,citation_author=Melina Souza Leite;,citation_author=Maximilian Pichler;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=7;,citation_doi=10.1002/ece3.9062;,citation_volume=12;,citation_journal_title=Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Linear and generalized linear mixed models;,citation_author=Benjamin M. Bolker;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_doi=10.1093/acprof:oso/9780199672547.003.0014;,citation_inbook_title=Ecological statistics;">
+<meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
+<meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
+<meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -110,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6B-CheatSheet.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6B-CheatSheet.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Quick reference</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -176,7 +208,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the mean</span></a>
+ <span class="menu-text">Modeling the mean</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -211,7 +243,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Model Choice</span></a>
+ <span class="menu-text">Model choice</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -240,7 +272,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the distribution</span></a>
+ <span class="menu-text">Modeling the distribution</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -269,7 +301,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Summary and references</span></a>
+ <span class="menu-text">Workflow</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -278,7 +310,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">From question to paper: the analysis workflow</span></span></a>
   </div>
 </li>
       </ul>
@@ -301,7 +333,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Quick reference</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -322,20 +354,29 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#formula-syntax" id="toc-formula-syntax" class="nav-link active" data-scroll-target="#formula-syntax"><span class="header-section-number">B.1</span> Formula syntax</a></li>
-  <li><a href="#random-effect-syntax" id="toc-random-effect-syntax" class="nav-link" data-scroll-target="#random-effect-syntax"><span class="header-section-number">B.2</span> Random effect syntax</a>
+  <li><a href="#sec-cheat-lookup" id="toc-sec-cheat-lookup" class="nav-link active" data-scroll-target="#sec-cheat-lookup"><span class="header-section-number">B.1</span> Where to find what</a></li>
+  <li><a href="#sec-cheat-formula" id="toc-sec-cheat-formula" class="nav-link" data-scroll-target="#sec-cheat-formula"><span class="header-section-number">B.2</span> Formula syntax</a></li>
+  <li><a href="#sec-cheat-predictors" id="toc-sec-cheat-predictors" class="nav-link" data-scroll-target="#sec-cheat-predictors"><span class="header-section-number">B.3</span> Preparing predictors</a></li>
+  <li><a href="#sec-cheat-family" id="toc-sec-cheat-family" class="nav-link" data-scroll-target="#sec-cheat-family"><span class="header-section-number">B.4</span> Model families</a></li>
+  <li><a href="#sec-cheat-re" id="toc-sec-cheat-re" class="nav-link" data-scroll-target="#sec-cheat-re"><span class="header-section-number">B.5</span> Random effect syntax</a></li>
+  <li><a href="#sec-cheat-corr" id="toc-sec-cheat-corr" class="nav-link" data-scroll-target="#sec-cheat-corr"><span class="header-section-number">B.6</span> Correlation structures</a>
   <ul class="collapse">
-  <li><a href="#correlation-structures" id="toc-correlation-structures" class="nav-link" data-scroll-target="#correlation-structures"><span class="header-section-number">B.2.1</span> Correlation structures:</a></li>
+  <li><a href="#sec-cheat-corr-glmmtmb" id="toc-sec-cheat-corr-glmmtmb" class="nav-link" data-scroll-target="#sec-cheat-corr-glmmtmb"><span class="header-section-number">B.6.1</span> glmmTMB</a></li>
+  <li><a href="#sec-cheat-corr-lme4" id="toc-sec-cheat-corr-lme4" class="nav-link" data-scroll-target="#sec-cheat-corr-lme4"><span class="header-section-number">B.6.2</span> lme4</a></li>
+  <li><a href="#sec-cheat-corr-gls" id="toc-sec-cheat-corr-gls" class="nav-link" data-scroll-target="#sec-cheat-corr-gls"><span class="header-section-number">B.6.3</span> nlme::gls</a></li>
   </ul></li>
+  <li><a href="#sec-cheat-dispersion" id="toc-sec-cheat-dispersion" class="nav-link" data-scroll-target="#sec-cheat-dispersion"><span class="header-section-number">B.7</span> Dispersion, zero-inflation and offsets</a></li>
+  <li><a href="#sec-cheat-dharma" id="toc-sec-cheat-dharma" class="nav-link" data-scroll-target="#sec-cheat-dharma"><span class="header-section-number">B.8</span> Residual checks with DHARMa</a></li>
+  <li><a href="#sec-cheat-inference" id="toc-sec-cheat-inference" class="nav-link" data-scroll-target="#sec-cheat-inference"><span class="header-section-number">B.9</span> Tests, effects and predictions</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6B-CheatSheet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/6B-CheatSheet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6B-CheatSheet.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5B-References.html">Appendices</a></li><li class="breadcrumb-item"><a href="./6B-CheatSheet.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Quick reference</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Appendix B — Cheat sheet</h1>
+<h1 class="title"><span id="sec-cheat" class="quarto-section-identifier">Appendix B — Quick reference</span></h1>
 </div>
 
 
@@ -352,170 +393,540 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="formula-syntax" class="level2" data-number="B.1">
-<h2 data-number="B.1" class="anchored" data-anchor-id="formula-syntax"><span class="header-section-number">B.1</span> Formula syntax</h2>
+<p>This appendix collects lookup tables for your own analysis: first, typical problems and where to find help in this book; then the R syntax for the models, checks and outputs used in the book. Each row links to the section where the topic is explained. For the order in which to do things, see the workflow chapter (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
+<section id="sec-cheat-lookup" class="level2" data-number="B.1">
+<h2 data-number="B.1" class="anchored" data-anchor-id="sec-cheat-lookup"><span class="header-section-number">B.1</span> Where to find what</h2>
+<div id="tbl-cheat-lookup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-lookup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.1: Typical problems and where to find help in this book.
+</figcaption>
+<div aria-describedby="tbl-cheat-lookup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<caption>Formula syntax</caption>
 <colgroup>
 <col style="width: 50%">
 <col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>My problem</th>
+<th>Where to look</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Which model fits my type of response?</td>
+<td><a href="5A-Summary.html#tbl-summary-response" class="quarto-xref">Table&nbsp;<span>12.1</span></a></td>
+</tr>
+<tr class="even">
+<td>How do I interpret the regression table?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interpretation" class="quarto-xref"><span>Section 2.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>How do I check the residuals of my model?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-residual" class="quarto-xref"><span>Section 2.4</span></a>, <a href="4A-GLMs.html#sec-glm-dharma" class="quarto-xref"><span>Section 9.3.1</span></a></td>
+</tr>
+<tr class="even">
+<td>The relationship is not linear</td>
+<td><a href="2A-LinearRegression.html#sec-lm-functional-form" class="quarto-xref"><span>Section 2.5</span></a>, <a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a>, <a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a></td>
+</tr>
+<tr class="odd">
+<td>I have a categorical predictor: how to read the coefficients?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-contrast" class="quarto-xref"><span>Section 2.6.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Which groups differ from each other?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-posthoc" class="quarto-xref"><span>Section 2.6.3</span></a>, <a href="2B-ANOVA.html#nte-anova-emmeans" class="quarto-xref">Note&nbsp;<span>3.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>I have an interaction</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction" class="quarto-xref"><span>Section 2.10</span></a>, <a href="4A-GLMs.html#sec-glm-interaction" class="quarto-xref"><span>Section 9.4</span></a></td>
+</tr>
+<tr class="even">
+<td>My predictors are correlated</td>
+<td><a href="2A-LinearRegression.html#sec-lm-collinearity" class="quarto-xref"><span>Section 2.8</span></a></td>
+</tr>
+<tr class="odd">
+<td>Should I center or scale my predictors?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-centering-scaling" class="quarto-xref"><span>Section 2.9</span></a></td>
+</tr>
+<tr class="even">
+<td>A reviewer asks for type I, II or III ANOVA</td>
+<td><a href="2B-ANOVA.html#sec-anova-choice" class="quarto-xref"><span>Section 3.2.3.2</span></a>, <a href="2B-ANOVA.html#sec-anova-recommend" class="quarto-xref"><span>Section 3.2.4.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>My observations are grouped or repeated</td>
+<td><a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="5A-Summary.html#tbl-summary-design" class="quarto-xref">Table&nbsp;<span>12.2</span></a></td>
+</tr>
+<tr class="even">
+<td>My mixed model does not converge or is singular</td>
+<td><a href="2C-RandomEffects.html#sec-re-convergence" class="quarto-xref"><span>Section 4.4.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>How do I get p-values for a mixed model?</td>
+<td><a href="2C-RandomEffects.html#sec-re-df" class="quarto-xref"><span>Section 4.5.1</span></a>, <a href="2C-RandomEffects.html#sec-re-selection" class="quarto-xref"><span>Section 4.5.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Do I need a random slope?</td>
+<td><a href="2C-RandomEffects.html#sec-re-slope" class="quarto-xref"><span>Section 4.2.2</span></a>, <a href="2C-RandomEffects.html#sec-re-pergroup" class="quarto-xref"><span>Section 4.4.5</span></a>, <a href="2C-RandomEffects.html#sec-re-simlrt" class="quarto-xref"><span>Section 4.5.3.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>How much variance is explained by the random effects?</td>
+<td><a href="2C-RandomEffects.html#sec-re-vpc" class="quarto-xref"><span>Section 4.5.5</span></a></td>
+</tr>
+<tr class="even">
+<td>How much variance does my mixed model explain (R²)?</td>
+<td><a href="2C-RandomEffects.html#sec-re-anova" class="quarto-xref"><span>Section 4.5.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>Log-transform the response or use a GLM (e.g.&nbsp;Gamma)?</td>
+<td><a href="4A-GLMs.html#sec-glm-gamma" class="quarto-xref"><span>Section 9.2.3</span></a>, <a href="4B-Heteroskedasticity.html#sec-disp-transform" class="quarto-xref"><span>Section 10.1.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Which package: lme4 or glmmTMB?</td>
+<td><a href="2C-RandomEffects.html#sec-re-package" class="quarto-xref"><span>Section 4.2.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>I have missing values</td>
+<td><a href="3A-MissingData.html" class="quarto-xref"><span>Chapter 6</span></a></td>
+</tr>
+<tr class="even">
+<td>Which variables should I include to estimate a causal effect?</td>
+<td><a href="3B-CausalInference.html#sec-causal-framework" class="quarto-xref"><span>Section 7.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Which predictor is most important?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-scaling" class="quarto-xref"><span>Section 2.9.2</span></a>, <a href="3B-CausalInference.html#sec-causal-table2" class="quarto-xref"><span>Section 7.4.1</span></a></td>
+</tr>
+<tr class="even">
+<td>How do I select between models?</td>
+<td><a href="3C-ModelSelection.html#sec-select-methods" class="quarto-xref"><span>Section 8.2</span></a>, <a href="3C-ModelSelection.html#sec-select-problems" class="quarto-xref"><span>Section 8.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>I have many predictors and want to predict</td>
+<td><a href="3C-ModelSelection.html#sec-select-shrinkage" class="quarto-xref"><span>Section 8.2.3</span></a>, <a href="3C-ModelSelection.html#sec-select-cv" class="quarto-xref"><span>Section 8.4</span></a></td>
+</tr>
+<tr class="even">
+<td>My counts or k/n data are overdispersed</td>
+<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>I have many zeros</td>
+<td><a href="4A-GLMs.html#sec-glm-zero-inflation" class="quarto-xref"><span>Section 9.3.3</span></a></td>
+</tr>
+<tr class="even">
+<td>My counts were sampled with different effort or area</td>
+<td><a href="4A-GLMs.html#sec-glm-poisson-note" class="quarto-xref"><span>Section 9.2.1.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>The spread of the residuals is not constant</td>
+<td><a href="4B-Heteroskedasticity.html" class="quarto-xref"><span>Chapter 10</span></a></td>
+</tr>
+<tr class="even">
+<td>I have outliers</td>
+<td><a href="4B-Heteroskedasticity.html#sec-disp-outlier" class="quarto-xref"><span>Section 10.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>My residuals are correlated in time, space or phylogeny</td>
+<td><a href="4C-CorrelationStructures.html" class="quarto-xref"><span>Chapter 11</span></a></td>
+</tr>
+<tr class="even">
+<td>How do I make predictions with confidence intervals?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-prediction" class="quarto-xref"><span>Section 2.11</span></a>, <a href="2C-RandomEffects.html#sec-re-prediction" class="quarto-xref"><span>Section 4.5.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>How large must my study be?</td>
+<td><a href="5A-Summary.html#sec-summary-design" class="quarto-xref"><span>Section 12.7</span></a></td>
+</tr>
+<tr class="even">
+<td>What should I report?</td>
+<td><a href="5A-Summary.html#sec-summary-report" class="quarto-xref"><span>Section 12.5</span></a></td>
+</tr>
+<tr class="odd">
+<td>Can I use Bayesian methods instead?</td>
+<td><a href="5A-Summary.html#sec-summary-next" class="quarto-xref"><span>Section 12.8</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-formula" class="level2" data-number="B.2">
+<h2 data-number="B.2" class="anchored" data-anchor-id="sec-cheat-formula"><span class="header-section-number">B.2</span> Formula syntax</h2>
+<div id="formula-syntax">
+
+</div>
+<div id="tbl-cheat-formula" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.2: Formula syntax
+</figcaption>
+<div aria-describedby="tbl-cheat-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
 <th>Formula</th>
 <th>Interpretation</th>
+<th>Section</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>y ~ x</code></td>
-<td>Intercept + slope</td>
+<td>intercept + slope</td>
+<td><a href="2A-LinearRegression.html#sec-lm-simple" class="quarto-xref"><span>Section 2.1</span></a></td>
 </tr>
 <tr class="even">
 <td><code>y ~ 1</code></td>
 <td>intercept only</td>
+<td><a href="2A-LinearRegression.html#sec-lm-regression-syntax" class="quarto-xref"><span>Section 2.5.2</span></a></td>
 </tr>
 <tr class="odd">
-<td><code>y ~ x - 1</code> or <code>x + 0</code></td>
-<td>only slope, for categorical</td>
+<td><code>y ~ x - 1</code> or <code>y ~ x + 0</code></td>
+<td>no intercept (numeric x: line through origin; factor: one mean per level)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-regression-syntax" class="quarto-xref"><span>Section 2.5.2</span></a></td>
 </tr>
 <tr class="even">
-<td><code>log(x) ~ sqrt(x)</code></td>
+<td><code>log(y) ~ sqrt(x)</code></td>
 <td>predictor and response variable can be transformed</td>
+<td><a href="2A-LinearRegression.html#sec-lm-functional-form" class="quarto-xref"><span>Section 2.5</span></a></td>
 </tr>
 <tr class="odd">
 <td><code>y ~ x1 + x2</code></td>
-<td>multiple predictors can be added</td>
+<td>multiple predictors</td>
+<td><a href="2A-LinearRegression.html#sec-lm-multiple" class="quarto-xref"><span>Section 2.7</span></a></td>
 </tr>
 <tr class="even">
 <td><code>y ~ x1 * x2</code></td>
 <td>interaction and main effects</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction-syntax" class="quarto-xref"><span>Section 2.10.1</span></a></td>
 </tr>
 <tr class="odd">
 <td><code>y ~ x1:x2</code></td>
-<td>only interaction</td>
+<td>only the interaction</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction-syntax" class="quarto-xref"><span>Section 2.10.1</span></a></td>
 </tr>
 <tr class="even">
 <td><code>y ~ (x1 + x2)^2</code></td>
-<td>all 2nd order interactions, works also with 3rd order ^3 etc</td>
+<td>all 2nd order interactions; works also with 3rd order (<code>^3</code>) etc.</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction-syntax" class="quarto-xref"><span>Section 2.10.1</span></a></td>
 </tr>
 <tr class="odd">
-<td><code>y ~ I(x^2)</code></td>
-<td>I() forces mathematical interpretation of whatever is in the parenthesis</td>
+<td><code>y ~ x + I(x^2)</code></td>
+<td><code>I()</code> forces the mathematical interpretation of whatever is in the parentheses (here a quadratic effect)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-regression-syntax" class="quarto-xref"><span>Section 2.5.2</span></a></td>
 </tr>
 <tr class="even">
 <td><code>y ~ s(x)</code></td>
-<td>spline (works only for mgcv)</td>
+<td>spline (mgcv only)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a></td>
 </tr>
 <tr class="odd">
 <td><code>y ~ te(x1, x2)</code></td>
-<td>tensor spline (works only for mgcv)</td>
+<td>tensor spline (mgcv only)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction-gam" class="quarto-xref"><span>Section 2.10.4</span></a></td>
 </tr>
 <tr class="even">
-<td><code>y ~.</code></td>
-<td>include all variables as main effects</td>
+<td><code>y ~ .</code></td>
+<td>all variables in the data as main effects</td>
+<td><a href="2A-LinearRegression.html#sec-lm-multiple" class="quarto-xref"><span>Section 2.7</span></a></td>
 </tr>
 <tr class="odd">
-<td><code>y~.^2</code></td>
-<td>include all variables as main effects and their 2nd order interactions</td>
+<td><code>y ~ .^2</code></td>
+<td>all variables as main effects and their 2nd order interactions</td>
+<td><a href="2A-LinearRegression.html#sec-lm-interaction-syntax" class="quarto-xref"><span>Section 2.10.1</span></a></td>
+</tr>
+<tr class="even">
+<td><code>y ~ x + offset(log(effort))</code></td>
+<td>offset, a term with a fixed coefficient of 1 (e.g.&nbsp;for sampling effort or area in log-link GLMs)</td>
+<td><a href="4A-GLMs.html#sec-glm-poisson-note" class="quarto-xref"><span>Section 9.2.1.1</span></a></td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 </section>
-<section id="random-effect-syntax" class="level2" data-number="B.2">
-<h2 data-number="B.2" class="anchored" data-anchor-id="random-effect-syntax"><span class="header-section-number">B.2</span> Random effect syntax</h2>
-<p>The following formulas are used by many R packages (e.g.&nbsp;glmmTMB and lme4). For a detailed overview, see <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#model-specification">Ben Bolkers glmmFAQ</a></p>
+<section id="sec-cheat-predictors" class="level2" data-number="B.3">
+<h2 data-number="B.3" class="anchored" data-anchor-id="sec-cheat-predictors"><span class="header-section-number">B.3</span> Preparing predictors</h2>
+<div id="tbl-cheat-predictors" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-predictors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.3: Syntax for preparing predictors.
+</figcaption>
+<div aria-describedby="tbl-cheat-predictors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>What</th>
+<th>Syntax</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Center / scale a predictor (keeps the transformation as attributes)</td>
+<td><code>data$sx = scale(data$x)</code>; center only: <code>scale(data$x, scale = FALSE)</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-centering-scaling" class="quarto-xref"><span>Section 2.9</span></a></td>
+</tr>
+<tr class="even">
+<td>Set the reference level of a factor</td>
+<td><code>data$f = relevel(factor(data$f), ref = "control")</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-contrast" class="quarto-xref"><span>Section 2.6.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Sum-to-zero contrasts (e.g.&nbsp;for type III ANOVA)</td>
+<td><code>lm(y ~ f * x, data = data, contrasts = list(f = contr.sum))</code></td>
+<td><a href="2B-ANOVA.html#sec-anova-contrast" class="quarto-xref"><span>Section 3.2.4</span></a></td>
+</tr>
+<tr class="even">
+<td>Check collinearity</td>
+<td><code>cor(data[, c("x1", "x2")])</code>, <code>car::vif(fit)</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-collinearity" class="quarto-xref"><span>Section 2.8</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-family" class="level2" data-number="B.4">
+<h2 data-number="B.4" class="anchored" data-anchor-id="sec-cheat-family"><span class="header-section-number">B.4</span> Model families</h2>
+<div id="tbl-cheat-family" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-family-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.4: Model families and the corresponding R code. For which model to choose, see <a href="5A-Summary.html#tbl-summary-response" class="quarto-xref">Table&nbsp;<span>12.1</span></a>.
+</figcaption>
+<div aria-describedby="tbl-cheat-family-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Response</th>
+<th>R code</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Continuous, normal residuals</td>
+<td><code>lm(y ~ x)</code>, <code>lmer(y ~ x + (1|group))</code>, <code>glmmTMB(y ~ x)</code></td>
+<td><a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>, <a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a></td>
+</tr>
+<tr class="even">
+<td>Counts</td>
+<td><code>glm(y ~ x, family = poisson)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-poisson" class="quarto-xref"><span>Section 9.2.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Overdispersed counts</td>
+<td><code>MASS::glm.nb(y ~ x)</code>, <code>glmmTMB(y ~ x, family = nbinom2)</code> (or <code>nbinom1</code>)</td>
+<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Binary (0/1)</td>
+<td><code>glm(y ~ x, family = binomial)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>k out of n</td>
+<td><code>glm(cbind(k, n - k) ~ x, family = binomial)</code>; if overdispersed, <code>glmmTMB(..., family = betabinomial)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a>, <a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Positive continuous</td>
+<td><code>glm(y ~ x, family = Gamma(link = "log"))</code></td>
+<td><a href="4A-GLMs.html#sec-glm-gamma" class="quarto-xref"><span>Section 9.2.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Proportions between 0 and 1</td>
+<td><code>glmmTMB(y ~ x, family = beta_family)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-beta" class="quarto-xref"><span>Section 9.2.4</span></a></td>
+</tr>
+<tr class="even">
+<td>Ordered categories</td>
+<td><code>ordinal::clm(y ~ x)</code>, with random effects <code>ordinal::clmm()</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Unordered categories</td>
+<td><code>nnet::multinom(y ~ x)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Nonlinear function</td>
+<td><code>nls(y ~ a * x / (b + x), start = list(a = 1, b = 1))</code></td>
+<td><a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a></td>
+</tr>
+<tr class="odd">
+<td>GAM</td>
+<td><code>mgcv::gam(y ~ s(x), family = poisson)</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Mixed models with any of these families</td>
+<td><code>glmer(..., family = ...)</code>, <code>glmmTMB(..., family = ...)</code></td>
+<td><a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="4A-GLMs.html#sec-glm-glmm" class="quarto-xref"><span>Section 9.5</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-re" class="level2" data-number="B.5">
+<h2 data-number="B.5" class="anchored" data-anchor-id="sec-cheat-re"><span class="header-section-number">B.5</span> Random effect syntax</h2>
+<div id="random-effect-syntax">
+
+</div>
+<p>The following formulas are used by many R packages (e.g.&nbsp;glmmTMB and lme4), explained in the chapter on mixed models (<a href="2C-RandomEffects.html#sec-re-lme4" class="quarto-xref"><span>Section 4.2.3.1</span></a>, <a href="2C-RandomEffects.html#tip-re-design" class="quarto-xref">Tip&nbsp;<span>4.1</span></a>). For a detailed overview, see <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#model-specification">Ben Bolker’s glmmFAQ</a>.</p>
+<div id="tbl-cheat-re" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-re-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.5: Random effect syntax in lme4 and glmmTMB.
+</figcaption>
+<div aria-describedby="tbl-cheat-re-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Formula</th>
 <th>Interpretation</th>
+<th>Section</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>(1|group)</code></td>
 <td>Random intercept within group</td>
+<td><a href="2C-RandomEffects.html#sec-re-intercept" class="quarto-xref"><span>Section 4.2.1</span></a></td>
 </tr>
 <tr class="even">
 <td><code>(x|group)</code></td>
 <td>Random intercept within group and random slope for x within group; correlation between random intercept and random slope</td>
+<td><a href="2C-RandomEffects.html#sec-re-slope" class="quarto-xref"><span>Section 4.2.2</span></a></td>
 </tr>
 <tr class="odd">
 <td><code>(0+x|group)</code> or <code>(x-1|group)</code></td>
 <td>Random slope for x within group without random intercept for group</td>
+<td><a href="2C-RandomEffects.html#sec-re-slope" class="quarto-xref"><span>Section 4.2.2</span></a></td>
 </tr>
 <tr class="even">
 <td><code>(0+x|group) + (1|group)</code> or <code>(x||group)</code></td>
 <td>Random intercept and slope but uncorrelated</td>
+<td><a href="2C-RandomEffects.html#sec-re-slope" class="quarto-xref"><span>Section 4.2.2</span></a></td>
 </tr>
 <tr class="odd">
-<td><code>(1|group:site)</code></td>
-<td>Random intercept for sites within group (nested random effect)</td>
+<td><code>(1|group/site)</code></td>
+<td>Same as <code>(1|group) + (1|group:site)</code>: nested random effect (sites within group)</td>
+<td><a href="2C-RandomEffects.html#tip-re-nested" class="quarto-xref">Tip&nbsp;<span>4.2</span></a></td>
 </tr>
 <tr class="even">
+<td><code>(1|group:site)</code></td>
+<td>Only the group-by-site intercepts, without a group-level intercept</td>
+<td><a href="2C-RandomEffects.html#tip-re-nested" class="quarto-xref">Tip&nbsp;<span>4.2</span></a></td>
+</tr>
+<tr class="odd">
 <td><code>(1|group) + (1|site)</code></td>
 <td>Random intercept within groups and within sites (crossed random effects)</td>
+<td><a href="2C-RandomEffects.html#sec-re-lme4" class="quarto-xref"><span>Section 4.2.3.1</span></a></td>
 </tr>
 </tbody>
 </table>
-<section id="correlation-structures" class="level3" data-number="B.2.1">
-<h3 data-number="B.2.1" class="anchored" data-anchor-id="correlation-structures"><span class="header-section-number">B.2.1</span> Correlation structures:</h3>
-<section id="glmmtmb" class="level4" data-number="B.2.1.1">
-<h4 data-number="B.2.1.1" class="anchored" data-anchor-id="glmmtmb"><span class="header-section-number">B.2.1.1</span> glmmTMB</h4>
-<p>glmmTMB supports several correlation structures but we will show here only two common representatives. See also the <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html">glmmTMB vignette</a> about correlation structures.</p>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-corr" class="level2" data-number="B.6">
+<h2 data-number="B.6" class="anchored" data-anchor-id="sec-cheat-corr"><span class="header-section-number">B.6</span> Correlation structures</h2>
+<p>Correlation structures are explained in <a href="4C-CorrelationStructures.html" class="quarto-xref"><span>Chapter 11</span></a> (temporal: <a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a>, spatial: <a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a>, phylogenetic: <a href="4C-CorrelationStructures.html#sec-corr-phylo" class="quarto-xref"><span>Section 11.4</span></a>).</p>
+<section id="sec-cheat-corr-glmmtmb" class="level3" data-number="B.6.1">
+<h3 data-number="B.6.1" class="anchored" data-anchor-id="sec-cheat-corr-glmmtmb"><span class="header-section-number">B.6.1</span> glmmTMB</h3>
+<p>glmmTMB supports several correlation structures; the following table shows two common ones. See also the <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html">glmmTMB vignette</a> about correlation structures.</p>
+<div id="tbl-cheat-corr-glmmtmb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-corr-glmmtmb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.6: Correlation structures in glmmTMB.
+</figcaption>
+<div aria-describedby="tbl-cheat-corr-glmmtmb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 33%">
-<col style="width: 58%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
-<th>Formula</th>
+<th>Code</th>
 <th>Interpretation</th>
+<th>Section</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Spatial</td>
-<td><p><code>coords = numFactor(cbind(Latitude, Longitude))</code></p>
-<p><code>y~x + exp(0+coords|group)</code></p></td>
-<td><p>Use <code>glmmTMB::numFactor()</code> function to represent your coordinates as a factor.</p>
-<p>Conditional autoregressive random intercepts within group based on the coords (sites).</p></td>
+<td><code>data$coords = numFactor(data$x, data$y)</code>; <code>data$group = factor(1)</code>; <code>glmmTMB(y ~ x + exp(0 + coords | group), data = data)</code></td>
+<td>random intercepts per location with exponentially decaying covariance (geostatistical); <code>group = factor(1)</code> if there is one spatial field</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a></td>
 </tr>
 <tr class="even">
 <td>Temporal</td>
-<td><p><code>yearFactor = factor(years)</code></p>
-<p><code>y~x + ar1(0+yearFactor|group)</code></p></td>
-<td><p>Change your time variable to factor.</p>
-<p>Conditional autoregressive random intercepts within group based on years.</p></td>
+<td><code>data$yearF = factor(data$year)</code>; <code>glmmTMB(y ~ x + ar1(0 + yearF | group), data = data)</code></td>
+<td>random intercepts per time point (time must be a factor) with AR(1) correlation within each group; <code>group</code> is required, use <code>data$group = factor(1)</code> for a single time series</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 </section>
-<section id="lme4" class="level4" data-number="B.2.1.2">
-<h4 data-number="B.2.1.2" class="anchored" data-anchor-id="lme4"><span class="header-section-number">B.2.1.2</span> lme4</h4>
-<p>lme4 does not support correlation structures</p>
+<section id="sec-cheat-corr-lme4" class="level3" data-number="B.6.2">
+<h3 data-number="B.6.2" class="anchored" data-anchor-id="sec-cheat-corr-lme4"><span class="header-section-number">B.6.2</span> lme4</h3>
+<p>lme4 has no correlation structures for residuals (use glmmTMB, or <code>nlme</code> for linear models).</p>
 </section>
-<section id="nlmegls" class="level4" data-number="B.2.1.3">
-<h4 data-number="B.2.1.3" class="anchored" data-anchor-id="nlmegls"><span class="header-section-number">B.2.1.3</span> nlme::gls</h4>
+<section id="sec-cheat-corr-gls" class="level3" data-number="B.6.3">
+<h3 data-number="B.6.3" class="anchored" data-anchor-id="sec-cheat-corr-gls"><span class="header-section-number">B.6.3</span> nlme::gls</h3>
+<div id="tbl-cheat-corr-gls" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-corr-gls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.7: Correlation structures in <code>nlme::gls</code>.
+</figcaption>
+<div aria-describedby="tbl-cheat-corr-gls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
 <th>Formula</th>
 <th>Interpretation</th>
+<th>Section</th>
 </tr>
 </thead>
 <tbody>
@@ -523,26 +934,305 @@ ul.task-list li input[type="checkbox"] {
 <td>Spatial</td>
 <td><code>gls(y~.., correlation = corExp(form = ~ Lat + Long|group))</code></td>
 <td>Spatial correlation structure (no random effects) between sites within group (group is optional)</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a></td>
 </tr>
 <tr class="even">
 <td>Temporal</td>
 <td><code>gls(y~.., correlation = corAR1(form = ~ years | group))</code></td>
 <td>Temporal correlation structure (no random effects) between years within group (group is optional)</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
 </tr>
 <tr class="odd">
 <td>Phylogeny</td>
 <td><code>library(ape); gls(y~.., correlation = corBrownian(phy = phyTree, form = ~ species | group))</code></td>
 <td>Phylogenetic correlation structure (no random effects) between species within group (group is optional)</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-phylo" class="quarto-xref"><span>Section 11.4</span></a></td>
 </tr>
 </tbody>
 </table>
-
-
+</div>
+</figure>
+</div>
 </section>
 </section>
+<section id="sec-cheat-dispersion" class="level2" data-number="B.7">
+<h2 data-number="B.7" class="anchored" data-anchor-id="sec-cheat-dispersion"><span class="header-section-number">B.7</span> Dispersion, zero-inflation and offsets</h2>
+<div id="tbl-cheat-dispersion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-dispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.8: Syntax for dispersion, zero-inflation and offsets.
+</figcaption>
+<div aria-describedby="tbl-cheat-dispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>What</th>
+<th>Syntax</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Offset for effort or area (log link)</td>
+<td><code>glm(y ~ x + offset(log(effort)), family = poisson)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-poisson-note" class="quarto-xref"><span>Section 9.2.1.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Exposure time for binary data</td>
+<td><code>glm(y ~ x + offset(log(time)), family = binomial(link = "cloglog"))</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Observation-level random effect (overdispersion)</td>
+<td><code>data$obs = factor(1:nrow(data))</code>, then <code>glmer(y ~ x + (1|obs), family = poisson, data = data)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Zero-inflation</td>
+<td><code>glmmTMB(y ~ x, ziformula = ~ 1, family = poisson)</code> (or <code>ziformula = ~ x</code>)</td>
+<td><a href="4A-GLMs.html#sec-glm-zero-inflation" class="quarto-xref"><span>Section 9.3.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Dispersion depending on predictors (glmmTMB)</td>
+<td><code>glmmTMB(y ~ x, dispformula = ~ group)</code></td>
+<td><a href="4B-Heteroskedasticity.html#sec-disp-model" class="quarto-xref"><span>Section 10.1.2</span></a>, <a href="4B-Heteroskedasticity.html#sec-disp-glmm" class="quarto-xref"><span>Section 10.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Variance depending on predictors (gls)</td>
+<td><code>gls(y ~ x, weights = varIdent(form = ~ 1 | group))</code></td>
+<td><a href="4B-Heteroskedasticity.html#sec-disp-model" class="quarto-xref"><span>Section 10.1.2</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-dharma" class="level2" data-number="B.8">
+<h2 data-number="B.8" class="anchored" data-anchor-id="sec-cheat-dharma"><span class="header-section-number">B.8</span> Residual checks with DHARMa</h2>
+<div id="tbl-cheat-dharma" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-dharma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.9: Main DHARMa functions.
+</figcaption>
+<div aria-describedby="tbl-cheat-dharma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>What</th>
+<th>Syntax</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Simulate residuals and plot them</td>
+<td><code>res = simulateResiduals(fit, plot = TRUE)</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-residual-dharma" class="quarto-xref"><span>Section 2.4.2</span></a>, <a href="4A-GLMs.html#sec-glm-dharma" class="quarto-xref"><span>Section 9.3.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Residuals against a predictor</td>
+<td><code>plotResiduals(res, form = data$x)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-dharma" class="quarto-xref"><span>Section 9.3.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Dispersion</td>
+<td><code>testDispersion(res)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-overdispersion-detect" class="quarto-xref"><span>Section 9.3.2.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Zero-inflation</td>
+<td><code>testZeroInflation(res)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-zero-inflation-detect" class="quarto-xref"><span>Section 9.3.3.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Residuals aggregated per group (e.g.&nbsp;per year or site)</td>
+<td><code>res2 = recalculateResiduals(res, group = data$year)</code></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-hurricane" class="quarto-xref"><span>Section 11.2.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Temporal autocorrelation</td>
+<td><code>testTemporalAutocorrelation(res2, time = unique(data$year))</code></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Spatial autocorrelation</td>
+<td><code>testSpatialAutocorrelation(res, x = data$x, y = data$y)</code></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Re-simulate the random effects (default: conditional on the fitted ones)</td>
+<td><code>simulateResiduals(fit, simulateREs = "unconditional")</code></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Simulated likelihood ratio test</td>
+<td><code>simulateLRT(m0, m1)</code></td>
+<td><a href="2C-RandomEffects.html#sec-re-simlrt" class="quarto-xref"><span>Section 4.5.3.3</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-cheat-inference" class="level2" data-number="B.9">
+<h2 data-number="B.9" class="anchored" data-anchor-id="sec-cheat-inference"><span class="header-section-number">B.9</span> Tests, effects and predictions</h2>
+<div id="tbl-cheat-inference" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-inference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.10: Functions for tests, effects and predictions. For an overview of tests and CIs for mixed models, see <a href="2C-RandomEffects.html#tbl-re-inference" class="quarto-xref">Table&nbsp;<span>4.1</span></a>.
+</figcaption>
+<div aria-describedby="tbl-cheat-inference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>What</th>
+<th>Syntax</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ANOVA table (type II / III)</td>
+<td><code>car::Anova(fit)</code>, <code>car::Anova(fit, type = "III")</code></td>
+<td><a href="2B-ANOVA.html#sec-anova-collinearity" class="quarto-xref"><span>Section 3.2.3</span></a>, <a href="2B-ANOVA.html#sec-anova-contrast" class="quarto-xref"><span>Section 3.2.4</span></a></td>
+</tr>
+<tr class="even">
+<td>Likelihood ratio test of nested models</td>
+<td><code>anova(m0, m1)</code></td>
+<td><a href="3C-ModelSelection.html#sec-select-lrt" class="quarto-xref"><span>Section 8.2.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>p-values for <code>lmer</code> models</td>
+<td>load <code>lmerTest</code> before fitting</td>
+<td><a href="2C-RandomEffects.html#sec-re-df" class="quarto-xref"><span>Section 4.5.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Confidence intervals of parameters</td>
+<td><code>confint(fit)</code></td>
+<td><a href="5A-Summary.html#tbl-summary-inference" class="quarto-xref">Table&nbsp;<span>12.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>Group means and comparisons</td>
+<td><code>emm = emmeans(fit, ~ treatment)</code>, then <code>pairs(emm)</code> or <code>contrast(emm, "trt.vs.ctrl")</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-posthoc" class="quarto-xref"><span>Section 2.6.3</span></a>, <a href="2B-ANOVA.html#nte-anova-emmeans" class="quarto-xref">Note&nbsp;<span>3.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Means on the response scale (GLMs)</td>
+<td><code>emmeans(fit, ~ treatment, type = "response")</code></td>
+<td><a href="4A-GLMs.html#cau-glm-before" class="quarto-xref">Caution&nbsp;<span>9.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Predictions with standard errors</td>
+<td><code>predict(fit, newdata = newData, se.fit = TRUE)</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-prediction" class="quarto-xref"><span>Section 2.11</span></a></td>
+</tr>
+<tr class="even">
+<td>Conditional / unconditional predictions of mixed models</td>
+<td><code>predict(fit, re.form = NULL)</code> / <code>predict(fit, re.form = NA)</code></td>
+<td><a href="2C-RandomEffects.html#tip-re-predterms" class="quarto-xref">Tip&nbsp;<span>4.3</span></a>, <a href="2C-RandomEffects.html#sec-re-prediction" class="quarto-xref"><span>Section 4.5.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Confidence intervals for predictions of mixed models</td>
+<td><code>bootMer(fit, FUN = function(m) predict(m, re.form = NA), nsim = 100)</code></td>
+<td><a href="2C-RandomEffects.html#sec-re-prediction" class="quarto-xref"><span>Section 4.5.2</span></a></td>
+</tr>
+<tr class="even">
+<td>AIC comparison</td>
+<td><code>AIC(m1, m2)</code></td>
+<td><a href="3C-ModelSelection.html#sec-select-aic" class="quarto-xref"><span>Section 8.2.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Random effect variances and variance partitioning</td>
+<td><code>VarCorr(fit)</code></td>
+<td><a href="2C-RandomEffects.html#sec-re-vpc" class="quarto-xref"><span>Section 4.5.5</span></a></td>
+</tr>
+<tr class="even">
+<td>Marginal and conditional R² of a mixed model</td>
+<td><code>MuMIn::r.squaredGLMM(fit)</code></td>
+<td><a href="2C-RandomEffects.html#sec-re-anova" class="quarto-xref"><span>Section 4.5.4</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
+<script>
+/* Margin references (citation-location: margin).
+   Quarto puts the references of a block (paragraph, list, callout) into one margin box that starts
+   at the top of that block. For long lists and callouts the references are then far above or below
+   the sentence that cites them. This script moves every reference down to the first visible
+   citation of that work and stacks references that would overlap.
+   - Narrow screens (margin content is shown inline): nothing is changed.
+   - Blocks with a citation inside a collapsed callout: Quarto's default layout is kept.
+   - Re-run after load, resize and when callouts are opened or closed. */
+(function () {
+  function align() {
+    var boxes = Array.prototype.filter.call(document.querySelectorAll('.column-margin'), function (b) {
+      return b.querySelector('.csl-entry');
+    });
+    boxes.forEach(function (box) {                       // reset first (resize, callout toggled)
+      box.style.position = ''; box.style.minHeight = '';
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        e.style.position = ''; e.style.top = ''; e.style.left = ''; e.style.right = '';
+      });
+    });
+    boxes.forEach(function (box) {
+      var block = box.previousElementSibling, rect = box.getBoundingClientRect();
+      if (!block || rect.height === 0) return;
+      if (rect.left < block.getBoundingClientRect().right - 20) return;   // inline mode on narrow screens
+      var items = [], ok = true;
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        var key = e.id.replace(/^ref-/, '');
+        var cites = Array.prototype.filter.call(block.querySelectorAll('span.citation'), function (c) {
+          return (c.getAttribute('data-cites') || '').split(' ').indexOf(key) >= 0 && c.getBoundingClientRect().height > 0;
+        });
+        if (!cites.length) { ok = false; return; }
+        items.push({ e: e, anchor: cites[0].getBoundingClientRect().top - rect.top, h: e.getBoundingClientRect().height });
+      });
+      if (!ok || !items.length) return;                  // a citation is hidden (collapsed callout): keep default
+      box.style.position = 'relative'; box.style.minHeight = '1px';
+      items.sort(function (a, b) { return a.anchor - b.anchor; });
+      var bottom = -Infinity;
+      items.forEach(function (i) {
+        var top = Math.max(i.anchor, bottom + 6);
+        i.e.style.position = 'absolute'; i.e.style.left = '0'; i.e.style.right = '0'; i.e.style.top = top + 'px';
+        bottom = top + i.h;
+      });
+    });
+  }
+  var timer;
+  function later() { clearTimeout(timer); timer = setTimeout(align, 100); }
+  window.addEventListener('load', function () {
+    align(); setTimeout(align, 1000);                    // second pass after fonts, images and math have settled
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(later);
+  });
+  window.addEventListener('resize', later);
+  document.addEventListener('shown.bs.collapse', later);
+  document.addEventListener('hidden.bs.collapse', later);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -630,6 +1320,11 @@ ul.task-list li input[type="checkbox"] {
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -960,4 +1655,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/6B-CheatSheet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/6B-CheatSheet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

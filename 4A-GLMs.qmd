@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -78,9 +77,7 @@ Of course, there are many additional distributions that you could consider for y
 knitr::include_graphics(c("images/linkFunctions.jpg"))
 ```
 
-```{=html}
-<p><small>Screenshot taken from Wikipedia: <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function</a>. Content licensed under the <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike License 3.0</a>.</small></p>
-```
+*Screenshot taken from [Wikipedia](https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function). Content licensed under the [Creative Commons Attribution-ShareAlike License 3.0](https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License).*
 
 ### Count data - Poisson regression {#sec-glm-poisson}
 
@@ -146,7 +143,7 @@ fitNull = glm(feeding ~ 1, data = birdfeeding, family = "poisson")
 
 **Calculation of Pseudo-R^2^** **with deviance or logL**
 
-Common pseudo-R^2^ such as McFadden or Nagelkerke use the logL instead of the deviance, whereas the pseudo-R^2^ by Cohen uses the deviance. However, R^2^ calculated based on deviance or logL differs considerably, as the former is calculated in reference to the maximal achievable fit (saturated model) while the latter just compares the improvement of fit compared to the null model:
+Common pseudo-R^2^ such as McFadden or Nagelkerke use the logL instead of the deviance, whereas the deviance-based pseudo-R^2^ (1 - D~res~/D~null~, the "proportion of deviance explained") uses the deviance. However, R^2^ calculated based on deviance or logL differs considerably, as the former is calculated in reference to the maximal achievable fit (saturated model) while the latter just compares the improvement of fit compared to the null model:
 
 ```{r}
 # Based on logL
@@ -154,8 +151,8 @@ McFadden = 1-(logLik(fit1))/(logLik(fitNull))
 print(McFadden)
 
 # Based on deviance
-Cohen = 1- (logLik(fitSat) - logLik(fit1)) / (logLik(fitSat) - logLik(fitNull))
-print(Cohen)
+R2_dev = 1- (logLik(fitSat) - logLik(fit1)) / (logLik(fitSat) - logLik(fitNull))
+print(R2_dev)
 ```
 
 *Note: outside of the context of GL(M)Ms, deviance is sometimes defined simply as* $-2 \log L(M_1)$ *(see @nte-glm-deviance for the two definitions).*
@@ -164,7 +161,7 @@ print(Cohen)
 If we want to calculate model predictions, we have to transform to the response scale. Here we have a log link, i.e. we have to transform with exp(linear response).
 
 ```{r chunk_chapter5_chunk17, echo=TRUE, eval=TRUE}
-exp(1.47459 + 3 * 0.14794)
+exp(coef(fit)[1] + 3 * coef(fit)[2])
 ```
 
 Alternatively (and preferably), you can use the predict() function with `type = "response"`
@@ -175,6 +172,8 @@ predict(fit, newdata = dat) # linear predictor
 predict(fit, newdata = dat, type = "response") # response scale
 ```
 
+Because of the log link, effects are multiplicative: `exp(coef(fit))` shows that each unit of attractiveness multiplies the expected number of feedings by about 1.16 (a rate ratio, see @tbl-summary-link for the interpretation of coefficients under the common link functions).
+
 Effect plots work as before (see @sec-lm-visualization). Note that the effects package always transforms the y axis according to the link, so we have log scaling on the y axis, and the effect lines remain straight
 
 ```{r, warning=FALSE, message=FALSE}
@@ -184,7 +183,7 @@ plot(allEffects(fit))
 
 #### Notes on the Poisson regression {#sec-glm-poisson-note}
 
-**Poisson vs. log transformed count data:** For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, it was common to fit an lm with log-transformed counts, which is basically log link + normal distribution
+**Poisson vs. log transformed count data:** For count data, even if the distribution is switched, the log link is nearly always the appropriate link function. Before GLMs were widely available, it was common to fit an lm to log-transformed counts (log(y + 1) if there are zeros). This is similar to, but not the same as, a Poisson GLM with log link: the lm assumes a constant variance on the log scale, the Poisson GLM a variance equal to the mean (see also @sec-glm-gamma).
 
 **Log offset:** If there is a variable that controls the number of counts (e.g. time, area), this variable is usually added as an offset in the following form
 
@@ -227,11 +226,12 @@ summary(m1)
 The syntax here is for 0/1 data. If you have k/n data, you can either specify the response as cbind(k, n-k), or you can fit the glm with `I(k/n) ~ x, weights = n` (and `family = binomial`)
 :::
 
-The interpretation of the regression table remains unchanged. To transform to predictions, we have to use the inverse logit, which is in R:
+The coefficients are now on the logit scale (log odds, where odds = p/(1-p)); `exp(coef(m1))` gives odds ratios (see @tbl-summary-link). To transform to predictions, we have to use the inverse logit, which is in R:
 
 ```{r chunk_chapter5_chunk5, echo=TRUE, eval=TRUE}
-plogis(0.493381 + 0.022516 * 20)  # Women, age 20.
-plogis(0.493381 -1.154139 + 20*(0.022516-0.046276)) # Men, age 20
+cf = coef(m1)
+plogis(cf[1] + cf[3] * 20)  # Women, age 20.
+plogis(cf[1] + cf[2] + 20 * (cf[3] + cf[4])) # Men, age 20
 ```
 
 Alternatively, we can again use the predict function
@@ -255,7 +255,7 @@ If you do an ANOVA on a glm, you should take care that you perform a Chisq and n
 anova(m1, test = "Chisq")
 ```
 
-note that anova works for glm and glmmTMB, but not for lme4::glmer.
+Note that `anova()` gives tests for a single model only for `glm`. For `glmer` and `glmmTMB`, use `car::Anova()`, or compare two nested models with `anova(m0, m1)` (a likelihood-ratio test).
 
 The function car::Anova works for most model classes and uses a ChiSq test automatically (for glm this is a likelihood-ratio test; for glmer/glmmTMB, `car::Anova` computes Wald chi-squared tests, which are approximate). Given that you probably want to use a type II or III Anova anyway, you should prefer it.
 
@@ -378,7 +378,7 @@ Now, the quantile plots show no obvious misfit. With the confounders modeled fle
 
 ### Continuous positive response - Gamma regression {#sec-glm-gamma}
 
-The Gamma regression is the natural choice for a **strictly positive, continuous, right-skewed** response whose variance grows with the mean (e.g. concentrations, waiting times, biomass, body sizes). A common alternative is to log-transform and fit an `lm` (as we do first below), but the two are not equivalent: the log-`lm` assumes constant variance *on the log scale* and, if you back-transform predictions, incurs a retransformation bias, whereas the Gamma GLM models the mean on the original scale with a variance that scales as $\text{Var}(y) \propto \mu^2$. With the default log link, coefficients are interpreted multiplicatively - `exp(coef)` is the factor by which the mean changes per unit of the predictor, exactly as in the Poisson regression.
+The Gamma regression is the natural choice for a **strictly positive, continuous, right-skewed** response whose variance grows with the mean (e.g. concentrations, waiting times, biomass, body sizes). A common alternative is to log-transform and fit an `lm` (as we do first below), but the two are not equivalent: the log-`lm` assumes constant variance *on the log scale* and, if you back-transform predictions, incurs a retransformation bias, whereas the Gamma GLM models the mean on the original scale with a variance that scales as $\text{Var}(y) \propto \mu^2$. With a log link (which we set explicitly below, because R's default for `Gamma()` is the inverse link, see the box below), coefficients are interpreted multiplicatively - `exp(coef)` is the factor by which the mean changes per unit of the predictor, as in the Poisson regression.
 
 ```{r, message=FALSE}
 library(faraway)
@@ -508,15 +508,15 @@ With that in mind, we can say that there is nothing special to see here. Also re
 
 ```{r chunk_chapter5_chunk14, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 par(mfrow = c(1, 2))
-plotResiduals(m1, form = model.frame(m1)$age)
-plotResiduals(m1, form = model.frame(m1)$sex)
+plotResiduals(res, form = model.frame(m1)$age)
+plotResiduals(res, form = model.frame(m1)$sex)
 ```
 
 However, residuals against the missing predictor pclass show a clear problem:
 
 ```{r chunk_chapter5_chunk15, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 dataUsed = as.numeric(rownames(model.frame(m1)))
-plotResiduals(m1, form = titanic$pclass[dataUsed])
+plotResiduals(res, form = titanic$pclass[dataUsed])
 ```
 
 Thus, I should add passenger class to the model
@@ -525,7 +525,8 @@ Thus, I should add passenger class to the model
 m2 = glm(survived ~ sex*age + pclass, family = "binomial", data = titanic)
 summary(m2)
 
-plotResiduals(m2, form = model.frame(m2)$pclass)
+res2 = simulateResiduals(m2)
+plotResiduals(res2, form = model.frame(m2)$pclass)
 ```
 
 Now, residuals look fine. Of course, if your model gets more complicated, you may want to do additional checks, for example for the distribution of random effects etc.
@@ -542,7 +543,7 @@ To remove the assumptions of a fixed dispersion, there are three options, of whi
 
 1.  **Quasi-distributions**, which are available in glm. Those add a term to the likelihood that corrects the p-values for the dispersion, but they are not distributions, so there are no residual checks and no AIC. Therefore discouraged.
 2.  **Observation-level random effect (OLRE)** - Add a separate random effect per observation. This effectively creates a normal random variate at the level of the linear predictor, increases variance on the responses.
-3.  A **GLM distribution with variable dispersion**, for Poisson usually the negative binomial.
+3.  A **GLM distribution with variable dispersion**, for Poisson usually the negative binomial, for k/n binomial data the beta-binomial (`family = betabinomial` in glmmTMB).
 
 The reason why I prefer the 3rd option is that it allows better residual checks and to model the dispersion as a function of the predictors (see @sec-disp-glmm). OLRE is also a valid solution.
 
@@ -598,11 +599,11 @@ res = simulateResiduals(m2, plot = T)
 shows that there is still some overdispersion. Actually, what the plots also show is heteroskedasticity, and we should probably deal with that as well, but we will only learn how in the next chapter on dispersion models (@sec-disp). For now, let's switch to a negative binomial model. This could be fit with lme4, but it is more convenient to use the package glmmTMB, which has the same syntax as lme4, but more advanced options.
 
 ```{r}
-m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamanders)
-res = simulateResiduals(m4, plot = T)
+m3 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, data = Salamanders)
+res = simulateResiduals(m3, plot = T)
 ```
 
-Now, the test is fine.
+Now, the test is fine. The negative binomial is a Poisson distribution with a gamma-distributed rate. `glmmTMB` offers two parameterizations: `nbinom2` (variance $\mu + \mu^2/\theta$, quadratic in the mean, the usual starting point) and `nbinom1` (variance $\mu (1 + \alpha)$, linear in the mean); compare both by AIC if in doubt.
 
 ### Zero-inflation {#sec-glm-zero-inflation}
 
@@ -635,8 +636,8 @@ This shows no sign of zero-inflation. There are, however, two problems with this
 Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. Compare the models with and without `ziformula` via AIC or likelihood ratio test. Do not use the p-value of the zero-inflation intercept for this, as it tests a zero-inflation probability of 0.5, not the absence of zero-inflation.
 
 ```{r}
-m5 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, ziformula = ~1,  data = Salamanders)
-summary(m5)
+m4 = glmmTMB(count ~ spp + mined + (1|site), family = nbinom2, ziformula = ~1,  data = Salamanders)
+summary(m4)
 ```
 
 In this case, we have no evidence for zero-inflation (AIC 1674.4 with vs. 1672.4 without zero-inflation, i.e. the simpler model is preferred; the estimated zero-inflation intercept of about -16 on the logit scale, i.e. a probability of about 0, with a huge standard error is a boundary estimate). To see an example where you can find zero-inflation, see the owls exercise (@cau-glm-owls).
@@ -696,7 +697,7 @@ abline(v = 4, col = "red", lty =2)
 
 If we turn this around, this means that if we want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.
 
-Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because relatively speaking, and increase of 45% to 55% is less important than an increase of 90% to 100%.
+Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because on the odds scale, which is what the logit link works with, the same 10% change is much larger close to 100% than around 50%. Whether this is the biologically relevant scale is a modeling decision.
 
 Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.
 
@@ -746,7 +747,7 @@ mean(plogis(1 + rnorm(1e5, sd = 1)))
 
 The value (about 0.70) is lower than the unconditional prediction (0.73), and this value is also what you would approximately get if you take the mean of your data.
 
-Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. Unfortunately (to my knowledge), there is no function to automatically create marginal predictions. A quick fix would be to create conditional predictions, add random effects on top as above (with the estimated variances) and push them through the corresponding link function.
+Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. A simple and transparent way to create marginal predictions is the simulation above: create unconditional predictions on the link scale, add random effects simulated with the estimated variances, push them through the corresponding link function and average.
 
 ## Take-home messages {#sec-glm-takehome}
 
@@ -956,7 +957,8 @@ We want to answer two questions:
 1.  What are the variables that explain the occurrence of the *Bulinus truncatus* species (=Species distribution model)
 2.  What are the variables that influence the infection of the snails with Schistosomiasis
 
-Tasks:
+::: {.callout-caution icon="false"}
+#### Exercise — Snails
 
 - Build two binomial GLMs (see hints) to explain the presence and the infection rate of *Bulinus truncatus* (BT)
 
@@ -965,6 +967,7 @@ Tasks:
 - Check residuals with DHARMa, check for misfits (plot residuals against variables)
 
 - Which variables explain the presence of BT and which have an effect on the infection rates?
+:::
 
 ::: callout-tip
 #### Hints
@@ -984,8 +987,8 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 data$sTemp_Air = scale(data$Temp_Air)
 # Remove NAs
-rows = rownames(model.matrix(~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
-data = data[rows, ]
+vars = c("Temp_Water", "pH", "Latitude", "Longitude", "Cond", "seas_wmo", "wmo_prec", "water_speed_ms", "water_depth", "Temp_Air", "year", "duration", "locality", "site_irn", "coll_date")
+data = data[complete.cases(data[, vars]), ]
 ```
 
 1.  Factors which drive the occurrence of BT
@@ -1032,13 +1035,13 @@ summary(model1)
 
 Intercept corresponds to seas_wmo == dry and site_type == can.2
 
-Year (our confounder) has a very strong effect on the occurrence rate. Conductivity has a strong positive effect. Let's look at the effects:
+Coefficients of confounders (here year, site type and season) are not interpreted (Table 2 fallacy, @sec-causal-table2). We only interpret the variables of our hypothesis: conductivity has a clear positive effect, precipitation, water speed and air temperature clear negative effects. Let's look at the effects:
 
 ```{r,warning=FALSE}
 plot(allEffects(model1))
 ```
 
-it appears that site_type and conductivity have the largest positive effects on occurrence rates. It is reasonable to assume that there are interactions between freshwater (site_type) and factors such as conductivity:
+it appears that conductivity has the largest positive effect on occurrence rates. It is reasonable to assume that there are interactions between freshwater (site_type) and factors such as conductivity:
 
 ```{r,warning=FALSE}
 model1 = glm(bt_pres~ site_type * sCond -sCond + swater_speed_ms+spH + sTemp_Water + swmo_prec + duration + 
@@ -1101,7 +1104,7 @@ summary(model2)
 
 Intercept corresponds to seas_wmo == dry and site_type == can.2
 
-Year (our confounder) has a very strong effect on the infection rate. Site_type, swmo_prec (Precipitation), sTemp_Water, and sTemp_Air have strong effects:
+Again, coefficients of confounders (year, site type, season) are not interpreted (Table 2 fallacy, @sec-causal-table2). Let's look at the estimates of our hypothesis variables:
 
 ```{r,warning=FALSE}
 plot(allEffects(model2))
@@ -1171,7 +1174,7 @@ library(pROC)
 auc(elephant$occurenceData$Presence, predict(model, type = "response"))
 ```
 
-The AUC is a common measure of goodness of fit for binary classification. However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validation (@sec-select-cv)
+The AUC is a common measure of how well a model separates presences from absences: the probability that a randomly chosen presence gets a higher predicted value than a randomly chosen absence (0.5 = random, 1 = perfect). However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validation (@sec-select-cv)
 
 ```{r, results=F, message = F}
 library(boot)

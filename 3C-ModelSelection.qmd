@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -37,7 +36,7 @@ Apart from causality (see @sec-causal), the arguably most fundamental idea about
 If we sum both terms up, we see that the total error of a model that is too simple will be dominated by bias (underfitting), and the total error of a model that is too complex will be dominated by variance (overfitting):
 
 ```{r chunk_chapter3_71, echo=FALSE, out.width="100%", out.height="100%"}
-knitr::include_graphics(c("images/BiasBarianceTradeOff.jpg"))
+knitr::include_graphics(c("images/BiasVarianceTradeOff.jpg"))
 ```
 
 Let's confirm this with a small simulation - let's assume I have a simple relationship between x and y:
@@ -99,7 +98,7 @@ The effect of X on Y is now significant (standard error = 0.15)!
 ::: {#model-selection-methods}
 :::
 
-Because of the bias-variance trade-off (@sec-select-biasvar), we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out
+Because of the bias-variance trade-off (@sec-select-biasvar), we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out (a fourth, cross-validation, follows at the end of the chapter, @sec-select-cv)
 
 1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests (@sec-select-lrt)
 2.  Optimize a penalized fit to the data -\> AIC selection (@sec-select-aic)
@@ -144,12 +143,14 @@ AIC(m1)
 AIC(m2)
 ```
 
-**Note 1:** It can be shown that AIC is asymptotically identical to leave-one-out cross-validation (see @sec-select-cv), so what AIC is optimizing is essentially the predictive error of the model on new data.
+**Note 1:** It can be shown that AIC is asymptotically equivalent to leave-one-out cross-validation (under regularity conditions, for likelihood-based loss; see @sec-select-cv), so what AIC is optimizing is essentially the predictive error of the model on new data.
+
+**Note 2:** AIC values can only be compared between models fitted to exactly the same rows of the data (@sec-miss-na-action). As a rule of thumb, models with a difference in AIC of less than about 2 are essentially equivalent. For a small n relative to the number of parameters, use the corrected AICc (`MuMIn::AICc`).
 
 ::: {#nte-select-bic .callout-note}
 #### AIC or BIC?
 
-The most common alternative to the AIC is the BIC (Bayesian information criterion), $-2 \ln(\text{likelihood}) + \ln(n) \, k$. Instead of 2 per parameter, BIC adds $\ln(n)$ per parameter, which is more than 2 for any data set with at least 8 observations, so BIC selects smaller models, and the more so the larger the data. The two criteria answer different questions: AIC aims at the model that predicts best, BIC at the true model, assuming it is among the candidates [@aho2014model]. If they disagree, the extra parameters improve the fit, but not enough to pass BIC's stronger penalty: the larger model probably predicts better, but whether the extra structure really exists remains uncertain. State which of the two questions you ask. Note also that in mixed models, $n$ is ambiguous (number of observations or number of groups?); R uses the number of observations (for an example where this matters, see the case study on species cover, @sec-corr-multivar-cover). Other criteria (AICc, WAIC, DIC) exist, but are beyond the scope of this course; Bayesian model selection is covered in [the chapter on Bayesian model selection](https://florianhartig.github.io/LearningBayes/3A-ModelSelection.html) of @hartig2024introduction.
+The most common alternative to the AIC is the BIC (Bayesian information criterion), $-2 \ln(\text{likelihood}) + \ln(n) \, k$. Instead of 2 per parameter, BIC adds $\ln(n)$ per parameter, which is more than 2 for any data set with at least 8 observations, so BIC selects smaller models, and the more so the larger the data. The two criteria answer different questions: AIC aims at the model that predicts best, BIC at the true model, assuming it is among the candidates [@aho2014model]. If they disagree, the extra parameters improve the fit, but not enough to pass BIC's stronger penalty: the larger model probably predicts better, but whether the extra structure really exists remains uncertain. State which of the two questions you ask. Note also that in mixed models, $n$ is ambiguous (number of observations or number of groups?); R uses the number of observations (for an example where this matters, see the case study on species cover, @sec-corr-multivar-cover). Other criteria (WAIC, DIC) exist, but are beyond the scope of this course; Bayesian model selection is covered in [the chapter on Bayesian model selection](https://florianhartig.github.io/LearningBayes/3A-ModelSelection.html) of @hartig2024introduction.
 :::
 
 ::: {.callout-caution icon="false"}
@@ -317,7 +318,7 @@ Note that all shrinkage estimators are biased towards zero, and the standard err
 
 ### P-hacking {#sec-select-phacking}
 
-The most dubious model selection strategy, a questionable research practice that can amount to scientific **misconduct**, is **p-hacking**. The purpose of this exercise is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example:
+The most dubious model selection strategy, a questionable research practice that can amount to scientific **misconduct**, is **p-hacking**. The purpose of this exercise is to show you how **not** to do model selection, i.e, that by playing around with the variables, you can make any outcome significant. That is why your hypothesis needs to be fixed **before** looking at the data, ideally through pre-registration, based on an experimental plan or a causal analysis. Here is the example (why this works is explained in @sec-select-pvalue):
 
 ::: {.callout-caution icon="false"}
 #### Exercise — p-hacking
@@ -341,6 +342,8 @@ When you run summary(fullModel), you will see that there is no significant effec
 ```{r}
 summary(lm(Performance ~ Gen1 * Humidity, data = dat[20:30,]))
 ```
+
+We tried several subsets and models before finding this one; a single significant result among many tests is expected by chance (see @sec-lm-posthoc).
 :::
 
 Here some more inspiration on p-hacking:
@@ -451,7 +454,7 @@ We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's
 ::: {#tip-select-stepwise .callout-tip}
 #### Stepwise vs. global model selection
 
-Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::stepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine.
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::stepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine. Note that `dredge()` only runs with `options(na.action = "na.fail")`, which makes sure that all models use the same rows (@sec-miss-na-action).
 :::
 
 ```{r, echo=T, results='hide'}
@@ -473,14 +476,14 @@ The result is good and bad. Good is that we now get the effect of y \~ x signifi
 
 The phenomenon is well-known in the stats literature, and the reason is that performing a stepwise / global selection + calculating a regression table for the selected model is **hidden multiple testing** and has inflated Type I error rates! Remember, you are implicitly trying out hundreds or thousand of models, and are taking the one that is showing the strongest effects.
 
-There are methods to correct for the problem (keyword: post-selection inference), but none of them are readily available in R, and also, mostly those corrected p-values have lower power than the full model.
+There are methods to correct for the problem (keyword: post-selection inference), e.g. the selectiveInference package for lasso and forward stepwise selection, but not for stepAIC or dredge, and mostly those corrected p-values have lower power than the full model. The simplest valid strategy is to split the data: select the model on one half, test it on the other.
 
 ## Non-parametric R2 - cross-validation {#sec-select-cv}
 
 ::: {#non-parametric-r2---cross-validation}
 :::
 
-Cross-validation is the non-parametric alternative to AIC. Note that AIC (@sec-select-aic) is asymptotically equal to leave-one-out cross-validation.
+Cross-validation is the non-parametric alternative to AIC (@sec-select-aic).
 
 For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`, using the `cv.glm`{.R} function:
 
@@ -555,7 +558,7 @@ selectedModel = stepAIC(fullModel, trace = 0)
 summary(selectedModel)
 ```
 
-R2 = 0.99 ... very high. In general, AIC should not overfit. In practice, however, it can overfit if there are unmodeled correlations in the data, or if you use variables that are (indirectly) identical to your response.
+R2 = 0.998 is a warning sign: the selected model has about 150 parameters for 163 observations (10 residual degrees of freedom). AIC can overfit with a small n and a huge candidate set (consider AICc or a smaller candidate set), and R2 says nothing about prediction on new data: validate with cross-validation (@sec-select-cv).
 :::
 
 ### Exercise — Life satisfaction #3 {#sec-select-life}
@@ -591,9 +594,12 @@ Evaluate the predictive error with cross-validation. Note that this CV error is 
 
 ```{r, message=FALSE, warning=FALSE}
 library(boot)
+set.seed(1)
 cvFit = glm(formula(predModel), data = dat)
-cv.glm(dat, cvFit, K = 10)$delta[1]         # 10-fold CV mean squared error
+causalFit = glm(lebensz_org ~ sqrt(einkommenj1) + syear + sex + alter + anz_pers + bildung + erwerb + gesund_org, data = dat)
+c(predModel = cv.glm(dat, cvFit, K = 10)$delta[1],       # 10-fold CV mean squared error
+  causalModel = cv.glm(dat, causalFit, K = 10)$delta[1])  # the same for the causal model
 ```
 
-Note that we filtered to `complete.cases` on the modeled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the section on na.action in the chapter on missing data, @sec-miss-na-action). Compare this CV error to that of the simpler causal model (@sec-causal-life) - a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
+Note that we filtered to `complete.cases` on the modeled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the section on na.action in the chapter on missing data, @sec-miss-na-action). Compared with the simpler causal model (@sec-causal-life), the selected model is only slightly better on prediction (about 2.17 vs 2.19), a very small gain for 13 additional coefficients: a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
 :::

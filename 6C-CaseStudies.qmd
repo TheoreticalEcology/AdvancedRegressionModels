@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -84,7 +83,7 @@ m1 = glmmTMB(alldeaths ~ MasFem*
 summary(m1)
 ```
 
-Note that in the code that I gave you not all predictors were scaled (and they don't say if they scaled in the paper), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability (see @sec-lm-interaction-centering)
+Note that the model above scales only NDAM (and the paper does not say whether they scaled), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability (see @sec-lm-interaction-centering)
 
 ```{r}
 m2 = glmmTMB(alldeaths ~ scale(MasFem) *
@@ -93,7 +92,7 @@ m2 = glmmTMB(alldeaths ~ scale(MasFem) *
 summary(m2)
 ```
 
-now main effect is n.s.; it's a bit dodgy, but if you read in the main paper, they do not claim a significant main effect, they mainly argue via ANOVA and significance at high values of NDAM, so let's run an ANOVA (see @sec-anova-contrast and @cau-anova-typeiii for the dependence of type III tests on centering):
+now main effect is n.s.; it's a bit dodgy, but if you read in the main paper, they do not claim a significant main effect, they mainly argue via ANOVA and significance at high values of NDAM, so let's run an ANOVA. `car::Anova()` gives type II tests, which, unlike type III, do not depend on the centering (see @sec-anova-contrast and @cau-anova-typeiii):
 
 ```{r, message=FALSE}
 car::Anova(m2)
@@ -130,7 +129,7 @@ plotResiduals(res, hurricanes$MasFem)
 plotResiduals(res, hurricanes$Minpressure_Updated_2014)
 ```
 
-No significant deviation in the general DHARMa plot, but residuals \~ NDAM looks funny, which was also pointed out by Bob O'Hara in a blog post after publication of the paper. Let's try to correct this - scaling with \^0.2 does a great job:
+No significant deviation in the general DHARMa plot, but residuals \~ NDAM looks funny, which was also pointed out by Bob O'Hara in a blog post after publication of the paper. Let's try to correct this - transforming NDAM with \^0.2 (found by trying a few powers; 0.1 to 0.2 fit best) does a great job:
 
 ```{r}
 correctedModel = glmmTMB(alldeaths ~ scale(MasFem) *
@@ -171,7 +170,7 @@ summary(newModel)
 car::Anova(newModel) # nothing regarding MasFem
 ```
 
-The results remain that there is no effect of MasFem!
+The variance of the year random effect is estimated as practically zero (a boundary fit), so there is no extra year-to-year variation beyond the fixed effect of Year, and removing the random effect would not change the results. The results remain that there is no effect of MasFem!
 :::
 
 ## Researcher degrees of freedom --- skin color and red cards {#sec-cases-redcard}
@@ -190,15 +189,19 @@ library(EcoData)
 ?redCards
 ```
 
-Task: Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta-analysis. You can find the data in the ecodata package, dataset redCards.
+::: {.callout-caution icon="false"}
+#### Tasks
+
+Do a re-analysis of the data as if you were the 30th team to contribute the results to the meta-analysis. You can find the data in the ecodata package, dataset redCards.
 
 1.  Response variable: 'redCards' (+'yellowReds'?).
 2.  primary predictors: 'rater1', 'rater2'
 3.  Multiple variables, potentially accounting for confounding, offsetting, grouping, ... are included in the data.
+:::
 
-The rater variable contains ratings of "two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin. Make sure that 'rater1' and 'rater2' are rescaled to the range 0 ... 1 as described in the paper ("This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.")
+The rater variable contains ratings of "two independent raters blind to the research question who, based on their profile photo, categorized players on a 5-point scale ranging from (1) very light skin to (5) very dark skin. Note that 'rater1' and 'rater2' in `EcoData::redCards` are already rescaled to the range 0 ... 1, as described in the paper ("This variable was rescaled to be bounded by 0 (very light skin) and 1 (very dark skin) prior to the final analysis, to ensure consistency of effect sizes across the teams of analysts. The raw ratings were rescaled to 0, .25, .50, .75, and 1 to create this new scale.")
 
-When you're done, have a look at the other modeling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odd ratios**. Are your results within the range of estimates from the 29 teams in @silberzahn2018many?
+When you're done, have a look at the other modeling teams. Do you understand the models they fit? Note that the results are displayed in terms of **odds ratios**. Are your results within the range of estimates from the 29 teams in @silberzahn2018many?
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -210,7 +213,7 @@ There is no single "correct" analysis - that is the whole point of @silberzahn20
 ```{r, message=FALSE}
 library(EcoData); library(glmmTMB); library(DHARMa)
 d = redCards
-d$skin  = ((d$rater1 + d$rater2)/2 - 1) / 4     # mean rating, rescaled to 0..1
+d$skin  = (d$rater1 + d$rater2)/2     # mean of the two ratings (already on the 0..1 scale)
 d = d[!is.na(d$skin) & d$games > 0, ]
 
 m = glmmTMB(redCards ~ skin + (1|playerShort) + (1|refNum),
@@ -220,7 +223,7 @@ exp(fixef(m)$cond["skin"])   # rate ratio, darkest (1) vs lightest (0) skin
 res = simulateResiduals(m); plot(res); testDispersion(res)
 ```
 
-The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comparable to the paper's odds ratios). Compare it to the 0.89-2.93 range of odds ratios reported across the 29 teams. This bare model actually gives a somewhat *higher* estimate, which nicely illustrates the point of the study: the "researcher degrees of freedom" (choice of exposure, random-effect structure, which rater, count vs. binomial, and - crucially - which confounders are included) move the result substantially. From this base model, you would go on to check residuals and dispersion (@sec-glm-residual) and to add plausible confounders (see @sec-causal; league, playing position, player skill, ...), which typically pulls the estimate towards the reported range.
+The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comparable to the paper's odds ratios: red cards are rare, about 0.4% per player-referee game, and for rare events a rate ratio is close to an odds ratio). Compare it to the 0.89-2.93 range of odds ratios reported across the 29 teams. This bare model gives a rate ratio of about 1.4, which is inside the range of the 29 teams and close to their median (1.31). The study shows, however, that the "researcher degrees of freedom" (choice of exposure, random-effect structure, which rater, count vs. binomial, and - crucially - which confounders are included) can move the result substantially. From this base model, you would go on to address the slight overdispersion (@sec-glm-residual) and to add plausible confounders (see @sec-causal; league, playing position, player skill, ...) and see how much the estimate changes.
 :::
 
 ## Scouting ants {#sec-cases-ant}
@@ -228,7 +231,11 @@ The exponentiated `skin` coefficient is our effect in **rate-ratio** units (comp
 ::: {#scouting-ants}
 :::
 
+::: {.callout-caution icon="false"}
+#### Tasks
+
 Look at the dataset EcoData::scoutingAnts, and find out if there are really scouting ants in *Lasius niger*.
+:::
 
 A base model should be:
 
@@ -337,11 +344,10 @@ library(EcoData)
 library(glmmTMB)
 library(lme4)
 library(DHARMa)
-library(tidyverse)
 ?EcoData::snails
 ```
 
-Look at the Snails data set in the `EcoData` package, and find out which environmental and/or seasonal predictors i) explain the total abundance and ii) the infection rate of the three species.
+Look at the Snails data set in the `EcoData` package, and find out which environmental and/or seasonal predictors i) explain the total abundance and ii) the infection rate of *Bulinus* spp.
 
 The snails data set in the EcoData package includes observations on the distribution of freshwater snails and their infection rates ( schistosomiasis (a parasite)).
 
@@ -349,23 +355,25 @@ The first scientific question is that their abundance depends on the water condi
 
 The data also contains data on other environmental (and seasonal factors). You should consider if it is useful to add them to the analysis.
 
-Species: BP_tot, BF_tot, BT_tot
+Species: BP_tot (*Biomphalaria pfeifferi*), BF_tot (*Bulinus forskalii*), BT_tot (*Bulinus truncatus*)
 
 Number of infected individuals: BP_pos_tot, BF_pos_tot, BT_pos_tot
 
-Total abundances of BP species: Bulinus_tot
+Total abundance of *Bulinus* spp.: Bulinus_tot
 
-Total number of infected in BP species: Bulinus_pos_tot
+Total number of infected *Bulinus* spp.: Bulinus_pos_tot
 
-Tasks:
+::: {.callout-caution icon="false"}
+#### Tasks
 
-1.  Model the summed total abundance of the three species (Bulinus_tot)
+1.  Model the total abundance of *Bulinus* spp. (Bulinus_tot)
 
-2.  Model the infection rate of all three species (Bulinus_pos_tot) (k/n binomial)
+2.  Model the infection rate of *Bulinus* spp. (Bulinus_pos_tot) (k/n binomial)
 
 3.  Optional: Model the species individually (BP_tot, BF_tot, BT_tot)
 
 4.  Optional: Fit a multivariate (joint) species distribution model (see @sec-corr-multivar)
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -390,7 +398,8 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 data$sTemp_Air = scale(data$Temp_Air)
 
-# Let's remove NAs beforehand:
+# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
+# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
 rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
@@ -528,7 +537,8 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 data$sTemp_Air = scale(data$Temp_Air)
 
-# Let's remove NAs beforehand:
+# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
+# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
 rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
@@ -550,7 +560,7 @@ summary(model1)
 res = simulateResiduals(model1, plot=TRUE)
 ```
 
-We have dispersion problems (@sec-glm-dispersion), but we cannot model the dispersion for binomial models.
+The dispersion test is n.s. (if k/n data are overdispersed, use `family = betabinomial` or an observation-level random effect, @sec-glm-dispersion).
 
 Check for spatial autocorrelation (again with unconditional simulations, as for the abundance model):
 
@@ -607,7 +617,8 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 data$sTemp_Air = scale(data$Temp_Air)
 
-# Let's remove NAs beforehand:
+# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
+# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
 rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
@@ -658,7 +669,6 @@ library(glmmTMB)
 library(lme4)
 library(lmerTest)
 library(DHARMa)
-library(tidyverse)
 ?EcoData::seedBank
 ```
 
@@ -668,13 +678,15 @@ The scientific question is if the ability of plants to build a seed bank depends
 
 The data also contains data on environmental factors and plant traits. You should consider if it is useful to add them to the analysis.
 
-Tasks:
+::: {.callout-caution icon="false"}
+#### Tasks
 
 1.  Fit an lm/lmm with SBDensity as response
 
 2.  Bonus: Add phylogenetic correlation structure (see @sec-corr-phylo)
 
 3.  Fit a glm/glmm with SBPA as response (Bonus: add phylogenetic correlation structure)
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -701,7 +713,8 @@ data$sEpiStein = scale(data$EpiStein)
 data$sMGR = scale(data$MGR)
 data$sT95 = scale(data$T95)
 
-# Let's remove NAs beforehand:
+# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
+# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
 rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
                                sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
                                sMGR + sEpiStein + sT95 +
@@ -730,7 +743,7 @@ model1 = lmer(logSBDensity~
 summary(model1)
 ```
 
-Environmental factors can be potential confounders, let's add them to the model:
+Altitude and humidity may influence both which species (and thus which seed traits) occur at a site and the seed bank density, so we add them as potential confounders:
 
 ```{r}
 
@@ -743,7 +756,7 @@ model2 = lmer(logSBDensity~
 summary(model2)
 ```
 
-sSeedShape and sSeedN are now statistically significant!
+Adding altitude and humidity barely changes the seed-trait estimates: seed mass and seed shape have negative effects on seed bank density, seed number has no clear effect.
 
 **Question**:
 
@@ -751,7 +764,7 @@ What about the germination temperatures, T50/T95?
 
 **Answer:**
 
-They could be mediators (@sec-causal-framework), Seed Shape -\> T95 -\> SBDensity, so it is up to if you want to include them or not!
+They could be mediators (Seed Shape -\> T95 -\> SBDensity). For the total effect of the seed traits we leave them out; we would include them only to estimate the direct effect (@sec-causal-framework).
 
 **Residual checks:**
 
@@ -835,7 +848,6 @@ phyl.upd2 = multi2di(phyl.upd)
 glmmTMB (not perfect because lack of support of specific phylogenetic correlation structures):
 
 ```{r}
-dist_phylo = ape::cophenetic.phylo(phyl.upd2) # create distance matrix
 correlation_matrix = vcv(phyl.upd2)[unique(data$Species), unique(data$Species)]
 
 ###
@@ -894,7 +906,8 @@ data$sEpiStein = scale(data$EpiStein)
 data$sMGR = scale(data$MGR)
 data$sT95 = scale(data$T95)
 
-# Let's remove NAs beforehand:
+# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
+# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
 rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
                                sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
                                sMGR + sEpiStein + sT95 +
@@ -939,8 +952,9 @@ Residuals look good!
 
 **Bonus: With phylogenetic correlation structure:**
 
+(This bonus part uses `phyl.upd2` from the SBDensity bonus solution above, so run that one first.)
+
 ```{r}
-dist_phylo = ape::cophenetic.phylo(phyl.upd2) # create distance matrix
 correlation_matrix = vcv(phyl.upd2)[unique(data$Species), unique(data$Species)]
 
 ###
@@ -987,7 +1001,11 @@ plot(res)
 ::: {#snouter}
 :::
 
-Fit one of the responses in the snouter dataset against the predictors rain + djungle (see ?snouter). Check for spatial autocorrelation and proceed to fitting a spatial model if needed (@sec-corr-spatial). See the data set's help for details on the variables.
+::: {.callout-caution icon="false"}
+#### Tasks
+
+Fit one of the (continuous) responses in the snouter dataset, e.g. `snouter1.1`, against the predictors rain + djungle (see ?snouter); the coordinates are `X` and `Y`. Check for spatial autocorrelation and proceed to fitting a spatial model if needed (@sec-corr-spatial). See the data set's help for details on the variables.
+:::
 
 ```{r eval = F}
 library(EcoData)
@@ -1028,15 +1046,24 @@ This changes residuals somewhat, but there is still significant spatial autocorr
 ::: {#volcano-island}
 :::
 
+::: {.callout-caution icon="false"}
+#### Tasks
+
 Analyze ?volcanoisland in the EcoData package. Perform an appropriate causal statistical analysis (see @sec-causal; including residual checks and everything) to understand the predictors that determine the value of
 
-windObs (numeric) lizards (1/0) beetles2 (counts) survivedOf20 (k out of 20) There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (random effects, @sec-re; overdispersion, @sec-glm-dispersion; zero-inflation, @sec-glm-zero-inflation; spatial autocorrelation, @sec-corr-spatial) could appear in this data.
+- windObs (numeric)
+- lizards (1/0)
+- beetles2 (counts)
+- survivedOf20 (k out of 20)
+
+There are various predictors, including plot, year, x, y that can be considered. Assume that all the issues that we talked about (random effects, @sec-re; overdispersion, @sec-glm-dispersion; zero-inflation, @sec-glm-zero-inflation; spatial autocorrelation, @sec-corr-spatial) could appear in this data.
 
 Hint: it is possible that the possibility to observe a species depends on wind, and it is possible that lizards eat beetles, so you can also consider these variables (or predictions for these variables) as predictors of the others.
 
 Hint 2: binomial k/n data in R is specified as a response that is cbind(k, n-k), so you would write glm(cbind(survivedOf20, 20 - survivedOf20) \~ predictor, data = data, family = "binomial")
 
 Hint 3: lizards may be present but not observed (imperfect detection, see Hint 1). Occupancy models, which separate the true presence from the detection process, are introduced with the same data set in [the chapter on occupancy models](https://florianhartig.github.io/LearningBayes/4B-Occupancy.html) of @hartig2024introduction.
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution

@@ -11,11 +11,11 @@ set.seed(42)
 
 ### Learning goals {#sec-intro-model}
 
-Generalized (linear) mixed models are a framework for modeling a wide range of data structures. The aim of this book is to introduce you to this framework, and apply guidance on its use. It is organized in three main parts, followed by a workflow chapter and appendices:
+Generalized (linear) mixed models are a framework for modeling a wide range of data structures. The aim of this book is to introduce you to this framework, and apply guidance on its use. It is organized in three main parts, followed by a workflow chapter (@sec-summary) and appendices (quick reference, @sec-cheat; case studies, @sec-cases):
 
-1.  **Modeling the mean:** The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. In this part, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression (@sec-lm), ANOVA (@sec-anova), mixed models (@sec-re) and nonlinear regression (@sec-nls)
-2.  **Model Choice** The second part covers model choice, including how to handle missing data (@sec-miss), causal inference (@sec-causal) and model selection (@sec-select), with cross-validation (@sec-select-cv)
-3.  **Modeling the Distribution** The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (@sec-glm) and modeling variance (@sec-disp) and correlation (@sec-corr) of residuals.
+1.  **Modeling the mean:** The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. In this part, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression (@sec-lm), ANOVA (@sec-anova), mixed models (@sec-re) and nonlinear regression (@sec-nls).
+2.  **Model choice:** The second part covers model choice, including how to handle missing data (@sec-miss), causal inference (@sec-causal) and model selection (@sec-select), with cross-validation (@sec-select-cv).
+3.  **Modeling the distribution:** The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (@sec-glm) and modeling variance (@sec-disp) and correlation (@sec-corr) of residuals.
 
 ### Implementing this into a data analysis workflow {#sec-intro-workflow}
 
@@ -236,19 +236,20 @@ class(x)
 This also works if a data set already exists, i.e. if you assign a different value, the type will automatically be changed. Look at what happens when we assign a character value to a previously numeric column in a data.frame:
 
 ```{r chunk_chapter2_8, eval=FALSE}
-iris$Sepal.Length[2] = "dog"
-str(iris)
+irisNA = iris # work on a copy
+irisNA$Sepal.Length[2] = "dog"
+str(irisNA)
 ```
 
 Note that all numeric values are changed to characters as well. You can try to force back the values to numeric by:
 
 ```{r chunk_chapter2_9, eval=FALSE}
-iris$Sepal.Length = as.numeric(iris$Sepal.Length)
+irisNA$Sepal.Length = as.numeric(irisNA$Sepal.Length)
 ```
 
-Have a look at what this does to the values in iris\$Sepal.Length.
+Have a look at what this does to the values in irisNA\$Sepal.Length.
 
-Note: The actions above operate on a local copy of the iris data set. You don't overwrite the base data and can use it again in a new R session or reset it with `data(iris)`{.R}.
+Note: The actions above operate on a copy (`irisNA`) of the iris data set, the original `iris` is not changed.
 
 ### Data selection, slicing and subsetting {#sec-intro-selection}
 
@@ -389,7 +390,7 @@ squareValue(2)
 squareValue()
 ```
 
-The given value (3 in the example above) is the **default value**. This value is used automatically, if no value is supplied for the respective variable. Default values can be specified for all variables, but you should put them to the end of the function definition. Hint: In R, it is always useful to name the parameters when using functions.
+The given value (3 in the example above) is the **default value**. This value is used automatically, if no value is supplied for the respective variable. Default values can be specified for all variables, but it is good practice to put them at the end of the function definition (the example below shows what can go wrong if you do not). Hint: In R, it is always useful to name the parameters when using functions.
 
 Look at the following example:
 
@@ -408,6 +409,8 @@ testFunction(10, 20, 30)
 
 testFunction(b = 10, c = 20, a = 30)
 ```
+
+The first two calls fail because `b` has no default value. `testFunction(10, 20)` matches the values by position (a = 10, b = 20, c = 3). In the last call all arguments are named, so their order does not matter.
 :::
 
 #### The apply() Function {#sec-intro-apply}
@@ -424,7 +427,7 @@ apply(iris[,1:4], 2, mean)
 #### Tasks
 
 1.  Check the help of `apply`{.R} to understand what this does.
-2.  Why is the first result of `apply(iris[,1:4], 2, mean)`{.R} NA? Check the help of mean to understand this.
+2.  Why is the first result of `apply(irisNA[,1:4], 2, mean)`{.R} NA? (`irisNA` is the copy of iris with the "dog" from @sec-intro-dynamic-typing.) Check the help of mean to understand this.
 3.  Try `apply(iris[,1:4], 1, mean)`{.R}. Think about what has changed here.
 4.  What would happen if you use `iris`{.R} instead of `iris[,1:4]`{.R}?
 :::
@@ -443,12 +446,13 @@ apply(iris[,1:4], 2, mean)
 Remember, what we have done in @sec-intro-dynamic-typing (if you run this part separately, execute the following lines again):
 
 ```{r chunk_chapter2_task_5, eval=TRUE, purl=FALSE}
-iris$Sepal.Length[2] = "dog"
-iris$Sepal.Length = as.numeric(iris$Sepal.Length)
+irisNA = iris
+irisNA$Sepal.Length[2] = "dog"
+irisNA$Sepal.Length = as.numeric(irisNA$Sepal.Length)
 ```
 
 ```{r chunk_chapter2_task_6, eval=TRUE}
-apply(iris[,1:4], 2, mean)
+apply(irisNA[,1:4], 2, mean)
 ```
 
 In the previous step, `as.numeric()` coerced `"dog"` to `NA` because a string cannot be converted to a number. The column therefore already contains an `NA` before `apply()` is called. The `mean()` function with its default `na.rm = FALSE` propagates any `NA` in its input, so the result is `NA` (**N**ot **A**vailable, missing value).
@@ -456,7 +460,7 @@ In the previous step, `as.numeric()` coerced `"dog"` to `NA` because a string ca
 But you can skip missing values with the option `na.rm = TRUE`{.R} of the `mean`{.R} function. To use it with the `apply`{.R} function, pass the argument(s) after.
 
 ```{r chunk_chapter2_task_7, eval=TRUE}
-apply(iris[,1:4], 2, mean, na.rm = T)
+apply(irisNA[,1:4], 2, mean, na.rm = T)
 ```
 
 ***3***
@@ -520,7 +524,7 @@ for (i in 1:3){
 For loops are very useful when you want to execute the same task many times. This can be for plotting, but also for data manipulation. For example, if I would like to re-program the apply function with a for loop, it would look like this:
 
 ```{r}
-apply(iris[,1:4], 2, mean, na.rm = T)
+apply(iris[,1:4], 2, mean)
 
 out = rep(NA, 4)
 for (i in 1:4){
@@ -574,9 +578,9 @@ Before you fit a model to your own data, check the data. These checks correspond
 | Number of observations per group and combination | `table()`, e.g. `table(dat$site, dat$year)` | Unbalanced designs and groups with few observations (@sec-anova-collinearity, @sec-re) |
 | Experimental unit | ask: what is the replicate? Is there one row per unit, or several rows per site, plot or individual? | Several measurements per unit are not independent (@tip-re-design) |
 
-: Checks before fitting a model. {#tbl-intro-explore}
+: Checks before fitting a model.
 
-In the final exercise (@sec-intro-final-exercise), you apply these checks to the airquality data, which we will use again in the chapter on linear regression (@sec-lm). The links in @tbl-intro-explore lead to the sections where these points are discussed. Looking at the predictors alone (their ranges, correlations and the number of observations) is safe. Plotting the response against the predictors in order to decide which predictors or functional forms to include, however, is already a form of model selection, with consequences for the p-values (@sec-select-phacking). Decide the model from your question and design first (@sec-summary), and use such plots only to check it.
+In the final exercise (@sec-intro-final-exercise), you apply these checks to the airquality data, which we will use again in the chapter on linear regression (@sec-lm). The links in the table above lead to the sections where these points are discussed. Looking at the predictors alone (their ranges, correlations and the number of observations) is safe. Plotting the response against the predictors in order to decide which predictors or functional forms to include, however, is already a form of model selection, with consequences for the p-values (@sec-select-phacking). Decide the model from your question and design first (@sec-summary), and use such plots only to check it.
 
 ### Final exercise {#sec-intro-final-exercise}
 
@@ -589,7 +593,7 @@ We work with the airquality dataset:
 dat = airquality
 ```
 
-1.  Before working with a dataset, you should always get an overview of it. Helpful functions for this are `str()`, `View()`, `summary()`, `head()`, and `tail()`. Apply them to `dat` and make sure to understand what they do. Then go through the checks in @tbl-intro-explore, taking Ozone as the response: missing values, distribution of the response, correlations between the predictors, number of observations per month.
+1.  Before working with a dataset, you should always get an overview of it. Helpful functions for this are `str()`, `View()`, `summary()`, `head()`, and `tail()`. Apply them to `dat` and make sure to understand what they do. Then go through the checks in @sec-intro-explore, taking Ozone as the response: missing values, distribution of the response, correlations between the predictors, number of observations per month.
 2.  What is the data type of the variable 'Month'? Transform it to a factor
 3.  Scale the variable Wind and save it as a new variable in `dat`
 4.  Transform the variable 'Temp' (log-transform) and save it as a new variable in `dat`
@@ -608,7 +612,7 @@ dat = airquality
     summary(dat)
     ```
 
-    There are NAs in Ozone and Solar.R! Also, Month is not a factor! The checks from @tbl-intro-explore:
+    There are NAs in Ozone and Solar.R! Also, Month is not a factor! The checks from @sec-intro-explore:
 
     ```{r}
     colSums(is.na(dat))       # missing values per variable
@@ -656,20 +660,20 @@ dat = airquality
 
     | Scenario | Which plot | R command |
     |------------------------|------------------------|------------------------|
-    | Numeric | Histogram or boxplot | `hist()` and`boxplot` |
-    | Numeric with numeric | Scatterplot | `plot` |
+    | Numeric | Histogram or boxplot | `hist()` and `boxplot()` |
+    | Numeric with numeric | Scatterplot | `plot()` |
     | Numeric with categorical | Boxplot | `boxplot(numeric~categorical)` |
-    | Categorical with categorical | mosaicplot or grouped barplot | `mosaicplot(table(categorical, categorical))` or `barplot(data,        beside=TRUE)` |
+    | Categorical with categorical | mosaicplot or grouped barplot | `mosaicplot(table(categorical, categorical))` or `barplot(table(categorical, categorical), beside = TRUE)` |
 
     ```{r}
     # Numeric
     hist(dat$Wind, main = "Wind")
 
     # Numeric vs numeric
-    plot(dat$Wind, dat$Solar.R)
+    plot(Temp ~ Wind, data = dat)
 
     # Numeric with categorical
-    boxplot(Wind~Month, data = dat)
+    boxplot(Temp ~ Month, data = dat)
 
     # All with all
     pairs(dat)

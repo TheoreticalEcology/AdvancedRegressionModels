@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -348,7 +347,7 @@ all.equal(fitted(fit), fitted(fitSum))
 ```
 
 ::: column-margin
-This holds as long as the model contains all lower-order terms of each interaction. If you, e.g., remove a main effect but keep its interaction, or use uncorrelated random slopes in a mixed model (see @sec-re), the coding also changes the model itself.
+This holds as long as the model contains all lower-order terms of each interaction. If you, e.g., remove a main effect but keep its interaction, or use uncorrelated random slopes in a mixed model (see @cau-re-typeiii), the coding also changes the model itself.
 :::
 
 For the second part, we have to consider what hypothesis / comparisons are expressed by the contrasts. In a model with interactions, every lower-order term (a main effect, or a two-way interaction in a model with a three-way interaction) is estimated and tested at the **zero point** of the variables it interacts with. This zero point is
@@ -627,7 +626,7 @@ It is interesting to consider more generally which hypothesis tests can be obtai
 |                                  |                                       |                                                   |
 | **Spearman correlation**         |                                       |                                                   |
 +----------------------------------+---------------------------------------+---------------------------------------------------+
-| y differs within a group         | `aov(y~group)`                        | `lm(y~group)` with subsequent ANOVA               |
+| y differs between groups         | `aov(y~group)`                        | `lm(y~group)` with subsequent ANOVA               |
 |                                  |                                       |                                                   |
 | **One-way ANOVA**                |                                       |                                                   |
 +----------------------------------+---------------------------------------+---------------------------------------------------+

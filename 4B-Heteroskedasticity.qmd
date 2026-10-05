@@ -25,7 +25,7 @@ Modeling dispersion means that we describe how the expected variance changes as 
 ::: {#heteroskedasticity-in-the-linear-model}
 :::
 
-The easiest way to understand heteroskedasticity is in the linear model. Let's look at an extreme example that we create by simulating some data
+Heteroskedasticity means that the residual variance is not constant, for example because it depends on a predictor or on the mean. The easiest way to understand it is in the linear model. Let's look at an extreme example that we create by simulating some data
 
 ```{r chunk_chapter4_chunk8, echo=TRUE, eval=TRUE}
 set.seed(125)
@@ -36,7 +36,7 @@ data$observation = c(7, 2 ,4)[as.numeric(data$treatment)] +
 boxplot(observation ~ treatment, data = data)
 ```
 
-Especially p-values and confidence intervals of `lm()`{.R} and ANOVA can react quite strongly to such differences in residual variation. So, running a standard `lm()`{.R} / ANOVA on this data is not a good idea - in this case, we see that all regression effects are not significant, as is the ANOVA, suggesting that there is no difference between groups.
+Especially p-values and confidence intervals of `lm()`{.R} and ANOVA can react quite strongly to such differences in residual variation. So, running a standard `lm()`{.R} / ANOVA on this data is not a good idea - in this case, we see that no regression effect is significant, and neither is the ANOVA (p = 0.27), although the true group means differ (7, 2, 4, we simulated them). The unequal residual variances distort the standard errors and p-values (here they cost us power); let's see what happens when we model the variances.
 
 ```{r chunk_chapter4_chunk9, echo=TRUE, eval=TRUE}
 fit = lm(observation ~ treatment, data = data)
@@ -44,11 +44,11 @@ summary(fit)
 summary(aov(fit))
 ```
 
-::: callout-important
-A subtlety about heteroskedasticity in the normal model is that it mainly affects p-values for the variable that the residual variance is correlated with, as illustrated by the simulation below
+::: callout-note
+A subtlety about heteroskedasticity in the normal model is that it especially affects p-values when the residual variance changes with the predictor itself, as illustrated by the simulation below (no true effect, so p-values should be uniform)
 
-``` r
-
+```{r, fig.height=3.5}
+par(mfrow = c(1, 2))
 # error sd is variable, but uncorrelated with predictor
 
 getP <- function(effect = 0, n = 1000){
@@ -62,7 +62,7 @@ getP <- function(effect = 0, n = 1000){
 }
 
 out = replicate(1000, getP())
-hist(out, breaks = 20)
+hist(out, breaks = 20, main = "variance independent of x")
 
 
 # error sd is variable and correlated with predictor (identical in this case)
@@ -76,8 +76,10 @@ getP2 <- function(effect = 0, n = 1000){
 }
 
 out2 = replicate(1000, getP2())
-hist(out2, breaks = 20)
+hist(out2, breaks = 20, main = "variance depends on x")
 ```
+
+Left: the p-values are uniform under H0, i.e. calibrated (about 5% false positives at alpha = 0.05). Right: strong excess of small p-values (here about 30% false positives): inflated type I error.
 :::
 
 So, what can we do?
@@ -88,9 +90,9 @@ One option is to search for a transformation of the response that improves the p
 
 ### Modeling the variance / dispersion {#sec-disp-model}
 
-The second, more general option, is to model the variance - Modeling the variance to fit a model where the variance is not fixed. We will discuss two packages in R that allow you to model the dispersion
+The second, more general option is to model the variance, i.e. to fit a model in which the variance is not fixed. We will discuss two packages in R that allow you to model the dispersion.
 
-The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares* (not to be confused with GLMs, @sec-glm: GLS keeps the normal distribution, but allows non-constant variance and correlated errors). In the `gls` function, you can specify a dependency of the residual variance on a predictor or the response via the weight argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the `varIdent` function, which allows you to specify a different variance per treatment.
+The first (traditional) option is to use `nlme::gls`{.R}. GLS = *Generalized Least Squares* (not to be confused with GLMs, @sec-glm: GLS keeps the normal distribution, but allows non-constant variance and correlated errors). In the `gls` function, you can specify a dependency of the residual variance on a predictor or the response via the `weights` argument. There are different types of dependencies that you can specify, see `?varFunc`{.R}. In our case, we will use the `varIdent` function, which allows you to specify a different variance per treatment.
 
 ```{r chunk_chapter4_chunk10, echo=TRUE, eval=TRUE}
 library(nlme)
@@ -116,7 +118,7 @@ fit = glmmTMB(observation ~ treatment, data = data,
 summary(fit)
 ```
 
-We get 2 regression tables as outputs - one for the effects, and one for the dispersion. We see, as expected, that the dispersion is higher in groups B and C compared to A: for the Gaussian family the dispersion formula models the residual standard deviation on the log scale, so exp(1.55) = 4.7 means that the SD in B is about 4.7 times that in A. An advantage over gls is that we get confidence intervals and p-values for these differences on top!
+We get 2 regression tables as outputs - one for the effects, and one for the dispersion. We see, as expected, that the dispersion is higher in groups B and C compared to A: for the Gaussian family the dispersion formula models the residual standard deviation on the log scale, so exp(1.55) = 4.7 means that the SD in B is about 4.7 times that in A. `gls` reports the same quantities as SD ratios relative to A (4.7 for B and 11.8 for C, with confidence intervals from `intervals()` on the gls fit), whereas `glmmTMB` additionally gives z-tests and p-values for these differences.
 
 ::: {.callout-caution icon="false"}
 #### Exercise — Variance modeling
@@ -129,7 +131,7 @@ plot(Ozone ~ Solar.R, data = airquality)
 
 We can also see this when we fit the regression model:
 
-```{r chunk_chapter4_chunk15, echo=TRUE, eval=F}
+```{r chunk_chapter4_chunk15, echo=TRUE, eval=TRUE}
 m1 = lm(Ozone ~ Solar.R, data = airquality)
 par(mfrow = c(2, 2))
 plot(m1)
@@ -169,7 +171,7 @@ m4 = glmmTMB(Ozone ~ Solar.R, dispformula = ~Solar.R, data = airquality)
 ::: {#heteroskedasticity-in-glmms}
 :::
 
-GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. In `glmmTMB`, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula` argument, analogous to the variance modeling with `gls` and `glmmTMB` for the linear model (@sec-disp-model).
+GLM(M)s can be heteroskedastic as well, i.e. dispersion depends on some predictors. This is the same idea as the dispersion problems in GLMs (@sec-glm-dispersion): the variance is not what the distribution assumes, but here we model it explicitly. In `glmmTMB`, you can make the dispersion of the negative Binomial dependent on a formula via the `dispformula` argument, analogous to the variance modeling with `gls` and `glmmTMB` for the linear model (@sec-disp-model).
 
 Variance problems would show up when plotting residuals against predicted and predictors (see @sec-glm-dharma). In the section on recognizing overdispersion (@sec-glm-overdispersion-detect), we saw some variance problems in the Salamander model. We could add a variable dispersion model via
 

@@ -58,7 +58,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -138,34 +157,66 @@ window.Quarto = {
 };
 </script>
 
-<meta name="citation_title" content="[5]{.chapter-number}&nbsp; [Nonlinear regressions]{.chapter-title}">
+<link rel="stylesheet" href="styles.css">
+<meta name="citation_title" content="[[5]{.chapter-number}&nbsp; [Nonlinear regressions]{.chapter-title}]{#sec-nls .quarto-section-identifier}">
 <meta name="citation_fulltext_html_url" content="https://TheoreticalEcology.github.io/AdvancedRegressionModels/2D-NonlinearRegression.html">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=ńgrundlangen der statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_publisher=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
-<meta name="citation_reference" content="citation_title=ństatistical rethinking;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_publisher=CRC Press;">
-<meta name="citation_reference" content="citation_title=ńan introduction to statistical learning;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Rob Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_publisher=https://www.statlearning.com/; Springer;">
+<meta name="citation_reference" content="citation_title=Grundlagen der Statistik;,citation_author=Florian Hartig;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0;">
+<meta name="citation_reference" content="citation_title=Statistical rethinking: A Bayesian course with examples in R and Stan;,citation_author=Richard McElreath;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;">
+<meta name="citation_reference" content="citation_title=An introduction to statistical learning: With applications in R;,citation_author=Gareth James;,citation_author=Daniela Witten;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.statlearning.com/;">
 <meta name="citation_reference" content="citation_title=What is the difference between missing completely at random and missing at random?;,citation_author=Krishnan Bhaskaran;,citation_author=Liam Smeeth;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=4;,citation_volume=43;,citation_journal_title=International journal of epidemiology;,citation_publisher=Oxford University Press;">
 <meta name="citation_reference" content="citation_title=Computational methods for mixed models;,citation_author=Douglas Bates;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_journal_title=Vignette for lme4;">
-<meta name="citation_reference" content="citation_title=R: A language and environment for statistical computing;,citation_author=R Core Team;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://www.R-project.org/;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with r markdown;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=bookdown;">
-<meta name="citation_reference" content="citation_title=Knitr: A general-purpose package for dynamic report generation in r;,citation_author=Yihui Xie;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Rmarkdown: Dynamic documents for r;,citation_author=JJ Allaire;,citation_author=Yihui Xie;,citation_author=Jonathan McPherson;,citation_author=Javier Luraschi;,citation_author=Kevin Ushey;,citation_author=Aron Atkins;,citation_author=Hadley Wickham;,citation_author=Joe Cheng;,citation_author=Winston Chang;,citation_author=Richard Iannone;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://CRAN.R-project.org/package=rmarkdown;">
-<meta name="citation_reference" content="citation_title=Bookdown: Authoring books and technical documents with R markdown;,citation_author=Yihui Xie;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_fulltext_html_url=https://bookdown.org/yihui/bookdown;">
-<meta name="citation_reference" content="citation_title=Dynamic documents with R and knitr;,citation_author=Yihui Xie;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_fulltext_html_url=https://yihui.org/knitr/;">
-<meta name="citation_reference" content="citation_title=Knitr: A comprehensive tool for reproducible research in R;,citation_author=Yihui Xie;,citation_editor=Victoria Stodden;,citation_editor=Friedrich Leisch;,citation_editor=Roger D. Peng;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_fulltext_html_url=http://www.crcpress.com/product/isbn/9781466561595;,citation_inbook_title=Implementing reproducible computational research;">
-<meta name="citation_reference" content="citation_title=R markdown: The definitive guide;,citation_author=Yihui Xie;,citation_author=J. J. Allaire;,citation_author=Garrett Grolemund;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown;">
-<meta name="citation_reference" content="citation_title=R markdown cookbook;,citation_author=Yihui Xie;,citation_author=Christophe Dervieux;,citation_author=Emily Riederer;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://bookdown.org/yihui/rmarkdown-cookbook;">
 <meta name="citation_reference" content="citation_title=Freshwater snails of biomedical importance in the niger river valley: Evidence of temporal and spatial patterns in abundance, distribution and infection with schistosoma spp.;,citation_author=Muriel Rabone;,citation_author=Joris Hendrik Wiethase;,citation_author=Fiona Allan;,citation_author=Anouk Nathalie Gouvras;,citation_author=Tom Pennance;,citation_author=Amina Amadou Hamidou;,citation_author=Bonnie Lee Webster;,citation_author=Rabiou Labbo;,citation_author=Aidan Mark Emery;,citation_author=Amadou Djirmay Garba;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=12;,citation_journal_title=Parasites &amp;amp;amp; vectors;,citation_publisher=BioMed Central;">
 <meta name="citation_reference" content="citation_title=Inferring community assembly processes from functional seed trait variation along elevation gradient;,citation_author=Sergey Rosbakh;,citation_author=Loı̈c Chalmandrier;,citation_author=Shyam Phartyal;,citation_author=Peter Poschlod;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_journal_title=Journal of Ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=The difference between “significant” and “not significant” is not itself statistically significant;,citation_author=Andrew Gelman;,citation_author=Hal Stern;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=4;,citation_doi=10.1198/000313006X152649;,citation_volume=60;,citation_journal_title=The American Statistician;">
 <meta name="citation_reference" content="citation_title=Analysis of variance with unbalanced data: An update for ecology &amp;amp;amp; evolution;,citation_author=Andy Hector;,citation_author=Stefanie Von Felten;,citation_author=Bernhard Schmid;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_volume=79;,citation_journal_title=Journal of animal ecology;,citation_publisher=Wiley Online Library;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: Use type II instead of type III sums of squares;,citation_author=Øyvind Langsrud;,citation_publication_date=2003;,citation_cover_date=2003;,citation_year=2003;,citation_issue=2;,citation_doi=10.1023/A:1023260610025;,citation_volume=13;,citation_journal_title=Statistics and Computing;">
+<meta name="citation_reference" content="citation_title=How to capitalize on a priori contrasts in linear (mixed) models: A tutorial;,citation_author=Daniel J. Schad;,citation_author=Shravan Vasishth;,citation_author=Sven Hohenstein;,citation_author=Reinhold Kliegl;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_doi=10.1016/j.jml.2019.104038;,citation_volume=110;,citation_journal_title=Journal of Memory and Language;">
+<meta name="citation_reference" content="citation_title=An R companion to applied regression;,citation_author=John Fox;,citation_author=Sanford Weisberg;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;">
 <meta name="citation_reference" content="citation_title=A biologist’s guide to model selection and causal inference;,citation_author=Zachary M Laubach;,citation_author=Eleanor J Murray;,citation_author=Kim L Hoke;,citation_author=Rebecca J Safran;,citation_author=Wei Perng;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_issue=1943;,citation_volume=288;,citation_journal_title=Proceedings of the Royal Society B;,citation_publisher=The Royal Society;">
 <meta name="citation_reference" content="citation_title=Control of confounding and reporting of results in causal inference studies. Guidance for authors from editors of respiratory, sleep, and critical care journals;,citation_author=David J Lederer;,citation_author=Scott C Bell;,citation_author=Richard D Branson;,citation_author=James D Chalmers;,citation_author=Rachel Marshall;,citation_author=David M Maslove;,citation_author=David E Ost;,citation_author=Naresh M Punjabi;,citation_author=Michael Schatz;,citation_author=Alan R Smyth;,citation_author=others;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=1;,citation_volume=16;,citation_journal_title=Annals of the American Thoracic Society;,citation_publisher=American Thoracic Society;">
 <meta name="citation_reference" content="citation_title=A note on model selection using information criteria for general linear models estimated using REML;,citation_author=Arunas Petras Verbyla;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/anzs.12254;,citation_issue=1;,citation_doi=10.1111/anzs.12254;,citation_volume=61;,citation_language=en;,citation_journal_title=Australian &amp;amp;amp; New Zealand Journal of Statistics;">
 <meta name="citation_reference" content="citation_title=Estimation of covariate effects in generalized linear mixed models with a misspecified distribution of random intercepts and slopes;,citation_author=John M. Neuhaus;,citation_author=Charles E. McCulloch;,citation_author=Ross Boylan;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.5682;,citation_issue=14;,citation_doi=10.1002/sim.5682;,citation_volume=32;,citation_language=en;,citation_journal_title=Statistics in Medicine;">
 <meta name="citation_reference" content="citation_title=Major axes of variation in tree demography across global forests;,citation_author=Melina de Souza Leite;,citation_author=Sean M. McMahon;,citation_author=Paulo Inácio Prado;,citation_author=Stuart J. Davies;,citation_author=Alexandre Adalardo Oliveira;,citation_author=Hannes P. De Deurwaerder;,citation_author=Salomón Aguilar;,citation_author=Kristina J. Anderson-Teixeira;,citation_author=Nurfarah Aqilah;,citation_author=Norman A. Bourg;,citation_author=Warren Y. Brockelman;,citation_author=Nicolas Castaño;,citation_author=Chia-Hao Chang-Yang;,citation_author=Yu-Yun Chen;,citation_author=George Chuyong;,citation_author=Keith Clay;,citation_author=Álvaro Duque;,citation_author=Sisira Ediriweera;,citation_author=Corneille E. N. Ewango;,citation_author=Gregory Gilbert;,citation_author=I. a. U. N. Gunatilleke;,citation_author=C. V. S. Gunatilleke;,citation_author=Robert Howe;,citation_author=Walter Huaraca Huasco;,citation_author=Akira Itoh;,citation_author=Daniel J. Johnson;,citation_author=David Kenfack;,citation_author=Kamil Král;,citation_author=Yao Tze Leong;,citation_author=James A. Lutz;,citation_author=Jean-Remy Makana;,citation_author=Yadvinder Malhi;,citation_author=William J. McShea;,citation_author=Mohizah Mohamad;,citation_author=Musalmah Nasardin;,citation_author=Anuttara Nathalang;,citation_author=Geoffrey Parker;,citation_author=Renan Parmigiani;,citation_author=Rolando Pérez;,citation_author=Richard P. Phillips;,citation_author=Pavel Šamonil;,citation_author=I-Fang Sun;,citation_author=Sylvester Tan;,citation_author=Duncan Thomas;,citation_author=Jill Thompson;,citation_author=María Uriarte;,citation_author=Amy Wolf;,citation_author=Jess Zimmerman;,citation_author=Daniel Zuleta;,citation_author=Marco D. Visser;,citation_author=Lisa Hülsmann;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://onlinelibrary.wiley.com/doi/abs/10.1111/ecog.07187;,citation_issue=6;,citation_doi=10.1111/ecog.07187;,citation_volume=2024;,citation_language=en;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=Causality: Models, reasoning, and inference;,citation_author=Judea Pearl;,citation_publication_date=2009;,citation_cover_date=2009;,citation_year=2009;,citation_isbn=9780521895606;">
+<meta name="citation_reference" content="citation_title=A structural equation model analysis of postfire plant diversity in California shrublands;,citation_author=James B. Grace;,citation_author=Jon E. Keeley;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=2;,citation_doi=10.1890/1051-0761(2006)016[0503:ASEMAO]2.0.CO;2;,citation_volume=16;,citation_journal_title=Ecological Applications;">
+<meta name="citation_reference" content="citation_title=Double/debiased machine learning for treatment and structural parameters;,citation_author=Victor Chernozhukov;,citation_author=Denis Chetverikov;,citation_author=Mert Demirer;,citation_author=Esther Duflo;,citation_author=Christian Hansen;,citation_author=Whitney Newey;,citation_author=James Robins;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=1;,citation_doi=10.1111/ectj.12097;,citation_volume=21;,citation_journal_title=The Econometrics Journal;">
+<meta name="citation_reference" content="citation_title=Sixty seconds on … P-hacking;,citation_author=Nigel Hawkes;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.1136/bmj.k4039;,citation_volume=362;,citation_journal_title=BMJ;">
+<meta name="citation_reference" content="citation_title=Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure;,citation_author=David R. Roberts;,citation_author=Volker Bahn;,citation_author=Simone Ciuti;,citation_author=Mark S. Boyce;,citation_author=Jane Elith;,citation_author=Gurutzeta Guillera-Arroita;,citation_author=Severin Hauenstein;,citation_author=José J. Lahoz-Monfort;,citation_author=Boris Schröder;,citation_author=Wilfried Thuiller;,citation_author=David I. Warton;,citation_author=Brendan A. Wintle;,citation_author=Florian Hartig;,citation_author=Carsten F. Dormann;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=8;,citation_doi=10.1111/ecog.02881;,citation_volume=40;,citation_journal_title=Ecography;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The arcsine is asinine: The analysis of proportions in ecology;,citation_author=David I. Warton;,citation_author=Francis K. C. Hui;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=1;,citation_doi=10.1890/10-0340.1;,citation_volume=92;,citation_journal_title=Ecology;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Spatial interaction and the statistical analysis of lattice systems;,citation_author=Julian Besag;,citation_publication_date=1974;,citation_cover_date=1974;,citation_year=1974;,citation_issue=2;,citation_doi=10.1111/j.2517-6161.1974.tb00999.x;,citation_volume=36;,citation_journal_title=Journal of the Royal Statistical Society: Series B (Methodological);,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Phylogenies and the comparative method;,citation_author=Joseph Felsenstein;,citation_publication_date=1985;,citation_cover_date=1985;,citation_year=1985;,citation_issue=1;,citation_doi=10.1086/284325;,citation_volume=125;,citation_journal_title=The American Naturalist;">
+<meta name="citation_reference" content="citation_title=Simple means to improve the interpretability of regression coefficients;,citation_author=Holger Schielzeth;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_doi=10.1111/j.2041-210X.2010.00012.x;,citation_volume=1;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=Female hurricanes are deadlier than male hurricanes;,citation_author=Kiju Jung;,citation_author=Sharon Shavitt;,citation_author=Madhu Viswanathan;,citation_author=Joseph M. Hilbe;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=24;,citation_doi=10.1073/pnas.1402786111;,citation_volume=111;,citation_journal_title=Proceedings of the National Academy of Sciences;,citation_publisher=National Academy of Sciences;">
+<meta name="citation_reference" content="citation_title=Many analysts, one data set: Making transparent how variations in analytic choices affect results;,citation_author=R. Silberzahn;,citation_author=E. L. Uhlmann;,citation_author=D. P. Martin;,citation_author=P. Anselmi;,citation_author=F. Aust;,citation_author=E. Awtrey;,citation_author=Š. Bahník;,citation_author=F. Bai;,citation_author=C. Bannard;,citation_author=E. Bonnier;,citation_author=R. Carlsson;,citation_author=F. Cheung;,citation_author=G. Christensen;,citation_author=R. Clay;,citation_author=M. A. Craig;,citation_author=A. Dalla Rosa;,citation_author=L. Dam;,citation_author=M. H. Evans;,citation_author=I. Flores Cervantes;,citation_author=N. Fong;,citation_author=M. Gamez-Djokic;,citation_author=A. Glenz;,citation_author=S. Gordon-McKeon;,citation_author=T. J. Heaton;,citation_author=K. Hederos;,citation_author=M. Heene;,citation_author=A. J. Hofelich Mohr;,citation_author=F. Högden;,citation_author=K. Hui;,citation_author=M. Johannesson;,citation_author=J. Kalodimos;,citation_author=E. Kaszubowski;,citation_author=D. M. Kennedy;,citation_author=R. Lei;,citation_author=T. A. Lindsay;,citation_author=S. Liverani;,citation_author=C. R. Madan;,citation_author=D. Molden;,citation_author=E. Molleman;,citation_author=R. D. Morey;,citation_author=L. B. Mulder;,citation_author=B. R. Nijstad;,citation_author=N. G. Pope;,citation_author=B. Pope;,citation_author=J. M. Prenoveau;,citation_author=F. Rink;,citation_author=E. Robusto;,citation_author=H. Roderique;,citation_author=A. Sandberg;,citation_author=E. Schlüter;,citation_author=F. D. Schönbrodt;,citation_author=M. F. Sherman;,citation_author=S. A. Sommer;,citation_author=K. Sotak;,citation_author=S. Spain;,citation_author=C. Spörlein;,citation_author=T. Stafford;,citation_author=L. Stefanutti;,citation_author=S. Tauber;,citation_author=J. Ullrich;,citation_author=M. Vianello;,citation_author=E.-J. Wagenmakers;,citation_author=M. Witkowiak;,citation_author=S. Yoon;,citation_author=B. A. Nosek;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=3;,citation_doi=10.1177/2515245917747646;,citation_volume=1;,citation_journal_title=Advances in Methods and Practices in Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=A general and simple method for obtaining $R^2$ from generalized linear mixed-effects models;,citation_author=Shinichi Nakagawa;,citation_author=Holger Schielzeth;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=2;,citation_doi=10.1111/j.2041-210x.2012.00261.x;,citation_volume=4;,citation_journal_title=Methods in Ecology and Evolution;,citation_publisher=Wiley;">
+<meta name="citation_reference" content="citation_title=The coefficient of determination $R^2$ and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded;,citation_author=Shinichi Nakagawa;,citation_author=Paul C. D. Johnson;,citation_author=Holger Schielzeth;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=134;,citation_doi=10.1098/rsif.2017.0213;,citation_volume=14;,citation_journal_title=Journal of The Royal Society Interface;,citation_publisher=The Royal Society;">
+<meta name="citation_reference" content="citation_title=Analysing data using linear models: With applications in R;,citation_author=Stéphanie M. Berg;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://bookdown.org/pingapang9/linear_models_bookdown/;">
+<meta name="citation_reference" content="citation_title=False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant;,citation_author=Joseph P. Simmons;,citation_author=Leif D. Nelson;,citation_author=Uri Simonsohn;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;,citation_issue=11;,citation_doi=10.1177/0956797611417632;,citation_volume=22;,citation_journal_title=Psychological Science;,citation_publisher=SAGE Publications;">
+<meta name="citation_reference" content="citation_title=ANOVA for unbalanced data: An overview;,citation_author=Ruth G. Shaw;,citation_author=Thomas Mitchell-Olds;,citation_publication_date=1993;,citation_cover_date=1993;,citation_year=1993;,citation_issue=6;,citation_doi=10.2307/1939922;,citation_volume=74;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Collinearity: A review of methods to deal with it and a simulation study evaluating their performance;,citation_author=Carsten F. Dormann;,citation_author=Jane Elith;,citation_author=Sven Bacher;,citation_author=Carsten Buchmann;,citation_author=Gudrun Carl;,citation_author=Gabriel Carré;,citation_author=Jaime R. García Marquéz;,citation_author=Bernd Gruber;,citation_author=Bruno Lafourcade;,citation_author=Pedro J. Leitão;,citation_author=Tamara Münkemüller;,citation_author=Colin McClean;,citation_author=Patrick E. Osborne;,citation_author=Björn Reineking;,citation_author=Boris Schröder;,citation_author=Andrew K. Skidmore;,citation_author=Damaris Zurell;,citation_author=Sven Lautenbach;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=1;,citation_doi=10.1111/j.1600-0587.2012.07348.x;,citation_volume=36;,citation_journal_title=Ecography;">
+<meta name="citation_reference" content="citation_title=A reformulation of linear models;,citation_author=John A. Nelder;,citation_publication_date=1977;,citation_cover_date=1977;,citation_year=1977;,citation_issue=1;,citation_doi=10.2307/2344517;,citation_volume=140;,citation_journal_title=Journal of the Royal Statistical Society: Series A (General);">
+<meta name="citation_reference" content="citation_title=Generalizing hierarchical and variation partitioning in multiple regression and canonical analyses using the rdacca.hp R package;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Jinlong Zhang;,citation_author=Pedro R. Peres-Neto;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=4;,citation_doi=10.1111/2041-210X.13800;,citation_volume=13;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Glmm.hp: An R package for computing individual effect of predictors in generalized linear mixed models;,citation_author=Jiangshan Lai;,citation_author=Yi Zou;,citation_author=Shuang Zhang;,citation_author=Xiaoguang Zhang;,citation_author=Lingfeng Mao;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=6;,citation_doi=10.1093/jpe/rtac096;,citation_volume=15;,citation_journal_title=Journal of Plant Ecology;">
+<meta name="citation_reference" content="citation_title=Regression with missing Ys: An improved strategy for analyzing multiply imputed data;,citation_author=Paul T. Hippel;,citation_publication_date=2007;,citation_cover_date=2007;,citation_year=2007;,citation_issue=1;,citation_doi=10.1111/j.1467-9531.2007.00180.x;,citation_volume=37;,citation_journal_title=Sociological Methodology;">
+<meta name="citation_reference" content="citation_title=Ordered beta regression: A parsimonious, well-fitting model for continuous data with lower and upper bounds;,citation_author=Robert Kubinec;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_issue=4;,citation_doi=10.1017/pan.2022.20;,citation_volume=31;,citation_journal_title=Political Analysis;">
+<meta name="citation_reference" content="citation_title=Analysing continuous proportions in ecology and evolution: A practical introduction to beta and dirichlet regression;,citation_author=Jacob C. Douma;,citation_author=James T. Weedon;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=9;,citation_doi=10.1111/2041-210X.13234;,citation_volume=10;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=A comparison of joint species distribution models for percent cover data;,citation_author=Pekka Korhonen;,citation_author=Francis K. C. Hui;,citation_author=Jenni Niku;,citation_author=Sara Taskinen;,citation_author=Bert Veen;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=12;,citation_doi=10.1111/2041-210X.14437;,citation_volume=15;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Using the beta distribution to analyse plant cover data;,citation_author=Christian F. Damgaard;,citation_author=Kathryn M. Irvine;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_issue=6;,citation_doi=10.1111/1365-2745.13200;,citation_volume=107;,citation_journal_title=Journal of Ecology;">
+<meta name="citation_reference" content="citation_title=A better lemon squeezer? Maximum-likelihood regression with beta-distributed dependent variables;,citation_author=Michael Smithson;,citation_author=Jay Verkuilen;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;,citation_issue=1;,citation_doi=10.1037/1082-989X.11.1.54;,citation_volume=11;,citation_journal_title=Psychological Methods;">
+<meta name="citation_reference" content="citation_title=Co-occurrence is not evidence of ecological interactions;,citation_author=F. Guillaume Blanchet;,citation_author=Kevin Cazelles;,citation_author=Dominique Gravel;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_issue=7;,citation_doi=10.1111/ele.13525;,citation_volume=23;,citation_journal_title=Ecology Letters;">
+<meta name="citation_reference" content="citation_title=Parsimoniously fitting large multivariate random effects in glmmTMB;,citation_author=Maeve McGillycuddy;,citation_author=Gordana Popovic;,citation_author=Benjamin M. Bolker;,citation_author=David I. Warton;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=1;,citation_doi=10.18637/jss.v112.i01;,citation_volume=112;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=Model selection for ecologists: The worldviews of AIC and BIC;,citation_author=Ken Aho;,citation_author=DeWayne Derryberry;,citation_author=Teri Peterson;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;,citation_issue=3;,citation_doi=10.1890/13-1452.1;,citation_volume=95;,citation_journal_title=Ecology;">
+<meta name="citation_reference" content="citation_title=Introduction to Bayesian statistics with R;,citation_author=Florian Hartig;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://florianhartig.github.io/LearningBayes/;">
+<meta name="citation_reference" content="citation_title=Pseudoreplication and the design of ecological field experiments;,citation_author=Stuart H. Hurlbert;,citation_publication_date=1984;,citation_cover_date=1984;,citation_year=1984;,citation_issue=2;,citation_doi=10.2307/1942661;,citation_volume=54;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=Fixed or random? On the reliability of mixed-effects models for a small number of levels in grouping variables;,citation_author=Johannes Oberpriller;,citation_author=Melina Souza Leite;,citation_author=Maximilian Pichler;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=7;,citation_doi=10.1002/ece3.9062;,citation_volume=12;,citation_journal_title=Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=Linear and generalized linear mixed models;,citation_author=Benjamin M. Bolker;,citation_publication_date=2015;,citation_cover_date=2015;,citation_year=2015;,citation_doi=10.1093/acprof:oso/9780199672547.003.0014;,citation_inbook_title=Ecological statistics;">
+<meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
+<meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
+<meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating slimcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -174,7 +225,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2A-LinearRegression.html">Modelling the mean</a></li><li class="breadcrumb-item"><a href="./2D-NonlinearRegression.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2A-LinearRegression.html">Modeling the mean</a></li><li class="breadcrumb-item"><a href="./2D-NonlinearRegression.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -240,7 +291,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the mean</span></a>
+ <span class="menu-text">Modeling the mean</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -275,7 +326,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Model Choice</span></a>
+ <span class="menu-text">Model choice</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -304,7 +355,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Modelling the distribution</span></a>
+ <span class="menu-text">Modeling the distribution</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -333,7 +384,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Summary and references</span></a>
+ <span class="menu-text">Workflow</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -342,7 +393,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5A-Summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Summary and concluding thoughts</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">From question to paper: the analysis workflow</span></span></a>
   </div>
 </li>
       </ul>
@@ -365,7 +416,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6B-CheatSheet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Cheat sheet</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Quick reference</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -386,23 +437,24 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-is-a-nonlinear-regression" id="toc-what-is-a-nonlinear-regression" class="nav-link active" data-scroll-target="#what-is-a-nonlinear-regression"><span class="header-section-number">5.1</span> What is a nonlinear regression?</a></li>
-  <li><a href="#fitting-a-nonlinear-regression-using-nls" id="toc-fitting-a-nonlinear-regression-using-nls" class="nav-link" data-scroll-target="#fitting-a-nonlinear-regression-using-nls"><span class="header-section-number">5.2</span> Fitting a nonlinear regression using nls</a></li>
-  <li><a href="#residual-checks" id="toc-residual-checks" class="nav-link" data-scroll-target="#residual-checks"><span class="header-section-number">5.3</span> Residual checks</a></li>
-  <li><a href="#uncertainties-and-cis-on-parameters" id="toc-uncertainties-and-cis-on-parameters" class="nav-link" data-scroll-target="#uncertainties-and-cis-on-parameters"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</a></li>
-  <li><a href="#uncertainties-and-cis-on-predictions-and-derived-quantities" id="toc-uncertainties-and-cis-on-predictions-and-derived-quantities" class="nav-link" data-scroll-target="#uncertainties-and-cis-on-predictions-and-derived-quantities"><span class="header-section-number">5.5</span> Uncertainties and CIs on predictions and derived quantities</a></li>
-  <li><a href="#interactions-in-nls" id="toc-interactions-in-nls" class="nav-link" data-scroll-target="#interactions-in-nls"><span class="header-section-number">5.6</span> Interactions in NLS</a></li>
-  <li><a href="#model-selection" id="toc-model-selection" class="nav-link" data-scroll-target="#model-selection"><span class="header-section-number">5.7</span> Model selection</a></li>
-  <li><a href="#mixed-effects-heteroskedasticity-and-correlations" id="toc-mixed-effects-heteroskedasticity-and-correlations" class="nav-link" data-scroll-target="#mixed-effects-heteroskedasticity-and-correlations"><span class="header-section-number">5.8</span> Mixed effects, heteroskedasticity and correlations</a></li>
+  <li><a href="#sec-nls-definition" id="toc-sec-nls-definition" class="nav-link active" data-scroll-target="#sec-nls-definition"><span class="header-section-number">5.1</span> What is a nonlinear regression?</a></li>
+  <li><a href="#sec-nls-fit" id="toc-sec-nls-fit" class="nav-link" data-scroll-target="#sec-nls-fit"><span class="header-section-number">5.2</span> Fitting a nonlinear regression using nls</a></li>
+  <li><a href="#sec-nls-residual" id="toc-sec-nls-residual" class="nav-link" data-scroll-target="#sec-nls-residual"><span class="header-section-number">5.3</span> Residual checks</a></li>
+  <li><a href="#sec-nls-ciparameter" id="toc-sec-nls-ciparameter" class="nav-link" data-scroll-target="#sec-nls-ciparameter"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</a></li>
+  <li><a href="#sec-nls-ciprediction" id="toc-sec-nls-ciprediction" class="nav-link" data-scroll-target="#sec-nls-ciprediction"><span class="header-section-number">5.5</span> Uncertainties and CIs on predictions and derived quantities</a></li>
+  <li><a href="#sec-nls-interaction" id="toc-sec-nls-interaction" class="nav-link" data-scroll-target="#sec-nls-interaction"><span class="header-section-number">5.6</span> Interactions in NLS</a></li>
+  <li><a href="#sec-nls-selection" id="toc-sec-nls-selection" class="nav-link" data-scroll-target="#sec-nls-selection"><span class="header-section-number">5.7</span> Model selection</a></li>
+  <li><a href="#sec-nls-extension" id="toc-sec-nls-extension" class="nav-link" data-scroll-target="#sec-nls-extension"><span class="header-section-number">5.8</span> Mixed effects</a></li>
+  <li><a href="#sec-nls-takehome" id="toc-sec-nls-takehome" class="nav-link" data-scroll-target="#sec-nls-takehome"><span class="header-section-number">5.9</span> Take-home messages</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/2D-NonlinearRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/2D-NonlinearRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2A-LinearRegression.html">Modelling the mean</a></li><li class="breadcrumb-item"><a href="./2D-NonlinearRegression.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2A-LinearRegression.html">Modeling the mean</a></li><li class="breadcrumb-item"><a href="./2D-NonlinearRegression.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></h1>
+<h1 class="title"><span id="sec-nls" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Nonlinear regressions</span></span></h1>
 </div>
 
 
@@ -419,16 +471,42 @@ window.Quarto = {
 </header>
 
 
-<section id="what-is-a-nonlinear-regression" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="what-is-a-nonlinear-regression"><span class="header-section-number">5.1</span> What is a nonlinear regression?</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>In this chapter
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this chapter, you will learn</p>
+<ul>
+<li>what makes a regression nonlinear, and how to fit one with <code>nls()</code> and starting values (<a href="#sec-nls-definition" class="quarto-xref"><span>Section 5.1</span></a>, <a href="#sec-nls-fit" class="quarto-xref"><span>Section 5.2</span></a>);</li>
+<li>how to check residuals and get CIs for parameters and predictions when the normal approximation may fail (<a href="#sec-nls-residual" class="quarto-xref"><span>Section 5.3</span></a>, <a href="#sec-nls-ciparameter" class="quarto-xref"><span>Section 5.4</span></a>, <a href="#sec-nls-ciprediction" class="quarto-xref"><span>Section 5.5</span></a>);</li>
+<li>how to compare groups with interactions (dummy variables) and LRT or AIC, and how to add random effects with <code>nlme</code> (<a href="#sec-nls-interaction" class="quarto-xref"><span>Section 5.6</span></a>, <a href="#sec-nls-selection" class="quarto-xref"><span>Section 5.7</span></a>, <a href="#sec-nls-extension" class="quarto-xref"><span>Section 5.8</span></a>).</li>
+</ul>
+<p><strong>Workflow steps</strong> (<a href="1A-GettingStarted.html#sec-intro-workflow" class="quarto-xref"><span>Section 1.1.2</span></a>): step 3 (a-priori model), step 5 (residual checks), step 6 (inference).</p>
+<p>Prerequisites: the linear model (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>).</p>
+</div>
+</div>
+<section id="sec-nls-definition" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-nls-definition"><span class="header-section-number">5.1</span> What is a nonlinear regression?</h2>
+<div id="what-is-a-nonlinear-regression">
+
+</div>
 <p>The most important thing first: the main distinction between a linear and a nonlinear regression is NOT whether you fit a straight line. The defining criterion is whether the model is <strong>linear in the parameters</strong>. Quadratic, cubic and other polynomial functional forms (although sometimes also referred to as “polynomial regressions”) are all still linear regressions, and so are transformations such as <span class="math inline">\(\log(x)\)</span> or spline bases.</p>
 <p>The reason is that as long as the function of the mean is linear in the parameters - for example a polynomial of the form</p>
-<p><span class="math display">\[ y = a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...\]</span> you are considering linear effects (<span class="math inline">\(a_0, a_1, a_2\)</span>), where the predictor just happens to be <span class="math inline">\(x^2\)</span>, <span class="math inline">\(\sqrt(x)\)</span> or something like that. You can see this by noting that instead of writing the <span class="math inline">\(x^2\)</span> in the regression formula, you could pre-calculate it in the data as <span class="math inline">\(x_2 = x*x\)</span> and it would just look like a multiple regression.</p>
-<p>Because the linear regression is much better supported in R (as in other statistical packages), it is usually preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g.&nbsp;by regressing against log(y), logit(y)). Note, however, that transforming the response changes the error structure — for example, regressing against log(y) implies multiplicative errors on the original scale, which is a different model from an NLS fit with log-normal residuals.</p>
+<p><span class="math display">\[ y = a_0 + a_1 \cdot x + a_2 \cdot x^2 + ...\]</span> you are considering linear effects (<span class="math inline">\(a_0, a_1, a_2\)</span>), where the predictor just happens to be <span class="math inline">\(x^2\)</span>, <span class="math inline">\(\sqrt{x}\)</span> or something like that. You can see this by noting that instead of writing the <span class="math inline">\(x^2\)</span> in the regression formula, you could pre-calculate it in the data as <span class="math inline">\(x_2 = x*x\)</span> and it would just look like a multiple regression.</p>
+<p>Because the linear regression is much better supported in R (as in other statistical packages), it is usually preferable to consider if the function you want to fit can be made linear in the parameters by transforming y or x (e.g.&nbsp;by regressing against log(y), logit(y)). Note, however, that transforming the response changes the error structure — for example, regressing against log(y) with normal residuals implies multiplicative (log-normal) errors on the original scale, which is a different model from an NLS fit of the untransformed function, which assumes additive normal errors.</p>
 <p>However, there are a number of functions that cannot be expressed as a linear regression. This usually means that the parameters of your model are somehow inside a more complex function that cannot be made linear in the parameters. Typical examples in ecology are growth or density dependence models, or in biology certain reaction or dose-response curves. In these and other cases, you will have to run a nonlinear regression. The simplest case is a nonlinear regression with normal residuals, which is known as nls (nonlinear least squares).</p>
 </section>
-<section id="fitting-a-nonlinear-regression-using-nls" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="fitting-a-nonlinear-regression-using-nls"><span class="header-section-number">5.2</span> Fitting a nonlinear regression using nls</h2>
+<section id="sec-nls-fit" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-nls-fit"><span class="header-section-number">5.2</span> Fitting a nonlinear regression using nls</h2>
+<div id="fitting-a-nonlinear-regression-using-nls">
+
+</div>
 <p>Here, I will use the Michaelis-Menten model as an example. In this example, we are interested in how the reaction rate depends on the substrate concentration. The data we have are paired measurements of the reaction rate (<span class="math inline">\(v\)</span>) and substrate concentration (<span class="math inline">\(S\)</span>)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlstools)</span>
@@ -445,7 +523,7 @@ window.Quarto = {
 </div>
 <p>From the MM model, we can derive the evolution of the reaction rate (v) as a function of the concentration of substrate (S) (For details, see ?nlstools::michaelismodels ). The function we want to fit is of the form:</p>
 <p><span class="math display">\[ v = \frac{S}{S + K_m} \cdot V_{max}\]</span></p>
-<p>The base package to do this is the nls package, which allows you to specify</p>
+<p>In base R, the function <code>nls()</code> (package stats) fits such models: you specify the model as a formula with named parameters and provide starting values for them:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm, </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -454,7 +532,7 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">nls</span>(michaelis,<span class="at">data =</span> vmkm, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).</p>
+<p>Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls). Starting values can be read off the plot (e.g.&nbsp;Vmax at least the largest observed v, Km about the S at which v reaches half of Vmax); if they are far off, nls typically fails with errors such as “singular gradient”. For many standard functions, self-starting models find the starting values automatically, e.g.&nbsp;<code>nls(v ~ SSmicmen(S, Vmax, Km), data = vmkm)</code>.</p>
 <p>The model provides a standard summary table.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -523,8 +601,11 @@ Vmax 0.9917486 1.0000000</code></pre>
 </div>
 </div>
 </section>
-<section id="residual-checks" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="residual-checks"><span class="header-section-number">5.3</span> Residual checks</h2>
+<section id="sec-nls-residual" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="sec-nls-residual"><span class="header-section-number">5.3</span> Residual checks</h2>
+<div id="residual-checks">
+
+</div>
 <p>Residual plots can be created using the nlstools package</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">nlsResiduals</span>(mm)</span>
@@ -537,27 +618,36 @@ Vmax 0.9917486 1.0000000</code></pre>
 </div>
 </div>
 </div>
-<p>Of course, all discussions about residuals from the chapter on linear regressions also apply here, so we are checking for iid normal residuals.</p>
+<p>Of course, all discussions about residuals from the section on residual checks in the linear regression chapter (<a href="2A-LinearRegression.html#sec-lm-residual" class="quarto-xref"><span>Section 2.4</span></a>) also apply here, so we are checking for iid normal residuals.</p>
 </section>
-<section id="uncertainties-and-cis-on-parameters" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="uncertainties-and-cis-on-parameters"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</h2>
+<section id="sec-nls-ciparameter" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="sec-nls-ciparameter"><span class="header-section-number">5.4</span> Uncertainties and CIs on parameters</h2>
+<div id="uncertainties-and-cis-on-parameters">
+
+</div>
 <p>In nonlinear models, the sampling distribution of the MLE will often not be well approximated by a multivariate normal distribution, which means that approximation errors can be large when calculating CIs based on the variance-covariance matrix as done in the regression table (which assumes that the likelihood surface is multivariate normal). The nlstools package allows you to calculate CIs based the normal approximation (asymptotic, corresponds to the se in the regression table) or on profiling.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>nlstools<span class="sc">::</span><span class="fu">confint2</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>nlstools<span class="sc">::</span><span class="fu">confint2</span>(mm)  <span class="co"># asymptotic (normal approximation) CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        2.5 %   97.5 %
 Km   1.813418 3.358860
 Vmax 1.242790 1.849303</code></pre>
 </div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mm)  <span class="co"># profile-likelihood CI, preferable for small samples</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         2.5%    97.5%
+Km   1.940953 3.609793
+Vmax 1.290728 1.944217</code></pre>
+</div>
 </div>
 <p>We can also visualize the RSS contour (under normal errors, minimizing the RSS is equivalent to maximizing the likelihood, so this also traces the likelihood surface)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cont <span class="ot">&lt;-</span> <span class="fu">nlsContourRSS</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>cont <span class="ot">&lt;-</span> <span class="fu">nlsContourRSS</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>0%100%
  RSS contour surface array returned </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cont)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cont)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -566,10 +656,10 @@ Vmax 1.242790 1.849303</code></pre>
 </div>
 </div>
 </div>
-<p>Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions</p>
+<p>Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions (<code>nlsBoot</code> resamples the residuals, i.e.&nbsp;it assumes i.i.d. errors)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mmboot <span class="ot">&lt;-</span> nlstools<span class="sc">::</span><span class="fu">nlsBoot</span>(mm, <span class="at">niter =</span> <span class="dv">1000</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mmboot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mmboot <span class="ot">&lt;-</span> nlstools<span class="sc">::</span><span class="fu">nlsBoot</span>(mm, <span class="at">niter =</span> <span class="dv">1000</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mmboot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -577,7 +667,7 @@ Vmax 1.242790 1.849303</code></pre>
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mmboot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mmboot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 ------
@@ -593,71 +683,79 @@ Km   2.602323 2.049972 3.540909
 Vmax 1.547969 1.330331 1.896717</code></pre>
 </div>
 </div>
-<p>In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case.</p>
-<p>The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this).</p>
+<p>In this case, the bootstrap and the profile intervals are similar to each other and slightly shifted to the right of the symmetric asymptotic interval for Km (larger upper limit), so the normal approximation is acceptable here, but somewhat optimistic for Km.</p>
 </section>
-<section id="uncertainties-and-cis-on-predictions-and-derived-quantities" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="uncertainties-and-cis-on-predictions-and-derived-quantities"><span class="header-section-number">5.5</span> Uncertainties and CIs on predictions and derived quantities</h2>
+<section id="sec-nls-ciprediction" class="level2 page-columns page-full" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="sec-nls-ciprediction"><span class="header-section-number">5.5</span> Uncertainties and CIs on predictions and derived quantities</h2>
+<div id="uncertainties-and-cis-on-predictions-and-derived-quantities">
+
+</div>
 <p>In principle, predictions on an nls object (also for new data) can be made with the predict.nls function</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>however, this function does not calculate confidence intervals. You can add those using the propagate package, which propagates uncertainties through the nonlinear model based on MC samples or Taylor expansion based on the normal approximation of the likelihood.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(propagate)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> propagate<span class="sc">::</span><span class="fu">predictNLS</span>(mm, <span class="at">nsim =</span> <span class="dv">10000</span>) <span class="co"># nsim must be set much higher for production</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(propagate)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> propagate<span class="sc">::</span><span class="fu">predictNLS</span>(mm, <span class="at">nsim =</span> <span class="dv">10000</span>) <span class="co"># nsim must be set much higher for production</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the general boot function described at the end of the linear regression chapter. This can also be applied to any derived quantities (i.e.&nbsp;quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.</p>
-<p>The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this).</p>
-</section>
-<section id="interactions-in-nls" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="interactions-in-nls"><span class="header-section-number">5.6</span> Interactions in NLS</h2>
-<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable? Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see subsection on categorical predictors in section linear regression)</p>
+<p>For complex nonlinear models with few data, the normal approximation will not be a good one. In this case, you can resort to the bootstrap, using the general boot function described in the section on the bootstrap in the linear regression chapter (<a href="2A-LinearRegression.html#sec-lm-nonparametric" class="quarto-xref"><span>Section 2.12</span></a>). This can also be applied to any derived quantities (i.e.&nbsp;quantities that are calculated from a function of the model parameters such as an LD50 value). However, note that wherever possible, it is easier to fit those derived quantities by reshuffling the regression formula.</p>
+<p>The most complete solution to calculating confidence intervals and uncertainties and predictions on derived quantities would be to fit the model fully Bayesian. This can be done, for example, using the BayesianTools R package (see the package <a href="https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html">vignette</a> about how to do this, and <a href="https://florianhartig.github.io/LearningBayes/2B-PosteriorEstimation.html">the chapter on posterior estimation</a> in <span class="citation" data-cites="hartig2024introduction">Hartig (<a href="5B-References.html#ref-hartig2024introduction" role="doc-biblioref">2024</a>)</span>).</p>
+<div class="no-row-height column-margin column-container"><div id="ref-hartig2024introduction" class="csl-entry" role="listitem">
+Hartig, F. (2024) <span>“Introduction to <span>Bayesian</span> statistics with <span>R</span>.”</span> Available at: <a href="https://florianhartig.github.io/LearningBayes/">https://florianhartig.github.io/LearningBayes/</a>.
+</div></div></section>
+<section id="sec-nls-interaction" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="sec-nls-interaction"><span class="header-section-number">5.6</span> Interactions in NLS</h2>
+<div id="interactions-in-nls">
+
+</div>
+<p>What about interactions, i.e.&nbsp;one variable influencing the parameter value of another variable? Numeric interactions in nls will just be coded as multiplications in the formula. Factor interactions are not explicitly supported by nls but you can create them via dummy variables (i.e.&nbsp;introduce a variable per factor level and put a 1 if the observation corresponds to the factor level, zero otherwise). The estimated parameters then correspond to treatment contrasts (see <a href="2A-LinearRegression.html#sec-lm-contrast" class="quarto-xref"><span>Section 2.6.1</span></a>)</p>
 <p>Here I created an example with the previous dataset, which I randomly split between wild type and mutant observations. I want to know if the parameter Km differs between wild type and mutant.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># wild type and mutant</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>vmkm1 <span class="ot">=</span> vmkm</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>vmkm1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="co"># wild type and mutant</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    S    v type
-1 0.3 0.17    1
+1 0.3 0.17    0
 2 0.3 0.15    1
-3 0.4 0.21    1
+3 0.4 0.21    0
 4 0.4 0.23    0
-5 0.5 0.26    0
+5 0.5 0.26    1
 6 0.5 0.23    0</code></pre>
 </div>
 </div>
 <p>Now I can fit the model</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mm1 <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km <span class="sc">+</span> type<span class="sc">*</span>DeltaMutantKm) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm1, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>, <span class="at">DeltaMutantKm =</span> <span class="dv">0</span>)) </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mm1 <span class="ot">&lt;-</span> <span class="fu">nls</span>(v <span class="sc">~</span> S<span class="sc">/</span>(S <span class="sc">+</span> Km <span class="sc">+</span> type<span class="sc">*</span>DeltaMutantKm) <span class="sc">*</span> Vmax,<span class="at">data =</span> vmkm1, <span class="at">start =</span> <span class="fu">list</span>(<span class="at">Km=</span><span class="dv">1</span>,<span class="at">Vmax=</span><span class="dv">1</span>, <span class="at">DeltaMutantKm =</span> <span class="dv">0</span>)) </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Formula: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 
 Parameters:
               Estimate Std. Error t value Pr(&gt;|t|)    
-Km             2.53813    0.35783   7.093 9.54e-07 ***
-Vmax           1.51381    0.14144  10.703 1.74e-09 ***
-DeltaMutantKm -0.09655    0.09737  -0.992    0.334    
+Km              2.5647     0.3750    6.84 1.58e-06 ***
+Vmax            1.5456     0.1477   10.47 2.51e-09 ***
+DeltaMutantKm   0.0532     0.1004    0.53    0.603    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.02577 on 19 degrees of freedom
+Residual standard error: 0.0262 on 19 degrees of freedom
 
 Number of iterations to convergence: 6 
-Achieved convergence tolerance: 1.797e-06</code></pre>
+Achieved convergence tolerance: 5.254e-06</code></pre>
 </div>
 </div>
 <p>We see here that there is no significant difference between wild type and mutant, which is reasonable as I just randomly put the observations in one or the other type. Of course, you can extend this procedure to additional variables.</p>
 <p>There is no automatic plotting function for this, so you will have to plot by hand:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">S =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">50</span>), <span class="at">type =</span> <span class="dv">0</span>)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dat<span class="sc">$</span>S, <span class="fu">predict</span>(mm1, <span class="at">newdata =</span> dat), <span class="at">type =</span> <span class="st">"l"</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>type <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dat<span class="sc">$</span>S, <span class="fu">predict</span>(mm1, <span class="at">newdata =</span> dat), <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(vmkm1<span class="sc">$</span>S, vmkm1<span class="sc">$</span>v, <span class="at">col =</span> vmkm1<span class="sc">$</span>type <span class="sc">+</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">S =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">50</span>), <span class="at">type =</span> <span class="dv">0</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dat<span class="sc">$</span>S, <span class="fu">predict</span>(mm1, <span class="at">newdata =</span> dat), <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.75</span>), <span class="at">xlab =</span> <span class="st">"S"</span>, <span class="at">ylab =</span> <span class="st">"v"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>dat<span class="sc">$</span>type <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dat<span class="sc">$</span>S, <span class="fu">predict</span>(mm1, <span class="at">newdata =</span> dat), <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(vmkm1<span class="sc">$</span>S, vmkm1<span class="sc">$</span>v, <span class="at">col =</span> vmkm1<span class="sc">$</span>type <span class="sc">+</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -667,62 +765,69 @@ Achieved convergence tolerance: 1.797e-06</code></pre>
 </div>
 </div>
 </section>
-<section id="model-selection" class="level2" data-number="5.7">
-<h2 data-number="5.7" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">5.7</span> Model selection</h2>
-<p>You can use all model selection methods described in the following chapter on model selection in much more detail. Just very briefly, if you want to compare, for example, if the model with the interaction as fitted above is better than the null model that doesn’t distinguish between types, we can either do a LRT</p>
+<section id="sec-nls-selection" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="sec-nls-selection"><span class="header-section-number">5.7</span> Model selection</h2>
+<div id="model-selection">
+
+</div>
+<p>You can use all model selection methods described in much more detail in the chapter on model selection (<a href="3C-ModelSelection.html" class="quarto-xref"><span>Chapter 8</span></a>). Just very briefly, if you want to compare, for example, if the model with the interaction as fitted in <a href="#sec-nls-interaction" class="quarto-xref"><span>Section 5.6</span></a> is better than the null model that doesn’t distinguish between types, we can either do a LRT (for normal errors, <code>anova()</code> runs it as an F-test, see <a href="2B-ANOVA.html#tip-anova-ftest" class="quarto-xref">Tip&nbsp;<span>3.1</span></a>)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mm, mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mm, mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table
 
 Model 1: v ~ S/(S + Km) * Vmax
 Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
-  Res.Df Res.Sum Sq Df     Sum Sq F value Pr(&gt;F)
-1     20   0.013234                             
-2     19   0.012615  1 0.00061883   0.932 0.3465</code></pre>
+  Res.Df Res.Sum Sq Df    Sum Sq F value Pr(&gt;F)
+1     20   0.013234                            
+2     19   0.013039  1 0.0001953  0.2846 0.5999</code></pre>
 </div>
 </div>
+<p>(these tests rely on the same normal approximation)</p>
 <p>or an AIC comparison</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -94.71828</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -93.77182</code></pre>
+<pre><code>[1] -93.04535</code></pre>
 </div>
 </div>
-<p>Both of which tell us the same thing our previous result told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.</p>
+<p>Both of which tell us the same thing our previous result in <a href="#sec-nls-interaction" class="quarto-xref"><span>Section 5.6</span></a> told us, which is that the model that fits separate Km parameters for wild type and mutant is not better than the model that assumes that they have the same functional relationship.</p>
 <p>Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a difference between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.</p>
 </section>
-<section id="mixed-effects-heteroskedasticity-and-correlations" class="level2" data-number="5.8">
-<h2 data-number="5.8" class="anchored" data-anchor-id="mixed-effects-heteroskedasticity-and-correlations"><span class="header-section-number">5.8</span> Mixed effects, heteroskedasticity and correlations</h2>
+<section id="sec-nls-extension" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="sec-nls-extension"><span class="header-section-number">5.8</span> Mixed effects</h2>
+<div id="mixed-effects-heteroskedasticity-and-correlations">
+
+</div>
 <p>If you want to add mixed effects to your model (which can often make sense, e.g.&nbsp;consider you would have data as above, but from 3 different experiments), we can use the nlme function in the package nlme. To create a simple example, I add a variable group to the data we used before, assuming that the data came out of 3 different experiments</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">=</span> vmkm</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>vmkm2<span class="sc">$</span>group <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">&lt;-</span> <span class="fu">groupedData</span>(v <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, vmkm2) <span class="co"># transferring to a grouped data object recommended for nlme</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">=</span> vmkm</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>vmkm2<span class="sc">$</span>group <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="fu">nrow</span>(vmkm), <span class="at">replace =</span> T)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>vmkm2 <span class="ot">&lt;-</span> <span class="fu">groupedData</span>(v <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, vmkm2) <span class="co"># transferring to a grouped data object recommended for nlme</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vmkm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Grouped Data: v ~ 1 | group
     S    v group
-1 0.3 0.17     3
-2 0.3 0.15     2
+1 0.3 0.17     1
+2 0.3 0.15     1
 3 0.4 0.21     1
-4 0.4 0.23     2
-5 0.5 0.26     3
+4 0.4 0.23     1
+5 0.5 0.26     2
 6 0.5 0.23     1</code></pre>
 </div>
 </div>
-<p>We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. Note that random effects in this case are effectively random slopes, as there is no obvious intercept in a nonlinear function.</p>
+<p>We now want to assume that the parameter Km may be different in the 3 experiments. In this case, we use nlme, provide the data, formula and start values as before, and we can decide which of the parameters should be treated as fixed and which as random effects. In nlme, random effects are placed on parameters of the nonlinear function: <code>random = Km ~ 1 | group</code> lets Km vary between groups, with deviations drawn from a normal distribution.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mm2 <span class="ot">=</span> <span class="fu">nlme</span>(<span class="at">model =</span> michaelis,<span class="at">data =</span> vmkm2, </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">fixed =</span> Vmax <span class="sc">+</span> Km <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> Km <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, </span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">c</span>(<span class="at">Km=</span><span class="dv">1</span>, <span class="at">Vmax=</span><span class="dv">1</span>))</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mm2 <span class="ot">=</span> <span class="fu">nlme</span>(<span class="at">model =</span> michaelis,<span class="at">data =</span> vmkm2, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">fixed =</span> Vmax <span class="sc">+</span> Km <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> Km <span class="sc">~</span> <span class="dv">1</span><span class="sc">|</span>group, </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">c</span>(<span class="at">Km=</span><span class="dv">1</span>, <span class="at">Vmax=</span><span class="dv">1</span>))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mm2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Nonlinear mixed-effects model fit by maximum likelihood
   Model: michaelis 
@@ -733,7 +838,7 @@ Model 2: v ~ S/(S + Km + type * DeltaMutantKm) * Vmax
 Random effects:
  Formula: Km ~ 1 | group
                   Km   Residual
-StdDev: 3.321875e-06 0.02452676
+StdDev: 3.176079e-06 0.02452676
 
 Fixed effects:  Vmax + Km ~ 1 
         Value Std.Error DF   t-value p-value
@@ -745,17 +850,96 @@ Km 0.992
 
 Standardized Within-Group Residuals:
         Min          Q1         Med          Q3         Max 
--1.84557904 -0.38103071 -0.01901336  0.57185718  2.39956862 
+-1.84557904 -0.38103071 -0.01901336  0.57185719  2.39956861 
 
 Number of Observations: 22
 Number of Groups: 3 </code></pre>
 </div>
 </div>
+<p>The estimated SD of Km between groups is close to zero, as expected for randomly assigned groups. Variance and correlation structures can be added in the same way, via <code>gnls()</code> or the <code>weights</code> and <code>correlation</code> arguments of <code>nlme()</code>, see <a href="4B-Heteroskedasticity.html" class="quarto-xref"><span>Chapter 10</span></a> and <a href="4C-CorrelationStructures.html" class="quarto-xref"><span>Chapter 11</span></a>.</p>
+</section>
+<section id="sec-nls-takehome" class="level2" data-number="5.9">
+<h2 data-number="5.9" class="anchored" data-anchor-id="sec-nls-takehome"><span class="header-section-number">5.9</span> Take-home messages</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>A regression is nonlinear if the model is not linear in the parameters, not if the curve is not straight: polynomials, <code>log(x)</code> and splines are still linear regressions. If the function can be made linear by transforming x or y, consider <code>lm</code> (better supported in R), but remember that transforming the response changes the error structure.</li>
+<li><code>nls()</code> needs starting values for the parameters. If the fit fails or converges badly, change the starting values, the algorithm or the control settings.</li>
+<li><code>nls</code> is the maximum-likelihood estimate only for i.i.d. normal residuals. Check the residuals exactly as in a linear regression.</li>
+<li>CIs from the regression table rely on a multivariate normal approximation, which can be poor in nonlinear models. Use profile CIs (<code>confint()</code>) or the bootstrap, and treat large differences to the table CIs as a sign that the approximation fails. For derived quantities (e.g.&nbsp;an LD50), use the bootstrap or reparameterize the formula so that the quantity is a parameter.</li>
+<li>To compare groups, code factors as dummy variables inside the formula. The effects on the parameters show which parameter differs; model selection (LRT or AIC) decides whether there is a difference at all.</li>
+</ol>
+</div>
+</div>
+
 
 
 </section>
 
 </main> <!-- /main -->
+<script>
+/* Margin references (citation-location: margin).
+   Quarto puts the references of a block (paragraph, list, callout) into one margin box that starts
+   at the top of that block. For long lists and callouts the references are then far above or below
+   the sentence that cites them. This script moves every reference down to the first visible
+   citation of that work and stacks references that would overlap.
+   - Narrow screens (margin content is shown inline): nothing is changed.
+   - Blocks with a citation inside a collapsed callout: Quarto's default layout is kept.
+   - Re-run after load, resize and when callouts are opened or closed. */
+(function () {
+  function align() {
+    var boxes = Array.prototype.filter.call(document.querySelectorAll('.column-margin'), function (b) {
+      return b.querySelector('.csl-entry');
+    });
+    boxes.forEach(function (box) {                       // reset first (resize, callout toggled)
+      box.style.position = ''; box.style.minHeight = '';
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        e.style.position = ''; e.style.top = ''; e.style.left = ''; e.style.right = '';
+      });
+    });
+    boxes.forEach(function (box) {
+      var block = box.previousElementSibling, rect = box.getBoundingClientRect();
+      if (!block || rect.height === 0) return;
+      if (rect.left < block.getBoundingClientRect().right - 20) return;   // inline mode on narrow screens
+      var items = [], ok = true;
+      Array.prototype.forEach.call(box.querySelectorAll('.csl-entry'), function (e) {
+        var key = e.id.replace(/^ref-/, '');
+        var cites = Array.prototype.filter.call(block.querySelectorAll('span.citation'), function (c) {
+          return (c.getAttribute('data-cites') || '').split(' ').indexOf(key) >= 0 && c.getBoundingClientRect().height > 0;
+        });
+        if (!cites.length) { ok = false; return; }
+        items.push({ e: e, anchor: cites[0].getBoundingClientRect().top - rect.top, h: e.getBoundingClientRect().height });
+      });
+      if (!ok || !items.length) return;                  // a citation is hidden (collapsed callout): keep default
+      box.style.position = 'relative'; box.style.minHeight = '1px';
+      items.sort(function (a, b) { return a.anchor - b.anchor; });
+      var bottom = -Infinity;
+      items.forEach(function (i) {
+        var top = Math.max(i.anchor, bottom + 6);
+        i.e.style.position = 'absolute'; i.e.style.left = '0'; i.e.style.right = '0'; i.e.style.top = top + 'px';
+        bottom = top + i.h;
+      });
+    });
+  }
+  var timer;
+  function later() { clearTimeout(timer); timer = setTimeout(align, 100); }
+  window.addEventListener('load', function () {
+    align(); setTimeout(align, 1000);                    // second pass after fonts, images and math have settled
+    if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(later);
+  });
+  window.addEventListener('resize', later);
+  document.addEventListener('shown.bs.collapse', later);
+  document.addEventListener('hidden.bs.collapse', later);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -843,6 +1027,11 @@ Number of Groups: 3 </code></pre>
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -1173,4 +1362,4 @@ Number of Groups: 3 </code></pre>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/master/2D-NonlinearRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/2D-NonlinearRegression.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

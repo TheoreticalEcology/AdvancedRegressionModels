@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options:
   chunk_output_type: console
 ---
@@ -216,7 +215,7 @@ What we see highlighted here is that the data seems to follow a completely diffe
 
 ### LM residual plots {#sec-lm-residual-lm}
 
-To better analyze these residuals (and potential problems), R offers a function for residual plots. It produces 4 plots. I think it's most convenient plotting them all into one figure, via the command `par(mfrow = c(2, 2))`, which produces a figure with 2 x 2 = 4 panels.
+To better analyze these residuals (and potential problems), R offers a function for residual plots. It produces 4 plots. I think it's most convenient plotting them all into one figure, via the command `par(mfrow = c(2, 2))`, which produces a figure with 2 x 2 = 4 panels. For the residual checks, we continue with the model `Ozone ~ Temp` from the exercise in the visualization section (@sec-lm-visualization); the same checks work for any lm.
 
 ```{r, echo=TRUE, eval=TRUE}
 fit = lm(Ozone ~ Temp, data = airquality)
@@ -265,7 +264,7 @@ Deviations from these expectations can be interpreted similar to a linear regres
 
 Looking at the residual plots of our regression model, there are two types of problems, and there is a clear order in which you should solve them:
 
-1.  **Systematic misfit of the mean:** the first thing we should worry about is if the model describes the mean of the data well, i.e. if our function form (we assumed a straight line) fits to the data. You can see misfit for our model in a) the effects plot (@sec-lm-visualization), b) the res \~ fitted plot (@sec-lm-residual-lm), and c) the DHARMa res \~ fitted plot (@sec-lm-residual-dharma).
+1.  **Systematic misfit of the mean:** the first thing we should worry about is if the model describes the mean of the data well, i.e. if our function form (we assumed a straight line) fits to the data. You can see misfit for the model `Ozone ~ Temp` in a) the effects plot (@sec-lm-visualization), b) the res \~ fitted plot (@sec-lm-residual-lm), and c) the DHARMa res \~ fitted plot (@sec-lm-residual-dharma).
 
 2.  **Distributional problems:** only if your model fits the mean of the data well should you look at distributional problems. Distributional problems means that the residuals do not scatter as assumed by the regression (for an lm iid normal). The reason why we look only after solving 1) at the distribution is that a misfit can easily create distributional problems.
 
@@ -335,11 +334,13 @@ AIC(fit1)
 AIC(fit2)
 ```
 
-Likelihood ratio test (is there evidence for the more complex model?)
+Nested model comparison with `anova()` (for an lm an F-test, the counterpart of the likelihood ratio test for normal errors): is there evidence for the more complex model?
 
 ```{r}
 anova(fit1, fit2)
 ```
+
+Both AIC (lower for the simpler model) and the test (n.s.) give no support for the more complex model.
 :::
 
 ### Generalized additive models (GAMs) {#sec-lm-gam}
@@ -356,7 +357,7 @@ plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.8, cex = 0.7,
      col = c("black", rep("red", length(fit$residuals))))
 ```
 
-In the summary(), you still get significance for the smoothing term (i.e. a p-value), but given that you fit a line that could go up and down, you don't get an effect direction.
+In the summary(), you still get significance for the smoothing term (i.e. a p-value, testing the smooth against a flat line), but given that you fit a line that could go up and down, you don't get an effect direction. The edf (effective degrees of freedom) tell you how wiggly the curve is: an edf near 1 is a straight line, larger values a wigglier curve.
 
 ```{r}
 summary(fit)
@@ -504,7 +505,7 @@ TukeyHSD(anov)
 In the result, we see, as hinted at in @sec-lm-anova, that there is a significant difference between trt1 and trt2. Note that the p-values of the post-hoc tests are larger than those of the lm `summary()`. This is because post-hoc tests nearly always correct p-values for multiple testing, while regression estimates are usually not corrected for multiple testing (you could of course if you wanted).
 
 ::: callout-note
-Remember: a significance test with a significance threshold of alpha = 0.05 has a type I error rate of 5%. Thus, if you make 20 independent tests, you would expect about one significant result by chance (probability of at least one: 1 - 0.95\^20, about 64%), even if there are no effects whatsoever. Corrections for multiple testing are used to compensate for this, usually aiming at controlling the **family-wise error rate** (**FWER**), the probability of making one or more type I errors when performing multiple hypotheses tests.
+Remember: a significance test with a significance threshold of alpha = 0.05 has a type I error rate of 5%. Thus, if you make 20 independent tests, you would expect about one significant result by chance (probability of at least one: 1 - 0.95\^20, about 64%), even if there are no effects whatsoever. Corrections for multiple testing are used to compensate for this, usually aiming at controlling the **family-wise error rate** (**FWER**), the probability of making one or more type I errors when performing multiple hypotheses tests. For any set of p-values, `p.adjust(p, method = "holm")` (FWER) or `p.adjust(p, method = "BH")` (false discovery rate) applies such a correction; the family of tests is defined by the question the analysis answers.
 :::
 
 `TukeyHSD()` only works for simple ANOVA models fitted with `aov()`. A more general alternative is the `emmeans` package, which works for lm, glm and mixed models, and also for models with several predictors. `emmeans()` calculates the estimated mean for each factor level, and `pairs()` compares all of them, with Tukey adjustment as default:
@@ -620,7 +621,7 @@ plot(Wind ~ Temp, data = airquality)
 **How to quantify collinearity?** For two predictors, their correlation (`cor()`) is sufficient (\|r\| \> 0.7 is a common warning sign). With more predictors, variance inflation factors (`car::vif(fit)` on the fitted model) are more informative: they also detect a predictor that is well explained by a combination of the others, and √VIF is the factor by which its standard error is inflated. As a rough guide, values above 5–10 are often considered problematic.
 :::
 
-In such a case, if Temp is not included in the regression, **the effect of Temp will be absorbed in the Wind effect to the extent to which both variables are collinear**. In other words, if one variable is missing, there will be a spillover of the effect of this variable to all collinear variables.
+In such a case, if Temp is not included in the regression, **the effect of Temp will be absorbed in the Wind effect to the extent to which both variables are collinear**. In other words, if one variable is missing, there will be a spillover of the effect of this variable to all collinear variables. This spillover is omitted-variable bias, the core of confounding; whether adding a variable to the regression is the right thing to do depends on the causal structure (colliders, mediators), see @sec-causal.
 
 ::: callout-tip
 To give a simple example of this spillover, let's say
@@ -862,7 +863,7 @@ Scaling: scaled, you get estimate of relative importance, while unscaled, effect
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-How does adding or multiplying a factor on the predictor change the intercept and slope (effect, CI, p-values) of a regression?
+How does adding a constant to, or multiplying, the predictor change the intercept and slope (effect, CI, p-values) of a regression?
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -880,14 +881,14 @@ fit = lm(Ozone ~ I(Temp + 100), data = airquality)
 summary(fit)
 ```
 
-Additive transformation change the intercept value. All p-values, CIs stay the same (except for the intercept, as the test contrast changes)
+Adding a constant c to the predictor changes only the intercept (by minus c times the slope, here -100 \* 2.43 = -243). Slope, SE, CI and p-value stay the same; only the test of the intercept changes, because it refers to a different point.
 
 ```{r, message=FALSE, warning=FALSE}
 fit = lm(Ozone ~ I(Temp * 10), data = airquality)
 summary(fit)
 ```
 
-Multiplicative transformations change the slope value. P-values and relative CIs for intercept and slope stay the same. Combinations of both have both effects together
+Multiplying the predictor by k divides the slope and its SE by k (here 2.43 becomes 0.243), so t-value and p-value stay the same; the intercept is unchanged. Combinations of both have both effects together.
 :::
 
 ## Interactions {#sec-lm-interaction}
@@ -1032,22 +1033,24 @@ fit = lm(Ozone ~ Wind, data = airquality)
 we can use the `predict()` function.
 
 ```{r,eval=F}
+newData = data.frame(Wind = c(5, 10))
 predict(fit) # predicts on current data
-predict(fit, newdata = X) # predicts on new data
-predict(fit, se.fit = T)
+predict(fit, newdata = newData) # predicts on new data
+predict(fit, newdata = newData, se.fit = T)
 ```
 
-To generate confidence intervals on predictions, we can use se.fit = T, which returns standard errors on predictions. As always, 95% confidence interval (CI) = 1.96 \* se.
+With se.fit = T, predict() also returns the standard error of the predicted mean. An approximate 95% confidence interval for the mean prediction is fit ± 1.96 \* se (large-sample approximation; `interval = "confidence"` in predict() uses the exact t quantile). For new individual observations use `interval = "prediction"`, which also includes the residual variation and is therefore much wider.
 
-So, let's assume we want to predict Ozone with a 95% CI for wind between 0 and 10:
+So, let's predict Ozone with a 95% CI for wind between 2.5 and 10 (within the observed range of 2.3 to 20.7, so that we do not extrapolate):
 
 ```{r}
-Wind = seq(0,10,0.1)
-newData = data.frame(Wind = Wind)
+newData = data.frame(Wind = seq(2.5, 10, 0.1))
 pred = predict(fit, newdata = newData, se.fit = T)
-plot(Wind, pred$fit, type = "l")
-lines(Wind, pred$fit - 1.96 * pred$se.fit, lty = 2)
-lines(Wind, pred$fit + 1.96 * pred$se.fit, lty = 2)
+lower = pred$fit - 1.96 * pred$se.fit
+upper = pred$fit + 1.96 * pred$se.fit
+plot(newData$Wind, pred$fit, type = "l", ylim = range(lower, upper), xlab = "Wind", ylab = "Ozone")
+lines(newData$Wind, lower, lty = 2)
+lines(newData$Wind, upper, lty = 2)
 ```
 
 ## Nonparametrics and the bootstrap {#sec-lm-nonparametric}
@@ -1097,10 +1100,10 @@ for(i in 1:nSim){
 
 hist(nullDistribution, xlim = c(-2,2))
 abline(v = reference, col = "red")
-ecdf(nullDistribution)(reference) # 1-sided p-value
+(1 + sum(abs(nullDistribution) >= abs(reference))) / (nSim + 1) # two-sided p-value
 ```
 
-Voila, we have a p-value, and it is significant. Randomization null models are used in many R packages where analytical p-values are not available, e.g., in the packages vegan (ordinations, community analysis) and bipartite (networks).
+Voila, we have a p-value. None of the randomizations was as extreme as the observed difference, so p \< 1/nSim; the smallest p-value that we can report is 1/(nSim + 1) (never p = 0), and it is significant. Randomization null models are used in many R packages where analytical p-values are not available, e.g., in the packages vegan (ordinations, community analysis) and bipartite (networks).
 :::
 
 ### Non-parametric bootstrap {#sec-lm-bootstrap-nonparam}
@@ -1147,7 +1150,7 @@ abline(v = getEstimate(fit), col = "red", lwd = 2, lty = 2)
 sd(bootstrappedEstimate)
 ```
 
-We estimate a standard error of 0.84, slightly higher than the parametric error of 0.69 returned by `summary.lm()`
+We estimate a standard error of `r round(sd(bootstrappedEstimate), 2)`, slightly higher than the parametric error of `r round(summary(fit)$coefficients[2, 2], 2)` returned by `summary.lm()`
 
 ```{r}
 summary(fit)
@@ -1248,7 +1251,7 @@ b2
 ::: {#cau-lm-plantheight .callout-caution icon="false"}
 #### Exercise — Plant height
 
-Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log(height).
+Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log10(height).
 
 ```{r echo=T, eval=TRUE, message=FALSE}
 library(EcoData)
@@ -1299,13 +1302,13 @@ model2 = lm(loght ~ growthform, data = plantHeight)
 summary(model2)
 ```
 
-There is an effect of growth form, however, note that the comparisons are against the growth form fern (intercept), which has only one observation
+The coefficient table only compares each growth form against the reference level fern (intercept), which has only one observation, so it cannot tell us whether growth form has an effect at all (the overall test is the ANOVA below).
 
 ```{r}
 table(plantHeight$growthform)
 ```
 
-so it may make sense to re-order the factor in the regression so that you compare, e.g., against Herb (will yield more significant comparisons).
+so it makes sense to choose a well-sampled reference level such as Herb: it is the same model, but the comparisons are estimated more precisely.
 
 ```{r}
 plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
@@ -1313,7 +1316,7 @@ model2 = lm(loght ~ growthform2, data = plantHeight)
 summary(model2)
 ```
 
-It would also make sense in this case to follow up with an ANOVA (@sec-lm-anova) and possible post-hoc tests (@sec-lm-posthoc).
+The overall test of whether growth form has an effect is the ANOVA (@sec-lm-anova), possible post-hoc tests (@sec-lm-posthoc) follow up on it.
 
 ```{r}
 anova(model2)
@@ -1342,7 +1345,7 @@ library(EcoData)
 summary(solomonislands)
 ```
 
-1.  Fit an lm, trying to fit the classical relationship of Species \~ log(Area)
+1.  Fit an lm, trying to fit the semi-log species-area relationship Species \~ log(Area)
 2.  Perform residual checks, and change the model if necessary
 3.  Interpret the results
 :::
@@ -1367,13 +1370,13 @@ par(mfrow = c(2, 2))
 plot(model)
 ```
 
-Residuals don't look particularly normal ... would get better fitting \~ log(Area+1), but that doesn't correspond to the classical model. In this case, it's a trade-off between fitting the classical model and get better residuals.
+Residuals don't look particularly normal ... would get better fitting \~ log(Area+1), but that changes the model of the exercise. In this case, it's a trade-off between fitting the model that was asked for and getting better residuals.
 
 With advanced methods, we could also think about GLMs (@sec-glm) or quantile regressions (@sec-disp-quantile).
 
 ***3. Interpretation***
 
-Significant increase of species richness with area that follows a classical log(Area) relationship.
+Significant increase of species richness with area that follows a log(Area) relationship.
 :::
 
 ### Multiple regression {#sec-lm-case-multiple}
@@ -1428,13 +1431,15 @@ summary(fit)
 
 ```
 
-Yes, because (some) interactions are significant.
+One interaction coefficient (Tree) is significant, but the overall question is answered by the ANOVA below.
 
 Note that for the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see the chapter on ANOVA, @sec-anova) to see the effect of the variables overall is significant.
 
 ```{r}
 anova(lm(loght ~ growthform2 *  sTemp , data = plantHeight))
 ```
+
+The row `growthform2:sTemp` tests whether the temperature slope differs among growth forms at all: yes (F = 6.8, p = 0.0003).
 
 Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either run a univariate regression for this growth form
 

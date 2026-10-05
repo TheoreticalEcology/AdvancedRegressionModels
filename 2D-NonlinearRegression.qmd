@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -70,7 +69,7 @@ Alternatively, the helpful nlstools package already provides many functions that
 mm <- nls(michaelis,data = vmkm, start = list(Km=1,Vmax=1)) 
 ```
 
-Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls).
+Note that unlike in an lm, the nls function requires you to provide starting values for the parameters. This helps the optimizer to find the NLS solution (which equals the MLE under i.i.d. normal residuals), which can sometimes be problematic. In this case, you may also want to consider changing the algorithm and some of its settings (via algorithm and control, see ?nls). Starting values can be read off the plot (e.g. Vmax at least the largest observed v, Km about the S at which v reaches half of Vmax); if they are far off, nls typically fails with errors such as "singular gradient". For many standard functions, self-starting models find the starting values automatically, e.g. `nls(v ~ SSmicmen(S, Vmax, Km), data = vmkm)`.
 
 The model provides a standard summary table.
 
@@ -123,7 +122,7 @@ cont <- nlsContourRSS(mm)
 plot(cont)
 ```
 
-Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions
+Alternatively (if you assume the normal approximation is bad), you can bootstrap the model, which can also be used to generate CIs on predictions (`nlsBoot` resamples the residuals, i.e. it assumes i.i.d. errors)
 
 ```{r}
 mmboot <- nlstools::nlsBoot(mm, niter = 1000)
@@ -131,9 +130,7 @@ plot(mmboot)
 summary(mmboot)
 ```
 
-In this case, we see that the bootstrapped distribution is very similar to the contour we had above, so it seems that the multivariate normal assumption is not so bad in our case.
-
-The most complete solution to calculating confidence intervals for complex models with non-normal likelihood surfaces would be a Bayesian approach, for example by using the BayesianTools R package (see the package [vignette](https://cran.r-project.org/web/packages/BayesianTools/vignettes/BayesianTools.html) about how to do this).
+In this case, the bootstrap and the profile intervals are similar to each other and slightly shifted to the right of the symmetric asymptotic interval for Km (larger upper limit), so the normal approximation is acceptable here, but somewhat optimistic for Km.
 
 ## Uncertainties and CIs on predictions and derived quantities {#sec-nls-ciprediction}
 
@@ -186,7 +183,7 @@ There is no automatic plotting function for this, so you will have to plot by ha
 
 ```{r}
 dat = data.frame(S = seq(0,2,length.out = 50), type = 0)
-plot(dat$S, predict(mm1, newdata = dat), type = "l")
+plot(dat$S, predict(mm1, newdata = dat), type = "l", ylim = c(0, 0.75), xlab = "S", ylab = "v")
 dat$type = 1
 lines(dat$S, predict(mm1, newdata = dat), type = "l", col = "red")
 points(vmkm1$S, vmkm1$v, col = vmkm1$type +1)
@@ -216,7 +213,7 @@ Both of which tell us the same thing our previous result in @sec-nls-interaction
 
 Note that, similar to what is discussed in the ANOVA chapter, the model selection procedure is often helpful to decide whether there is a difference between wild type and mutant AT ALL, whereas the procedure via calculating treatment contrasts on the interactions (previous subsection) is useful to decide for each parameter separately if there are significant differences, and if so, how strong.
 
-## Mixed effects, heteroskedasticity and correlations {#sec-nls-extension}
+## Mixed effects {#sec-nls-extension}
 
 ::: {#mixed-effects-heteroskedasticity-and-correlations}
 :::
@@ -241,7 +238,7 @@ mm2 = nlme(model = michaelis,data = vmkm2,
 summary(mm2)
 ```
 
-The estimated SD of Km between groups is close to zero, as expected for randomly assigned groups.
+The estimated SD of Km between groups is close to zero, as expected for randomly assigned groups. Variance and correlation structures can be added in the same way, via `gnls()` or the `weights` and `correlation` arguments of `nlme()`, see @sec-disp and @sec-corr.
 
 ## Take-home messages {#sec-nls-takehome}
 

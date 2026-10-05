@@ -1,0 +1,7 @@
+/* R console output (summary(), anova(), ...): smaller than the running text and
+   than the code input (13.4px), so that it does not dominate the page and wide
+   lines (80 characters) fit into the text column without a horizontal scrollbar.
+   Measured at 17px body text: default output 14.9px, now 0.75em = 12.75px. */
+.cell-output pre {
+  font-size: 0.75em;
+}

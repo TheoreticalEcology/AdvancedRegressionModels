@@ -1,5 +1,4 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -31,7 +30,7 @@ Prerequisites: the linear model (@sec-lm), in particular multiple regression (@s
 
 The most fundamental distinction in strategies for model choice is if we want to estimate effects, or if we want to predict. If we want to estimate effects, we nearly always want to estimate causal effects. Prediction is treated in the chapter on model selection (@sec-select).
 
-Let me first define what we mean by "a causal effect": if we have a system with a number of variables, the causal effect of A on B is the change in B that would happen if we changed A, but kept all other aspects of this system constant.
+Let me first define what we mean by "a causal effect": if we have a system with a number of variables, the causal effect of A on B is the change in B that would happen if we intervened on A (set it to a different value), while everything not caused by A is left unchanged. This total effect includes paths through mediators; the direct effect excludes them.
 
 Assume we look at the effect of coffee consumption on Lung Cancer. Assume further that there is no such effect. However, there is an effect of smoking on lung cancer, and for some reason, smoking also affects coffee consumption.
 
@@ -98,7 +97,7 @@ In observational data, we have to use statistical methods to achieve statistical
 
 The multiple regression can estimate the effect of coffee, corrected for the effect of smoking. Thus, by including smoking in the multiple regression, we are "virtually" holding smoking constant, thus allowing us to estimate the causal effect of coffee. Let's try this out:
 
-```{r, warning=FALSE}
+```{r}
 smoking <- runif(100)
 Coffee <- smoking + rnorm(100, sd = 0.2)
 LungCancer <- smoking + rnorm(100, sd =0.2)
@@ -106,9 +105,12 @@ fit1 <- lm(LungCancer ~ Coffee)
 fit2 <- lm(LungCancer ~ Coffee + smoking)
 plot(LungCancer ~ Coffee)
 abline(fit1)
-abline(fit2, col = "red")
+xs <- seq(min(Coffee), max(Coffee), length.out = 50)
+lines(xs, predict(fit2, data.frame(Coffee = xs, smoking = mean(smoking))), col = "red")
 legend("topleft", c("simple regression", "multiple regression"), col = c(1,2), lwd = 1)
 ```
+
+The red line shows the effect of coffee with smoking held at its mean: it is much flatter than the simple regression, i.e. most of the apparent coffee effect disappears once we control for smoking.
 
 ::: callout-tip
 GAMs (see @sec-lm-gam) are particularly useful for confounders. If you have confounders, you usually don't care that the fitted relationship is a bit hard to interpret, you just want the confounder effect to be removed. So, if you want to fit the causal relationship between Ozone \~ Wind, account for the other variables, a good strategy might be:
@@ -129,7 +131,7 @@ In this way, you still get a nicely interpretable linear effect for Wind, but yo
 
 What we have just seen in the section on statistical control (@sec-causal-adjustment) is an example of a causal analysis. The goal of a causal analysis is to control for other variables, in such a way that we estimate the same effect size we would obtain if only the target predictor was manipulated (as in a randomized controlled trial). If we are after causal effects, the correct selection of variables is crucial, while it isn't if we just want to predict (see the chapter on model selection, @sec-select).
 
-You probably have learned in your intro stats class that, to do so, we have to control for **confounders.** I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. Imagine that there is a third variable that is included
+You probably have learned in your intro stats class that, to do so, we have to control for **confounders.** I am less sure, however, if everyone is clear about what a confounder is. In particular, confounding is more specific than having a variable that correlates with predictor and response. The direction is crucial to identify true confounders. Imagine that there is a third variable (nervousness) that is influenced by both coffee and lung cancer:
 
 ```{r}
 dag = collider_triangle(x = "Coffee", y = "Lung Cancer", m = "Nervousness") 
@@ -161,7 +163,7 @@ summary(fit1)
 
 What we've seen here is a collider bias - a collider is a variable that is influenced by predictor and response. Although it correlates with predictor and response, correcting for it (or including it) in a multiple regression will create a bias on the causal link we are interested in (Corollary: Including all variables is not always a good thing).
 
-There is an entire framework to analyze which variables you need to include in the regression to achieve proper control [@pearl2000causality; @pearl2009causality]. In the following picture, I have summarized the three basic structures. The one that we haven't discussed yet is a mediation structure. A mediator is an intermediate variable that "mediates" an effect between exposure and response.
+There is an entire framework to analyze which variables you need to include in the regression to achieve proper control [@pearl2009causality]. In the following picture, I have summarized the three basic structures. The one that we haven't discussed yet is a mediation structure. A mediator is an intermediate variable that "mediates" an effect between exposure and response.
 
 ```{r chunk_chapter3_72, echo=FALSE, out.width="150%", out.height="150%"}
 knitr::include_graphics(c("images/CausalStructures.jpg"))
@@ -176,15 +178,15 @@ How do we deal with the basic causal structures colliders, mediators and confoun
 Note: If other variables are just there to correct our estimates, they are **nuisance parameters** (= we are not interested in them), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy, see @sec-causal-table2).
 
 ::: callout-tip
-The best practical guidance paper I know on estimating causal effects is @lederer2019control ("Control of Confounding and Reporting of Results in Causal Inference Studies. Guidance for Authors from Editors of Respiratory, Sleep, and Critical Care Journals"), which is available [here](https://www.atsjournals.org/doi/full/10.1513/AnnalsATS.201808-564PS).
+The best practical guidance paper I know on estimating causal effects is @lederer2019control.
 
 Another great paper is @laubach2021biologist.
 :::
 
 ::: {.callout-caution icon="false"}
-#### Case study 1
+#### Exercise — Causal effect of temperature on ozone
 
-Take the example of the past exercise (airquality) and assume, the goal is to understand the causal effect of Temperature on Ozone (primary hypothesis). Draw a causal diagram to decide which variables to take into the regression (i.e. noting which are confounders, mediators or colliders), and fit the model.
+Take the airquality data and assume the goal is to understand the causal effect of Temperature on Ozone (primary hypothesis). Draw a causal diagram to decide which variables to take into the regression (i.e. noting which are confounders, mediators or colliders), and fit the model.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -192,7 +194,7 @@ Take the example of the past exercise (airquality) and assume, the goal is to un
 
 - Solar.R could affect both Temp, Ozone -\> Confounder, include
 - Wind could affect Temp, Ozone -\> Confounder, include. Alternatively, one could assume that Temp is also affecting Wind, then it's a mediator
-- I would not include Month, as the Month itself should not affect Ozone, it's the Temp, Solar.R of the month that must have the effect. It's more like a placeholder, but if you include it, it will nearly act as a collider, because it can snitch away some of the effects of the other variables.
+- I would not include Month: Month itself should not affect Ozone, it should act only through the Temp, Solar.R and Wind of the month, so adjusting for Solar.R and Wind already blocks the paths via Month. Including it is largely redundant with Temp and costs precision.
 :::
 
 ## Graphs and models on graphs {#sec-causal-graph}
@@ -253,13 +255,13 @@ The blind reporting of the entire regression table is known as Table 2 fallacy (
 
 ### Structural equation models (SEMs) {#sec-causal-sem}
 
-But what if we are interested in all the causal relationships? If we have a graph already, the best option is to fit a structural equation model.
+But what if we are interested in all the causal relationships? If we have a graph already and are interested in all relationships in it (not just one effect, for which the adjustment-set regression above suffices), a good option is to fit a structural equation model.
 
-Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLM responses (see @sec-glm), you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with <https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html>.
+Structural equation models (SEMs) are models that are designed to estimate entire causal diagrams. For GLM responses (see @sec-glm), you will currently have to estimate the DAG (directed acyclic graph) piece-wise, e.g. with [piecewiseSEM](https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html).
 
 For linear (= normally distributed) SEMs, we can estimate the entire DAG in one go. This also allows us to have unobserved variables in the DAG. One of the most popular packages for this is `lavaan`. The advantage of lavaan is that you can also have unobserved covariates which can be modeled latent.
 
-If you have REs (@sec-re) or GLM-type dependencies (@sec-glm), the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN (for examples, see [the chapter on Bayesian causal models](https://florianhartig.github.io/LearningBayes/4F-BayesianSEMs.html) in @hartig2024introduction). However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM. As of May 2023, supported models include lm, glm, gls, Sarlm, lme, glmmPQL, lmerMod, merModLmerTest,glmerMod, glmmTMB, gam.
+If you have REs (@sec-re) or GLM-type dependencies (@sec-glm), the only way to fit everything in one go is to go to use Bayesian Inference, e.g. STAN (for examples, see [the chapter on Bayesian causal models](https://florianhartig.github.io/LearningBayes/4F-BayesianSEMs.html) in @hartig2024introduction). However, what you can do is to fit your models piece-wise. The most popular package for this purpose is piecewiseSEM (see the package documentation for the supported model classes).
 
 ```{r chunk_chapter7_chunk20, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(piecewiseSEM)
@@ -273,6 +275,8 @@ mod = psem(
 summary(mod)
 plot(mod)
 ```
+
+The output of `summary(mod)` has three parts: (1) the d-separation tests, each of which tests one arrow that is missing in the DAG (here 4 tests, none significant); (2) Fisher's C statistic, which combines these tests: a p-value above 0.05 means that there is no evidence against the DAG, a small p-value would indicate a missing arrow or a wrong structure; (3) the path coefficients of all regressions (use the standardized coefficients to compare the strength of different paths).
 
 ## Partialling out confounders (Frisch-Waugh-Lovell) {#sec-causal-partialling}
 
@@ -326,7 +330,11 @@ Strictly speaking, what we did here is the classic Frisch-Waugh-Lovell partialli
 
 ### Case study: Swiss fertility {#sec-causal-swiss}
 
+::: {.callout-caution icon="false"}
+#### Exercise — Swiss fertility
+
 Perform a causal, a predictive and an exploratory analysis of the Swiss fertility data set called "swiss", available in the standard R data sets. Target for the causal analysis is to estimate the causal effect of education on fertility (separating direct and indirect effects), i.e. `lm(Fertility ~ Education, data = swiss)`{.R}.
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
@@ -341,12 +349,16 @@ For all mediators (see @sec-causal-framework): remember that if you want to get 
 
 The following data set contains information about life satisfaction (lebensz_org) in Germany, based on the socio-economic panel.
 
-```{r chunk_chapter4_chunk1, echo=TRUE, eval=T}
+```{r chunk_chapter4_chunk1, echo=TRUE, eval=TRUE}
 library(EcoData)
-?soep
+# ?soep  # see the help page for the variables
 ```
 
+::: {.callout-caution icon="false"}
+#### Exercise — Life satisfaction
+
 Perform a causal analysis of the effect of income on life satisfaction, considering possible confounding / mediation / colliders.
+:::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
