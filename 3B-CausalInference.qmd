@@ -18,7 +18,7 @@ In this chapter, you will learn
 -   which variables to include in a regression: confounders yes, colliders no, mediators depending on the question, using causal graphs to decide (@sec-causal-framework, @sec-causal-graph);
 -   how to report the result without the Table 2 fallacy, how to estimate whole graphs with structural equation models, and how to partial out confounders (@sec-causal-table2, @sec-causal-sem, @sec-causal-partialling).
 
-**Workflow steps** (@sec-intro-workflow): step 1 (question and goal), step 3 (choice of predictors).
+**Workflow steps** (@sec-summary): step 1 (question and goal), step 3 (choice of predictors).
 
 Prerequisites: the linear model (@sec-lm), in particular multiple regression (@sec-lm-multiple).
 :::
@@ -52,13 +52,14 @@ ggdag_dconnected(dag, text = FALSE, use_labels = "label")
 
 In this case, the plot highlights me to the fact that Coffee and Lung cancer are d-connected (with an empty conditioning set, i.e. without controlling for anything). What that means is: if I plot coffee against lung cancer, I will see a correlation between them, even though coffee consumption does not influence lung cancer at all. Note that d-connection is a property of the graph: it tells us which associations we should expect in the data, not that there is a causal link between the two variables — here, the association is entirely created by the common cause Smoking. We can easily confirm via a simulation that this is true:
 
-```{r}
-smoking <- runif(50)
-Coffee <- smoking + rnorm(50, sd = 0.2)
-LungCancer <- smoking + rnorm(50, sd =0.2)
-fit <- lm(LungCancer ~ Coffee)
-plot(LungCancer ~ Coffee)
-abline(fit)
+```{r, message=FALSE}
+library(effects)
+smoking <- runif(100)
+Coffee <- smoking + rnorm(100, sd = 0.2)
+LungCancer <- smoking + rnorm(100, sd =0.2)
+obsData <- data.frame(smoking, Coffee, LungCancer) # kept for the adjustment below
+fit <- lm(LungCancer ~ Coffee, data = obsData)
+plot(allEffects(fit, partial.residuals = TRUE))
 ```
 
 So, if we would fit a regression of LungCancer \~ Coffee, we would at least conclude that there is a correlation between the two variables. Many people would even go a step further, and conclude that Coffee consumption affects lung cancer. This is a classical misinterpretation created by the confounder smoking. Realizing this, I could ask the ggdag_dconnected function what would happen if I control for the effect of smoking.
@@ -85,8 +86,7 @@ smoking <- rep(0.5, 50)
 Coffee <- smoking + rnorm(50, sd = 0.2)
 LungCancer <- smoking + rnorm(50, sd =0.2)
 fit <- lm(LungCancer ~ Coffee)
-plot(LungCancer ~ Coffee)
-abline(fit)
+plot(allEffects(fit, partial.residuals = TRUE))
 ```
 
 This leads us to an important point: randomized controlled experiments estimate causal effects, provided the randomization (and compliance, blinding) worked. Actually, all advice regarding experimental design (control, randomization) is aimed at removing any possible confounding with other factors, so that we can isolate causal effects.
@@ -95,18 +95,15 @@ This leads us to an important point: randomized controlled experiments estimate 
 
 In observational data, we have to use statistical methods to achieve statistical control. Luckily, we have a great tool for that: the multiple regression (see @sec-lm-multiple).
 
-The multiple regression can estimate the effect of coffee, corrected for the effect of smoking. Thus, by including smoking in the multiple regression, we are "virtually" holding smoking constant, thus allowing us to estimate the causal effect of coffee. Let's try this out:
+The multiple regression can estimate the effect of coffee, corrected for the effect of smoking. Thus, by including smoking in the multiple regression, we are "virtually" holding smoking constant, thus allowing us to estimate the causal effect of coffee. Let's try this out with the observational data simulated in the correlation example (@sec-causal-correlation):
 
 ```{r}
-smoking <- runif(100)
-Coffee <- smoking + rnorm(100, sd = 0.2)
-LungCancer <- smoking + rnorm(100, sd =0.2)
-fit1 <- lm(LungCancer ~ Coffee)
-fit2 <- lm(LungCancer ~ Coffee + smoking)
-plot(LungCancer ~ Coffee)
+fit1 <- lm(LungCancer ~ Coffee, data = obsData)
+fit2 <- lm(LungCancer ~ Coffee + smoking, data = obsData)
+plot(LungCancer ~ Coffee, data = obsData)
 abline(fit1)
-xs <- seq(min(Coffee), max(Coffee), length.out = 50)
-lines(xs, predict(fit2, data.frame(Coffee = xs, smoking = mean(smoking))), col = "red")
+xs <- seq(min(obsData$Coffee), max(obsData$Coffee), length.out = 50)
+lines(xs, predict(fit2, data.frame(Coffee = xs, smoking = mean(obsData$smoking))), col = "red")
 legend("topleft", c("simple regression", "multiple regression"), col = c(1,2), lwd = 1)
 ```
 
@@ -173,7 +170,7 @@ How do we deal with the basic causal structures colliders, mediators and confoun
 
 1.  Control for all confounding structures
 2.  Do not control for colliders and other similar relationships, e.g. "M-Bias" (red paths).
-3.  It depends on the question whether we should control for **mediators** (yellow paths).
+3.  It depends on the question whether we should control for **mediators** (yellow paths): leave the mediator out to estimate the **total effect** of the predictor (including the part that runs via the mediator), include it to estimate the **direct effect** (the part that does not run via the mediator). A numerical example follows in the chapter on model selection (@sec-select-causality).
 
 Note: If other variables are just there to correct our estimates, they are **nuisance parameters** (= we are not interested in them), and we should later not discuss them, as they were not themselves checked for confounding (Table 2 fallacy, see @sec-causal-table2).
 
@@ -246,6 +243,8 @@ So, the model we should fit is
 fit = lm(rich ~ cover + abiotic + elev + firesev + age, data = keeley)
 summary(fit)
 ```
+
+In this additive linear model, the coefficient of cover is the causal effect (given the adjustment set and a correct model). With interactions, nonlinear terms or a nonlinear link (GLMs), a coefficient is not the average causal effect; the data-averaged effect is (@sec-lm-nonlinear-effect for the idea, @sec-glm-effects for GLMs, where it is computed by predicting every observation under each treatment and averaging, also called G-computation).
 
 ### Table 2 fallacy {#sec-causal-table2}
 

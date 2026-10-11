@@ -13,7 +13,7 @@ In this chapter, you will learn
 -   how to model a variable dispersion in GLMMs (@sec-disp-glmm);
 -   what to do about outliers and non-normal residuals: robust and quantile regression (@sec-disp-outlier).
 
-**Workflow steps** (@sec-intro-workflow): step 5 (residual checks: changing variance).
+**Workflow steps** (@sec-summary): step 5 (residual checks: changing variance).
 
 Prerequisites: the linear model and its residual checks (@sec-lm), GLMMs (@sec-glm) for the second part.
 :::
@@ -156,13 +156,13 @@ m3 = lm(sqrt(Ozone) ~ Solar.R, data = airquality)
 2.  **GLS**
 
 ```{r}
-m3 = nlme::gls(Ozone ~ Solar.R, weights = varPower(form = ~Solar.R), data = airquality[complete.cases(airquality),])
+m4 = nlme::gls(Ozone ~ Solar.R, weights = varPower(form = ~Solar.R), data = airquality, na.action = na.omit)
 ```
 
 3.  **glmmTMB**
 
 ```{r}
-m4 = glmmTMB(Ozone ~ Solar.R, dispformula = ~Solar.R, data = airquality)
+m5 = glmmTMB(Ozone ~ Solar.R, dispformula = ~Solar.R, data = airquality)
 ```
 :::
 
@@ -256,7 +256,7 @@ summary(fit)
 
 ::: callout-tip
 
-1.  Check the residuals against the predicted values and against each predictor. With heteroskedasticity, p-values and confidence intervals of `lm()` and ANOVA can be badly wrong, mainly for the predictor the variance is related to; in our example, a non-significant ANOVA became significant once the variance was modeled.
+1.  Check the residuals against the predicted values and against each predictor. With heteroskedasticity, p-values and confidence intervals of `lm()` and ANOVA can be badly wrong, especially for the predictor the variance is related to; in our example, a non-significant ANOVA became significant once the variance was modeled.
 2.  A transformation (e.g. sqrt or log) can remove the problem, but may conflict with normality. The more general solution is to model the variance: `gls` with `varIdent` or `varPower`, or `glmmTMB` with `dispformula`. For the Gaussian family, `dispformula` models the residual standard deviation on the log scale.
 3.  In GLMMs, the dispersion can also depend on predictors (`dispformula`, e.g. with the negative binomial). Check again with simulated residuals plotted against the predictors.
 4.  Do not simply remove outliers; if you do, show the results with and without them. Better: change the distribution, or use robust or quantile regression.

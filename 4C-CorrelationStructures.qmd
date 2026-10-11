@@ -18,7 +18,7 @@ In this chapter, you will learn
 -   how to detect and model temporal, spatial and phylogenetic correlation (@sec-corr-temporal, @sec-corr-spatial, @sec-corr-phylo);
 -   how multivariate GLMs describe the correlation between several responses (@sec-corr-multivar).
 
-**Workflow steps** (@sec-intro-workflow): step 3 (correlation structures from the design), step 5 (residual checks: autocorrelation).
+**Workflow steps** (@sec-summary): step 3 (correlation structures from the design), step 5 (residual checks: autocorrelation).
 
 Prerequisites: random effects (@sec-re), modeling the variance (@sec-disp-model), GLMs (@sec-glm).
 :::
@@ -76,7 +76,7 @@ In the context of regression models, we are never interested in the autocorrelat
 
 ### R implementation {#sec-corr-r}
 
-To de-trend, you can just use standard regression terms or splines on time or space. For the rest of this chapter, we will concentrate on how to specify "real" correlation structures. However, in the case studies, you should always de-trend first.
+De-trending needs no new tools, only regression terms or splines on time or space, so the rest of this chapter concentrates on how to specify "real" correlation structures.
 
 To account for "real" autocorrelation of residuals, similarly to the variance modeling (@sec-disp-model), we can add correlation structures
 
@@ -148,14 +148,7 @@ library(DHARMa)
 testTemporalAutocorrelation(fit, time = 1:1000)
 ```
 
-::: callout-note
-Remember (@sec-corr-model): in general, for spatial / temporal data, there are two processes that can create residual autocorrelation:
-
-1.  There is a misfit trend in time (or space), which creates residual correlation.
-2.  There truly is autocorrelation after accounting for the trend.
-
-Unfortunately, the distinction between a larger trend and a correlation is quite fluid. Nevertheless, one should always first check for and remove the trend, typically by including time/space as a predictor, potentially in a flexible way (GAMs come in handy). After this is done, we can fit a model with a temporally/spatially correlated error.
-:::
+Remember that a misfit trend in time or space also creates residual autocorrelation, and the line between a large-scale trend and autocorrelation is fluid, so in real data always de-trend first (@sec-corr-model).
 
 Let's see how we can fit the AR1 model to data. First, with nlme
 
@@ -263,8 +256,11 @@ Look at the hurricane study that we also analyze in the case studies (@sec-cases
 ```{r}
 library(DHARMa)
 
-fit = glmmTMB(alldeaths ~ scale(MasFem) *
-                          (scale(Minpressure_Updated_2014) + scale(NDAM)),
+hurricanes$sMasFem = scale(hurricanes$MasFem)
+hurricanes$sMinpressure = scale(hurricanes$Minpressure_Updated_2014)
+hurricanes$sNDAM = scale(hurricanes$NDAM)
+
+fit = glmmTMB(alldeaths ~ sMasFem * (sMinpressure + sNDAM),
                            data = hurricanes, family = nbinom2)
 
 # Residual checks with DHARMa.
@@ -289,8 +285,7 @@ Adding the AR1 to the glmmTMB model
 hurricanes$yearF <- factor(hurricanes$Year)
 hurricanes$group = factor(rep(1,nrow(hurricanes)))
 
-fit = glmmTMB(alldeaths ~ scale(MasFem) *
-                          (scale(Minpressure_Updated_2014) + scale(NDAM))
+fit = glmmTMB(alldeaths ~ sMasFem * (sMinpressure + sNDAM)
                           + ar1(yearF + 0 | group),
                            data = hurricanes, family = nbinom2)
 summary(fit)
@@ -301,8 +296,7 @@ Note that `ar1` on a factor treats consecutive years in the data as lag 1, altho
 Careful, we are getting a convergence warning here! You should take these warnings seriously! The estimated variance of the AR1 term is practically zero (a boundary estimate), so the reported correlation (positive, although the residual test indicated negative autocorrelation) is meaningless. Let's fit a reduced model:
 
 ```{r}
-fit = glmmTMB(alldeaths ~ scale(MasFem) 
-                          + ar1(yearF + 0 | group),
+fit = glmmTMB(alldeaths ~ sMasFem + ar1(yearF + 0 | group),
                            data = hurricanes, family = nbinom2)
 summary(fit)
 ```
@@ -410,7 +404,7 @@ If you find autocorrelation that cannot be removed with a gam, the problem is th
 
 plants_sf <- plantcounts
 str(plants_sf)
-plants_sf$agrarea_scaled <- scale(plants_sf$agrarea)
+plants_sf$sAgrarea <- scale(plants_sf$agrarea)
 
 plants_sf$longitude <- plants_sf$lon
 plants_sf$latitude <- plants_sf$lat
@@ -422,7 +416,7 @@ plants_sf <- sf::st_as_sf(plants_sf, coords = c('longitude', 'latitude'), crs
 library(mapview)
 mapview(plants_sf["richness"], map.types = "OpenTopoMap")
 
-fit <-  glmmTMB::glmmTMB(richness ~ agrarea_scaled + offset(log(area)),
+fit <-  glmmTMB::glmmTMB(richness ~ sAgrarea + offset(log(area)),
                 family = nbinom1, data = plants_sf)
 summary(fit)
 
@@ -431,7 +425,7 @@ res <- simulateResiduals(fit)
 plot(res)
 testSpatialAutocorrelation(res, x = plants_sf$lon, y =  plants_sf$lat)
 
-fit2<-mgcv::gam(richness ~ agrarea_scaled + te(lon, lat) + offset(log(area)),
+fit2<-mgcv::gam(richness ~ sAgrarea + te(lon, lat) + offset(log(area)),
             family = nb, data = plants_sf)
 summary(fit2)
 plot(fit2)
@@ -466,6 +460,7 @@ library(geiger)
 library(nlme)
 library(phytools)
 library(DHARMa)
+library(effects)
 ```
 
 To plot the phylogenetic tree, use
@@ -483,10 +478,9 @@ name.check(anolisTree, anolisData)
 # Plot traits.
 plot(anolisData[, c("awesomeness", "hostility")])
 
-plot(hostility ~ awesomeness, data = anolisData)
 fit = lm(hostility ~ awesomeness, data = anolisData)
 summary(fit)
-abline(fit)
+plot(allEffects(fit, partial.residuals = TRUE))
 ```
 
 Check for phylogenetic signal in residuals.
@@ -540,9 +534,11 @@ pglsModel = gls(hostility ~ awesomeness,
                  data = anolisData, method = "ML")
 summary(pglsModel)
 coef(pglsModel)
-plot(hostility ~ awesomeness, data = anolisData)
-abline(pglsModel, col = "red")
+plot(allEffects(pglsModel, partial.residuals = TRUE),
+     partial.residuals = list(smooth = FALSE))
 ```
+
+In the effects plot of a `gls`, the points are the raw data, which are correlated through the phylogeny. We therefore switch off the smoother, which would ignore this correlation and could deviate from the PGLS line even if the model is fine.
 
 OK, same result (the PIC slope equals the PGLS slope, here -0.978), but PGLS is WAY more flexible than PICs. For example, we can include a discrete predictor:
 
@@ -609,8 +605,9 @@ Task: Check if there is a relationship between altitude at which a species is fo
 #### Solution
 
 ```{r, message=FALSE, warning=FALSE}
+dat$sLnalt = scale(dat$Lnalt)
 plot(Lnote~Lnalt, data = dat)
-fit <- lm(Lnote~ scale(Lnalt), data = dat)
+fit <- lm(Lnote~ sLnalt, data = dat)
 summary(fit)
 library(effects)
 plot(allEffects(fit,partial.residuals = T))
@@ -619,7 +616,7 @@ plot(allEffects(fit,partial.residuals = T))
 Bit of a misfit, to get a good fit, after playing around, I logged the response and added a quadratic and a cubic effect - you can probably also find other solutions.
 
 ```{r, warning=FALSE}
-fit <- lm(log(Lnote) ~ scale(Lnalt) + I(scale(Lnalt)^2) + I(scale(Lnalt)^3), data = dat)
+fit <- lm(log(Lnote) ~ sLnalt + I(sLnalt^2) + I(sLnalt^3), data = dat)
 summary(fit)
 plot(allEffects(fit,partial.residuals = T))
 ```
@@ -642,7 +639,7 @@ Moran.I(residuals(fit), w)
 The residuals are phylogenetically correlated (p = 0.04), so we should not trust the p-value of the lm. Let's fit the same model with a PGLS:
 
 ```{r}
-fit <- gls(log(Lnote) ~ scale(Lnalt) + I(scale(Lnalt)^2) + I(scale(Lnalt)^3), 
+fit <- gls(log(Lnote) ~ sLnalt + I(sLnalt^2) + I(sLnalt^3), 
            correlation = corBrownian(phy = reducedTree, 
                                      form =~ species), data = dat, 
            method = "ML")
@@ -665,14 +662,14 @@ After accounting for the phylogeny, the evidence for an effect of altitude on no
 Addition: what would happen if we do the same with a misspecified model (only a linear effect, response not logged)? Have a look at the p-values of the fitted models. Can you explain what's going on here?
 
 ```{r, warning=FALSE}
-fit <- lm(Lnote~ scale(Lnalt), data = dat)
+fit <- lm(Lnote~ sLnalt, data = dat)
 summary(fit)
 
 plot(allEffects(fit, partial.residuals = T))
 
 Moran.I(residuals(fit), w)
 
-fit <- gls(Lnote~ scale(Lnalt), 
+fit <- gls(Lnote~ sLnalt, 
            correlation = corBrownian(phy = reducedTree, 
                                      form =~ species), data = dat, 
            method = "ML")
@@ -684,7 +681,7 @@ Here, it is the other way round: the PGLS effect estimate is significant (p = 0.
 What we learn from these examples is that phylogenetic correlation can make the p-values of an lm too small or too large, so it should not be ignored. Instead of only testing the residuals, you can also estimate the strength of the phylogenetic signal together with the model, e.g. with Pagel's $\lambda$ (`corPagel()`, $\lambda = 0$ means no phylogenetic signal, $\lambda = 1$ corresponds to Brownian motion):
 
 ```{r}
-fitPagel <- gls(Lnote~ scale(Lnalt), 
+fitPagel <- gls(Lnote~ sLnalt, 
                 correlation = corPagel(1, phy = reducedTree, 
                                        form =~ species), data = dat, 
                 method = "ML")
@@ -746,7 +743,7 @@ summary(rowSums(varespec))
 
 keep <- names(which(colSums(varespec > 0) >= 14))
 wide <- data.frame(site = factor(rownames(varespec)), varespec[, keep] / 100,
-                   Al = scale(varechem$Al)[, 1], N = scale(varechem$N)[, 1])
+                   Al = scale(varechem$Al)[, 1], N = scale(varechem$N)[, 1])  # scaled; plain vectors for reshape()
 long <- reshape(wide, direction = "long", varying = keep, v.names = "cover",
                 timevar = "species", times = keep, idvar = "site")
 long$species <- factor(long$species)

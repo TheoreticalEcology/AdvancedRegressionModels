@@ -18,7 +18,7 @@ In this chapter, you will learn
 -   how to select models with likelihood-ratio tests, AIC and shrinkage, and what each of them answers (@sec-select-lrt, @sec-select-aic, @sec-select-shrinkage);
 -   why model selection is a problem when you want to interpret effects and p-values, and how to evaluate predictions with cross-validation (@sec-select-problems, @sec-select-cv).
 
-**Workflow steps** (@sec-intro-workflow): step 1 (question and goal), step 3 (choice of predictors), step 6 (inference after model selection).
+**Workflow steps** (@sec-summary): step 1 (question and goal), step 3 (choice of predictors), step 6 (inference after model selection).
 
 Prerequisites: causal inference (@sec-causal), the linear model (@sec-lm).
 :::
@@ -54,10 +54,10 @@ As you see, the effect is significant. Now, I add 80 new variables to the model 
 
 ```{r}
 xNoise = matrix(runif(8000), ncol = 80)
-dat = data.frame(y=y,x=x, xNoise)
+datNoise = data.frame(y=y,x=x, xNoise)
 
-fullModel = lm(y~., data = dat)
-coef(summary(fullModel))["x", ]
+noiseModel = lm(y~., data = datNoise)
+coef(summary(noiseModel))["x", ]
 ```
 
 The effect estimates are relatively unchanged, but the CI has increased, and the p-values are n.s.
@@ -98,7 +98,7 @@ The effect of X on Y is now significant (standard error = 0.15)!
 ::: {#model-selection-methods}
 :::
 
-Because of the bias-variance trade-off (@sec-select-biasvar), we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out (a fourth, cross-validation, follows at the end of the chapter, @sec-select-cv)
+Because of the bias-variance trade-off (@sec-select-biasvar), we cannot just fit the most complex model that we can imagine. Of course, such a model would have the lowest possible bias, but we would lose all power to see effects. Therefore, we must put bounds on model complexity. There are many methods to do so, but I would argue that three of them stand out (a fourth, cross-validation, follows at the end of the chapter, @sec-select-cv):
 
 1.  Test whether there is evidence for going to a more complex model -\> Likelihood Ratio Tests (@sec-select-lrt)
 2.  Optimize a penalized fit to the data -\> AIC selection (@sec-select-aic)
@@ -108,11 +108,9 @@ Let's go through them one by one
 
 ### Likelihood-ratio tests {#sec-select-lrt}
 
-A likelihood-ratio test (LRT) is a hypothesis test that can be used to compare 2 **nested** models. Nested means that the simpler of the 2 models is included in the more complex model.
+A likelihood-ratio test (LRT) compares 2 **nested** models, i.e. the simpler of the 2 models is a special case of the more complex one. The more complex model will always fit the data better, i.e. have a higher likelihood. Hence, fit alone cannot be used for model selection. The LRT gives a p-value for whether this improvement in likelihood is larger than one would expect if the simpler model were the correct model. The test statistic and its null distribution are explained in the section on testing in the ANOVA chapter (@sec-anova-test); here, we use the test to decide whether the more complex model is warranted.
 
-The more complex model will always fit the data better, i.e. have a higher likelihood. This is the reason why you shouldn't use fit or residual patterns for model selection. The likelihood-ratio test tests whether this improvement in likelihood is significantly larger than one would expect if the simpler model is the correct model.
-
-Likelihood-ratio tests are used to get the p-values in an R ANOVA (see @sec-anova-test), and thus you can also use the `anova`{.R} function to perform a likelihood-ratio test between 2 models (Note: for linear models with normal residuals, `anova()` runs an F-test. This is not a different principle: the F-test is the special case of the LRT for linear models, with an exact instead of an approximate null distribution, see @tip-anova-ftest):
+In R, the `anova`{.R} function performs the test between 2 fitted models. For linear models with normal residuals, it reports an F-test, which is the exact version of the LRT for this case (@tip-anova-ftest):
 
 ```{r chunk_chapter3_chunk74, echo=TRUE, eval=TRUE}
 # Model 1
@@ -135,10 +133,9 @@ Essentially, this means AIC = misfit + penalty for complexity: the first term ($
 
 **Lower AIC is better!**
 
-```{r chunk_chapter3_chunk75, echo=TRUE, eval=TRUE}
-m1 = lm(Ozone ~ Temp, data = airquality)
-m2 = lm(Ozone ~ Temp + Wind, data = airquality)
+For the two ozone models `m1` and `m2` from the LRT example:
 
+```{r chunk_chapter3_chunk75, echo=TRUE, eval=TRUE}
 AIC(m1)
 AIC(m2)
 ```
@@ -164,15 +161,7 @@ Compare results of AIC with likelihood-ratio tests. Discuss: When to use one or 
 
 The two answer different questions. A **likelihood-ratio test** is a hypothesis test: it requires **nested** models, returns a **p-value**, and controls the type-I error rate at your chosen $\alpha$ - it answers *"is there significant evidence to prefer the more complex model?"*. **AIC** estimates the model's **out-of-sample predictive error** (it is asymptotically equivalent to leave-one-out cross-validation), does **not** require nesting, and returns no p-value or error guarantee - it answers *"which model is expected to predict best?"*.
 
-```{r}
-m1 = lm(Ozone ~ Wind, data = airquality)
-m2 = lm(Ozone ~ Wind + Temp, data = airquality)
-
-anova(m1, m2)      # LRT / F-test -> p-value (error-controlled test)
-AIC(m1); AIC(m2)   # AIC -> lower is better (predictive ranking)
-```
-
-They routinely disagree. For adding a single parameter, AIC prefers the larger model whenever the deviance drops by more than 2, which corresponds to an LRT p-value of about 0.157 - so AIC is considerably more *liberal* about including predictors than an LRT at $\alpha = 0.05$.
+For the two ozone models above, both agree: the F-test (an LRT) is highly significant, and the AIC of the model with Temp is lower by more than 40. Often, however, they disagree. For adding a single parameter, AIC prefers the larger model whenever the deviance drops by more than 2, which corresponds to an LRT p-value of about 0.157 - so AIC is considerably more *liberal* about including predictors than an LRT at $\alpha = 0.05$.
 
 **Rule of thumb:** use the LRT (or F-test) for a confirmatory, pre-specified nested comparison where you want error control; use AIC when the goal is prediction, or to rank many (possibly non-nested) candidate models. For neither should you read the resulting coefficients as unbiased causal effects (see the section on problems with model selection for inference, @sec-select-problems, and the chapter on causal inference, @sec-causal).
 :::
@@ -404,9 +393,9 @@ m2 = MASS::stepAIC(m1)
 summary(m2)
 ```
 
-Which of the two effects is the right one depends on the causal question (see @sec-causal): if we are interested in the total effect of x1, including the part that runs via x2, the reduced model is fine. Note, however, that this is often not what we want. Usually, we include a variable such as x2 because we consider it a confounder, or because we want to separate the direct effect from effects via other variables. The model selection takes this decision for us, based on how much x2 improves the fit and not on causal reasoning, and thereby silently changes the meaning of the remaining estimate.
+Here, x2 is a mediator, and whether to adjust for it depends on whether we want the direct or the total effect of x1 (@sec-causal-framework). The problem is that the model selection takes this decision for us, based on how much x2 improves the fit and not on causal reasoning, and thereby silently changes the meaning of the remaining estimate.
 
-If you understand what AIC model selection (@sec-select-aic) is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear, while x3 is independent
+If you understand what AIC model selection (@sec-select-aic) is doing, you wouldn't be concerned - this is actually not a bug, but rather, the method is doing exactly what it is designed for. However, it was not designed to estimate causal effects. Let's do another simulation: here, x1,x2 and x3 all have the same effect on the response, but x1 and x2 are highly collinear (x1 and x2 are generated as in the collinearity simulation of the linear regression chapter, @sec-lm-collinearity), while x3 is independent
 
 ```{r}
 set.seed(123)
@@ -434,32 +423,21 @@ anova(m1, m3)
 AIC(m3)
 ```
 
-What we see is that the model selection methods are far more enthusiastic about including x3. And with good reason: x3 is an independent predictor, so adding x3 improves the model a lot. The effect of x2, however, is mostly already included in x1, so adding x2 will only slightly improve the model. Thus, from the point of view of how good the data is explained, it doesn't pay off to add x2. From the causal viewpoint, however, adding x3 is irrelevant for the effect of x1, because it is not a confounder (see @sec-causal-framework), while adding x2 changes the meaning of the effect of x1: in this simulation, x2 is caused by x1, so the model with x1 alone estimates the total effect of x1, and the model with x1 + x2 its direct effect. If x2 were instead a common cause of x1 and the response (a confounder), leaving it out would bias the estimate, and the model selection would make exactly the wrong choice.
+What we see is that the model selection methods are far more enthusiastic about including x3. And with good reason: x3 is an independent predictor, so adding x3 improves the model a lot. The effect of x2, however, is mostly already included in x1, so adding x2 will only slightly improve the model. Thus, from the point of view of how good the data is explained, it doesn't pay off to add x2. From the causal viewpoint, however, adding x3 is irrelevant for the effect of x1, because it is not a confounder, while adding x2 changes the meaning of the effect of x1 (total instead of direct effect, as in the first example). If x2 were instead a common cause of x1 and the response (a confounder), leaving it out would bias the estimate, and the model selection would make exactly the wrong choice.
 
 ### P-values {#sec-select-pvalue}
 
-The second problem with model selection is the calibration of p-values. Let's revisit our simulation example from the bias-variance trade-off (@sec-select-biasvar), where we added 80 noisy predictors with no effect to a situation where we had one variable with an effect.
-
-```{r}
-set.seed(123)
-x = runif(100)
-y = 0.25 * x + rnorm(100, sd = 0.3)
-xNoise = matrix(runif(8000), ncol = 80)
-dat = data.frame(y=y,x=x, xNoise)
-fullModel = lm(y~., data = dat)
-```
-
-We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
+The second problem with model selection is the calibration of p-values. Let's revisit our simulation example from the bias-variance trade-off (@sec-select-biasvar), where we added 80 noisy predictors with no effect to a situation where we had one variable with an effect (`noiseModel`). We saw before that the y\~x effect is n.s. after adding all 80 predictors. Let's use AIC in a stepwise model selection procedure to reduce model complexity
 
 ::: {#tip-select-stepwise .callout-tip}
 #### Stepwise vs. global model selection
 
-Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::stepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine. Note that `dredge()` only runs with `options(na.action = "na.fail")`, which makes sure that all models use the same rows (@sec-miss-na-action).
+Systematic LRT or AIC model selections are often used stepwise or global. Stepwise means that we start with the most simple (forward) or the most complex (backward) model, and then run a chain of model selection steps (AIC or LRT) adding (forward) or removing (backward) complexity until we arrive at an optimum. Global means that we run immediately all possible models and compare their AIC. The main function for stepwise selection is `MASS::stepAIC`, for global selection `MuMIn::dredge`. There was a lot of discussion about step-wise vs. global selection in the literature, that mostly revolved around the fact that a stepwise selection is faster, but will not always find the global optimum. However, compared to the other problems discussed here (causality, p-values), I do not consider this a serious problem. Thus, if you can, run a global selection by all means, but if this is computationally prohibitive, stepwise selections are also fine. Note that `dredge()` only runs with `options(na.action = "na.fail")`, which makes sure that all models use the same rows.
 :::
 
 ```{r, echo=T, results='hide'}
 library(MASS)
-reduced = stepAIC(fullModel)
+reduced = stepAIC(noiseModel)
 ```
 
 ::: callout-note
@@ -478,39 +456,60 @@ The phenomenon is well-known in the stats literature, and the reason is that per
 
 There are methods to correct for the problem (keyword: post-selection inference), e.g. the selectiveInference package for lasso and forward stepwise selection, but not for stepAIC or dredge, and mostly those corrected p-values have lower power than the full model. The simplest valid strategy is to split the data: select the model on one half, test it on the other.
 
-## Non-parametric R2 - cross-validation {#sec-select-cv}
+## Cross-validation {#sec-select-cv}
 
 ::: {#non-parametric-r2---cross-validation}
 :::
 
-Cross-validation is the non-parametric alternative to AIC (@sec-select-aic).
+Cross-validation estimates how well a model predicts new data. The data are split into $K$ parts (folds); the model is fitted to $K-1$ folds and predicts the left-out fold, and this is repeated until each fold was left out once. Comparing these out-of-sample predictions with the observed values gives the prediction error on new data.
 
-For most advanced models, you will have to program the cross-validation by hand, but here an example for `glm`, using the `cv.glm`{.R} function:
+Compare this to the R² (@sec-lm-interpretation): it measures how well the model fits the data it was fitted to, and it always increases when we add predictors. If we calculate an R² from the cross-validated predictions instead, we get an estimate of how well the model would fit new data (it can even become negative if the model predicts worse than the mean). The gap between the two shows how much the model overfits. Like AIC (@sec-select-aic), which approximates leave-one-out cross-validation, cross-validation can therefore be used to compare models, but it does not rely on a likelihood or on asymptotic approximations.
 
-```{r chunk_chapter7_chunk18, echo=TRUE, eval=TRUE}
+For a `glm`, the `cv.glm()` function from the boot package does the work:
+
+```{r}
 library(boot)
-
-# Leave-one-out and 5-fold cross-validation prediction error for the mammals data set.
-data(mammals, package="MASS")
+data(mammals, package = "MASS")
 mammals.glm = glm(log(brain) ~ log(body), data = mammals)
+
+set.seed(123)
 cv.err = cv.glm(mammals, mammals.glm, K = 5)$delta
+cv.err
 
-
-# As this is a linear model we could calculate the leave-one-out 
-# cross-validation estimate without any extra model-fitting.
-muhat = fitted(mammals.glm)
-mammals.diag = glm.diag(mammals.glm)
-(cv.err = mean((mammals.glm$y - muhat)^2/(1 - mammals.diag$h)^2))
-
-# Leave-one-out and 11-fold cross-validation prediction error for 
-# the nodal data set.  Since the response is a binary variable an
-# appropriate cost function is
-cost = function(r, pi = 0){ mean(abs(r - pi) > 0.5) }
-
-nodal.glm = glm(r ~ stage+xray+acid, binomial, data = nodal)
-(cv.err = cv.glm(nodal, nodal.glm, cost, K = nrow(nodal))$delta)
-(cv.11.err = cv.glm(nodal, nodal.glm, cost, K = 11)$delta)
+y = log(mammals$brain)
+1 - mean(residuals(mammals.glm)^2) / mean((y - mean(y))^2)  # R2 on the fitted data
+1 - cv.err[1] / mean((y - mean(y))^2)                       # cross-validated R2
 ```
+
+`delta` contains the cross-validated mean squared error (the second value is adjusted for the fact that each fit uses only $(K-1)/K$ of the data; the two values are close here). The R² on the fitted data is 0.92, the cross-validated R² 0.91: with one predictor, the model hardly overfits. With many predictors, as in the simulation in @sec-select-biasvar, the gap becomes large.
+
+**Choosing a performance metric.** The squared error (or the R² derived from it) is a natural metric for continuous responses, but not for binary ones. A simple metric for binary data is the misclassification rate: each predicted probability is turned into 0 or 1 with a threshold of 0.5, and we count how often this is wrong. This depends on the arbitrary threshold, and with rare events, a model that always predicts 0 already looks good. The AUC, which we used in the elephant example (@sec-glm-elephant), avoids both problems because it summarizes all thresholds. (`cv.glm()` accepts such metrics via its `cost` argument, but calculates them separately for each fold and then averages.)
+
+For metrics like the AUC, it is better to collect the out-of-sample predictions of all folds first and to calculate the metric once on all of them: with few observations per fold, the AUC of a single fold is very noisy, and with leave-one-out it is not even defined. For most models, you will have to program this by hand, which is only a few lines. As an example, a logistic regression for the `nodal` data from the boot package (lymph node involvement of 53 prostate cancer patients):
+
+```{r, message=FALSE}
+library(pROC)
+nodal.glm = glm(r ~ stage + xray + acid, family = binomial, data = nodal)
+
+cvAUC = function(K = 5){
+  fold = sample(rep(1:K, length.out = nrow(nodal)))  # random assignment to folds
+  predCV = numeric(nrow(nodal))
+  for (k in 1:K) {
+    fit = glm(r ~ stage + xray + acid, family = binomial, data = nodal[fold != k, ])
+    predCV[fold == k] = predict(fit, newdata = nodal[fold == k, ], type = "response")
+  }
+  as.numeric(auc(nodal$r, predCV, quiet = TRUE))
+}
+
+auc(nodal$r, predict(nodal.glm, type = "response"), quiet = TRUE) # on the fitted data
+set.seed(123)
+cvAUC()                                                           # cross-validated
+summary(replicate(20, cvAUC()))                                   # 20 different splits
+```
+
+On the fitted data, the AUC is 0.83; on new data, we expect about 0.77 (0.74 to 0.79 across splits). The last line shows that the result depends on the random split into folds. It is therefore good practice to repeat the cross-validation with several splits and to report the mean.
+
+Note that neither the spread over repetitions nor the spread of the metric over the single folds is a confidence interval for the performance: the training sets of different folds share most of their data, so these estimates are not independent, and their spread underestimates the true uncertainty [@bengio2004no; @bates2024cross]. Valid intervals require more elaborate methods such as nested cross-validation [@bates2024cross], which are beyond the scope of this book.
 
 Note that cross-validation requires independence of data points. For non-independent data, it is possible to block the cross-validation, see @roberts2017cross, methods implemented in package `blockCV`{.R}, see <https://cran.r-project.org/web/packages/blockCV/vignettes/BlockCV_for_SDM.html>.
 
@@ -522,7 +521,7 @@ Note that cross-validation requires independence of data points. For non-indepen
 2.  Choose the method by the question. An LRT tests a pre-specified comparison of nested models with error control; AIC ranks models (also non-nested) by expected predictive performance and is more liberal than an LRT at alpha = 0.05; shrinkage and cross-validation serve prediction.
 3.  If you want to estimate an effect, choose the variables from causal reasoning (@sec-causal), not by model selection: it can silently change the meaning of the remaining estimates.
 4.  Do not interpret p-values and CIs of a model that was selected on the same data: stepwise or global selection is hidden multiple testing and inflates the type I error. Fix your hypothesis before looking at the data to avoid p-hacking.
-5.  Evaluate predictive models on data that were not used for fitting (cross-validation). For non-independent data (e.g. repeated measures, space), block the cross-validation, otherwise the error is too optimistic.
+5.  Evaluate predictive models on data that were not used for fitting (cross-validation); repeat it with several random splits, and do not treat the spread over folds as a confidence interval. For non-independent data (e.g. repeated measures, space), block the cross-validation, otherwise the error is too optimistic.
 :::
 
 ## Case studies {#sec-select-cases}
@@ -548,6 +547,8 @@ includes all possible 2nd-order interactions between the variables in your model
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
+
+Note that we use all data here. In the earlier exercises (@cau-lm-plantheight), we removed the two growth forms with only one observation (Fern and Herb/Shrub). For model selection this does not matter, because we are interested in prediction and not in the contrasts between growth forms.
 
 ```{r chunk_chapter3_task_40, message=FALSE, warning=FALSE, collapse=TRUE}
 library(EcoData)
@@ -601,5 +602,5 @@ c(predModel = cv.glm(dat, cvFit, K = 10)$delta[1],       # 10-fold CV mean squar
   causalModel = cv.glm(dat, causalFit, K = 10)$delta[1])  # the same for the causal model
 ```
 
-Note that we filtered to `complete.cases` on the modeled variables first, so that `stepAIC` compares all candidate models on a constant dataset (the NA-handling point from the section on na.action in the chapter on missing data, @sec-miss-na-action). Compared with the simpler causal model (@sec-causal-life), the selected model is only slightly better on prediction (about 2.17 vs 2.19), a very small gain for 13 additional coefficients: a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
+Note that we filtered to `complete.cases` on the modeled variables first, so that `stepAIC` compares all candidate models on the same rows. Compared with the simpler causal model (@sec-causal-life), the selected model is only slightly better on prediction (about 2.17 vs 2.19), a very small gain for 13 additional coefficients: a more complex model often wins slightly on prediction even where it would be the wrong choice for inference.
 :::

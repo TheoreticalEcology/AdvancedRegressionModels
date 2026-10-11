@@ -18,7 +18,7 @@ In this chapter, you will learn
 -   how to check residuals and get CIs for parameters and predictions when the normal approximation may fail (@sec-nls-residual, @sec-nls-ciparameter, @sec-nls-ciprediction);
 -   how to compare groups with interactions (dummy variables) and LRT or AIC, and how to add random effects with `nlme` (@sec-nls-interaction, @sec-nls-selection, @sec-nls-extension).
 
-**Workflow steps** (@sec-intro-workflow): step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
+**Workflow steps** (@sec-summary): step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
 
 Prerequisites: the linear model (@sec-lm).
 :::
@@ -194,13 +194,11 @@ points(vmkm1$S, vmkm1$v, col = vmkm1$type +1)
 ::: {#model-selection}
 :::
 
-You can use all model selection methods described in much more detail in the chapter on model selection (@sec-select). Just very briefly, if you want to compare, for example, if the model with the interaction as fitted in @sec-nls-interaction is better than the null model that doesn't distinguish between types, we can either do a LRT (for normal errors, `anova()` runs it as an F-test, see @tip-anova-ftest)
+You can use all model selection methods described in much more detail in the chapter on model selection (@sec-select). Just very briefly, if you want to compare, for example, if the model with the interaction as fitted in @sec-nls-interaction is better than the null model that doesn't distinguish between types, we can either do a nested model test with `anova()` (an F-test, i.e. a variant of the likelihood ratio test; for `nls`, its reference distribution is only approximate, see @tip-anova-ftest)
 
 ```{r}
 anova(mm, mm1)
 ```
-
-(these tests rely on the same normal approximation)
 
 or an AIC comparison
 

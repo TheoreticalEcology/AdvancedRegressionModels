@@ -14,7 +14,7 @@ In this chapter, you will learn
 -   how to check a mixed model, including convergence, the random effects and residuals per group (@sec-re-check);
 -   how to get p-values, predictions, model comparisons and variance partitioning from a mixed model (@sec-re-downstream).
 
-**Workflow steps** (@sec-intro-workflow): step 2 (design and data), step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
+**Workflow steps** (@sec-summary): step 2 (design and data), step 3 (a-priori model), step 5 (residual checks), step 6 (inference).
 
 Prerequisites: the linear model (@sec-lm), ANOVA for the part on variance partitioning (@sec-anova).
 :::
@@ -143,13 +143,13 @@ $$\begin{aligned}
 The random effect structure should follow from the design of the study, not from the data. Ask yourself:
 
 -   **What is the experimental unit**, i.e. the unit to which a treatment was applied, or at which a predictor varies? If you have several measurements per unit (several plants per plot, several visits per site), these measurements are not independent replicates. Treating them as if they were is called **pseudoreplication** [@hurlbert1984pseudoreplication] and makes p-values too small. A random intercept for the unit (here `(1|plot)`) accounts for this when the treatment varies between units: the effective sample size is then roughly the number of plots, not the number of plants. The same applies to any predictor that is constant within a unit, e.g. the elevation of a site that was surveyed repeatedly.
--   **How are the units grouped?** Typical designs and their random effects:
+-   **How are the units grouped?** Typical designs and their random effects (these models replace what classical textbooks call randomized-block, nested, split-plot and repeated-measures ANOVA):
     -   randomized blocks: `y ~ treatment + (1|block)`
     -   several measurements per plot (subsampling): `y ~ treatment + (1|plot)`
     -   split-plot (factor A on main plots, factor B on subplots within the main plots): `y ~ A * B + (1|block/mainplot)` (`/` means nested: main plots within blocks, see @tip-re-nested)
     -   repeated measurements of the same units over time: `y ~ treatment * time + (1|site)`, possibly with a temporal correlation structure (@sec-corr-temporal)
     -   two independent grouping factors, e.g. sites and observers: `y ~ x + (1|site) + (1|observer)` (crossed random effects, @tip-re-nested)
--   **Does the grouping factor have enough levels?** The variance of a random effect is estimated from its levels. A common rule of thumb is therefore that a random effect needs at least about 5-10 levels, and that a grouping variable with fewer levels is better modeled as a fixed effect [@bolker2015linear; @harrison2018brief]. The discussion is, however, nuanced (see @sec-re-usage): with few levels, singular fits (variance estimated as zero) are common, but simulations suggest that the tests of the population-level effects can still be reliable [@oberpriller2022fixed].
+-   **Does the grouping factor have enough levels?** The variance of a random effect is estimated from its levels. A common rule of thumb is therefore that a random effect needs at least about 5-10 levels, and that a grouping variable with fewer levels is better modeled as a fixed effect [@bolker2015linear; @harrison2018brief]. With fewer levels, a random effect can still be the better choice if you are interested in the population-level effect of a predictor (see @sec-re-usage).
 -   **Is there structure left after that?** Correlation within units over time (@sec-corr-temporal) or changing variance (@sec-disp) can be modeled in addition. The college student case study (@sec-re-college) shows a worked example.
 :::
 
@@ -232,7 +232,7 @@ There are a large number of packages to fit mixed models in R. The main packages
 - Random slope + intercept + correlation (default): `(fixedEffect | group)`{.R}.
 - Random slope + intercept without correlation: `(fixedEffect || group)`{.R}, identical to\
   `(1 | group) + (0 + fixedEffect | group)`{.R} (for a numeric fixedEffect; for a factor, lme4 still estimates the correlations between its levels).
-- Nested random effects: `(1 | group / subgroup)`{.R}. If groups are labeled A, B, C, ... and subgroups 1, 2, 3, ..., this will create labels A1, A2 ,B1, B2, so that you effectively group in subgroups. Useful for the many experimental people that do not label subgroups uniquely, but otherwise no statistical difference to a normal (crossed) random effect.
+- Nested random effects: `(1 | group / subgroup)`{.R}, which expands to `(1 | group) + (1 | group:subgroup)`{.R}, i.e. subgroups are identified within their group (when to use it: @tip-re-nested).
 - Crossed random effects: You can add random effects independently, as in\
   `(1 | group1) + (1 | group2)`{.R}.
 
@@ -324,11 +324,9 @@ Regarding when to use what, use the following rule of thumb:
 
 - Per default, use REML
 
-- Switch to ML (`REML = FALSE`) if you compare models with different fixed effects, or a mixed model with a model without random effects, via LRTs or AIC. For comparing RE structures with identical fixed effects, REML is fine.
+- Switch to ML (`REML = FALSE`) if you compare models with different fixed effects via LRTs or AIC (@sec-re-selection). The reason is that REML likelihoods of models with different fixed effects refer to different linear combinations of the data, so they are not comparable. For comparing RE structures with identical fixed effects, REML is fine. For the comparison with a model without random effects (`lm()`), fit the mixed model with ML as well, because the likelihood of an `lm` is an ML value and ML and REML values must not be mixed (@sec-re-simlrt).
 
-::: callout-tip
-Later in this chapter (@sec-re-selection), we will talk about model selection via LRTs and AIC. Because those depend on the likelihood, it is generally recommended to switch from REML to ML in this case. The reason is that the REML likelihood refers to linear combinations of the data that do not depend on the fixed effects, i.e. to different data when the fixed-effect structure changes, so REML likelihoods are not comparable between models with different fixed effects. I would recommend sticking to this, although I have to say that I have always wondered how big this problem is, compared to the other df problems associated to mixed models (see @sec-re-df).
-:::
+I would recommend sticking to this rule, although I have always wondered how big this problem is, compared to the other df problems associated to mixed models (@sec-re-df).
 
 ::: {#cau-re-plantheight .callout-caution icon="false"}
 #### Exercise — A mixed model for plantHeight
@@ -361,7 +359,7 @@ summary(randomInterceptModel)
 randomSlopeModel <- lmer(loght ~ temp + (temp | Family), data = plantHeight)
 summary(randomSlopeModel)
 
-# scaling helps the optimizer
+# scaling often helps the optimizer; the effect of sTemp is then per SD
 plantHeight$sTemp = scale(plantHeight$temp)
 
 randomSlopeModel <- lmer(loght ~ sTemp + (sTemp | Family), data = plantHeight)
@@ -418,7 +416,7 @@ The plot shows that random effect estimates are biased towards the grand mean, i
 The shrinkage imposed by the RE is equivalent to an L2 (ridge) regression (see @sec-select-shrinkage), or a normally distributed Bayesian prior. You can see this by considering that the log likelihood of a normal distribution is equivalent to a quadratic penalty for deviations from the mean. The difference is that the strength of the penalty, controlled by the RE sd, is estimated. For that reason, the RE shrinkage is also referred to as an example of "adaptive shrinkage".
 :::
 
-This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit a random slope for density per species. Consider the plantHeight case study we did in the exercise in the chapter on linear regression (@cau-lm-plantheight-revisited). We saw that, even after re-leveling the predictor, not all interactions could be estimated, because some factor levels had only one observation.
+This RE shrinkage is useful in many situations, beyond describing a group-structured error in the data. A common use is that by using a random slope model, parameter estimates for groups with few data points are drawn towards the grand mean and thus informed by the estimates of the other groups. For example, if we have data for common and rare species, and we are interested in the density dependence of the species, we could fit a random slope for density per species. Consider the plantHeight case study we did in the exercise in the chapter on linear regression (@cau-lm-plantheight-revisited). In that exercise, we removed the two growth forms with only one observation (Fern and Herb/Shrub). Let's put them back: with the full data, not all interactions can be estimated, because these factor levels have only one observation.
 
 ```{r, results='hide'}
 library(EcoData)
@@ -435,7 +433,7 @@ fit <- lmer(loght ~ sTemp + (sTemp | growthform2) , data = plantHeight)
 ranef(fit)
 ```
 
-The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate. In this picture, the random effect imposes an adaptive shrinkage, similar to a ridge shrinkage estimator, with the shrinkage strength controlled by the standard deviation of the random effect. An alternative view is that the RE variance acts as a prior distribution on the slope. Of course, the estimates are biased towards the grand mean, so if you want to interpret these estimates that is a cost that you have to take into account.
+The reason is that rare growth forms will be constrained by the RE, while common growth forms with a lot of data can overrule the normal distribution imposed by the random slope and get their own estimate (the adaptive shrinkage described above). Of course, the estimates are biased towards the grand mean, so if you want to interpret these estimates that is a cost that you have to take into account.
 
 ### When to use what? {#sec-re-usage}
 
@@ -450,7 +448,7 @@ While point 1 is more a choice about how to report results (in principle, we cou
 
 - If you want to get unbiased estimates of the categorical variable (or its interactions), use a fixed effect
 
-A common question is how many levels a grouping variable needs to be modeled as a random effect. Because the variance of a random effect is estimated from its levels, a common rule of thumb is to use at least about 5-10 levels, and to model a grouping variable with fewer levels as a fixed effect [@bolker2015linear; @harrison2018brief]. With few levels, the variance estimate is indeed imprecise and biased towards zero, and singular fits are common. However, if you are interested in the population-level effect of a predictor rather than in the individual levels, simulations by @oberpriller2022fixed suggest that a mixed model can still give reliable tests, provided that singular fits are handled. They recommend to start with a mixed model regardless of the number of levels. If the effect of the predictor varies between groups, start with a correlated random slope and intercept; after a singular fit, remove the correlation (`||`, see @sec-re-convergence), and if the fit is still singular, switch to a fixed effect. In their simulations, singular mixed models had inflated type I error rates, similar to a model that omits the grouping variable, and omitting random slopes that are present in the data also inflated the type I error. In short, with few levels both options can be defended, and more levels are clearly better, so when planning a study, aim for more than the minimum.
+A common question is how many levels a grouping variable needs to be modeled as a random effect. Because the variance of a random effect is estimated from its levels, a common rule of thumb is to use at least about 5-10 levels, and to model a grouping variable with fewer levels as a fixed effect [@bolker2015linear; @harrison2018brief]. With few levels, the variance estimate is indeed imprecise and biased towards zero, and singular fits are common. However, if you are interested in the population-level effect of a predictor rather than in the individual levels, simulations by @oberpriller2022fixed suggest that a mixed model can still give reliable tests, provided that singular fits are handled. They recommend to start with a mixed model regardless of the number of levels. If the effect of the predictor varies between groups, start with a correlated random slope and intercept; after a singular fit, remove the correlation (`||`, see @sec-re-convergence), and if the fit is still singular, switch to a fixed effect. In their simulations, singular mixed models had inflated type I error rates, similar to a model that omits the grouping variable, and omitting random slopes that are present in the data also inflated the type I error. In short, with few levels both options can be defended, and more levels are clearly better, so when planning a study, aim for more than the minimum. Note that this rule of thumb concerns the choice between a random and a fixed effect. How many groups are needed for the approximate tests of the fixed effects to be reliable is a different question; there the threshold is higher (about 10-20 groups, see @tbl-re-inference).
 
 The choice between a random and a fixed effect based on whether you are interested in the estimates is just a rule of thumb; in data-poor situations, it is common to use random slope models and interpret the estimates as well. In this case, we are using the RE to optimize the bias-variance trade-off (see the section on the bias-variance trade-off in the model selection chapter, @sec-select-biasvar).
 
@@ -479,8 +477,8 @@ If there is a convergence problem, you should usually get a warning. Other signs
 
 There are different types of convergence problems that you can encounter:
 
-- Warnings about scaling and centering -\> just do it, it doesn't cost you!
-- The warning "boundary (singular) fit: see help('isSingular')" (meaning that some dimensions of the variance-covariance matrix have been estimated to zero. -\> often, this just means that a RE estimate is zero. In many cases, this is not a problem and can actually be ignored, but it is hard to give general advice to when this is the case. With few levels in the grouping variable, however, a singular fit can inflate the type I error of the fixed effects [@oberpriller2022fixed]; see the recommendations in @sec-re-usage. In random slope models, it often helps to move from \| to \|\| (suppressing the correlation). Removing the RE will solve the problem, but could lead to type I error inflation. A more conservative solution would be to change the RE to a fixed effect
+- Warnings that predictors are on very different scales ("consider rescaling") -\> center and scale the numeric predictors (@sec-lm-scaling); this often solves convergence problems. The effects are then per SD, but they can be transformed back.
+- The warning "boundary (singular) fit: see help('isSingular')" means that some dimensions of the variance-covariance matrix of the random effects were estimated as zero, often simply a random-effect variance of zero. With many groups, this usually means that there is little variation at this level; if a variance is estimated as zero, the model gives the same results as the model without that random term. With few groups, however, a singular fit can inflate the type I error of the fixed effects [@oberpriller2022fixed]. In both cases, first remove the correlation between random intercept and slope (`||`). If the fit is still singular, remove the random slope (many groups), or switch to a fixed effect (few groups, @sec-re-usage).
 - Optimizer / convergence warnings: use `lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e5))` (`glmerControl()` for `glmer`) to change the optimizer to bobyqa and possibly increase the number of iterations, e.g. `lmer(..., control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1e5)))`.
 
 ### Observation-level residual plots {#sec-re-residual}
@@ -522,13 +520,13 @@ For mixed models, there are three ways to make predictions, which are easy to co
 -   **Unconditional** predictions use only the fixed effects, i.e. the random effects are set to zero (`re.form = NA` or `re.form = ~0`). This is the prediction for an "average" group.
 -   **Marginal** predictions are averaged over the distribution of the random effects, i.e. the mean prediction over all possible groups.
 
-In a linear mixed model, unconditional and marginal predictions are identical, because the random effects average to zero. With a nonlinear link function (GLMMs), they differ (see @sec-glm-marginal). Note that these terms are not used consistently in the literature and in R packages; e.g. the "marginal R^2^" of mixed models (@sec-re-anova) is based on the fixed effects only.
+In a linear mixed model, unconditional and marginal predictions are identical, because the random effects average to zero. With a nonlinear link function (GLMMs), they differ (see @sec-glm-marginal). Note that these terms are not used consistently in the literature and in R packages: the "marginal R^2^" of mixed models (@sec-re-anova) is based on the fixed effects only, the "estimated marginal means" of `emmeans` are averaged over the other predictors, not over random effects, and the "average marginal effect" of the econometric literature is what this book calls the data-averaged effect (@sec-lm-nonlinear-effect).
 :::
 
 ::: {#tip-re-predtype .callout-tip}
 #### Conditional vs. unconditional predictions and residuals
 
-When you predict with a random effect model, you can do conditional or unconditional predictions (see @tip-re-predterms). The difference is that conditional predictions include the REs, while unconditional predictions only include the fixed effects.
+When you predict with a random effect model, you can do conditional predictions (random effects included) or unconditional predictions (fixed effects only, @tip-re-predterms):
 
 ```{r, eval = F}
 predict(mod1, re.form = NULL) # conditional, default
@@ -543,7 +541,7 @@ Exam$normexam - predict(mod1, re.form = NULL) # conditional, same as residuals(m
 Exam$normexam - predict(mod1, re.form = ~0) # unconditional
 ```
 
-DHARMa offers both: since version 0.5.0, `simulateResiduals()` simulates conditional on the fitted random effects by default, and with `simulateREs = "unconditional"` it re-simulates them. Both have advantages and disadvantages:
+DHARMa offers both: since version 0.5.0, `simulateResiduals()` simulates conditional on the fitted random effects by default, and with `simulateREs = "unconditional"` it re-simulates them (for a few covariance structures in glmmTMB, conditional simulation is not possible, and DHARMa falls back to unconditional simulations with a message; details in @sec-corr-temporal). Both have advantages and disadvantages:
 
 1.  Conditional residuals are more sensitive to violations of the iid normal assumptions of the outer (observation-level) normal error
 2.  However, REs can sometimes absorb misfit, such that plotting conditional residuals \~ pred looks fine, but unconditional \~ pred does not. For that reason, if you only check conditional residuals, you should also check REs \~ pred (see @sec-re-predictor)
@@ -591,7 +589,7 @@ Specifying mixed models is quite simple, but their practical application raises 
 | Question | `lmer` | `glmer` | `glmmTMB` | Section |
 |----|----|----|----|----|
 | Test a single fixed effect | t-test with approximate df (`summary()` after loading `lmerTest`) | Wald z-test (`summary()`) | Wald z-test (`summary()`) | @sec-re-df |
-| Test a term with several df (e.g. a factor) | F-test with approximate df (`anova()` after loading `lmerTest`, type III); alternatives in @sec-re-anova | `car::Anova()` (Wald $\chi^2$) | `car::Anova()` (Wald $\chi^2$) | @sec-re-anova |
+| Test a term with several df (e.g. a factor) | F-test with approximate df (`anova()` after loading `lmerTest`); details in @tbl-re-anova | `car::Anova()` (Wald $\chi^2$); details in @tbl-glm-glmmtest | `car::Anova()` (Wald $\chi^2$); details in @tbl-glm-glmmtest | @sec-re-anova |
 | Compare groups or treatments (contrasts) | `emmeans()` with `pairs()` or `contrast()` | `emmeans()` | `emmeans()` | @nte-anova-emmeans |
 | Compare nested models with different fixed effects | likelihood ratio test, `anova(m0, m1)` (refits REML models with ML) | `anova(m0, m1)` | `anova(m0, m1)` | @sec-re-fixed |
 | Test a random effect | simulated LRT (`DHARMa::simulateLRT()`); `lmerTest::ranova()` is approximate and conservative | simulated LRT | simulated LRT | @sec-re-simlrt |
@@ -601,7 +599,7 @@ Specifying mixed models is quite simple, but their practical application raises 
 
 : Tests and confidence intervals for mixed models. {#tbl-re-inference}
 
-All of these are approximations, because the degrees of freedom of a mixed model are not clearly defined (@sec-re-df). With few groups (as a rule of thumb, fewer than about 10-20), Wald tests and also likelihood ratio tests with the standard $\chi^2$ distribution give p-values for fixed effects that are too small. For linear mixed models, the approximate degrees of freedom of `lmerTest` (Satterthwaite) or Kenward-Roger (`car::Anova(m, test.statistic = "F")`) are then more reliable; for GLMMs, use a parametric bootstrap or a simulated LRT (`DHARMa::simulateLRT()`, `pbkrtest::PBmodcomp()`), and profile instead of Wald CIs. In contrast, a standard likelihood ratio test for a random effect is conservative, because the null hypothesis (variance = 0) lies at the boundary of the parameter space, which is another reason to use the simulated LRT. Finally, note that `anova()` after loading `lmerTest` gives type III tests, while `car::Anova()` gives type II tests by default; with interactions, they test different hypotheses (@sec-anova-collinearity, @cau-re-typeiii), so say which one you report.
+All of these are approximations, because the degrees of freedom of a mixed model are not clearly defined (@sec-re-df). With few groups (as a rule of thumb, fewer than about 10-20), Wald tests and also likelihood ratio tests with the standard $\chi^2$ distribution give p-values for fixed effects that are too small. For linear mixed models, F-tests with approximate df (Kenward-Roger or Satterthwaite, as in `lmerTest`, @tbl-re-anova) on REML fits keep the type I error rate close to the nominal level even for smaller samples [@luke2017evaluating]; for GLMMs, use a simulated LRT or a parametric bootstrap, and profile instead of Wald CIs. A standard likelihood ratio test for a random effect, on the other hand, is conservative, because the null hypothesis (variance = 0) lies at the boundary of the parameter space, which is another reason to use the simulated LRT.
 
 ### Degrees of freedom for a random effect {#sec-re-df}
 
@@ -634,7 +632,7 @@ Technically, the mixed model mRE estimates the same 65 school effects as the fix
 
 Because of these issues, `lmer`{.R} by default does not return p-values (for an overview of the options, see @tbl-re-inference). The help advises you to use bootstrapping to generate valid confidence intervals and p-values on parameters. This is possible indeed, but very cumbersome.
 
-However, you can calculate p-values based on approximate degrees of freedom via the `lmerTest`{.R} package, which also corrects ANOVA for random effects, but not AIC.
+However, you can calculate p-values based on approximate degrees of freedom via the `lmerTest`{.R} package [@kuznetsova2017lmertest] (for ANOVA tables, see @tbl-re-anova); this does not solve the problem for AIC.
 
 ```{r chunk_chapter4_chunk32, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 library(lmerTest)
@@ -684,11 +682,7 @@ Follow-up: have a look at the variance estimates for the REs - how wide are they
 
 ### Predictions {#sec-re-prediction}
 
-Related to the interpretation of an RE is the question whether the REs should be included when you make predictions or calculate other outputs of the model, e.g. residuals.
-
-- Unconditional predictions = predictions without the RE, i.e. the population-level curve from the fixed effects (see @tip-re-predterms)
-
-- Conditional predictions = predictions with RE
+Related to the interpretation of an RE is the question whether the REs should be included when you make predictions or calculate other outputs of the model: conditional predictions include them, unconditional predictions use only the fixed effects (@tip-re-predterms).
 
 In some, but unfortunately not all packages, the predict function can be adjusted. In lme4, this is via the option re.form, which is available in the predict and simulate function. Let look again at a simple random intercept model
 
@@ -784,15 +778,9 @@ I would deviate from this recipe and also add random slopes *a priori* when I ei
 
 #### Simulated LRTs {#sec-re-simlrt}
 
-If you want to formally select on the variance structure, the best way is to use a simulated likelihood-ratio test (LRT), based on the parametric bootstrap, which we introduced in @sec-anova-test. In such a test, we make the same assumptions as in a standard LRT, which is:
+If you want to formally select on the variance structure, the best way is to use a simulated likelihood ratio test (LRT), whose mechanics we introduced in @sec-anova-test. As a reminder: it compares two nested models M~0~ and M~1~ under H~0~: M~0~ is true, with the same test statistic as the standard LRT ($-2 \log \frac{L(M_0)}{L(M_1)}$, or simply the log likelihood ratio $\log \frac{L(M_1)}{L(M_0)}$, which DHARMa and the example below report). Instead of assuming a $\chi^2$ distribution, it generates the null distribution of the statistic by a parametric bootstrap: simulate data from the fitted M~0~, refit both models, calculate the statistic, and repeat; the p-value is the share of simulated statistics at least as large as the observed one.
 
-1.  We want to compare 2 nested models M~0~, M~1~
-2.  H~0~: simpler model M~0~ is correct
-3.  Test statistic: M~1~/M~0~ or log(M~1~/M~0~) = log(M~1~) - log(M~0~)
-
-However, unlike in the standard LRT, where we assumed that the test statistic is Chi^2^ distributed, we use the parametric bootstrap (see @sec-lm-bootstrap-param) to generate new data under H~0~, fit M~0~ and M~1~ to this simulated data, and thus generate a null distribution of the LR for these two models.
-
-Simulated LRTs for mixed models are implemented in a number of packages. To my knowledge, one of the most general functions is DHARMa::simulateLRT. Here an example, in which we test if a random intercept is needed. Note that we fit the mixed model with ML (`REML = FALSE`), because its likelihood is compared to the likelihood of a model without random effects (see @sec-re-reml):
+Simulated LRTs for mixed models are implemented in a number of packages. To my knowledge, one of the most general functions is `DHARMa::simulateLRT()`. Here an example, in which we test if a random intercept is needed. Note that we fit the mixed model with ML (`REML = FALSE`), because its likelihood is compared to the likelihood of a model without random effects (see @sec-re-reml; `lmerTest::ranova()` avoids this by comparing the REML values of both models):
 
 ```{r, warning=F, message=F}
 set.seed(123)
@@ -860,7 +848,18 @@ mean(nullDistribution > observedLR)
 
 ### Variance partitioning / ANOVA {#sec-re-anova}
 
-Also variance partitioning in mixed models is a bit tricky, as (see the type I/II/III ANOVA discussion in @sec-anova-collinearity) fixed and random components of the model are in some way "correlated".
+ANOVA and variance partitioning in mixed models need some care, as fixed and random components of the model are in some way "correlated".
+
+The following table summarizes our recommendations for ANOVA-type questions in linear mixed models; the rest of this section and the sections on simulated LRTs (@sec-re-simlrt) and VPCs (@sec-re-vpc) give details. Which ANOVA type (I, II or III) to use is discussed in the chapter on ANOVA (@sec-anova-choice); the table only lists which types each function supports. For GLMMs, see @tbl-glm-glmmtest.
+
+| Question | Recommended function | Notes |
+|----|----|----|
+| Test fixed-effect terms (ANOVA table) | Fit the model with `lmerTest::lmer()`, then `anova(m, type = 2, ddf = "Kenward-Roger")`; alternative: `car::Anova(m, test.statistic = "F")` (the same type II result if numeric predictors in interactions are centered) | F-tests with approximate denominator df, which depend on the number of groups. Types: `anova()` of lmerTest supports I, II and III (`type = 1`, `2`, `3`; default III), `car::Anova()` supports II and III (`type = "II"`, `"III"`; default II). Without `ddf`, lmerTest uses Satterthwaite df, which are faster to compute for large data sets. Unlike `car::Anova()`, the type II tests of lmerTest depend on the centering of numeric predictors that are part of interactions (@cau-re-typeiii). |
+| ANOVA table with p-values from a parametric bootstrap (e.g. as a check with very few groups) | `afex::mixed(formula, data, method = "PB")` | Simulates the null distribution of the LRT for each term (@sec-re-simlrt), so it is slow; afex fits the model with ML and sets sum-to-zero contrasts automatically. Types II and III (`type = 2`, `3`; default III). |
+| How much variation do fixed and random effects explain? (description, not a test) | `MuMIn::r.squaredGLMM(m)` | R^2^m: fixed effects; R^2^c: fixed plus random effects. VPCs: the variances from `lme4::VarCorr(m)`, divided by their sum including the residual variance, i.e. shares of the variance that the fixed effects leave unexplained (@sec-re-vpc). |
+| Test a random effect | `DHARMa::simulateLRT(m0, m1)` | m0: the same fixed effects without the random effect (`lm()` if no random effect is left; to test a random slope, m0 keeps the random intercept); fit m1 with `REML = FALSE` (@sec-re-simlrt). If p = 0, report p < 1/(n+1) (@sec-anova-test). `lmerTest::ranova(m)` is a quick check, but its p-values are approximate and conservative. |
+
+: ANOVA-type questions for linear mixed models. {#tbl-re-anova}
 
 First of all, note that you have to be careful because as most S3 functions in R, the anova function is overloaded, so depending on the class of the model object, different functions will be used.
 
@@ -883,7 +882,7 @@ anova(fit)
 
 See discussions about the exact calculations of this function [here](https://stats.stackexchange.com/questions/71914/what-does-the-anova-command-do-with-a-lmer-model-object).
 
-If you load lmerTest, the anova command will be overwritten by anova.lmerTest, which performs, as displayed in the output, a type III Anova with df estimated by Satterthwaite's method.
+If you load lmerTest, the anova command will be overwritten by anova.lmerTest, which performs, as displayed in the output, a type III Anova with df estimated by Satterthwaite's method. This is the default of lmerTest; the call recommended in @tbl-re-anova differs (type II, Kenward-Roger df).
 
 ```{r, message=F, warning=F}
 library(lmerTest)
@@ -896,7 +895,7 @@ Arguably, this method is preferable over the base lme4 method if you are interes
 ::: {#cau-re-typeiii .callout-caution}
 #### Type III ANOVA for mixed models: coding and centering
 
-The considerations from the chapter on ANOVA about contrasts and centering (@sec-anova-contrast, @cau-anova-typeiii) also apply to mixed models, with one difference between packages: the type III ANOVA of `lmerTest` does not depend on how factors are coded (it constructs the type III hypotheses independently of the contrasts used), but `car::Anova(fit, type = "III")` does, exactly as for an lm. Both still depend on centering: if a numeric predictor is part of an interaction, the main effects of the other variables are tested at the value 0 of this predictor. `emmeans::joint_tests()` also works for mixed models and avoids both problems. When reporting, state which method was used for the degrees of freedom (Satterthwaite as above, or Kenward-Roger).
+The considerations from the chapter on ANOVA about contrasts and centering (@cau-anova-typeiii) also apply to mixed models, with one difference between packages: the type III ANOVA of `lmerTest` does not depend on how factors are coded (it constructs the type III hypotheses independently of the contrasts used), but `car::Anova(fit, type = "III")` does, exactly as for an lm. Both still depend on centering: if a numeric predictor is part of an interaction, the main effects of the other variables are tested at the value 0 of this predictor. Unlike `car::Anova()`, this also holds for the type II ANOVA of `lmerTest`: it does not treat a factor `g` as part of an interaction `x:g` with a numeric `x`, and therefore tests `g` at x = 0. Center such numeric predictors, or use `car::Anova(fit, test.statistic = "F")` for type II. `emmeans::joint_tests()` also works for mixed models and avoids both problems. When reporting, state which method was used for the degrees of freedom (Satterthwaite as above, or Kenward-Roger).
 
 Note also that in mixed models, the coding determines what random slopes for factors mean. If you use uncorrelated random effects (the `||` syntax), the coding even changes the fitted model, as the assumption of zero correlations depends on how the factor is coded.
 :::
@@ -1011,7 +1010,7 @@ Disadvantages are measures of uncertainty (p-values, CIs) may be problematic to 
 2.  Fix the random effect structure a priori (random intercepts for all grouping variables; random slopes if expected or if the residuals per group suggest them). Do not select it with AIC or standard LRTs, because the df of a random effect are unclear; use a simulated LRT if you need a test.
 3.  Check that group IDs are unique across higher-level groups, or use the nested syntax `(1 | group / subgroup)`; otherwise different groups are merged.
 4.  Fit with REML, but refit with ML when you compare models with different fixed effects by LRT or AIC. `lmer()` reports no p-values because of the df problem; use `lmerTest` (approximate df) or the parametric bootstrap.
-5.  Check the residuals as for an lm, plus convergence (center and scale predictors; a singular fit often means a variance estimated at zero; for grouping variables with few levels, see @sec-re-usage) and the random effects (normality, correlation with predictors). State whether predictions and residuals are conditional or unconditional, and use the parametric bootstrap for confidence intervals of predictions.
+5.  Check the residuals as for an lm, plus convergence (if there are warnings about scales, center and scale predictors; a singular fit often means a variance estimated at zero; for grouping variables with few levels, see @sec-re-usage) and the random effects (normality, correlation with predictors). State whether predictions and residuals are conditional or unconditional, and use the parametric bootstrap for confidence intervals of predictions.
 :::
 
 ## Case studies {#sec-re-cases}
@@ -1021,21 +1020,20 @@ Disadvantages are measures of uncertainty (p-values, CIs) may be problematic to 
 
 ### Honeybee data {#sec-re-honeybee}
 
-We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. The study measured spores of the bacterium "Paenibacillus larvae" (variable Spobee) that infect honeybee larvae, as well as the degree of the infection of the colony (integer: 0 (none), 1 (minor), 2 (moderate), 3 (major)).
+We use a dataset on bee colonies infected by the American Foulbrood (AFB) disease. The study measured spores of the bacterium *Paenibacillus larvae* (variable `Spobee`) that infect honeybee larvae, as well as the degree of the infection of the colony (integer: 0 (none), 1 (minor), 2 (moderate), 3 (major)).
 
-The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are BeesN (Bees per hive) and Hive (ID of the respective hive, 1 - 24). The data has 72 samples from 24 hives (3 per hive); the degree of infection and the number of bees are measured per hive, and only 4 of the 24 hives are infected.
+The scientific question is if colonies with a higher degree of infection also exhibit more spores, i.e. if infection predicts spores. Additional variables that you can consider are `BeesN` (bees per hive) and `Hive` (ID of the respective hive, 1 - 24). The data has 72 samples from 24 hives (3 per hive); the degree of infection and the number of bees are measured per hive, and only 4 of the 24 hives are infected.
 
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Fit an appropriate linear mixed model on this data.
+Fit an appropriate linear mixed model on this data and answer the question.
 
 ```{r chunk_chapter4_task_3, message=FALSE, warning=FALSE, eval = TRUE, purl=FALSE}
 library(EcoData)
 str(bees)
 ```
 
-Perform the data analysis for this question.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -1047,19 +1045,18 @@ Perform the data analysis for this question.
 
 ```{r chunk_chapter4_task_4, message=FALSE, warning=FALSE}
 library(lme4)
+library(lmerTest) # adds p-values to summary()
+library(DHARMa)
 fit <- lmer(log(Spobee + 1) ~ Infection + BeesN + (1|Hive), data = bees)
-summary(fit)
 ```
 
-The log spore count increases with the degree of infection (about +2.7 per infection degree, 95% CI 1.6 to 3.7); BeesN has no clear effect. Note that only 4 of the 24 hives are infected, so this conclusion rests on few hives.
-
-Standard residual plots look fine, possible minor evidence for heteroskedasticity
+We check the model before interpreting it. Standard residual plots look fine, possible minor evidence for heteroskedasticity
 
 ```{r}
 plot(fit)
 ```
 
-Let's have a look at the random effects
+The random intercepts should be approximately normally distributed:
 
 ```{r}
 x = ranef(fit)
@@ -1068,7 +1065,7 @@ qqline(x$Hive$`(Intercept)`)
 shapiro.test(x$Hive$`(Intercept)`)
 ```
 
-Looks good. Could also check with DHARMa. 
+Looks good (with only 24 hives, the Shapiro test has little power, so rely mainly on the QQ plot). We can also check with DHARMa. 
 
 ```{r}
 simulateResiduals(fit, plot = T)
@@ -1081,6 +1078,17 @@ plot(fit,
      resid(., scaled=TRUE) ~ fitted(.) | Hive, 
      abline = 0)
 ```
+
+The checks show no serious problems (only the mild funnel in the residual plot), so we can interpret the model. Here is the summary, with profile confidence intervals (@sec-re-downstream):
+
+```{r}
+summary(fit)
+confint(fit)
+```
+
+The log spore count increases with the degree of infection (about +2.7 per infection degree, 95% CI 1.6 to 3.7, p < 0.001; on the original scale, i.e. after taking exp() of the estimate and the CI, roughly a 14-fold increase of Spobee + 1 per degree, 95% CI roughly 5- to 41-fold); BeesN has no clear effect (p = 0.43). The random intercept has a standard deviation of 2.2 between hives (profile CI 1.6 to 2.8), compared to 0.78 for the residuals within hives, i.e. variances of 4.85 and 0.60. Thus, 4.85 / (4.85 + 0.60) = 89% of the variance that the fixed effects do not explain lies between hives (intraclass correlation, see @sec-re-intercept): samples from the same hive are very similar. The between-hive SD is of the same order as the effect of one infection degree (2.7), so hives with the same infection degree still differ strongly.
+
+**Good to know:** Infection and BeesN are constant within each hive, so their effects are estimated only from the comparison of hives (see @tip-re-design): they rest on 24 hives (for Infection, only 4 of them infected), not on 72 samples. If there were only one hive per level of a categorical predictor (e.g. one infected and one uninfected hive), the predictor would be perfectly confounded with the hive, and its effect could not be separated from the hive effect without additional assumptions. A random intercept cannot create replication; only more hives can.
 :::
 
 ### College student performance {#sec-re-college}

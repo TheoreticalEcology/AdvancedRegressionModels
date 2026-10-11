@@ -17,9 +17,10 @@ In this chapter, you will learn
 - how to fit a linear model, read the regression table, visualize the result, and check the residuals and adjust the functional form if the model does not fit the mean (@sec-lm-simple, @sec-lm-visualization, @sec-lm-residual, @sec-lm-functional-form);
 - how categorical predictors are coded (contrasts), and how to follow up with ANOVA, post-hoc tests and compact letter displays (@sec-lm-categorical);
 - how multiple regression, collinearity, centering, scaling and interactions change what the coefficients mean (@sec-lm-multiple, @sec-lm-collinearity, @sec-lm-centering-scaling, @sec-lm-interaction);
-- how to make predictions and get uncertainty from the bootstrap when the analytical results are not available (@sec-lm-prediction, @sec-lm-nonparametric).
+- how to make predictions and how to report an effect that is not constant, e.g. a curved effect (@sec-lm-prediction);
+- how to get uncertainty from the bootstrap when the analytical results are not available (@sec-lm-nonparametric).
 
-**Workflow steps** (@sec-intro-workflow): step 3 (a-priori model), step 5 (residual checks), step 6 (inference and predictions).
+**Workflow steps** (@sec-summary): step 3 (a-priori model), step 5 (residual checks), step 6 (inference and predictions).
 
 Prerequisites: basic R and the idea of a regression (@sec-intro-assumed-knowledge).
 :::
@@ -142,7 +143,7 @@ In interpreting this, recall that:
 
 - "**Call**" repeats the regression formula.
 - "**Residuals**" gives you an indication about how far the observed data scatters around the fitted regression line / function.
-- The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second is the standard error (approximate 95% CI: $\hat{\beta} \pm 1.96 \cdot \text{SE}$; for small samples use the exact $t_{n-p}$ quantile instead of 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored.
+- The *regression table* (starting with "**Coefficients**") provides the estimated parameters, one row for each fitted parameter. The first column is the estimate, the second is the standard error (approximate 95% CI: $\hat{\beta} \pm 1.96 \cdot \text{SE}$; for small samples use the exact $t_{n-p}$ quantile instead of 1.96), and the fourth column is the p-value for a two-sided test with ${H}_{0}$: "Estimate is zero". The t-value is used for calculation of the p-value and can usually be ignored. Note that each coefficient answers one specific question, e.g. for a factor the difference to the reference level, and with interactions or curved effects the effect at one particular point; often this is not the number you want to report (@sec-lm-nonlinear-effect).
 - The last section of the summary provides information about the *model fit*.
   - Residual error = Standard deviation of the residuals,
   - Residual degrees of freedom (here 114) = number of observations used in the fit minus number of fitted mean parameters.
@@ -170,14 +171,7 @@ In interpreting this, recall that:
 ::: {#visualizing-the-results}
 :::
 
-For a simple lm and one predictor, we can visualize the results via
-
-```{r}
-plot(Ozone ~ Wind, data = airquality)
-abline(fit)
-```
-
-A more elegant way to visualize the regression, which also works once we move to generalized linear models (GLM, @sec-glm) and multiple regression (@sec-lm-multiple), is using the effects package. The base command to visualize the fitted model is:
+We visualize fitted models with the effects package. This works in the same way for simple and multiple regression (@sec-lm-multiple) and later for generalized linear models (GLM, @sec-glm). Effects plots are for looking at a model; for estimates, comparisons and tests of what you see, we will use the `emmeans` package (@sec-lm-posthoc). The base command to visualize the fitted model is:
 
 ```{r, message=FALSE}
 library(effects)
@@ -236,7 +230,7 @@ The plot(model) function should ONLY be used for linear models, because it expli
 
 ### DHARMa residual plots {#sec-lm-residual-dharma}
 
-The residual plots above only work for testing linear models, because they explicitly test for the assumptions of a normal distribution, which we will relax once we go to more complex models. The DHARMa package provides a general way to perform residual checks for practically any model from the generalized linear mixed-effect model (GLMM) family.
+Because we will relax the assumption of normal residuals once we go to more complex models, we need a more general check. The DHARMa package provides a general way to perform residual checks for practically any model from the generalized linear mixed-effect model (GLMM) family.
 
 ```{r, echo=TRUE, eval=TRUE, message=FALSE}
 library(DHARMa)
@@ -285,9 +279,71 @@ fit = lm(Ozone ~ Wind - 1 , data = airquality) # Only slope.
 fit = lm(Ozone ~ log(Wind), data = airquality) # Predictor variables can be transformed.
 fit = lm(Ozone^0.5 ~ Wind, data = airquality) # Output variables can also be transformed.
 fit = lm(Ozone ~ Wind + I(Wind^2), data = airquality) # Mathematical functions with I() command.
+fit = lm(Ozone ~ poly(Wind, 2), data = airquality) # Polynomials: the same curve, with poly().
 ```
 
-Basically, you can use all these tools to search for a better fit through the data.
+Basically, you can use all these tools to search for a better fit through the data. `I()` works for any transformation of the predictor inside a formula; for polynomials, `poly()` is usually the better choice (see the box on coding polynomials, @cau-lm-poly).
+
+::: {#cau-lm-poly .callout-caution collapse="true"}
+#### Coding polynomials: `poly()` vs `I()` syntax
+
+**Rule:** for a polynomial effect, use `poly(x, 2)`{.R} as the default. Use `poly(x, 2, raw = TRUE)`{.R} or `x + I(x^2)`{.R} only if you need the equation or the turning point of the curve. For a curved effect there is no single slope; how to report it is explained in @sec-lm-nonlinear-effect.
+
+```{r chunk_lm_poly}
+dat = airquality[!is.na(airquality$Ozone), ]   # rows without missing values (see below)
+fitI = lm(Ozone^0.35 ~ Wind + I(Wind^2), data = dat)
+fitP = lm(Ozone^0.35 ~ poly(Wind, 2), data = dat)
+summary(fitI)$coefficients
+summary(fitP)$coefficients
+all.equal(fitted(fitI), fitted(fitP))
+```
+
+- **Same model:** both formulas give the same fitted curve, residuals, R², AIC and predictions, and the same test for the quadratic term (last row, t = 3.95). They differ in the linear term and in the meaning of the coefficients.
+- **The linear row:** with `I()`, the `Wind` row refers to the slope at Wind = 0, a value far outside the data, and its test changes if you add the quadratic term or center Wind. With `poly()`, the first row answers the question that you usually have: is there an overall increase or decrease over the observed range? The reason is that `poly()` builds two columns that are uncorrelated with each other, whereas Wind and Wind² are almost the same variable (r = 0.97).
+- **Do not read `poly()` coefficients as effects per unit of x.** The columns are rescaled, so the numbers have no direct meaning in terms of Wind. A positive quadratic term means a U-shaped curve and a negative one a hump, whatever the linear term; the plot of the curve (`plot(allEffects(fitP))`{.R}) and `predict(fitP, newdata)`{.R} show the size of the effect.
+- **`raw = TRUE`:** `poly(x, 2, raw = TRUE)`{.R} returns the plain powers x and x² instead of orthogonal columns, so it is the same model with the same columns and coefficients as `x + I(x^2)`{.R}. Use it if you need the equation or the turning point of the curve; for higher degrees it is shorter than writing every power with `I()`, e.g. `poly(x, 4, raw = TRUE)`{.R}. The coefficients are then directly interpretable, but the terms are strongly correlated again (see the figure below).
+- **Missing values:** `poly()` builds its columns from all rows of the data before `lm()` removes rows with NA. We therefore removed them first; otherwise the columns are only approximately uncorrelated in the rows used (r = 0.06 here), which does not change the model, only the numbers in the linear row slightly.
+- **What to report:** the test of the quadratic term, the direction of the curve (U or hump), and the effect plot.
+
+**What do the coefficients mean?** Both models above describe the same curve (black line in the lower panels), but they build it from different columns. The upper panels show the columns that enter the model; the lower panels show how the fitted curve is the sum of the intercept (dotted) and the two columns, each multiplied with its coefficient (dashed).
+
+```{r chunk_lm_poly_figure, fig.width=8, fig.height=6.5}
+dat = airquality[!is.na(airquality$Ozone), ]
+fitI = lm(Ozone^0.35 ~ Wind + I(Wind^2), data = dat)
+fitP = lm(Ozone^0.35 ~ poly(Wind, 2), data = dat)
+w = seq(min(dat$Wind), max(dat$Wind), length.out = 200)
+XI = cbind(w, w^2)                              # columns used by I()
+XP = predict(poly(dat$Wind, 2), w)              # columns used by poly()
+bI = coef(fitI); bP = coef(fitP)
+yl = range(c(dat$Ozone^0.35, bI[1], bI[2] * XI[, 1], bI[3] * XI[, 2]))
+
+par(mfrow = c(2, 2), mar = c(4, 4, 3.5, 1), cex.main = 0.95)
+# Row 1: the two columns that enter the model
+matplot(w, XI, type = "l", lty = 1, lwd = 2, col = c(2, 4), xlab = "Wind", ylab = "value of the column",
+        main = "I(): columns Wind and Wind^2")
+legend("topleft", c("Wind", "Wind^2"), col = c(2, 4), lty = 1, lwd = 2, bty = "n")
+matplot(w, XP, type = "l", lty = 1, lwd = 2, col = c(2, 4), xlab = "Wind", ylab = "value of the column",
+        main = "poly(): columns 1 and 2")
+legend("topleft", c("column 1 (linear trend)", "column 2 (curvature)"), col = c(2, 4), lty = 1, lwd = 2, bty = "n")
+# Row 2: fitted curve = intercept + coefficient 1 x column 1 + coefficient 2 x column 2
+parts = function(X, b, ttl) {
+  plot(dat$Wind, dat$Ozone^0.35, col = "grey60", pch = 16, cex = 0.6, ylim = yl,
+       xlab = "Wind", ylab = "Ozone^0.35", main = ttl)
+  abline(h = b[1], col = "grey40", lty = 3)
+  lines(w, X[, 1] * b[2], col = 2, lwd = 2, lty = 2)
+  lines(w, X[, 2] * b[3], col = 4, lwd = 2, lty = 2)
+  lines(w, b[1] + X %*% b[-1], lwd = 3)
+}
+parts(XI, bI, sprintf("y = %.2f %+.3f * Wind %+.4f * Wind^2", bI[1], bI[2], bI[3]))
+parts(XP, bP, sprintf("y = %.2f %+.2f * column 1 %+.2f * column 2", bP[1], bP[2], bP[3]))
+legend("bottomright", c("fitted curve (sum)", "intercept", "coefficient 1 x column 1", "coefficient 2 x column 2"),
+       col = c(1, "grey40", 2, 4), lty = c(1, 3, 2, 2), lwd = c(3, 1, 2, 2), bty = "n", cex = 0.8)
+```
+
+- With `I()` (left), the two columns are almost the same shape, so large positive and negative contributions have to cancel each other to give the curve. This is why the individual coefficients and their tests depend on each other, and why high-degree polynomials built with `I()` become numerically unstable (for a polynomial of degree 8 on this data, the condition number of the model matrix is about 2e12 with `I()` and 11 with `poly()`; a large condition number means that the estimates are sensitive to rounding errors).
+- With `poly()` (right), column 1 is a straight line centered on the mean of Wind and column 2 is the curvature that remains after the straight line has been taken out. Because they are uncorrelated, each contribution is small and can be judged on its own, and the intercept is simply the mean of the response.
+- The curve and its fit are identical. Only the way of writing the same curve differs, and therefore the meaning of the coefficients.
+:::
 
 Note that if you transform the response variable, you change both the functional form and the spread of the residuals. Thus, this option can change (and often improve) both the mean and distributional problems, and is a common strategy to deal with non-symmetric residuals etc. There is a small convenience function in the package MASS that automatically searches for the best-fitting power transformation of the response.
 
@@ -308,10 +364,10 @@ Modify the formula with the tools above to get (as far as possible) an acceptabl
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-Possible solution, adding a quadratic predictor and choosing a power of 0.35 transformation based on the boxcox function:
+Possible solution, adding a quadratic predictor (with `poly()`, see @cau-lm-poly) and choosing a power of 0.35 transformation based on the boxcox function:
 
 ```{r chunk_chapter3_task_11, message=FALSE, warning=FALSE}
-fit1 = lm(Ozone^0.35 ~ Wind + I(Wind^2), data = airquality)
+fit1 = lm(Ozone^0.35 ~ poly(Wind, 2), data = airquality)
 plot(allEffects(fit1, partial.residuals = T), selection = 1)
 ```
 
@@ -320,8 +376,7 @@ Note that if you `plot(fit1)`, there seems to be still a bit of a pattern in the
 You could get an even better fit by adding more and more predictors, for example:
 
 ```{r chunk_chapter3_task_16, message=FALSE, warning=FALSE}
-fit2 = lm(Ozone^0.35 ~ Wind + I(Wind^2) + I(Wind^3) + I(Wind^4) + I(Wind^5) +
-           I(Wind^6) + I(Wind^7) + I(Wind^8), data = airquality)
+fit2 = lm(Ozone^0.35 ~ poly(Wind, 8), data = airquality)
 plot(allEffects(fit2, partial.residuals = T), selection = 1)
 ```
 
@@ -334,7 +389,7 @@ AIC(fit1)
 AIC(fit2)
 ```
 
-Nested model comparison with `anova()` (for an lm an F-test, the counterpart of the likelihood ratio test for normal errors): is there evidence for the more complex model?
+Nested model comparison with `anova()` (for an lm an F-test, which is the likelihood ratio test for normal errors; see @tip-anova-ftest): is there evidence for the more complex model?
 
 ```{r}
 anova(fit1, fit2)
@@ -357,7 +412,7 @@ plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.8, cex = 0.7,
      col = c("black", rep("red", length(fit$residuals))))
 ```
 
-In the summary(), you still get significance for the smoothing term (i.e. a p-value, testing the smooth against a flat line), but given that you fit a line that could go up and down, you don't get an effect direction. The edf (effective degrees of freedom) tell you how wiggly the curve is: an edf near 1 is a straight line, larger values a wigglier curve.
+In the summary(), you still get significance for the smoothing term (i.e. a p-value, testing the smooth against a flat line), but given that you fit a line that could go up and down, you don't get an effect direction (how to report such a curved effect is explained in @sec-lm-nonlinear-effect). The edf (effective degrees of freedom) tell you how wiggly the curve is: an edf near 1 is a straight line, larger values a wigglier curve.
 
 ```{r}
 summary(fit)
@@ -386,7 +441,12 @@ summary(fit)
 but the interpretation of the results often leads to confusion. We see effects for trt1 and trt2, but where is ctrl? The answer is: R is calculating so-called **treatment contrasts** for categorical predictors. In treatment contrasts, we have a **reference level** (in our case ctrl), which is the intercept of the model, and then we estimate the **difference to the reference** for all other factor levels (in our case trt1 and trt2).
 
 ::: callout-tip
-By default, R orders factors levels alphabetically, and thus the factor level that is first in the alphabet will be used as reference level in `lm()`. In our example, ctrl is before trt in the alphabet and thus used as reference, which also makes sense, because it is scientifically logical to compare treatments to the control. In other cases, it may be that the logical reference level does not correspond to the alphabetical order of the factors. If you want to change which factor level is the reference, you can re-order your factor using the `relevel()` function. In this case, estimates and p-values will change, because different comparisons (contrasts) are being made, but model predictions will stay the same! Also, avoid choosing a reference level with very few observations: all other estimates are differences to this level, so they will all be imprecise.
+By default, R orders factor levels alphabetically (whether upper or lower case comes first can depend on your computer settings), and the first level is used as reference level in `lm()`. It is therefore always worth checking the order with `levels()` before fitting. In our example, ctrl is before trt in the alphabet and thus used as reference, which also makes sense, because it is scientifically logical to compare treatments to the control. In other cases, it may be that the logical reference level does not correspond to the alphabetical order of the factors.
+
+-   To change only the reference level, use `relevel(x, ref = "ctrl")`.
+-   To set the order of all levels, e.g. for a treatment none / low / high (which R would sort as high, low, none), use `factor(x, levels = c("none", "low", "high"))`.
+
+When you change the reference level, estimates and p-values will change, because different comparisons (contrasts) are being made, but model predictions will stay the same! Also, avoid choosing a reference level with very few observations: all other estimates are differences to this level, so they will all be imprecise.
 :::
 
 This also becomes clear if we plot the results.
@@ -476,7 +536,7 @@ An ANOVA starts with a base model (in this case intercept only) and adds the var
 - How much the model improves in terms of ${R}^{2}$ (this is in the column Sum Sq).
 - If this increase of model fit is significant.
 
-We can run an ANOVA on the fitted model object using `aov()`. Note that we use `aov()` here rather than the more common `anova(fit)`, because the post-hoc test `TukeyHSD()` used below requires an `aov` object as input:
+We can run an ANOVA on the fitted model object using `aov()`. For a linear model, `summary(aov(fit))` and `anova(fit)` give the same (sequential, type I) ANOVA table. In general, we will use `anova()`, R's general function for comparing models, which also works for GLMs and mixed models; we use `aov()` here only because the post-hoc test `TukeyHSD()` used below requires an `aov` object as input:
 
 ```{r chunk_chapter3_chunk33, echo=TRUE, eval=TRUE}
 fit = lm(weight ~ group, data = PlantGrowth)
@@ -508,7 +568,7 @@ In the result, we see, as hinted at in @sec-lm-anova, that there is a significan
 Remember: a significance test with a significance threshold of alpha = 0.05 has a type I error rate of 5%. Thus, if you make 20 independent tests, you would expect about one significant result by chance (probability of at least one: 1 - 0.95\^20, about 64%), even if there are no effects whatsoever. Corrections for multiple testing are used to compensate for this, usually aiming at controlling the **family-wise error rate** (**FWER**), the probability of making one or more type I errors when performing multiple hypotheses tests. For any set of p-values, `p.adjust(p, method = "holm")` (FWER) or `p.adjust(p, method = "BH")` (false discovery rate) applies such a correction; the family of tests is defined by the question the analysis answers.
 :::
 
-`TukeyHSD()` only works for simple ANOVA models fitted with `aov()`. A more general alternative is the `emmeans` package, which works for lm, glm and mixed models, and also for models with several predictors. `emmeans()` calculates the estimated mean for each factor level, and `pairs()` compares all of them, with Tukey adjustment as default:
+`TukeyHSD()` only works for simple ANOVA models fitted with `aov()`. A more general alternative is the `emmeans` package, which works for lm, glm and mixed models, and also for models with several predictors. `emmeans()` calculates the estimated marginal mean for each factor level: the model's prediction for that level, with all other predictors in the model held fixed (numeric predictors at their mean, other factors averaged with equal weight; "marginal" here only means averaged over the other predictors). It is a model-based mean, which equals the raw group mean only in simple balanced designs like this one. `pairs()` compares all levels, with Tukey adjustment as default:
 
 ```{r, message=FALSE}
 library(emmeans)
@@ -590,12 +650,11 @@ Note that for the multiple regression, that scatter around the regression line d
 |----|----|----|
 | `y~x_1` | $y=a_0 +a_1*x_1$ | Slope+Intercept |
 | `y~x_1 - 1` | $y=a_1*x_1$ | Slope, no intercept |
-| `y~I(x_1^2)` | $y=a_0 + a_1*(x_1^2)$ | Quadratic effect |
 | `y~x_1+x_2` | $y=a_0+a_1*x_1+a_2*x_2$ | Multiple linear regression (two variables) |
 | `y~x_1:x_2` | $y=a_0+a_1*(x_1*x_2)$ | Interaction between x~1~ and x~2~ |
 | `y~x_1*x_2` | $y=a_0+a_1*x_1+a_2*x_2+a_3*(x_1*x_2)$ | Interaction and main effects |
 
-: Formula syntax
+: Formula syntax (for powers of a predictor and other transformations, see @sec-lm-regression-syntax)
 
 ## The effect of collinearity {#sec-lm-collinearity}
 
@@ -655,56 +714,40 @@ summary(lm(y ~ x1))
 ::: {.callout-tip collapse="true"}
 #### Understanding collinearity spillover in more detail
 
-We can understand the problem of one variable influencing the effect of the other in more detail if we simulate some data. Let's create 2 positively collinear predictors:
+The simulation above showed that a univariate regression absorbs the effect of a collinear predictor that is left out. We can look at this spillover in more detail, and visually, with two collinear predictors that both have an effect of 1 on a normal response $y$ (intercept 0). First, the case where the predictors are positively correlated, i.e. their effects have equal signs:
 
 ```{r chunk_chapter3_chunk52, echo=TRUE, eval=TRUE}
 x1 = runif(100, -5, 5)
 x2 = x1 + 0.2*runif(100, -5, 5)
-```
-
-We can check whether this has worked:
-
-```{r chunk_chapter3_chunk53, echo=TRUE, eval=TRUE}
 cor(x1, x2)
-```
-
-Now, the first case I want to look at, is when the effects for x1 and x2 have equal signs. Let's create such a situation, by simulating a normal response $y$, where the intercept is 0, and both predictors have effect = 1:
-
-```{r chunk_chapter3_chunk54, echo=TRUE, eval=TRUE}
 y = 0 + 1*x1 + 1*x2 + rnorm(100)
 ```
 
-If you look at the formula, you can nearly visually see what the problem of the univariate regression is: as x2 is nearly identical to x1, the apparent slope between y and either x1 or x2 will be around 2 (although the true effect is 1).
-
-Consequently, the univariate models will estimate too high effect sizes. We also say by taking out one predictor, the remaining one is absorbing the effect of the other predictor.
+If you look at the formula, you can nearly visually see what the problem of the univariate regression is: as x2 is nearly identical to x1, the apparent slope between y and either x1 or x2 will be around 2 (although the true effect is 1). Consequently, the univariate models will estimate too high effect sizes, while the multiple regression gets the right estimates (with a bit of error):
 
 ```{r chunk_chapter3_chunk55, echo=TRUE, eval=TRUE}
 coef(lm(y ~ x1))
 coef(lm(y ~ x2))
+coef(lm(y ~ x1 + x2))
 ```
 
-The multivariate model, on the other hand, gets the right estimates (with a bit of error):
-
-```{r chunk_chapter3_chunk57, echo=TRUE, eval=TRUE}
-coef(lm(y~x1 + x2))
-```
-
-You can also see this visually:
+You can also see this visually. As we need the same plot again below, we write it as a small function:
 
 ```{r chunk_chapter3_chunk56, echo=TRUE, eval=TRUE}
-par(mfrow = c(1, 2))
-plot(x1, y, main = "x1 effect", ylim = c(-12, 12))
-abline(lm(y ~ x1))
-
-# Draw a line with intercept 0 and slope 1,
-# just like we simulated the true dependency of y on x1:
-abline(0, 1, col = "red")
-
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
-plot(x2, y, main = "x2 effect", ylim = c(-12, 12))
-abline(lm(y ~ x2))
-abline(0, 1, col = "red")
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
+plotSpillover = function(x1, x2, y) {
+  par(mfrow = c(1, 2))
+  plot(x1, y, main = "x1 effect", ylim = c(-12, 12))
+  abline(lm(y ~ x1))
+  # Draw a line with intercept 0 and slope 1,
+  # just like we simulated the true dependency of y on x1:
+  abline(0, 1, col = "red")
+  legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
+  plot(x2, y, main = "x2 effect", ylim = c(-12, 12))
+  abline(lm(y ~ x2))
+  abline(0, 1, col = "red")
+  legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
+}
+plotSpillover(x1, x2, y)
 ```
 
 Check what happens if the two predictors are negatively correlated (both effects are still 1).
@@ -718,18 +761,9 @@ cor(x1, x2)
 
 coef(lm(y ~ x1))
 coef(lm(y ~ x2))
+coef(lm(y ~ x1 + x2))
 
-par(mfrow = c(1, 2))
-plot(x1, y, main = "x1 effect", ylim = c(-12, 12))
-abline(lm(y ~ x1))
-abline(0, 1, col = "red")
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
-plot(x2, y, main = "x2 effect", ylim = c(-12, 12))
-abline(lm(y ~ x2))
-abline(0, 1, col = "red")
-legend("topleft", c("fitted", "true"), lwd = 1, col = c("black", "red"))
-
-coef(lm(y~x1 + x2))
+plotSpillover(x1, x2, y)
 ```
 
 *In the univariate regressions, the two effects cancel out* (slopes close to 0), while the multiple regression recovers both effects.
@@ -801,7 +835,7 @@ For categorical predictors, the analog of centering is sum-to-zero coding (`cont
 
 Another very common transformation is to divide the x axis by a certain value to bring all variables on a similar scale. This is called **scaling**.
 
-The main motivation for scaling is to make **effect sizes in a multiple regression more comparable**. As an example, look again at the multiple regression with 4 predictors (@sec-lm-multiple):
+A frequent motivation for scaling (which is optional, see the summary **In short** at the end of this section) is to make **effect sizes in a multiple regression more comparable**. As an example, look again at the multiple regression with 4 predictors (@sec-lm-multiple):
 
 ```{r chunk_chapter3_chunk58, echo=TRUE, eval=TRUE}
 airquality$fMonth = factor(airquality$Month)
@@ -813,9 +847,7 @@ So, which of the predictors is the strongest (= largest effect on the response)?
 
 To make the effect sizes comparable, we can scale all numeric predictors by dividing them by their standard deviation, which will bring them all roughly on a range between -2, 2. You can do this by hand, or use the `scale()`{.R} function in R:
 
-::: callout-tip
-By default, the `scale(...)`{.R} function will scale and center. As discussed in @sec-lm-centering, centering is nearly always useful as it improves the interpretability of the intercept, so I would suggest to use this as a default when scaling.
-:::
+By default, `scale()`{.R} centers and scales; `scale(x, scale = FALSE)` only centers.
 
 ```{r}
 airquality$sTemp = scale(airquality$Temp)
@@ -844,9 +876,15 @@ sd(airquality$Temp)
 
 we can conclude that the scaled regression is estimating an effect of a 9.46527 degree change in temperature.
 
-While the latter is numerically a bit confusing, the advantage is that so we can interpret the Ozone effect scaled to typical temperature differences in the data, and the same for all other variables. Consequently, it makes sense to compare the scaled effect sizes between variables, which suggests, judged by the point estimates, that Temp is the most important predictor (check the CIs before ranking).
+While the latter is numerically a bit confusing, the advantage is that so we can interpret the Ozone effect scaled to typical temperature differences in the data, and the same for all other variables. Consequently, it makes sense to compare the scaled effect sizes between variables, which suggests, judged by the point estimates, that Temp is the most important predictor (check the CIs before ranking). "Most important" here means the largest effect of a change by one SD, which depends on the variation of the predictor in your sample.
 
-What about categorical variables, do we need to scale them as well? The answer is no, because they are effectively already scaled to a range of 1, because in the standard contrasts (treatment effects), we estimate the effect of going from option 1 to option 2. However, note that because scaling by 1 sd gives numeric predictors a typical range of about +/-1 sd, i.e. 2 sd in total, some authors also scale by 2 sd, so that numeric and categorical variables are more comparable in their effect sizes.
+What about categorical variables? They are not scaled: their coefficient is the difference between two levels, which is easy to interpret as it is, but it is not an effect per SD. An effect per SD of a numeric predictor and a difference between two levels are therefore not directly comparable. To make them more comparable, @gelman2008scaling suggests dividing numeric predictors by 2 SD instead of 1 SD.
+
+**In short:**
+
+-   **Centering:** centering numeric predictors at their mean is almost always useful: the intercept then refers to an average observation, and in models with interactions, the main effects refer to the other predictors at their center (@sec-lm-interaction-centering). The exception is when you want the intercept (and the main effects) to refer to a particular reference value: then center at this value instead of the mean (e.g. a reference temperature), or do not center at all if x = 0 is the meaningful reference (e.g. dose 0 = untreated control). For strongly skewed predictors, the median is often a better center than the mean.
+-   **Scaling** is optional. It often makes the results easier to interpret, because the coefficients become effects per SD of the predictor, which can be compared between numeric predictors, and for more complex models such as GLMMs, it often helps (and is sometimes needed) for the model to converge (@sec-re-convergence). The downside is that the effects are no longer in natural units (per degree, per mm of rain); they can be transformed back (see the tip in @sec-lm-centering), or you report both versions.
+-   **In practice:** create the centered or scaled predictors as new variables (e.g. `sTemp` for scaled, `cTemp` for centered only; see the tip above on why not inside the formula), and say in the methods which version you report.
 
 ::: {.callout-caution icon="false"}
 #### Exercise — Discuss centering
@@ -857,7 +895,7 @@ Under which circumstances should you center / scale, and how should you discuss 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
 #### Solution
 
-Scaling: scaled, you get estimate of relative importance, while unscaled, effects are interpretable in their original units. Depending on what you are more interested in, you may report one of the two, or both. Centering: changes the place of the origin, and thus the interpretation of the intercept (and possibly also main effects if interactions are present, see @sec-lm-interaction-centering). Per default, I would scale.
+Center almost always (at the mean or at a meaningful reference value); scale only if you want comparable effects or need it for convergence; in the paper, report which version you used (and, if you scaled, by which SD).
 :::
 
 ::: {.callout-caution icon="false"}
@@ -932,7 +970,7 @@ plot(allEffects(fit), selection = 2)
 plot(allEffects(fit), selection = 3)
 ```
 
-This creates all main effect and second order (aka two-way) interactions between variables. You can also use `^3`{.R} to create all possible 2-way and 3-way interactions between the variables in the parentheses. By the way: The `()^2`{.R} syntax for interactions is the reason why we have to write `I(x^2)`{.R} if we want to write a quadratic effect in an lm (see @sec-lm-regression-syntax).
+This creates all main effect and second order (aka two-way) interactions between variables. You can also use `^3`{.R} to create all possible 2-way and 3-way interactions between the variables in the parentheses. By the way: the `()^2`{.R} syntax for interactions is the reason why powers of a single predictor need `I(x^2)`{.R} or `poly(x, 2)`{.R} in the formula (see @cau-lm-poly).
 
 ### Interactions with categorical variables {#sec-lm-interaction-categorical}
 
@@ -991,10 +1029,10 @@ summary(fit)
 plot(allEffects(fit))
 ```
 
-Play around with the shift in x2, and observe how the effects change. Try how the estimates change when centering the variables via the `scale()`{.R} command. If you understand what's going on, you will realize that you should **always center** your variables (@sec-lm-centering), whenever you use any interactions.\
+Play around with the shift in x2, and observe how the effects change. Try how the estimates change when centering the variables via the `scale()`{.R} command. If you understand what's going on, you will realize that you should **almost always center** your predictors (at the mean or at a meaningful reference value, @sec-lm-scaling) whenever you use interactions; `scale(x, scale = FALSE)` centers without scaling.\
 Excellent explanations of the issues also in @schielzeth2010simple.
 
-**Describing interactions between numeric predictors.** With an interaction, the slope of one predictor changes with the value of the other. Instead of interpreting the main effects, you can describe this directly by the slope of one predictor at a few typical values of the other, e.g. its 10%, 50% and 90% quantiles, with confidence intervals. This is easy with the `emmeans` package (see @sec-lm-posthoc): `emtrends()` gives the slopes, and `emmip()` plots the predictions:
+**Describing interactions between numeric predictors.** With an interaction, the slope of one predictor changes with the value of the other. Instead of interpreting the main effects, you can describe this directly by the slope of one predictor at a few typical values of the other, e.g. its 10%, 50% and 90% quantiles, with confidence intervals. This is easy with the `emmeans` package (see @sec-lm-posthoc), whose functions all work with model predictions at fixed values of the other predictors: `emtrends()` gives the slopes, and `emmip()` plots the predictions:
 
 ```{r}
 library(emmeans)
@@ -1009,6 +1047,8 @@ emmip(fitNN, cSolar ~ cWind, at = list(cSolar = q, cWind = seq(-7, 10, 1)), CIs 
 
 A possible results sentence: "Ozone decreased with wind speed, more strongly at high solar radiation: the slope was -2.3 ppb per mph (95% CI -4.9 to 0.2) at low radiation (10% quantile), -5.8 (-7.1 to -4.5) at median and -7.4 (-9.3 to -5.5) at high radiation (90% quantile)."
 
+**Which number is "the effect" of wind?** In `fitNN`, the slope of `cWind` on a given day is `b1 + b3 * cSolar`. With centered predictors, the coefficient of `cWind` (-5.3) is the slope at the mean solar radiation. Because the model is linear, it is also the average of the day-specific slopes (we call this the data-averaged effect, @sec-lm-nonlinear-effect) (check: `mean(coef(fitNN)["cWind"] + coef(fitNN)["cWind:cSolar"] * aq$cSolar)`). Uncentered, it would be the slope at Solar.R = 0 (-1.6). The same holds for a quadratic term with a centered predictor: mean-centering makes the coefficient of the linear term the data-averaged effect, exactly for quadratic terms and bilinear interactions, as a good approximation otherwise.
+
 ### Interactions in GAMs {#sec-lm-interaction-gam}
 
 The equivalent of an interaction in a GAM is a **tensor spline**. It describes how the response varies as a smooth function of 2 predictors. You can specify a tensor spline with the `te()` command, as in
@@ -1019,10 +1059,14 @@ fit = gam(Ozone ~ te(Wind, Temp) , data = airquality)
 plot(fit, pages = 0, residuals = T, pch = 20, lwd = 1.9, cex = 0.4)
 ```
 
-## Predictions {#sec-lm-prediction}
+## Predictions and effects {#sec-lm-prediction}
 
 ::: {#predictions}
 :::
+
+This section shows how to predict from a fitted model, and how to use predictions to report an effect that is not a single number.
+
+### Predictions with confidence intervals {#sec-lm-prediction-ci}
 
 To predict with a fitted model
 
@@ -1053,6 +1097,59 @@ lines(newData$Wind, lower, lty = 2)
 lines(newData$Wind, upper, lty = 2)
 ```
 
+### Reporting effects that are not constant {#sec-lm-nonlinear-effect}
+
+The regression table gives one coefficient per term, but this coefficient is often not the number that we want to report. We have met three reasons in this chapter: for a factor, a coefficient is the difference to the reference level, while we may want other comparisons, e.g. between all pairs of levels or against a control; in a model with an interaction, a coefficient is the effect at one value of the other predictor, usually its mean after centering, while we may want the effect at other values, or an average over them (@sec-lm-interaction-centering); and for a curved effect (a polynomial or a GAM smooth), the slope changes along the predictor (on a curve, the slope at 60 °F is not the slope at 90 °F), so that no single coefficient is the effect at all. The same question returns with GLMs, where the link function makes every effect vary on the response scale (@sec-glm-interaction).
+
+In all these cases, we have to decide which number describes the effect. Beyond the comparisons between factor levels, which we have covered, there are three ways to report an effect that is not constant:
+
+1.  **The curve:** an effect plot with its confidence band (@sec-lm-visualization). Always show this first.
+2.  **Slopes at chosen values:** the slope at, e.g., the 10%, 50% and 90% quantiles of the predictor, or at biologically meaningful values, each with a confidence interval (`emtrends()`, as for interactions in @sec-lm-interaction-centering; it works for lm and gam objects, and holds the other predictors at their means).
+3.  **The data-averaged effect:** the slope averaged over all observations (called the average marginal effect, AME, in econometrics). This is one number that summarizes the effect, e.g. for comparisons between predictors or between studies. For a factor, the corresponding quantity is the data-averaged difference between its levels; in a linear model, if the covariates are balanced between the groups (or there are none), this is simply the `emmeans` contrast.
+
+As an example, we model the curved effect of temperature on ozone with a polynomial and with a GAM, and compute the slopes at the quantiles:
+
+```{r, message=FALSE}
+library(emmeans)
+library(mgcv)
+aq = airquality[complete.cases(airquality[, c("Ozone", "Temp", "Wind")]), ]
+fitQ = lm(Ozone ~ poly(Temp, 2) + Wind, data = aq)
+fitG = gam(Ozone ~ s(Temp) + Wind, data = aq)
+q = quantile(aq$Temp, c(0.1, 0.5, 0.9))
+emtrends(fitQ, ~ Temp, var = "Temp", at = list(Temp = q))
+emtrends(fitG, ~ Temp, var = "Temp", at = list(Temp = q))
+```
+
+The slope rises from about zero at low temperatures to 2-4 ppb per °F at high temperatures; at 90 °F, where there are few data, the two models disagree (the polynomial slope keeps rising to 3.8, the GAM levels off at about 2.8), which is a good reason to show the curve.
+
+The data-averaged effect is easy to compute from predictions: imagine nudging the predictor up a little for every observation, recording how much each prediction changes, and averaging. Formally, the slope at an observation is the change of the prediction for a small change `h` of the predictor, and we average these slopes over all observations (`transform()` returns a copy of the data with the shifted column; any small `h` works, e.g. 1% of the standard deviation of the predictor):
+
+```{r}
+h = 0.01
+d = (predict(fitQ, transform(aq, Temp = Temp + h)) - predict(fitQ, transform(aq, Temp = Temp - h))) / (2 * h)
+mean(d)
+```
+
+::: {.callout-tip collapse="true"}
+#### Confidence interval for the data-averaged slope
+
+To get a confidence interval for the data-averaged slope, let `emtrends()` compute the slopes at all observed temperatures and average them with the frequencies of these values in the data:
+
+```{r}
+ut = sort(unique(aq$Temp))
+w = as.numeric(table(factor(aq$Temp, levels = ut))) / nrow(aq)  # frequency of each value
+confint(contrast(emtrends(fitQ, ~ Temp, var = "Temp", at = list(Temp = ut)), list(average = w)))
+```
+
+This works as long as temperature is the only predictor with a curved or interacting effect; with several such predictors, use the finite differences above and a bootstrap for the confidence interval (@sec-lm-bootstrap-nonparam).
+:::
+
+::: callout-caution
+A data-averaged slope near zero does not mean that there is no effect: a hump-shaped response (rising, then falling) averages to about zero. If the slope changes sign, report the curve and the position of the optimum, not the average. The average also depends on where the observations lie: it describes the fitted curve over the covariate values of this sample, and its confidence interval assumes that the model is right.
+:::
+
+A possible results sentence: "Ozone increased on average by 2.0 ppb per °F (95% CI 1.6 to 2.5), with the slope rising from 0.1 ppb per °F at 64 °F (10% quantile) to 3.8 at 90 °F (90% quantile)."
+
 ## Nonparametrics and the bootstrap {#sec-lm-nonparametric}
 
 ::: {#nonparametrics-and-the-bootstrap}
@@ -1065,7 +1162,7 @@ There are two non-parametric methods that you should absolutely know and that fo
 1.  the bootstrap: generate variance of estimates, allows us to calculate non-parametric CIs and p-values
 2.  cross-validation: generate non-parametric estimates of the predictive error of the model (connects to ANOVA and AIC, see the chapters on ANOVA, @sec-anova, and model selection, @sec-select)
 
-Here, we will look at the bootstrap. Cross-validation will be introduced in the section on cross-validation (@sec-select-cv).
+Here, we will look at the bootstrap. Cross-validation is introduced in the chapter on model selection (@sec-select-cv).
 
 ::: {.callout-tip collapse="true"}
 #### Excursion: randomization null models
@@ -1237,8 +1334,9 @@ b2
 1.  Check the residuals before you interpret any p-value or estimate. If the checks reject the model, do not interpret it, change it: first fix a misfit of the mean (functional form), and only then look at distributional problems.
 2.  A coefficient in a multiple regression is the effect adjusted for the other predictors in the model. If a collinear predictor is missing, part of its effect is absorbed by the remaining predictors. Collinearity itself does not bias the estimates, but it makes them more uncertain.
 3.  For a categorical predictor, the coefficients are differences to the reference level (alphabetically first, change it with `relevel()`). Test the factor as a whole with an ANOVA, and compare levels with post-hoc tests (e.g. `emmeans`) that correct for multiple testing.
-4.  Center numeric predictors, in particular if the model contains interactions, so that the intercept and main effects refer to a meaningful point in the data. Scaling (by 1 SD) puts effects on a common unit and allows comparing their relative importance, unscaled effects stay interpretable in original units; say which one you report.
+4.  Center numeric predictors, in particular if the model contains interactions, so that the intercept and main effects refer to a meaningful point (usually the mean); with centered predictors, a main effect of a linear model is also the data-averaged effect (exactly for quadratic terms and bilinear interactions). Scaling (by 1 SD) is optional: it makes effects comparable and often helps complex models to converge, but the effects are then no longer in natural units; say which version you report.
 5.  Do not conclude "no effect" from a non-significant p-value: say that there is no significant evidence for an effect, and look at the confidence interval to see which effect sizes remain plausible.
+6.  For a curved effect, report the curve, slopes at chosen values and, if one number is needed, the data-averaged slope with its confidence interval, not the polynomial coefficients alone.
 :::
 
 ## Case studies {#sec-lm-cases}
@@ -1251,7 +1349,7 @@ b2
 ::: {#cau-lm-plantheight .callout-caution icon="false"}
 #### Exercise — Plant height
 
-Look at the plantHeight dataset in Ecodata. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log10(height).
+Look at the plantHeight dataset in EcoData. Let's assume we want to analyze whether height of plant species from around the world depends on temperature at the location of occurrence. Note that "loght" = log10(height).
 
 ```{r echo=T, eval=TRUE, message=FALSE}
 library(EcoData)
@@ -1260,7 +1358,7 @@ plot(loght ~ temp, data = plantHeight)
 
 1.  Fit a linear model for this relationship. Perform residual checks (@sec-lm-residual) and modify the model if you think it is necessary (@sec-lm-functional-form). Interpret the fitted model - how would you present the results in a scientific publication?
 
-2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. Also, consider changing the reference level of the treatment contrasts (@sec-lm-contrast) in this case.
+2.  The data set also includes a categorical variable "growthform". Test if growthform has an effect on the plant height. First check how many observations each growth form has, and remove the growth forms that have only one observation. Also, consider the reference level of the treatment contrasts (@sec-lm-contrast) in this case.
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -1291,30 +1389,29 @@ summary(model)
 
 ***2. Including "growthform"***
 
-```{r}
-boxplot(loght ~ growthform, data = plantHeight)
-```
-
-Fit the model
-
-```{r}
-model2 = lm(loght ~ growthform, data = plantHeight)
-summary(model2)
-```
-
-The coefficient table only compares each growth form against the reference level fern (intercept), which has only one observation, so it cannot tell us whether growth form has an effect at all (the overall test is the ANOVA below).
+Before fitting the model, we check how many observations each growth form has:
 
 ```{r}
 table(plantHeight$growthform)
 ```
 
-so it makes sense to choose a well-sampled reference level such as Herb: it is the same model, but the comparisons are estimated more precisely.
+Fern and Herb/Shrub have only one observation each. The mean of such a group rests on a single point, and interactions with temperature cannot be estimated for it at all, so we remove these two growth forms:
 
 ```{r}
-plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
-model2 = lm(loght ~ growthform2, data = plantHeight)
+plantHeight2 = plantHeight[!plantHeight$growthform %in% c("Fern", "Herb/Shrub"), ]
+plantHeight2$growthform = as.factor(plantHeight2$growthform) # drops the unused levels; a factor is needed for the post-hoc tests below
+table(plantHeight2$growthform)
+boxplot(loght ~ growthform, data = plantHeight2)
+```
+
+Fit the model
+
+```{r}
+model2 = lm(loght ~ growthform, data = plantHeight2)
 summary(model2)
 ```
+
+The reference level (intercept) is the first level in alphabetical order, here Herb. It is well sampled, which is a good choice: the comparisons of the other growth forms with it are estimated precisely. Had we kept Fern, which comes first alphabetically, the reference level would have been a single observation. With another reference level that is better for your question, use `relevel()`: it is the same model, only the coefficients change.
 
 The overall test of whether growth form has an effect is the ANOVA (@sec-lm-anova), possible post-hoc tests (@sec-lm-posthoc) follow up on it.
 
@@ -1324,7 +1421,7 @@ anova(model2)
 
 ```{r, warning=FALSE}
 library(multcomp)
-tuk = glht(model2, linfct = mcp(growthform2 = "Tukey"))
+tuk = glht(model2, linfct = mcp(growthform = "Tukey"))
 summary(tuk)          # Standard display.
 
 tuk.cld = cld(tuk)    # Letter-based display.
@@ -1408,13 +1505,13 @@ plantHeight$sTemp = scale(plantHeight$temp)
 plantHeight$sLat = scale(plantHeight$lat)
 plantHeight$sNPP = scale(plantHeight$NPP)
 
-# relevel 
-plantHeight$growthform2 = relevel(as.factor(plantHeight$growthform), "Herb")
+# remove the two growth forms with only one observation (Fern, Herb/Shrub; see the solution of the first exercise)
+plantHeight2 = plantHeight[!plantHeight$growthform %in% c("Fern", "Herb/Shrub"), ]
 ```
 
 1)  **NPP or Temp?**
 
-Important here is to use the scaled variables, so that effect sizes are comparable. An alternative would be to use an ANOVA, but this is only discussed in the next chapter (@sec-anova)!
+To compare the effects of the predictors, we use the scaled variables, so that the effect sizes are comparable. An alternative would be to use an ANOVA, but this is only discussed in the next chapter (@sec-anova)!
 
 ```{r}
 fit = lm(loght ~ sTemp + sNPP, data = plantHeight)
@@ -1426,32 +1523,32 @@ Both standardized effects are of similar size (NPP 0.25, temp 0.21, SE about 0.0
 2)  **Interaction with growth form**
 
 ```{r}
-fit = lm(loght ~ growthform2 *  sTemp , data = plantHeight)
+fit = lm(loght ~ growthform * sTemp, data = plantHeight2)
 summary(fit)
 
 ```
 
 One interaction coefficient (Tree) is significant, but the overall question is answered by the ANOVA below.
 
-Note that for the numeric variable, the sTemp effect is the Temp effect for the first factor level, not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see the chapter on ANOVA, @sec-anova) to see the effect of the variables overall is significant.
+Note that for the numeric variable, the sTemp effect is the Temp effect for the reference level (Herb), not overall. Thus, it could be n.s. although Temp does have significant effects for other growth forms. This could be solved by additionally running an ANOVA (see the chapter on ANOVA, @sec-anova) to see the effect of the variables overall is significant.
 
 ```{r}
-anova(lm(loght ~ growthform2 *  sTemp , data = plantHeight))
+anova(lm(loght ~ growthform * sTemp, data = plantHeight2))
 ```
 
-The row `growthform2:sTemp` tests whether the temperature slope differs among growth forms at all: yes (F = 6.8, p = 0.0003).
+The row `growthform:sTemp` tests whether the temperature slope differs among growth forms at all: yes (F = 6.8, p = 0.0003).
 
 Alternatively, if you want to test if a specific growth form has a significant temperature effect, you could either run a univariate regression for this growth form
 
 ```{r}
-fit = lm(loght ~ sTemp, data = plantHeight[plantHeight$growthform == "Tree",])
+fit = lm(loght ~ sTemp, data = plantHeight2[plantHeight2$growthform == "Tree",])
 summary(fit)
 ```
 
-or, better (because you use all data at once, better df), remove the main effect of sTemp to get one temperature slope per growth form (note that levels with only one observation, such as Fern and Herb/Shrub, give meaningless slopes):
+or, better (because you use all data at once, better df), remove the main effect of sTemp to get one temperature slope per growth form:
 
 ```{r}
-fit = lm(loght ~ sTemp*growthform2 - sTemp -1, data = plantHeight)
+fit = lm(loght ~ sTemp * growthform - sTemp - 1, data = plantHeight2)
 summary(fit)
 ```
 

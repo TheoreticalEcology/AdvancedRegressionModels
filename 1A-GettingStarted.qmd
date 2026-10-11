@@ -4,30 +4,7 @@ set.seed(42)
 
 # Getting Started {#sec-intro}
 
-## Overview and organization of this book {#sec-intro-organization}
-
-::: {#organization-of-this-book}
-:::
-
-### Learning goals {#sec-intro-model}
-
-Generalized (linear) mixed models are a framework for modeling a wide range of data structures. The aim of this book is to introduce you to this framework, and apply guidance on its use. It is organized in three main parts, followed by a workflow chapter (@sec-summary) and appendices (quick reference, @sec-cheat; case studies, @sec-cases):
-
-1.  **Modeling the mean:** The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. In this part, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression (@sec-lm), ANOVA (@sec-anova), mixed models (@sec-re) and nonlinear regression (@sec-nls).
-2.  **Model choice:** The second part covers model choice, including how to handle missing data (@sec-miss), causal inference (@sec-causal) and model selection (@sec-select), with cross-validation (@sec-select-cv).
-3.  **Modeling the distribution:** The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (@sec-glm) and modeling variance (@sec-disp) and correlation (@sec-corr) of residuals.
-
-### Implementing this into a data analysis workflow {#sec-intro-workflow}
-
-In a real scientific project, these techniques will (re)appear in several steps along the way. The usual workflow of a scientific analysis is given below, with pointers to which chapter is relevant for the respective step:
-
-1.  **Question and goal:** causal, predictive or exploratory? (@sec-causal, @sec-select)
-2.  **Design and data:** experimental unit, grouping, data checks and missing values (@sec-intro-explore, @tip-re-design)
-3.  **A-priori model:** distribution, predictors, random effects and correlation structures (@sec-glm, @sec-re)
-4.  **Fit the model** with the R packages introduced throughout the book (see the quick reference, @sec-cheat)
-5.  **Check residuals and adjust the model** (@sec-lm-residual, @sec-glm-residual)
-6.  **Inference:** tests, confidence intervals and predictions (@sec-lm-interpretation, @sec-anova)
-7.  **Report** the analysis (@sec-summary-report)
+This chapter sets up R and RStudio and lists the R knowledge that is assumed in the rest of the book.
 
 ## Your R system {#sec-intro-r-system}
 
@@ -78,7 +55,7 @@ In this book, we will often use data sets from the `EcoData`{.R} package, which 
 
 ```{r chunk_chapter2_2, eval=FALSE}
 install.packages("remotes") # only needed if remotes is not yet installed
-remotes::install_github("TheoreticalEcology/EcoData")
+remotes::install_github("TheoreticalEcology/EcoData", dependencies = TRUE)
 ```
 
 For your convenience, the EcoData installation also forces the installation of most of the packages needed in this book, so this may take a while. If you want to load only the EcoData package without its dependencies, run `remotes::install_github("TheoreticalEcology/EcoData", dependencies = FALSE)`.
@@ -566,12 +543,12 @@ For more help on plotting, I recommend:
 
 ### Preparing and exploring your data {#sec-intro-explore}
 
-Before you fit a model to your own data, check the data. These checks correspond to step 2 of the workflow (@sec-intro-workflow): if a check reveals a problem (e.g. many NAs, or factor levels with only one or two observations), decide how to deal with it now, before you fit the model. The following table lists the main checks and where this book discusses their consequences:
+Before you fit a model to your own data, check the data. These checks correspond to step 2 of the workflow (@sec-summary): if a check reveals a problem (e.g. many NAs, or factor levels with only one or two observations), decide how to deal with it now, before you fit the model. The following table lists the main checks and where this book discusses their consequences:
 
 | Check | How (examples) | Why it matters |
 |------------------------|------------------------|------------------------|
 | Missing values | `summary()`, `colSums(is.na(dat))` | Observations with NAs are removed from the model (@sec-miss) |
-| Distribution and range of the response | `hist()`, `table()` | Determines the model family (@tbl-summary-response) |
+| Distribution and range of the response | `hist()`, `table()` | Determines the model family (@tbl-cheat-family) |
 | Errors and outliers | `summary()`, `plot()`, `boxplot()` | Check extreme values against field notes or raw data and correct obvious entry errors; do not delete values only because they are extreme (@sec-disp-outlier) |
 | Range of and correlations between predictors | `pairs()`, `cor()` | Collinearity reduces the precision of the estimates (@sec-lm-collinearity) |
 | Factor levels | `str()`, `levels()`, `table()` | Reference level and rare levels (@sec-lm-contrast) |
@@ -636,6 +613,8 @@ dat = airquality
     dat$sWind = scale(dat$Wind)
     summary(dat)
     ```
+
+    `scale(x, scale = FALSE)` only centers; whether to center or scale is discussed in @sec-lm-scaling.
 
     ::: callout-note
     `scale()` returns a one-column **matrix**, not a plain vector, which stores the mean and standard deviation used for the transformation as attributes. This allows you to translate results back to the original units later (more on this in the chapter on linear regression, @sec-lm-centering).

@@ -4,15 +4,15 @@ set.seed(42)
 
 # From question to paper: the analysis workflow {#sec-summary}
 
-This chapter brings together what we have learned in this book as a workflow for analyzing your own data, from the scientific question to the methods and results sections of a paper. The seven steps are the same as in the overview at the beginning of the book (@sec-intro-workflow). Each step links to the sections where the respective topic is explained. If you have a concrete problem with your analysis, the table in the quick reference (@sec-cheat-lookup) points you to the relevant section.
+This chapter brings together what we have learned in this book as a workflow for analyzing your own data, from the scientific question to the methods and results sections of a paper. The seven steps are the same as in the overview in the Preface. Each step links to the sections where the respective topic is explained and to the lookup tables in the quick reference. If you have a concrete problem with your analysis, the table in the quick reference (@sec-cheat-lookup) points you to the relevant section.
 
 ## The workflow at a glance {#sec-summary-overview}
 
 1.  **Question and goal.** Is your goal to estimate a causal effect, to predict, or to explore? The answer determines which variables you include and whether model selection is appropriate (@sec-causal, @sec-select).
-2.  **Design and data.** What is the replicate (experimental unit), and how are the observations grouped (sites, plots, individuals, years)? Get an overview of the missing values (@sec-miss) and of the data: distribution of the response, range of and correlations between the predictors (@sec-lm-collinearity). If you are still planning the study, see the section on design and power analysis (@sec-summary-design).
-3.  **A-priori model.** Choose the distribution from the type of response (@tbl-summary-response), the predictors from the question (for causal questions with a causal diagram, @sec-causal-framework), and the random effects and correlation structures from the design (@tbl-summary-design). Center and scale numeric predictors if needed (@sec-lm-centering-scaling). Specify this model *before* you look at the results.
+2.  **Design and data.** What is the replicate (experimental unit), and how are the observations grouped (sites, plots, individuals, years)? Get an overview of the missing values (@sec-miss) and of the data: range of the response (bounds, many zeros: @sec-glm-zero-inflation), range of and correlations between the predictors (@sec-lm-collinearity). If you are still planning the study, see the section on power and sample size (@sec-summary-design).
+3.  **A-priori model.** Choose the distribution from the type of response (@tbl-cheat-family), the predictors from the question (for causal questions with a causal diagram, @sec-causal-framework), and the random effects and correlation structures from the design (@tbl-cheat-design). Center and scale numeric predictors if needed (@sec-lm-centering-scaling). Specify this model *before* you look at the results.
 4.  **Fit the model** (@sec-summary-check).
-5.  **Check the residuals and adjust the model** (@tbl-summary-residual). Change the model to remove misfit, not to obtain significance (@sec-select-phacking).
+5.  **Check the residuals and adjust the model** (@sec-summary-check, @tbl-cheat-residual). Change the model to remove misfit, not to obtain significance (@sec-select-phacking).
 6.  **Inference:** tests, confidence intervals, predictions (@sec-summary-inference).
 7.  **Report** the analysis so that others can understand and reproduce it (@sec-summary-report).
 
@@ -21,90 +21,37 @@ This chapter brings together what we have learned in this book as a workflow for
 ::: {#reminder-modelling-strategy}
 :::
 
-All models in this book are special cases of the general model shown in @sec-intro-model: a linear predictor (fixed effects, possibly with splines or nonlinear functions, plus random effects), a link function, a distribution and, if needed, a correlation structure. Building the a-priori model means choosing each of these components.
+All models in this book are special cases of the general model shown in @fig-summary-model: a linear predictor (fixed effects, possibly with splines or nonlinear functions, plus random effects), a link function, a distribution and, if needed, a correlation structure. Building the a-priori model means choosing each of these components, and each of them follows from a different aspect of your study.
 
-**The distribution** follows from the type of response:
+![The general model: the response Y follows a distribution, whose mean is linked to a linear predictor with fixed effects f(x), random effects R and, if needed, a correlation structure C.](images/reminder.jpg){#fig-summary-model fig-alt="Schematic of the general model: Y is drawn from a distribution (Dist), whose mean is connected by a link function to a linear predictor f(x) + R + C, consisting of fixed effects, random effects and a correlation structure (multivariate normal)."}
 
-| Response | Examples | Model (link) | R functions | Section |
-|----|----|----|----|----|
-| Continuous, roughly symmetric residuals | height, temperature | normal (identity) | `lm`, `lmer`, `glmmTMB`, `gls` | @sec-lm, @sec-re |
-| Continuous, positive, right-skewed | biomass, concentration | log-transformed response with a normal model, or Gamma (log) | `glm(..., family = Gamma(link = "log"))`, `glmmTMB` | @sec-glm-gamma |
-| Counts (0, 1, 2, ...) | number of individuals | Poisson (log); if overdispersed, negative binomial; if needed, zero-inflated | `glm` (Poisson), `MASS::glm.nb`, `glmer`, `glmmTMB(..., family = nbinom2)` | @sec-glm-poisson, @sec-glm-dispersion, @sec-glm-zero-inflation |
-| Binary (0/1) | presence / absence, survived yes / no | binomial (logit; cloglog with an offset for exposure time) | `glm(..., family = binomial)`, `glmer`, `glmmTMB` | @sec-glm-logistic |
-| k out of n | infected out of tested individuals | binomial with `cbind(k, n - k)`; if overdispersed, beta-binomial | `glm`, `glmmTMB(..., family = betabinomial)` | @sec-glm-logistic, @sec-glm-dispersion |
-| Continuous proportions | cover, fraction of time | beta (logit), for values strictly between 0 and 1 (exact 0s and 1s: see the section) | `glmmTMB(..., family = beta_family)` | @sec-glm-beta |
-| Ordered or unordered categories | damage classes, food type chosen | cumulative link model, multinomial regression (only briefly covered) | `ordinal::clm` (`clmm` with random effects), `nnet::multinom` | @sec-glm-logistic-note |
-| Several responses per unit | abundances of several species | multivariate GLM | `glmmTMB` | @sec-corr-multivar |
-| Mechanistic nonlinear relationship | enzyme kinetics, growth curves | nonlinear regression | `nls` | @sec-nls |
+**The distribution follows from the type of response:** continuous, counts, binary, k out of n, proportions or categories. The table of model families in the quick reference (@tbl-cheat-family) lists the options with examples and R code. Choose the family from the type and range of the response (e.g. counts are integers ≥ 0), not from the shape of its histogram: the distributional assumptions refer to the residuals, which you check after fitting (step 5).
 
-: Which model for which type of response? For more R code, see @tbl-cheat-family. {#tbl-summary-response}
-
-**The predictors** follow from the goal of the analysis:
+**The predictors follow from the goal of the analysis:**
 
 -   For a **causal** question, write down a causal diagram, adjust for confounders, but not for colliders, and for mediators only if you want the direct effect (@sec-causal-framework). Only the effect of interest can be interpreted causally (@sec-causal-table2).
 -   For **prediction**, the goal is the model with the best out-of-sample performance, e.g. via AIC, cross-validation or shrinkage (@sec-select-methods, @sec-select-cv, @sec-select-shrinkage).
 -   An **exploratory** analysis can generate hypotheses, but its p-values are not valid tests of these hypotheses (@sec-select-pvalue).
 
-**The random effects and correlation structures** follow from the design:
-
-| Data structure | Model component | Section |
-|----|----|----|
-| Several observations per site, plot or individual | random intercept for site | @sec-re-intercept |
-| The effect of a predictor varies between groups | random slope of x for site | @sec-re-slope |
-| Groups within groups (plots within sites) | nested random effects (plot within site) | @tip-re-nested |
-| Two independent grouping factors (sites and observers) | crossed random effects (site and observer) | @sec-re-lme4 |
-| A grouping factor with only a few levels | rule of thumb: fixed effect if fewer than about 5-10 levels; but a random effect can also work if you are interested in the population-level effect (simplify after a singular fit) | @tip-re-design, @sec-re-usage |
-| Unequal effort, area or duration (counts) | offset, `offset(log(effort))` | @sec-glm-poisson-note |
-| Repeated measurements over time | trend in time, then possibly a temporal correlation structure | @sec-corr-temporal |
-| Spatial coordinates | spatial trend, then possibly a spatial correlation structure | @sec-corr-spatial |
-| Species related by a phylogeny | phylogenetic correlation structure | @sec-corr-phylo |
-
-: Which random effects and correlation structures for which design? For how to derive the random effects from the study design, see @tip-re-design; for the syntax, see the quick reference (@sec-cheat-re). {#tbl-summary-design}
+**The random effects and correlation structures follow from the design:** repeated observations of the same sites, plots or individuals call for random effects; observations over time, in space or of related species possibly for a correlation structure; unequal sampling effort for an offset. The quick reference translates typical designs into model components (@tbl-cheat-design); for how to derive the random effects from the study design, see @tip-re-design.
 
 ## Fitting and checking the model {#sec-summary-check}
 
-Packages to fit these models (see the quick reference in the appendix, @sec-cheat, for the syntax):
+Most models in this book can be fitted with `lm()` and `glm()` (base R), `lme4::lmer()` and `lme4::glmer()`, or `glmmTMB()`, which additionally fits dispersion models, zero-inflation and correlation structures. For linear models, `nlme::gls()` (and `nlme::lme()` with random effects) fits variance and correlation structures, and `mgcv::gam()` fits GAMs. For when to use which package, see @sec-re-package; for the syntax, see the quick reference (@sec-cheat). A Bayesian alternative for all of these models is `brms` (@sec-summary-next).
 
--   base R (`stats`): `lm`, `glm`.
--   `lme4`: mixed models, `lmer`, `glmer`.
--   `mgcv`: GAMs.
--   `nlme`: variance and correlation structures for linear (mixed) models, using `gls` and `lme`.
--   `glmmTMB`: generalized linear mixed models with variance and correlation structures and zero-inflation.
+Check the fitted model with residual plots, for GLMs and mixed models with the simulated residuals of DHARMa (@sec-lm-residual-dharma, @sec-glm-dharma), and adjust the model if you find a problem. The quick reference lists typical patterns, their likely causes and what to do about them (@tbl-cheat-residual). Work through the problems in a fixed order: first the functional form (do the predictors have the right shape?), then the distribution (dispersion, zero-inflation, changing variance), and correlation structures last. The reason is that a problem at an earlier step can create apparent problems at later ones: a missing quadratic term, for example, can look like overdispersion or temporal autocorrelation.
 
-Alternatively, you could move to Bayesian estimates with `brms`, which can fit all of these models, makes it easier to include shrinkage, and makes p-value and degrees-of-freedom problems less visible (see [the Bayesian workflow](https://florianhartig.github.io/LearningBayes/3B-Workflow.html) in @hartig2024introduction).
-
-Check the fitted model with residual plots, for GLMs and mixed models with the simulated residuals of DHARMa (@sec-lm-residual-dharma, @sec-glm-dharma), and adjust the model if you find a problem. Work through the problems roughly in the order of the table: a wrong functional form or distribution can create apparent dispersion or correlation problems.
-
-| What you see | Likely cause | What to do | Section |
-|----|----|----|----|
-| Residuals against a predictor show a pattern | wrong functional form | quadratic terms, interactions or splines (GAM) | @sec-lm-functional-form, @sec-lm-gam |
-| Dispersion test significant, ratio \> 1 (counts, k/n data) | overdispersion | negative binomial or beta-binomial family, observation-level random effect, or dispersion model; if excess zeros are the cause, treat zero-inflation first | @sec-glm-dispersion |
-| Spread of residuals changes with a predictor or the fitted values | heteroskedasticity | model the variance (`gls` weights, `glmmTMB` dispformula) | @sec-disp |
-| More zeros than expected under the fitted model | zero-inflation | zero-inflation or hurdle model, compared with the model without via AIC or LRT | @sec-glm-zero-inflation |
-| Residuals correlated in time, space or phylogeny | misfit trend or real autocorrelation | first remove the trend, then add a correlation structure if autocorrelation remains | @sec-corr-model |
-| Random effect estimates not normal, or correlated with predictors | misfit at the group level | check per group, add predictors or random slopes | @sec-re-normality, @sec-re-predictor |
-| Single extreme observations | errors or outliers | check the data; robust regression | @sec-disp-outlier |
-| Convergence warnings, singular fit | model too complex for the data | scale predictors, change the optimizer, simplify the random effects | @sec-re-convergence |
-
-: Typical problems in residual checks and what to do about them. {#tbl-summary-residual}
-
-Note that since version 0.5.0, DHARMa simulates the residuals of mixed models conditional on the fitted random effects by default. To detect patterns at the level of the groups (e.g. spatial autocorrelation between sites), use `simulateResiduals(..., simulateREs = "unconditional")`. Note, however, that unconditional residuals of a model with a fitted correlation structure still contain the full autocorrelation, so they cannot show whether this structure is adequate (see the subsection on conditional residual checks in @sec-corr-temporal).
+For mixed models, DHARMa simulates the residuals conditional on the fitted random effects by default. This is fine for the routine checks, but it can hide patterns at the level of the groups, e.g. spatial or temporal autocorrelation between sites. To check for these, re-simulate the random effects with `simulateResiduals(..., simulateREs = "unconditional")` (@tip-re-predtype; for models with a fitted correlation structure, see the subsection on conditional residual checks in @sec-corr-temporal).
 
 ## Inference {#sec-summary-inference}
 
-Once the model is final, you can test hypotheses and calculate confidence intervals. The main options:
+Once the model is final, you can test hypotheses and calculate confidence intervals. Which tests and intervals are available depends on the model type: t- and F-tests for linear models, z- and likelihood-ratio tests for GLMs. For mixed models, the degrees of freedom are not well defined, so all tests are approximate or simulated, and which one to use depends on the model and the number of groups. The quick reference lists the options per model type (@tbl-cheat-tests); the recommendations for mixed models are in @tbl-re-inference and @tbl-glm-glmmtest. Comparisons between groups are calculated with `emmeans` (@sec-lm-posthoc, @nte-anova-emmeans).
 
-| Model | Tests for single terms | Confidence intervals | Section |
-|----|----|----|----|
-| `lm`, `gls` | t-tests (`summary`), F-tests (`car::Anova`; `anova` is sequential) | `confint()` | @sec-lm-interpretation, @sec-anova |
-| `glm` | z-tests (`summary`; t-tests if the dispersion is estimated, e.g. Gamma), likelihood-ratio tests (`car::Anova`; `anova(..., test = "Chisq")` is sequential) | `confint()` (profile) | @sec-glm-variant (caveats: @cau-glm-before) |
-| `lmer` | t- and F-tests with approximate degrees of freedom (`lmerTest`), likelihood-ratio tests | `confint()` (profile), parametric bootstrap (`bootMer`) | @sec-re-df, @sec-re-selection |
-| `glmer`, `glmmTMB` | z-tests, Wald tests (`car::Anova`), likelihood-ratio tests; for random effects simulated LRTs | `confint()` (`glmer`: profile; `glmmTMB`: Wald by default) | @sec-re-selection, @sec-re-simlrt |
-| Comparisons between groups | `emmeans` with `pairs()` or `contrast()` (Tukey or Dunnett adjustment) | `emmeans` | @sec-lm-posthoc, @nte-anova-emmeans |
+Three points apply to all models:
 
-: Tests and confidence intervals for the main model types. For mixed models in more detail, see @tbl-re-inference. {#tbl-summary-inference}
-
-Remember that p-values and confidence intervals are only valid for hypotheses that were specified before looking at the data. After model selection, they are too optimistic (@sec-select-pvalue). For nonlinear link functions, report effects on the response scale (@cau-glm-before), and for mixed models, decide whether you want conditional, unconditional or marginal predictions (@tip-re-predterms).
+-   p-values and confidence intervals are only valid for hypotheses that were specified before looking at the data. After model selection, they are too optimistic (@sec-select-pvalue).
+-   Do not simply report the coefficient of the regression table: it answers one specific question (difference to the reference level; effect at one value of the other predictors; for GLMs, on the link scale). Decide which comparison, which values, or which average you want to report (@sec-lm-nonlinear-effect), and for nonlinear link functions, report effects on an interpretable scale: rate or odds ratios, means on the response scale, or the data-averaged effect (@sec-glm-effects, @tbl-summary-link).
+-   For mixed models, decide whether you want conditional, unconditional or marginal predictions (@tip-re-predterms).
 
 ## Reporting {#sec-summary-report}
 
@@ -132,7 +79,7 @@ The results section should report effect sizes with confidence intervals, on an 
 | identity (`lm`, normal) | change of y per unit of x | $\beta$ with CI, in units of y |
 | log (Poisson, negative binomial, Gamma) | y is multiplied by $e^\beta$ per unit of x | rate ratio $e^\beta$ with CI, or the percent change $(e^\beta - 1) \cdot 100$ |
 | logit (binomial) | the odds are multiplied by $e^\beta$ per unit of x | odds ratio $e^\beta$ with CI |
-| any link | predictions on the scale of the response | predicted means with CIs, e.g. `emmeans(fit, ~ x, type = "response")`; for mixed models, say whether these are unconditional (random effects at zero) or marginal predictions (@tip-re-predterms) |
+| any link | predictions and effects on the scale of the response | predicted means with CIs at chosen values, e.g. `emmeans(fit, ~ x, type = "response")`, or the data-averaged effect (also called average marginal effect, AME; @sec-glm-effects); for mixed models, say whether these are unconditional (random effects at zero) or marginal predictions (@tip-re-predterms) |
 
 : How to report coefficients for different link functions. {#tbl-summary-link}
 
@@ -159,114 +106,117 @@ A results sentence could then read: "Compared to low tension, the number of brea
 -   using causal language for a predictive or exploratory analysis (@sec-causal).
 :::
 
-## Thoughts about the analysis pipeline {#sec-summary-pipeline}
+## Checking your analysis by simulation {#sec-summary-pipeline}
 
 ::: {#thoughts-about-the-analysis-pipeline}
 :::
 
-In statistics, we rarely use a simple analysis. We often use an entire pipeline, consisting, for example, of the workflow sketched in @sec-summary-overview. What we should constantly ask ourselves: Is our pipeline good? By "good", we typically mean: If 1000 analyses are run in that way:
+The workflow in this chapter (@sec-summary-overview) is a procedure: a model, residual checks, perhaps a model change, and finally tests and confidence intervals. Whether this procedure is good, i.e. whether its estimates are unbiased, its p-values calibrated and its confidence intervals correct, is often not known for a specific design, and textbook formulas only cover simple cases. The general way to find out is simulation: create data where you know the truth, run your analysis on them, and repeat this many times. Before you collect data, the same simulation also tells you how many observations you need (step 2 of the workflow).
 
-- What is the typical error of the estimate?
-- What is the Type I error (false positives)?
-- Are the confidence intervals correctly calculated?
-- ...
+For a simple linear regression, the following function creates data with a known slope (`effect`), fits the planned model and returns the estimate, its 95% CI and the p-value:
 
-The way to check this is to run simulations. For example, the following function creates data that follows the assumptions of a linear regression with slope 0.5, then fits a linear regression, and returns the estimate
-
-```{r chunk_chapter7_chunk1, echo=TRUE, eval=TRUE}
-getEstimate = function(n = 100){
+```{r}
+simulateAnalysis = function(n = 100, effect = 0.5){
   x = runif(n)
-  y = 0.5 * x + rnorm(n)
-  fit = lm(y ~ x)
-  x = summary(fit)
-  return(x$coefficients[2, 1])  # Get fitted x weight (should be ~0.5).
+  y = effect * x + rnorm(n)          # data with known truth, residual SD = 1
+  fit = lm(y ~ x)                    # the planned analysis
+  ci = confint(fit)["x", ]
+  c(estimate = coef(fit)[["x"]], lower = ci[[1]], upper = ci[[2]],
+    p = summary(fit)$coefficients["x", 4])
 }
 ```
 
-The replicate function allows us to execute this 1000 times:
+**Are the estimates and CIs correct?** We run the analysis 1000 times with a true slope of 0.5:
 
-```{r chunk_chapter7_chunk2, echo=TRUE, eval=TRUE}
-set.seed(543210)
+```{r}
+set.seed(123)
+out = t(replicate(1000, simulateAnalysis(effect = 0.5)))
 
-out = replicate(1000, getEstimate())
-```
-
-Plotting the result, we can check whether the linear regression is an unbiased estimator for the slope.
-
-```{r chunk_chapter7_chunk3, echo=TRUE, eval=TRUE}
-hist(out, breaks = 50)
+hist(out[, "estimate"], breaks = 50, main = "", xlab = "Estimated slope")
 abline(v = 0.5, col = "red")
+
+mean(out[, "estimate"]) - 0.5                         # bias
+sd(out[, "estimate"])                                 # true standard error
+mean(out[, "lower"] < 0.5 & out[, "upper"] > 0.5)    # CI coverage
 ```
 
-"Unbiased" means that, while each single estimate has some error, the errors average out: the mean of many estimates is the true value (up to simulation error).
+The bias is practically zero (-0.006): each single estimate has an error, but the errors average out. The standard deviation of the estimates (0.34) is the true standard error of the estimator; the standard error printed by `summary()` is an estimate of it, and the CI coverage (0.953, i.e. about 95% of the CIs contain the true value) checks that this estimate is right.
 
-***Explicitly calculating these values***
+**Are the p-values calibrated?** We simulate without an effect (H~0~ true):
 
-**Bias**
-
-```{r chunk_chapter7_chunk4, echo=TRUE, eval=TRUE}
-mean(out) - 0.5 # Should be ~0.
+```{r}
+set.seed(123)
+outH0 = t(replicate(1000, simulateAnalysis(effect = 0)))
+hist(outH0[, "p"], breaks = 20, main = "", xlab = "p-value")   # should be flat
+mean(outH0[, "p"] < 0.05)                                     # type I error rate
 ```
 
-**Variance / standard deviation of the estimator**
+If the model assumptions hold, the p-values under H~0~ are uniformly distributed, and about 5% of them are below 0.05. Note that the simulated rates are themselves estimates: with $B$ replicates, a rate $p$ has a simulation error of about $\sqrt{p(1-p)/B}$, i.e. ±0.007 for a rate near 0.05 with 1000 replicates. The 0.047 we get is therefore compatible with 0.05. Use more replicates if you need to tell close values apart.
 
-```{r chunk_chapter7_chunk5, echo=TRUE, eval=TRUE}
-sd(out)
-```
+To check your own analysis, replace the data-generating step and the model in `simulateAnalysis()` with your design. You can also include the steps you take after fitting, as long as they can be written as a rule, e.g. a refit with a negative binomial if the DHARMa dispersion test is significant, or AIC selection among a fixed set of models. Then simulate under H~0~ (if the procedure switches models, also with data that do and do not need the switch), and check the type I error and the CI coverage of the final estimates; they are often worse than for a single planned model. Worked examples of such an inflation are the model selection in @sec-select-pvalue and the heteroskedasticity example in @sec-disp-lm. Decisions made by eye cannot be simulated, which is one more reason to fix the analysis before looking at the data. For questions like these, simulation beats both textbook recommendations and closed-form power formulas.
 
-To check p-values, we could run:
-
-```{r chunk_chapter7_chunk6, echo=TRUE, eval=TRUE}
-set.seed(12345)
-
-getEstimate = function(n = 100){  # Mind: Function has changed!
-  x = runif(n)
-  y = rnorm(n)  # No dependence of x! Identical: y = 0 * x + rnorm(n).
-  fit = lm(y ~ x)
-  x = summary(fit)
-  return(x$coefficients[2, 4])  # P-value for H0: Weight of x = 0.
-}
-
-out = replicate(2000, getEstimate())
-
-hist(out) # Expected: Uniformly distributed p-values. -> Check.
-
-mean(out < 0.05) # Type I error rate: fraction of p-values < 0.05 when H0 is true; about 0.05 for a calibrated test
-# Explanation of syntax: Logical vectors are interpreted as vectors of 0s and 1s.
-```
-
-To check the properties of other, possibly more complicated pipelines, statisticians will typically use the same technique. I recommend doing this! For example, you could modify the function above to have a non-normal error. How much difference does that make? Simulating often beats recommendations in the books!
-
-## Experimental design and power analysis {#sec-summary-design}
+### Power and sample size {#sec-summary-design}
 
 ::: {#experimental-design-and-power-analysis}
 :::
 
-All we have learned in this course directly informs experimental and research design, be it controlled experiments, quasi-experiments or observational studies.
+When you plan a study, first decide the design: what the goal is (@sec-causal), what to randomize, hold constant or measure, and how observations are grouped (@tip-re-design). Then fix the analysis (variables and model), so that the simulation uses the model you will actually fit, and ask how many observations you need. The same simulation answers this: if we simulate with an effect, the share of p-values below 0.05 is the **power**, the probability of detecting this effect:
 
-As a start, note our discussions of causality (@sec-causal) and model selection (@sec-select):
-
-- First of all, research design needs a goal: do you want to design for prediction or (causal) inference
-
-- If you are after causal inference, randomize or hold constant what you can; measure what you cannot control so that you can adjust for it. It is often possible even in observational settings to control confounders, e.g. by selecting the observations in a way that confounders are at the same value. This can be useful because, as we discussed in the section on collinearity (@sec-lm-collinearity), adjusting for collinear variables is possible, but costs power.
-
-- In experimental settings, blocked designs where blocks will be later treated as a random effect (see @sec-re) are standard
-
-If you have decided on the selection of variables, treat your analysis as fixed. Perform a pilot study and/or a power analysis for the entire study.
-
-The cleanest way to do a power analysis for any model - not just the textbook cases - is by simulation: assume an effect size, simulate many datasets, fit your planned model to each, and count how often the effect comes out significant. That fraction *is* the power.
-
-```{r chunk_chapter7_chunk7, echo=TRUE, eval=TRUE}
-getP = function(n = 50, effect = 1){
-  x = runif(n)
-  y = effect * x + rnorm(n)          # assumed true effect + noise
-  summary(lm(y ~ x))$coefficients[2, 4]
-}
-
-mean(replicate(1000, getP(n = 50, effect = 1)) < 0.05)   # power at n = 50 (about 0.5)
+```{r}
+set.seed(123)
+mean(replicate(1000, simulateAnalysis(n = 50, effect = 1)[["p"]]) < 0.05)
 ```
 
-To find the sample size for, say, 80% power, wrap this in a loop over `n` (here, roughly 100 observations are needed). Note that the assumed effect should be the smallest biologically relevant effect (or a plausible one from the literature), not the effect observed in the data: power calculated from an observed effect is uninformative. The same recipe works for GLMMs, spatial models, etc. - just swap the data-generating step and the fitted model, which is why simulation beats closed-form power formulas once you leave the simple LM.
+With 50 observations, an effect of 1 is detected in about half of the studies (0.50). To find the sample size for, say, 80% power, we loop over n:
+
+```{r}
+set.seed(123)
+ns = c(25, 50, 100, 150, 200)
+power = sapply(ns, function(n)
+  mean(replicate(500, simulateAnalysis(n, effect = 1)[["p"]]) < 0.05))
+plot(ns, power, type = "b", xlab = "Sample size", ylab = "Power")
+abline(h = 0.8, lty = 2)
+```
+
+We need roughly 100 observations (power 0.82 at n = 100). An effect size only means something relative to the noise: a slope of 1 is easy to detect if the residual SD is small and hard if it is large. Assume the smallest effect that would be biologically relevant (or a plausible value from the literature), and take the residual variation from a pilot study or from similar published data. Do not use the effect observed in your own data: power calculated from an observed effect is a function of the p-value and therefore uninformative.
+
+::: {.callout-tip collapse="true"}
+#### Power analysis for grouped count data
+
+For a GLMM, the data-generating step follows the model: first draw the group effects, then the observations within the groups, all on the scale of the link function. Here, counts in plots within sites, with both treatments in each site, a treatment effect of 50% more individuals (`log(1.5)` on the log scale), a site SD of 0.5 and overdispersion (negative binomial with `theta = 2`):
+
+```{r, warning=FALSE}
+library(glmmTMB)
+simulateCounts = function(nSites = 15, nPlots = 6, effect = log(1.5),
+                          siteSD = 0.5, theta = 2){
+  dat = data.frame(site = factor(rep(1:nSites, each = nPlots)),
+                   treatment = rep(c(0, 1), length.out = nSites * nPlots))
+  siteEffect = rnorm(nSites, sd = siteSD)                       # group effects first
+  mu = exp(1 + effect * dat$treatment + siteEffect[dat$site])   # log link
+  dat$count = rnbinom(nrow(dat), mu = mu, size = theta)
+  fit = tryCatch(glmmTMB(count ~ treatment + (1 | site),
+                         family = nbinom2, data = dat),
+                 error = function(e) NULL)
+  if (is.null(fit)) return(NA)                                  # failed fit
+  summary(fit)$coefficients$cond["treatment", 4]
+}
+
+set.seed(123)
+sites = c(5, 10, 20, 40)
+powerGLMM = sapply(sites, function(s)
+  mean(replicate(100, simulateCounts(nSites = s)) < 0.05, na.rm = TRUE))
+plot(sites, powerGLMM, type = "b", xlab = "Number of sites (6 plots each)",
+     ylab = "Power")
+```
+
+With 6 plots per site, 20 sites give a power of 0.66 and 40 sites 0.90, so roughly 30 sites are needed for 80% power. Some practical points:
+
+-   Take the variance parameters (here `siteSD` and `theta`) from a pilot study or from published data, and try several values to see how sensitive the power is.
+-   Vary the number of groups and the number of observations per group separately (in the example, the treatment varies within sites). For predictors that vary only between groups, the number of groups limits the power; for predictors that vary within groups (as the treatment here), more observations per group also help.
+-   Fitting a GLMM takes time: use about 100 replicates while you develop the code and more for the final result. Count fits that fail or are singular, and report how many there were.
+:::
+
+For mixed models, you can also simulate from a model fitted to pilot data with `simulate()`, instead of writing the data-generating step by hand, and the simr package [@green2016simr] automates power analyses for `lme4` models, including the extension of a pilot data set to more groups.
 
 ## Next steps {#sec-summary-next}
 

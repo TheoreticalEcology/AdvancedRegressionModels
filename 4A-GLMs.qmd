@@ -14,11 +14,11 @@ set.seed(42)
 
 In this chapter, you will learn
 
--   how a GLM connects the linear predictor to the response via a link function and a distribution, and which variant to use for which type of response (@sec-glm-variant);
--   how to check GLMs with simulated residuals and fix the typical problems: overdispersion and zero-inflation (@sec-glm-residual);
--   why effects and interactions depend on the scale (link vs. response scale) (@sec-glm-interaction), and what changes when you add random effects (@sec-glm-glmm).
+- how a GLM connects the linear predictor to the response via a link function and a distribution, and which variant to use for which type of response (@sec-glm-variant);
+- how to check GLMs with simulated residuals and fix the typical problems: overdispersion and zero-inflation (@sec-glm-residual);
+- why effects and interactions depend on the scale (link vs. response scale), and how to report ratios, predictions and data-averaged effects on the response scale (@sec-glm-interaction), and what changes when you add random effects, including how to test them (@sec-glm-glmm, @sec-glm-glmmtest).
 
-**Workflow steps** (@sec-intro-workflow): step 3 (choice of the distribution), step 5 (residual checks), step 6 (inference on the response scale).
+**Workflow steps** (@sec-summary): step 3 (choice of the distribution), step 5 (residual checks), step 6 (inference on the response scale).
 
 Prerequisites: the linear model (@sec-lm), random effects (@sec-re) for the GLMM parts.
 :::
@@ -102,27 +102,25 @@ fit = glm(feeding ~ attractiveness, data = birdfeeding, family = "poisson")
 summary(fit)
 ```
 
-The output is very similar to the `lm()`, however, as the residuals are no longer assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (deviance = 2 \[logL(saturated) - logL(fitted)\], but note that the term is used with different definitions, see @nte-glm-deviance). So, we have
+The output is very similar to the `lm()`, however, as the residuals are no longer assumed to scatter normally, all statistics based on R^2^ have been replaced by the deviance (defined in @nte-glm-deviance). So, we have
 
 - Deviance residuals on top
 
-- Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the log-likelihood or the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~)\] (see the box below)
+- Instead of R^2^, we get null vs. residual deviance, and AIC. Based on the log-likelihood or the deviance, we can calculate a pseudo R^2^, e.g. McFadden, which is 1-\[LogL(M)/LogL(M~0~)\] (see the example box below)
 
 ::: {#nte-glm-deviance .callout-note}
 #### Different definitions of deviance
 
 The term *deviance* is used with two related, but different definitions, which is a common source of confusion:
 
-1.  **Deviance of a GLM (general definition):** $D = 2\,[\log L(\text{saturated}) - \log L(\text{fitted})]$. The saturated model has one parameter per observation and fits the data (almost) perfectly, so $D$ measures how far the fitted model is from the best possible fit. This is what `deviance()` returns for `glm` objects, and what is shown as null and residual deviance in `summary()` and in the `anova()` tables of GLMs. For a normal linear model, $D$ is the residual sum of squares (RSS; divided by $\sigma^2$ for the scaled deviance), which is why the deviance plays the role of the sum of squares in GLMs (see @sec-anova-example for the sums of squares in ANOVA). For 0/1 binomial data, $\log L(\text{saturated}) = 0$, and thus $D = -2 \log L$.
+1.  **Deviance of a GLM (general definition):** $D = 2\,[\log L(\text{saturated}) - \log L(\text{fitted})]$. The saturated model has one parameter per observation and fits the data (almost) perfectly, so $D$ measures how far the fitted model is from the best possible fit. This is what `deviance()` returns for `glm` objects, and what is shown as null deviance (D of the intercept-only model) and residual deviance (D of the fitted model) in `summary()` and in the `anova()` tables of GLMs. For a normal linear model, $D$ is the residual sum of squares (RSS; divided by $\sigma^2$ for the scaled deviance), which is why the deviance plays the role of the sum of squares in GLMs (see @sec-anova-example for the sums of squares in ANOVA). For 0/1 binomial data, $\log L(\text{saturated}) = 0$, and thus $D = -2 \log L$.
 2.  **Deviance as** $-2 \log L$: in many mixed-model contexts, $-2 \log L(\text{fitted})$ is called the deviance (older versions of `lme4` did this in their `anova()` tables, and `deviance()` for `lmer` fits still returns it; newer `lme4` versions and `glmmTMB` print it as `-2*log(L)`). It is the same as $D$ without the term $2 \log L(\text{saturated})$. AIC is built on this quantity, $\mathrm{AIC} = -2 \log L + 2k$.
 
 The two definitions differ by $2 \log L(\text{saturated})$, which is the same for all models fitted to the same data. Therefore, *differences* between models agree for both definitions as long as the dispersion is fixed (e.g. Poisson, binomial), and likelihood ratio tests and AIC comparisons give the same results. The *absolute values* are different, and numbers calculated with the two definitions must not be compared. For normal linear models, differences in RSS and differences in $-2 \log L$ are not identical, because the variance is estimated: at the maximum likelihood estimate, $-2 \log L = n \log(\mathrm{RSS}/n) + n (1 + \log 2\pi)$.
 :::
 
 ::: callout-note
-The deviance of our model M~1~ is defined as $Deviance_{M_1} = 2 \cdot (logL(M_{saturated}) - logL(M_1))$
-
-**Example:**
+**Example:** we can calculate the deviance by hand, using a saturated model with one parameter per observation.
 
 Deviance of M~1~
 
@@ -154,8 +152,6 @@ print(McFadden)
 R2_dev = 1- (logLik(fitSat) - logLik(fit1)) / (logLik(fitSat) - logLik(fitNull))
 print(R2_dev)
 ```
-
-*Note: outside of the context of GL(M)Ms, deviance is sometimes defined simply as* $-2 \log L(M_1)$ *(see @nte-glm-deviance for the two definitions).*
 :::
 
 If we want to calculate model predictions, we have to transform to the response scale. Here we have a log link, i.e. we have to transform with exp(linear response).
@@ -191,7 +187,15 @@ plot(allEffects(fit))
 fit = glm(y ~ x + offset(log(area)), family = "poisson")
 ```
 
-As the log-link connects the linear predictor as in $y = exp(x)$, and $exp(x + log(area)) = exp(x) \cdot area$, this makes the expected counts proportional to area, or whatever variable is added as a log offset.
+To see why this is useful, consider that with the log link
+
+$$y  = exp(a_0 + a_1 \cdot x + log(area) )$$
+
+and then rewriting
+
+$$y  = exp(a_0 + a_1 \cdot x) \dot exp(log(area)) $$
+
+i.e. this makes the expected counts proportional to area, or whatever variable is added as a log offset.
 
 **Interactions:** As for all GLMs with nonlinear link functions, interpretation of the interactions is more complicated. See the section on interactions in GLMs (@sec-glm-interaction) for notes on this.
 
@@ -255,9 +259,7 @@ If you do an ANOVA on a glm, you should take care that you perform a Chisq and n
 anova(m1, test = "Chisq")
 ```
 
-Note that `anova()` gives tests for a single model only for `glm`. For `glmer` and `glmmTMB`, use `car::Anova()`, or compare two nested models with `anova(m0, m1)` (a likelihood-ratio test).
-
-The function car::Anova works for most model classes and uses a ChiSq test automatically (for glm this is a likelihood-ratio test; for glmer/glmmTMB, `car::Anova` computes Wald chi-squared tests, which are approximate). Given that you probably want to use a type II or III Anova anyway, you should prefer it.
+`anova()` on a single model gives sequential (type I) tests, and only for some model classes (e.g. `lm`, `glm`, `gls`; for `glmer` it gives no p-values, for `glmmTMB` no such method exists). The function car::Anova works for most model classes and uses a ChiSq test automatically (for glm this is a likelihood-ratio test; for glmer/glmmTMB, `car::Anova` computes Wald chi-squared tests, which are approximate). It gives type II tests by default (type III with `type = "III"`, which needs sum-to-zero contrasts, @cau-glm-before); as you probably want one of these anyway, prefer it.
 
 ```{r, message=FALSE}
 car::Anova(m1)
@@ -266,15 +268,12 @@ car::Anova(m1)
 ::: {#cau-glm-before .callout-caution}
 #### Before testing a GLM
 
-- **Check dispersion first.** For Poisson and k/n binomial models, overdispersion (see the section on dispersion problems, @sec-glm-dispersion) makes all p-values of `car::Anova()` and `summary()` too small. It is not unusual that a seemingly highly significant effect disappears once the dispersion is accounted for. If you use a quasi-family (see @sec-glm-dispersion) as a quick fix, use `car::Anova(m, test = "F")`.
-- **Coding and centering.** Everything that was said in the chapter on ANOVA (@sec-anova) about type II vs. III (@sec-anova-collinearity), contrasts (@sec-anova-contrast) and centering also applies to GLMs, with the difference that averages are taken on the link scale.
-- **Reporting on the response scale.** `emmeans()` works for GLMs as well. With `type = "response"`, means are back-transformed to the response scale. Comparisons with `pairs()` are then reported as ratios (Poisson, log link) or odds ratios (binomial, logit link), while the tests are still performed on the link scale.
-- **Mixed models.** For tests and confidence intervals of GLMMs fitted with `glmer` or `glmmTMB`, see the overview in @tbl-re-inference.
+- **Check dispersion first.** For Poisson and k/n binomial models, overdispersion (see the section on dispersion problems, @sec-glm-dispersion) makes all p-values of `car::Anova()` and `summary()` too small. It is not unusual that a seemingly highly significant effect disappears once the dispersion is accounted for. Refit with a negative binomial or beta-binomial family (@sec-glm-dispersion); quasi-families are discouraged (no residual checks, no AIC), and if you use one anyway, test with `car::Anova(m, test.statistic = "F")`.
+- **Coding and centering.** The rules for type II vs. III, sum-to-zero contrasts and centering from the chapter on ANOVA (@sec-anova-contrast) also apply to GLMs; averages are taken on the link scale.
+- **Reporting on the response scale.** `emmeans(m, ~ x, type = "response")` back-transforms the means, and `pairs()` then gives ratios (log link) or odds ratios (logit link); for differences and data-averaged effects on the response scale, see @sec-glm-effects.
 :::
 
-Of course, when using `car::Anova` with random effects, the caveats that we discussed in the section on degrees of freedom of random effects (@sec-re-df) apply: it does not account for changes in the degrees of freedom created by changing the fixed effect structure. Something like the lmerTest package which uses a df approximation does not exist for GLMMs. Thus, the values that you obtain here are calculated under the assumption that the RE structure is the same.
-
-If you see large changes in your RE structure, or if you want to select on the REs, you can move to a simulated LRT (see @sec-re-simlrt).
+For GLMMs, `car::Anova()` gives Wald tests that treat the estimated random-effect variances as exact and ignore the df problem of mixed models (@sec-re-df), so with few groups the p-values are too small; for alternatives, see @tbl-glm-glmmtest.
 
 #### Notes on the logistic regression {#sec-glm-logistic-note}
 
@@ -356,7 +355,7 @@ plotResiduals(res, form = elk$ruggedness, quantreg = TRUE)
 
 The functional forms of our confounders are not perfect.
 
-Since we are not really interested in them, a cool trick is to use a GAM (see @sec-lm-gam) which automatically adjusts the functional form of the fitted curve to flexibly take care of the confounders. Our main predictor dist_roads is still modeled as a linear effect.
+Since we are not really interested in them, we model the confounders flexibly with a GAM, as in the section on statistical control (@sec-causal-adjustment). Our main predictor dist_roads is still modeled as a linear effect.
 
 ```{r, message=FALSE}
 library(mgcv)
@@ -470,18 +469,16 @@ Let's look again at the titanic example
 m1 = glm(survived ~ sex*age, family = "binomial", data = titanic)
 ```
 
-How can we check the residuals of this model? Due to an unfortunate programming choice in R (Nerds: Check `class(m1)`), the standard residual plots still work
+How can we check the residuals of this model? The standard residual plots still run (Nerds: check `class(m1)`), but they look horrible, because they check for normally distributed residuals, whereas ours should be binomial:
 
 ```{r chunk_chapter5_chunk10, echo=TRUE, eval=TRUE}
 par(mfrow = c(2, 2))
 plot(m1)
 ```
 
-but they look horrible, because they still check for normality of the residuals, while we are interested in the question of whether the residuals are binomially distributed.
-
 ### DHARMa residual plots for GL(M)Ms {#sec-glm-dharma}
 
-The `DHARMa` package that we already introduced in @sec-lm-residual-dharma solves this problem
+The DHARMa residuals solve this problem: they are simulated from the fitted model, so they work for any family and are read as for the linear model (@sec-lm-residual-dharma).
 
 ```{r chunk_chapter5_chunk12, echo=TRUE, eval=TRUE}
 library(DHARMa)
@@ -494,17 +491,7 @@ Standard plot:
 plot(res)
 ```
 
-Out of the help page: The function creates a plot with two panels. The left panel is a uniform Q-Q plot (calling [plotQQunif](https://rdrr.io/cran/DHARMa/man/plotQQunif.html)), and the right panel shows residuals against predicted values (calling [plotResiduals](https://rdrr.io/cran/DHARMa/man/plotResiduals.html)), with outliers highlighted in red.
-
-Very briefly, we would expect that a correctly specified model shows:
-
-a)  A straight 1-1 line, as well as not significant of the displayed tests in the Q-Q-plot (left) -\> Evidence for a correct overall residual distribution (for more details on the interpretation of this plot, see help).
-
-b)  Visual homogeneity of residuals in both vertical and horizontal direction, as well as no significance of quantile tests in the Residual vs. predicted plot (for more details on the interpretation of this plot, see help).
-
-Deviations from these expectations can be interpreted similarly to a linear regression. See the vignette for detailed examples.
-
-With that in mind, we can say that there is nothing special to see here. Also residuals against predictors shows no particular problem:
+The Q-Q plot (left) follows the 1-1 line and the residuals vs. predicted plot (right) shows no pattern, so these two plots show no problem. The residuals against the predictors also show no particular problem:
 
 ```{r chunk_chapter5_chunk14, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 par(mfrow = c(1, 2))
@@ -630,7 +617,7 @@ testZeroInflation(res)
 
 This shows no sign of zero-inflation. There are, however, two problems with this test:
 
-1.  For some model structures (e.g. spatial correlation structures in glmmTMB), DHARMa can only simulate unconditionally, i.e. it re-simulates the random effects; with unconditional residuals, dispersion and zero-inflation tests are less powerful (see the subsection on conditional residual checks in @sec-corr-temporal)
+1.  For mixed models, the test is less powerful with unconditional residuals, because the re-simulated random effects add variation (@tip-re-predtype). This happens if you set `simulateREs = "unconditional"`, or if DHARMa cannot simulate conditionally for the model's covariance structure and falls back to unconditional simulations (it then says so in a message).
 2.  When there is really zero-inflation, variable dispersion models such as the negative Binomial often simply increase the dispersion to account for the zeros, leading to no apparent zero-inflation in the residuals, but rather underdispersion.
 
 Thus, for zero-inflation, model selection, or simply fitting a ZIP model is often more reliable than residual checks. Compare the models with and without `ziformula` via AIC or likelihood ratio test. Do not use the p-value of the zero-inflation intercept for this, as it tests a zero-inflation probability of 0.5, not the absence of zero-inflation.
@@ -642,80 +629,136 @@ summary(m4)
 
 In this case, we have no evidence for zero-inflation (AIC 1674.4 with vs. 1672.4 without zero-inflation, i.e. the simpler model is preferred; the estimated zero-inflation intercept of about -16 on the logit scale, i.e. a probability of about 0, with a huge standard error is a boundary estimate). To see an example where you can find zero-inflation, see the owls exercise (@cau-glm-owls).
 
-## Interpreting interactions in GLMs {#sec-glm-interaction}
+## Interpreting effects and interactions in GLMs {#sec-glm-interaction}
 
 ::: {#interpreting-interactions-in-glms}
 :::
 
-A significant problem with interpreting GLMs is the interpretation of slopes in the presence of other variables, in particular interactions. To understand this problem, let's first confirm to ourselves: if we simulate data under the model assumptions, parameters will be recovered as expected.
+A significant problem with interpreting GLMs is the interpretation of effects, in particular of interactions. To see the problem, let's simulate survival data in which the treatment and the concentration of a substance act additively on the probability scale: the treatment raises survival from 30% to 80%, and the concentration adds up to 15% in both groups. We might think that there is no interaction, but a logistic regression finds a clearly positive interaction coefficient (z ≈ 5):
 
 ```{r}
 library(effects)
-set.seed(123)
-trt = as.factor(sample(c("ctrl", "trt"), 5000, replace= T))
-concentration =  runif(5000)
+set.seed(1)
+n = 20000
+trt = as.factor(sample(c("ctrl", "trt"), n, replace = TRUE))
+concentration = runif(n)
+response = 0.3 + 0.5 * (as.numeric(trt) - 1) + 0.15 * concentration
+survival = rbinom(n, 1, prob = response)
+dat = data.frame(trt = trt, concentration = concentration, survival = survival)
 
-response = plogis(0 + 1 * (as.numeric(trt) - 1) + 1*concentration)
-survival = rbinom(5000, 1, prob = response)
-
-dat = data.frame(trt = trt, 
-                 concentration = concentration,
-                 survival = survival)
-
-m1 = glm(survival ~ trt * concentration, data = dat, family = "binomial")
-summary(m1)
-plot(allEffects(m1))
-```
-
-The problem with this, however, is the condition that we "simulate data under model assumptions", which includes the nonlinear link function. Let's have a look what happens if we simulate data differently: in this case, we just assume that treatment changes the overall probability of survival (from 45% to 90%), and the concentration increases the survival by up to 10% for each group. We may think that we don't have an interaction in this case, but the model finds one
-
-```{r}
-response = 0.45 * as.numeric(trt) + 0.1*concentration
-survival = rbinom(5000, 1, response)
-
-dat = data.frame(trt = trt, 
-                 concentration = concentration,
-                 survival = survival)
-
-m2 = glm(survival ~ trt * concentration, 
-            data = dat, family = "binomial")
+m2 = glm(survival ~ trt * concentration, data = dat, family = "binomial")
 summary(m2)
 plot(allEffects(m2))
 ```
 
-It looks in the effect plots as if the slope is changing as well, but note that this is because the effect plots scale the y axis according to the link - absolutely, the effect of concentration is 10% for both groups.
-
-The reason is simple: if we plot the plogis function, it becomes obvious that at different base levels (which would be controlled by trt in our case), moving a unit in concentration has a different effect.
+The reason is the link function: a coefficient is a constant change on the logit scale, and the same change on the logit scale translates into different changes of the probability, depending on where we start. If we plot the `plogis()` function, this becomes obvious: at a baseline near 0.4 (control), one unit on the logit scale changes the probability by a lot, at a baseline near 0.9 (treatment) by much less.
 
 ```{r, echo= F}
-curve(plogis, -6, 6, xlab = "concentration")
+curve(plogis, -6, 6, xlab = "linear predictor", ylab = "probability")
 abline(v = 0)
 abline(v = 1, lty = 2)
 abline(v = 3, col = "red")
 abline(v = 4, col = "red", lty =2)
 ```
 
-If we turn this around, this means that if we want the model to have the same effect of concentration at the response scale for both treatments, we must implement an interaction.
-
-Whether this is a feature or a bug of GLMs depends a bit on the viewpoint. One could argue that, looking at survival, for example, it doesn't make sense that the concentration should have an effect of absolute 10% on top of the baseline created by trt for either 45% and 90% survival, and if we see such an effect, we should interpret this as an interaction, because on the odds scale, which is what the logit link works with, the same 10% change is much larger close to 100% than around 50%. Whether this is the biologically relevant scale is a modeling decision.
-
-Still, this also means that main effects and interactions can change if you change the link function, and default links are not always natural from a biological viewpoint.
-
-There are several ways to get better interpretable interactions. One option is that we could fit the last model with a binomial distribution, but with an identity link (note that identity-link binomial models may predict outside \[0, 1\] and may need start values via `start = ...`; use with care)
-
-```{r, warning=FALSE}
-m3 = glm(survival ~ trt * concentration,
-            data = dat, family = binomial(link = "identity"))
-summary(m3)
-plot(allEffects(m3))
-```
-
-Now, we can interpret effects and interactions exactly like in a linear regression.
-
-Another option is to look at the predicted effects at the response scale, e.g. via the effect plots, and interpret from there if we have an interaction according to what you would define as one biologically. One option to do this is the margins package.
+Turned around: for the same effect of concentration on the probability scale in both groups, the model needs an interaction on the logit scale. The effect plots show this as well, but note that they scale the y axis according to the link, so the lines look straight and the slopes look different. Whether a "real" interaction is one on the link scale or one on the response scale is a biological decision: one could argue that a change of 15% in survival means something different at 30% than at 80% survival. Decide this from your question before looking at the results; a link-scale interaction can appear or disappear depending on the scale, and choosing the scale after seeing which one gives the result you like is a forking path (@sec-select-problems).
 
 ::: callout-note
 If effect directions change in sign, they will do so under any link function (as they are always monotone), so changes in effect direction are robust to this problem.
+:::
+
+### Ways to report an effect {#sec-glm-effects}
+
+The effect of a predictor on the response scale depends on all other predictors. As in the linear model (@sec-lm-nonlinear-effect; effects plots to look at the model, `emmeans` for the numbers), you can report the curve or predictions at chosen values, slopes or differences at chosen values, and the data-averaged effect; in a GLM, a fourth option appears, the ratio, which is constant on the link scale. In a linear model without interactions or curvature, the slope at the mean equals the data-averaged slope; in a GLM it does not.
+
+| What | Scale | Averaged over | Call |
+|----|----|----|----|
+| Curve or predictions at chosen values | response | nothing | effects plots; `emmeans(m, ~ trt, at = list(...), type = "response")` |
+| Slopes or differences at chosen values | response | nothing | `emtrends(m, ~ trt, var = "x", regrid = "response")`; `pairs(regrid(emmeans(...)))` |
+| Data-averaged effect: the difference (factor) or slope (numeric predictor) on the response scale, averaged over all observations | response | the observed data | factors: `emmeans(m, ~ trt, counterfactuals = "trt", type = "response")`; slopes: finite differences |
+| Ratio: rate ratio (log link), odds ratio (logit link) | link scale, back-transformed | nothing (constant without interactions; with interactions it depends on the other predictors) | `exp(coef(m))`; `pairs(emmeans(m, ~ trt, type = "response"))` |
+
+**Ratios.** For our model, the odds ratio of the treatment is
+
+```{r}
+library(emmeans)
+pairs(emmeans(m2, ~ trt, type = "response"), reverse = TRUE)
+```
+
+i.e. the odds of survival are about 12 times higher under treatment, evaluated at the mean concentration (`emmeans` may warn that the result can be misleading because of the interaction: the odds ratio changes with the concentration). Ratios arise because a logit-link model is additive in log-odds, and adding on a log scale means multiplying: a coefficient becomes a factor on the odds (with a log link, a factor on the expected count, the rate ratio). Ratios are compact and constant on the link scale, which is why they are the standard way to report GLM coefficients (@tbl-summary-link), but they are hard to read: an odds ratio is not a risk ratio, and an odds ratio of 12 does not tell you whether survival went from 1% to 11% or from 30% to 84%.
+
+**Predictions on the response scale** at chosen values of the other predictors answer this directly:
+
+```{r}
+emmeans(m2, ~ trt | concentration, at = list(concentration = c(0.2, 0.8)), type = "response")
+```
+
+The confidence intervals are back-transformed from the logit scale and therefore asymmetric and bounded by 0 and 1.
+
+**The data-averaged effect** answers the question "by how much did the treatment change survival on average in this sample". With `counterfactuals`, `emmeans` predicts every observation once as control and once as treated (with its own concentration), averages the predictions on the probability scale and compares them:
+
+```{r}
+emmC = emmeans(m2, ~ trt, counterfactuals = "trt", type = "response")
+emmC
+confint(contrast(emmC, "revpairwise"))
+```
+
+The treatment raised survival by 0.49 on average (the true value is 0.50). This quantity is the G-computation (also called standardization) estimate of an average causal effect (@sec-causal), it refers to the covariate distribution of this sample, its standard error assumes that the model is right (check the residuals first, @sec-glm-residual), and the predictor must be a factor (a 0/1 predictor is treated as numeric). The output label `actual_trt` refers to the observed treatment, over which the predictions are averaged.
+
+For a numeric predictor, the data-averaged slope on the probability scale follows from finite differences as in @sec-lm-nonlinear-effect, here per treatment group:
+
+```{r}
+h = 0.01
+d = (predict(m2, transform(dat, concentration = concentration + h), type = "response") -
+     predict(m2, transform(dat, concentration = concentration - h), type = "response")) / (2 * h)
+tapply(d, dat$trt, mean)
+```
+
+`emtrends()` with `regrid = "response"` gives instead the slope of the probability at the mean of the other predictors (shown in the next subsection); in our example, the two differ by less than 0.01. The `marginaleffects` package [@arelbundock2024interpret] computes such average effects and slopes directly for many model classes; in this book, we stay with `emmeans`.
+
+**Which one to report?** Always show the curve or the predictions, as for linear models; add one summary number. In a designed experiment with few covariates, a ratio or the difference at reference values is fine; for observational data, interactions or several covariates, the data-averaged effect is usually the most useful single number. For GLMMs, `counterfactuals` gives the data-averaged effect for a typical group, not a marginal one (@sec-glm-marginal). In all cases, say which scale and which averaging you used, e.g. "treatment increased survival by 0.49 (95% CI 0.48 to 0.50), averaged over the observed concentrations (data-averaged effect)", or "the odds of survival were 12 times higher under treatment (95% CI 11 to 13) at the mean concentration".
+
+### Interactions on the response scale {#sec-glm-interaction-response}
+
+With these tools, we can now judge the interaction of our example on the scale we decided on. On the logit scale, the slopes of concentration clearly differ between the groups:
+
+```{r}
+emtrends(m2, ~ trt, var = "concentration")
+```
+
+On the probability scale, they do not:
+
+```{r}
+emtrends(m2, ~ trt, var = "concentration", regrid = "response")
+pairs(emtrends(m2, ~ trt, var = "concentration", regrid = "response"))
+```
+
+So the rule is: a significant interaction on the link scale says nothing about whether the effects are additive on the response scale, and vice versa. Judge an interaction by differences of slopes or of effects on the scale that you decided on; for two factors, `contrast(regrid(emmeans(m, ~ A * B)), interaction = "pairwise")` gives the difference of differences on the response scale. Note also that main effects and interactions can change if you change the link function, and that default links are not always natural from a biological viewpoint.
+
+::: {.callout-caution icon="false"}
+#### Exercise — Effects on the count scale
+
+The `warpbreaks` data set (base R) contains the number of breaks in yarn for two types of wool (A, B) and three levels of tension (L, M, H). Fit `glm(breaks ~ wool * tension, data = warpbreaks, family = poisson)` and report the effect of tension (a) as rate ratios and (b) as data-averaged differences in the number of breaks. Then judge whether wool and tension interact on the count scale, and compare with the interaction on the link scale.
+:::
+
+::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
+#### Solution
+
+```{r}
+m = glm(breaks ~ wool * tension, data = warpbreaks, family = poisson)
+# (a) rate ratios, averaged over wool on the link scale
+pairs(emmeans(m, ~ tension, type = "response"), reverse = TRUE)
+# (b) data-averaged differences in breaks
+emmT = emmeans(m, ~ tension, counterfactuals = "tension", type = "response")
+confint(contrast(emmT, "revpairwise"))
+# interaction on the count scale (difference of differences) and on the link scale (ratio of ratios)
+contrast(regrid(emmeans(m, ~ tension * wool)), interaction = "pairwise")
+contrast(emmeans(m, ~ tension * wool), interaction = "pairwise", type = "response")
+# simple effects of tension within each wool type, on the count scale
+contrast(regrid(emmeans(m, ~ tension | wool)), "revpairwise")
+```
+
+Medium and high tension reduce breaks by 26% and 39% relative to low tension (rate ratios 0.74 and 0.61), i.e. by 10 and 15 breaks on average. An interaction is present on both scales (L-M: ratio of ratios 1.9, difference of differences 21 breaks; the interaction contrasts are not adjusted for multiple testing): for wool A, both higher tensions reduce breaks by about 20, for wool B only high tension has an effect (-9 breaks). Here the conclusion does not depend on the scale, but the numbers do: on the link scale, the L-H contrast does not differ between the wool types (ratio of ratios 1.2, p = 0.15), on the count scale it does (difference of differences 10.6 breaks, p = 0.003), because the same ratio means more breaks at the higher counts of wool A. The scale can thus change whether an interaction contrast is significant, which is why the scale should be decided beforehand.
 :::
 
 ## New considerations for GLMMs {#sec-glm-glmm}
@@ -733,7 +776,7 @@ This has a number of consequences that may be unexpected if you don't think abou
 
 ### Unconditional vs. marginal predictions {#sec-glm-marginal}
 
-One of those is that, if you have a nonlinear link function, predictions based on the fixed effects (unconditional, see @tip-re-predterms for the terms) will not correspond to the mean of your data, or the average of the model predictions including the random effect (marginal predictions). To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale
+A consequence of the inverse link is that, with a nonlinear link function, unconditional predictions (fixed effects only) differ from marginal predictions (averaged over the random effects) and thus from the mean of your data; the three kinds of predictions are defined in @tip-re-predterms. To understand this, imagine we have a logistic regression, and our fixed effects predict a mean of 1. Then the unconditional prediction at the response scale
 
 ```{r}
 plogis(1)
@@ -747,17 +790,39 @@ mean(plogis(1 + rnorm(1e5, sd = 1)))
 
 The value (about 0.70) is lower than the unconditional prediction (0.73), and this value is also what you would approximately get if you take the mean of your data.
 
-Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. A simple and transparent way to create marginal predictions is the simulation above: create unconditional predictions on the link scale, add random effects simulated with the estimated variances, push them through the corresponding link function and average.
+Whether this is a problem or not is a matter of perspective. From statistical viewpoint, assuming that your model assumptions correspond to the data-generating model, there is nothing wrong with the unconditional (fixed effect) prediction not corresponding to the mean of the data. From a practical side, however, many people are unsatisfied with this, because they want to show predictions against data. A simple and transparent way to create marginal predictions is the simulation above: create unconditional predictions on the link scale, add random effects simulated with the estimated variances, push them through the corresponding link function and average. `emmeans` does approximately the same with `bias.adj = TRUE`, given the standard deviation of the random effects (its confidence intervals ignore the uncertainty of this standard deviation), here for the `cbpp` data of the lme4 package:
+
+```{r, message=FALSE}
+library(lme4)
+m = glmer(cbind(incidence, size - incidence) ~ period + (1 | herd), data = cbpp, family = binomial)
+sdHerd = attr(VarCorr(m)$herd, "stddev")
+emmeans(m, ~ period, type = "response")                                # unconditional
+emmeans(m, ~ period, type = "response", bias.adj = TRUE, sigma = sdHerd)  # marginal
+```
+
+Here, "marginal" means averaged over the random effects (for the other meanings of the word, see @tip-re-predterms); the data-averaged effect (@sec-glm-effects) averages over the observations instead, with the random effects at zero: `emmeans(m, ~ period, counterfactuals = "period", type = "response")` gives the data-averaged effect for a typical herd (here identical to the unconditional means, because the model has no covariates), and the bias adjustment is not applied to counterfactual averages. A data-averaged effect that is also marginal over the random effects can be obtained by the simulation approach above, applied to each observation.
+
+### ANOVA and tests for GLMMs {#sec-glm-glmmtest}
+
+The following table summarizes our recommendations for ANOVA-type questions in GLMMs, analogous to the table for linear mixed models (@tbl-re-anova). As there, the table only lists which ANOVA types each function supports; which type to use is discussed in @sec-anova-choice.
+
+| Question | Recommended function | Notes |
+|----|----|----|
+| Test fixed-effect terms (ANOVA table) | `car::Anova(m)` | Wald $\chi^2$ tests, for `glmer` and `glmmTMB` models. Types II and III (`type = "II"`, `"III"`; default II). For type I, there is no single-model test with p-values (`anova(m)` of lme4 gives none, and glmmTMB has no such method); compare a sequence of nested models, each adding one term, with `anova(m1, m2, m3)` (likelihood ratio tests). Check dispersion first (@cau-glm-before). |
+| ... with fewer than about 10-20 groups, or a predictor that varies only between groups | `afex::mixed(formula, data, family = ..., method = "PB")` | The Wald p-values are then too small. `afex::mixed()` computes the whole ANOVA table with p-values from a parametric bootstrap (slow; for `glmer` models; types II and III, default III; with pbkrtest 0.5.5, this fails for `glmer` models with an error, so check that it runs and otherwise use `simulateLRT()`). Alternative for single terms, also for `glmmTMB`: `DHARMa::simulateLRT(m0, m1)`, with m0 = the model without the term. |
+| How much variation do fixed and random effects explain? (description, not a test) | `lme4::VarCorr(m)`, `MuMIn::r.squaredGLMM(m)` | Random effects can be compared among each other by the ratios of their variances from `VarCorr()` (on the link scale). A GLMM has no residual variance on the link scale, so VPCs as for linear mixed models (@sec-re-vpc) and R^2^ values are only approximate (they use a distribution-specific residual variance, e.g. $\pi^2/3$ for the logit link); `r.squaredGLMM()` returns one row per approximation of this residual variance: "delta" (all families), "lognormal" and "trigamma" (log links; the package help recommends "trigamma" whenever available) and "theoretical" (binomial). Report "trigamma" for log links; otherwise state which row you report. |
+| Test a random effect | `DHARMa::simulateLRT(m0, m1)` | m0: the same fixed effects without the random effect (`glm()` if no random effect is left) (@sec-re-simlrt). If p = 0, report p < 1/(n+1) (@sec-anova-test). |
+
+: ANOVA-type questions for GLMMs (`glmer`, `glmmTMB`). {#tbl-glm-glmmtest}
 
 ## Take-home messages {#sec-glm-takehome}
 
 ::: callout-tip
-
 1.  Choose the distribution from the type of response data (counts, 0/1, k/n, positive continuous, proportions), and then check the residuals of the fitted model.
-2.  The estimates are on the scale of the link function. Report effects on the response scale: rate ratios for log links, odds ratios for logit links, or back-transformed predictions with CIs (`emmeans(..., type = "response")`).
-3.  Check dispersion before you interpret p-values: with overdispersed Poisson or k/n binomial data, p-values are too small. Overdispersion is often caused by model misfit, so check the model structure first; then use a negative binomial or beta-binomial family, an observation-level random effect, or a dispersion model.
+2.  The estimates are on the scale of the link function. Report effects on an interpretable scale: rate ratios for log links, odds ratios for logit links, back-transformed predictions with CIs (`emmeans(..., type = "response")`), or the data-averaged effect (`counterfactuals`); say which scale and averaging you used (@sec-glm-effects).
+3.  Check dispersion before you interpret p-values: with overdispersed Poisson or k/n binomial data, p-values are too small. Overdispersion is often caused by model misfit, so check the model structure first; then use a negative binomial or beta-binomial family (if needed with a dispersion model that depends on predictors), or an observation-level random effect.
 4.  Many zeros do not mean zero-inflation; zero-inflation is relative to the fitted model. Compare models with and without `ziformula` instead of relying on the residual test alone.
-5.  With a nonlinear link, interactions and effects depend on the scale. In a GLMM, predictions from the fixed effects alone (unconditional) need not match the average prediction over the random effects (marginal) or the mean of your data.
+5.  With a nonlinear link, interactions and effects depend on the scale: decide the scale from the biology before looking at the results, and judge interactions by slopes or differences on that scale. In a GLMM, predictions from the fixed effects alone (unconditional) need not match the average prediction over the random effects (marginal) or the mean of your data.
 :::
 
 ## Case studies {#sec-glm-case}
@@ -828,7 +893,7 @@ plot(m2, ask = FALSE)
 Plant cover is one of the most common continuous proportions in ecology, and it comes with some special issues [@damgaard2019beta]:
 
 - **How was cover measured?** Pin-point (point-intercept) data are hits out of N pins, i.e. k/n data; as plants grow in clumps, they are often overdispersed (beta-binomial). Cover classes (Braun-Blanquet, Londo, ...) are ordinal. Visual estimates in % are continuous, but often rounded to 1, 5 or 10%.
-- **Zeros:** if a zero means "too little to be recorded", the ordered beta fits the idea of one continuous scale; if it means that the species cannot grow there, the hurdle beta separates presence from cover where present.
+- **Zeros:** the choice between ordered and hurdle beta depends on what a zero means (@sec-glm-beta): "too little to be recorded" suits the ordered beta, "the species cannot grow there" the hurdle beta.
 - **Totals:** because plants overlap and there is bare ground, the cover of all species in a plot does not sum to 100%. Only relative cover (share of total vegetation) sums to 1.
 - **Several species:** the cover of species in the same plot is usually correlated (@sec-glm-shares). For joint models of many species, @korhonen2024comparison found the hurdle beta most accurate in simulations, with no noticeable difference to ordered beta for real data.
 
@@ -838,6 +903,8 @@ The data set `varespec` (package vegan) contains visually estimated cover (in %)
 library(vegan)
 data(varespec)
 data(varechem)
+# Al is scaled (per SD); [, 1] drops the attributes, so that predict() works
+# with new values given in SD units, e.g. Al = c(-1, 0, 1)
 d <- data.frame(cover = varespec$Callvulg / 100, Al = scale(varechem$Al)[, 1])
 table(d$cover == 0)
 ```
@@ -917,7 +984,7 @@ Bilberry (*Vaccinium myrtillus*, `Vaccmyrt`) is absent in 14 of the 24 plots. An
 
 ```{r}
 d2 <- data.frame(cover = varespec$Vaccmyrt / 100,
-                 Hum = scale(varechem$Humdepth)[, 1])
+                 Hum = scale(varechem$Humdepth)[, 1])  # scaled, as Al above
 table(d2$cover == 0)
 
 m_ord2 <- glmmTMB(cover ~ Hum, family = ordbeta(), data = d2)
@@ -1174,18 +1241,21 @@ library(pROC)
 auc(elephant$occurenceData$Presence, predict(model, type = "response"))
 ```
 
-The AUC is a common measure of how well a model separates presences from absences: the probability that a randomly chosen presence gets a higher predicted value than a randomly chosen absence (0.5 = random, 1 = perfect). However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validation (@sec-select-cv)
-
-```{r, results=F, message = F}
-library(boot)
-res = cv.glm(elephant$occurenceData, model, cost = auc, K=5)
-```
+The AUC is a common measure of how well a model separates presences from absences: the probability that a randomly chosen presence gets a higher predicted value than a randomly chosen absence (0.5 = random, 1 = perfect). However, it doesn't penalize for complexity, as the AIC. Better to look at it under cross-validation. As explained in the section on cross-validation (@sec-select-cv), we collect the out-of-sample predictions of all folds and calculate the AUC once. Because the loop uses `update()`, it works for any model you fit to these data:
 
 ```{r}
-res$delta
+dat = elephant$occurenceData
+set.seed(123)
+fold = sample(rep(1:5, length.out = nrow(dat)))  # random assignment to 5 folds
+predCV = numeric(nrow(dat))
+for (k in 1:5) {
+  fit = update(model, data = dat[fold != k, ])
+  predCV[fold == k] = predict(fit, newdata = dat[fold == k, ], type = "response")
+}
+auc(dat$Presence, predCV)
 ```
 
-Currently, fit and validation AUC are nearly identical, because we have a very simple model. However, for more complex models, this could change.
+Currently, fit and validation AUC are nearly identical (0.71), because we have a very simple model. However, for more complex models, this could change.
 
 - Drop some of the highly correlated variables (don't use all of them).
 

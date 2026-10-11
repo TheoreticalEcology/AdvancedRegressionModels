@@ -9,22 +9,7 @@ set.seed(42)
 
 # Case studies {#sec-cases}
 
-General strategy for analysis (see also the workflow in @sec-summary):
-
-1.  Define formula via scientific questions + confounders.
-2.  Define type of GLM (lm, logistic, Poisson).
-3.  Blocks in data -\> Random effects, start with random intercept.
-
-Fit this base model, then do residual checks for
-
-- Wrong functional form -\> Change fitted function.
-- Wrong distribution-\> Transformation or GLM adjustment.
-- (Over)dispersion -\> Variable dispersion GLM.
-- Heteroskedasticity -\> Model dispersion.
-- Zero-inflation -\> Add ZIP term.
-- ...
-
-And adjust the model accordingly.
+For all case studies, follow the general strategy of the workflow chapter (@sec-summary): fit a base model derived from the question, check its residuals, and adjust the model to the problems you find (@tbl-cheat-residual).
 
 ## Hurricanes {#sec-cases-hurricane}
 
@@ -77,17 +62,19 @@ This is the model fit by @jung2014female, fit with glmmTMB
 library(DHARMa)
 library(glmmTMB)
 
+hurricanes$sNDAM = scale(hurricanes$NDAM)
 m1 = glmmTMB(alldeaths ~ MasFem*
-                             (Minpressure_Updated_2014 + scale(NDAM)),
+                             (Minpressure_Updated_2014 + sNDAM),
                            data = hurricanes, family = nbinom2)
 summary(m1)
 ```
 
-Note that the model above scales only NDAM (and the paper does not say whether they scaled), but as we are looking for main effects in the presence of interactions, we should definitely scale to improve the interpretability (see @sec-lm-interaction-centering)
+Note that the model above scales only NDAM (and the paper does not say whether they scaled), but as we are looking for main effects in the presence of interactions, we should at least center the predictors (@sec-lm-interaction-centering); here, we also scale them, which makes the effects comparable.
 
 ```{r}
-m2 = glmmTMB(alldeaths ~ scale(MasFem) *
-                             (scale(Minpressure_Updated_2014) + scale(NDAM)),
+hurricanes$sMasFem = scale(hurricanes$MasFem)
+hurricanes$sMinpressure = scale(hurricanes$Minpressure_Updated_2014)
+m2 = glmmTMB(alldeaths ~ sMasFem * (sMinpressure + sNDAM),
                            data = hurricanes, family = nbinom2)
 summary(m2)
 ```
@@ -103,8 +90,7 @@ In the ANOVA we see that MasFem still n.s. but interactions, and if you would ca
 ```{r}
 hurricanes$highcenteredNDAM = hurricanes$NDAM - max(hurricanes$NDAM)
 
-m3 = glmmTMB(alldeaths ~ scale(MasFem) *
-                             (scale(Minpressure_Updated_2014) + highcenteredNDAM),
+m3 = glmmTMB(alldeaths ~ sMasFem * (sMinpressure + highcenteredNDAM),
                            data = hurricanes, family = nbinom2)
 summary(m3)
 ```
@@ -118,7 +104,7 @@ plot(allEffects(m3, partial.residuals = T))
 
 OK, this means we can replicate the results of the paper, even if concentrating the entire analysis exclusive on high NDAM seems a bit cherry-picking. Choosing the evaluation point after looking at the data inflates the false-positive risk, and at the maximum NDAM the estimate rests on very few storms. Another way to phrase the result is that we don't find a main effect of MasFem. However, to be fair: the current results do say that there is a significant difference at high NDAM, and such a difference, if it existed, would be important.
 
-But we haven't done residual checks yet. Let's do that:
+But we haven't done residual checks yet. Let's do that for the original model of the paper (`originalModelGAM`):
 
 ```{r, message=FALSE}
 res <- simulateResiduals(originalModelGAM)
@@ -132,8 +118,8 @@ plotResiduals(res, hurricanes$Minpressure_Updated_2014)
 No significant deviation in the general DHARMa plot, but residuals \~ NDAM looks funny, which was also pointed out by Bob O'Hara in a blog post after publication of the paper. Let's try to correct this - transforming NDAM with \^0.2 (found by trying a few powers; 0.1 to 0.2 fit best) does a great job:
 
 ```{r}
-correctedModel = glmmTMB(alldeaths ~ scale(MasFem) *
-                             (scale(Minpressure_Updated_2014) + scale(NDAM^0.2)),
+hurricanes$sNDAM02 = scale(hurricanes$NDAM^0.2)
+correctedModel = glmmTMB(alldeaths ~ sMasFem * (sMinpressure + sNDAM02),
                           data = hurricanes, family = nbinom2)
 
 res <- simulateResiduals(correctedModel, plot = T)
@@ -143,7 +129,7 @@ car::Anova(correctedModel)
 
 ```
 
-All gone, only damage is doing the effect. This wouldn't change with re-scaling probably, as interactions are n.s.
+All gone, only damage is doing the effect. As the interactions are n.s., the main effects would hardly change with a different centering.
 
 What if we would have fit our own model? First of all, note that if hurricane names were given randomly, we wouldn't have to worry about confounders (@sec-causal-experiment). However, this is not the case, hurricanes were only named randomly after 1978 or so.
 
@@ -163,7 +149,7 @@ I added NDAM to the model, because we saw earlier that it has a strong effect. I
 As we have several observations per year, a conservative approach would be to add a RE on year. Note that we use year both as a fixed effect (to remove temporal trends) and a random intercept, which is perfectly fine, however.
 
 ```{r}
-newModel = glmmTMB(alldeaths ~ scale(MasFem) * scale(NDAM^0.2) + Year + (1|Year),
+newModel = glmmTMB(alldeaths ~ sMasFem * sNDAM02 + Year + (1|Year),
                            data = hurricanes, family = nbinom2)
 summary(newModel)
 
@@ -171,6 +157,8 @@ car::Anova(newModel) # nothing regarding MasFem
 ```
 
 The variance of the year random effect is estimated as practically zero (a boundary fit), so there is no extra year-to-year variation beyond the fixed effect of Year, and removing the random effect would not change the results. The results remain that there is no effect of MasFem!
+
+The hurricanes are also a time series. The check for temporal autocorrelation and an AR1 model for these data are shown in the hurricane exercise of the chapter on correlation structures (@sec-corr-hurricane); they show only a weak, negative autocorrelation that could also be a statistical fluke.
 :::
 
 ## Researcher degrees of freedom --- skin color and red cards {#sec-cases-redcard}
@@ -398,12 +386,13 @@ data$sLat = scale(data$Latitude)
 data$sLon = scale(data$Longitude)
 data$sTemp_Air = scale(data$Temp_Air)
 
-# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
-# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
+# remove rows with NAs in the variables used (see text)
 rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
 data = data[rows, ]
 
 ```
+
+We remove the rows with NAs in the variables we use beforehand (with `model.matrix()`), so that all models use the same rows and can be compared (@sec-miss-na-action). We do the same for the seed bank data.
 
 Our hypothesis is that the abundance of Bulinus species depends on the water characteristics, e.g. site_type, Temp_water, pH, Cond, swmo_prec, water_speed_ms, and water_depth. We will set the length of the collection duration as an offset.
 
@@ -477,7 +466,7 @@ testDispersion(res)
 testZeroInflation(res)
 ```
 
-So far, we have not included a spatial trend, so there could be spatial autocorrelation. Let's check for it. Note that we simulate unconditionally here (`simulateREs = "unconditional"`): with the default conditional simulations, the fitted random effects of the sites would absorb the spatial pattern, and the test could not detect it (see the box on conditional simulations in @sec-corr-temporal).
+So far, we have not included a spatial trend, so there could be spatial autocorrelation. Let's check for it. Note that we simulate unconditionally here (`simulateREs = "unconditional"`): with the default conditional simulations, the fitted random effects of the sites would absorb the spatial pattern, and the test could not detect it (@tip-re-predtype).
 
 ```{r}
 ## Spatial
@@ -519,32 +508,7 @@ Residuals do not look perfect but I would say that we can stop here now.
 
 **Prevalence of *Bulinus* (GLMM)**
 
-Prepare+scale data:
-
-```{r}
-library(lme4)
-library(glmmTMB)
-library(DHARMa)
-data = EcoData::snails
-data$sTemp_Water = scale(data$Temp_Water)
-data$spH = scale(data$pH)
-data$swater_speed_ms = scale(data$water_speed_ms)
-data$swater_depth = scale(data$water_depth)
-data$sCond = scale(data$Cond)
-data$swmo_prec = scale(data$wmo_prec)
-data$syear = scale(data$year)
-data$sLat = scale(data$Latitude)
-data$sLon = scale(data$Longitude)
-data$sTemp_Air = scale(data$Temp_Air)
-
-# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
-# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
-rows = rownames(model.matrix(Bulinus_tot~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
-data = data[rows, ]
-
-```
-
-Let's start directly with all potential confounders (see previous solution):
+We use the data prepared and scaled in the solution for the total abundance (run that one first; it also loads lme4, glmmTMB and DHARMa). Let's start directly with all potential confounders:
 
 ```{r}
 model1 = glmmTMB(cbind(Bulinus_pos_tot, Bulinus_tot - Bulinus_pos_tot )~
@@ -598,44 +562,23 @@ After de-trending, the spatial autocorrelation is no longer significant, so we d
 
 The species models are connected by their response to latent variable (unobserved environment). For that, we will transform our dataset with respect to species from wide (sp1, sp2, sp3) to long format (species abundances in one column and a second column telling us the group (species)). In the model then, we will separate the species and their responses by using \~0+Species + Species:(predictors).
 
-The latent variable structure is set by the `rr(…)` object in the formula:
+The latent variable structure is set by the `rr(…)` object in the formula. We again use the data prepared in the solution for the total abundance (run that one first):
 
 ```{r}
-library(lme4)
-library(glmmTMB)
-library(DHARMa)
 library(tidyverse)
-data = EcoData::snails
-data$sTemp_Water = scale(data$Temp_Water)
-data$spH = scale(data$pH)
-data$swater_speed_ms = scale(data$water_speed_ms)
-data$swater_depth = scale(data$water_depth)
-data$sCond = scale(data$Cond)
-data$swmo_prec = scale(data$wmo_prec)
-data$syear = scale(data$year)
-data$sLat = scale(data$Latitude)
-data$sLon = scale(data$Longitude)
-data$sTemp_Air = scale(data$Temp_Air)
-
-# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
-# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
-rows = rownames(model.matrix(cbind(Bulinus_pos_tot, Bulinus_tot-Bulinus_pos_tot)~sTemp_Water + spH + sLat + sLon + sCond + seas_wmo+ swmo_prec + swater_speed_ms + swater_depth +sTemp_Air+ syear + duration + locality + site_irn + coll_date, data = data))
-data = data[rows, ]
-
-
-data =
+dataLong =
   data %>% pivot_longer(cols = c("BP_tot", "BF_tot", "BT_tot"),
                       names_to = "Species",
                       values_to = "Abundance" )
 
-numFac = numFactor(data$sLat, data$sLon)
-group = factor(rep(1, nrow(data)))
+numFac = numFactor(dataLong$sLat, dataLong$sLon)
+group = factor(rep(1, nrow(dataLong)))
 modelJoint = glmmTMB(Abundance~ 0 +
                  offset(log(duration)) + Species + Species:(site_type + 
                   sTemp_Water + spH + sCond + swmo_prec + swater_speed_ms + swater_depth +
                  sTemp_Air + seas_wmo) + (1|year) + (1|locality/site_irn) +  (swater_depth|coll_date:Species) + exp(0+numFac|group) + rr(Species + 0|locality:site_irn, d = 2),
                  dispformula = ~0+Species+Species:(swater_speed_ms + swater_depth+sCond),
-              data = data,  family = nbinom2)
+              data = dataLong,  family = nbinom2)
 
 
 
@@ -713,8 +656,7 @@ data$sEpiStein = scale(data$EpiStein)
 data$sMGR = scale(data$MGR)
 data$sT95 = scale(data$T95)
 
-# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
-# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
+# remove rows with NAs in the variables used (as for the snails)
 rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
                                sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
                                sMGR + sEpiStein + sT95 +
@@ -886,35 +828,7 @@ simulateResiduals(model5, plot = TRUE, simulateREs = "unconditional") # Uncondit
 
 **SBPA (GLMM)**
 
-Prepare+scale data:
-
-```{r}
-data = as.data.frame(EcoData::seedBank)
-data$sAltitude = scale(data$Altitude)
-data$sSeedMass = scale(data$SeedMass)
-data$sSeedShape = scale(data$SeedShape)
-data$sSeedN = scale(data$SeedN)
-data$sSeedPr = scale(data$SeedPr)
-data$sDormRank = scale(data$DormRank)
-data$sTemp = scale(data$Temp)
-data$sHum = scale(data$Humidity)
-data$sNitro = scale(data$Nitrogen)
-data$sGrazing = scale(data$Grazing)
-data$sMGT = scale(data$MGT)
-data$sJwidth = scale(data$Jwidth)
-data$sEpiStein = scale(data$EpiStein)
-data$sMGR = scale(data$MGR)
-data$sT95 = scale(data$T95)
-
-# Remove NAs beforehand: model.matrix drops only the rows with an NA in a variable used in the model
-# (complete.cases(data) would also drop rows with NAs in unused columns); all models then use the same rows:
-rows = rownames(model.matrix(SBDensity~sAltitude + sSeedMass + sSeedShape + sSeedN +
-                               sSeedPr + sDormRank + sTemp + sHum + sNitro + sMGT + 
-                               sMGR + sEpiStein + sT95 +
-                               sJwidth + sGrazing + Site + Species, data = data))
-data = data[rows, ]
-
-```
+We use the data prepared and scaled in the SBDensity solution (run that one first):
 
 ```{r}
 
@@ -952,25 +866,12 @@ Residuals look good!
 
 **Bonus: With phylogenetic correlation structure:**
 
-(This bonus part uses `phyl.upd2` from the SBDensity bonus solution above, so run that one first.)
+(This bonus part uses `phyl.upd2` and the function `as.theta.vcov()` from the SBDensity bonus solution above, so run that one first.)
 
 ```{r}
 correlation_matrix = vcv(phyl.upd2)[unique(data$Species), unique(data$Species)]
 
-###
-#the following code was taken from https://github.com/glmmTMB/glmmTMB/blob/master/misc/fixcorr.rmd
-as.theta.vcov <- function(Sigma,corrs.only=FALSE) {
-    logsd <- log(diag(Sigma))/2
-    cr <- cov2cor(Sigma)
-    cc <- chol(cr)
-    cc <- cc %*% diag(1 / diag(cc))
-    corrs <- cc[upper.tri(cc)]
-    if (corrs.only) return(corrs)
-    ret <- c(logsd,corrs)
-    return(ret)
-}
 corrs = as.theta.vcov(correlation_matrix, corrs.only=TRUE)
-#####
 
 data$dummy = factor(rep(0, nrow(data)))
 nsp = length(unique(data$Species))
@@ -1024,7 +925,7 @@ res = simulateResiduals(fit); plot(res)
 testSpatialAutocorrelation(res, x = snouter$X, y = snouter$Y)
 ```
 
-If the spatial test is significant, we first de-trend with a 2D spline (as recommended in @sec-corr-model - always de-trend before reaching for a correlation structure):
+If the spatial test is significant, we first de-trend with a 2D spline (de-trend before adding a correlation structure, @sec-corr-model):
 
 ```{r}
 library(mgcv)
@@ -1093,5 +994,5 @@ testSpatialAutocorrelation(grp,
       y = aggregate(y ~ plot, d, mean)$y)
 ```
 
-Work through the diagnostic ladder (@tbl-summary-residual) in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
+Work through the diagnostic ladder (@tbl-cheat-residual) in order - functional form -\> distribution -\> dispersion -\> zero-inflation -\> correlation - adding structure only when a residual check demands it. Note the hint that `lizards` (predators) may belong in the beetle model, and that detectability may depend on `windObs`.
 :::

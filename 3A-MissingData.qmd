@@ -14,7 +14,7 @@ In this chapter, you will learn
 -   what can and cannot be checked about this process, and how to test the sensitivity of the results to MNAR (@sec-miss-test, @nte-miss-sensitivity);
 -   how to impute missing predictors with single and multiple imputation, and why multiple imputation gives more honest standard errors (@sec-miss-imputation).
 
-**Workflow steps** (@sec-intro-workflow): step 2 (design and data).
+**Workflow steps** (@sec-summary): step 2 (design and data).
 
 Prerequisites: the linear model (@sec-lm).
 :::
@@ -226,14 +226,6 @@ In our simulated data we know that the missingness is MAR, so delta = 0 is the c
 :::
 
 More on missing data and imputation methods in Stef van Buuren's book ["Flexible Imputation of Missing Data"](https://stefvanbuuren.name/fimd/)
-
-```{r}
-library(mitools)
-
-data(smi)
-models<-with(smi, glm(drinkreg~wave*sex,family=binomial()))
-summary(MIcombine(models))
-```
 
 ## Take-home messages {#sec-miss-takehome}
 
