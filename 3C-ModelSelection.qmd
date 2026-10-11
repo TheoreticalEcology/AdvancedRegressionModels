@@ -186,7 +186,7 @@ plot( lm.ridge( Ozone ~ Wind + Temp + Solar.R, data = airquality,
               lambda = seq(0, 200, 0.1) ) )
 ```
 
-::: callout-tip
+::: {.callout-tip collapse="true"}
 #### (Adaptive) Shrinking with glmmTMB
 
 We can use glmmTMB for shrinkage estimation by changing the slopes into random slopes with only one level in a dummy grouping variable:

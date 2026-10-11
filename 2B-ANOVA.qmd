@@ -14,10 +14,10 @@ set.seed(42)
 
 In this chapter, you will learn
 
--   that an ANOVA is a test on top of a regression model, how it measures and tests the improvement of model fit, and how to partition the model into custom blocks (@sec-anova-idea, @sec-anova-test, @sec-anova-custom);
--   why the order of the predictors matters for collinear predictors, and how to choose between type I, II and III ANOVA (@sec-anova-collinearity, @sec-anova-choice);
--   why contrast coding and centering change type III results for terms in interactions, and how `emmeans` gives results that do not depend on the coding, including simple effects (@sec-anova-contrast, @nte-anova-emmeans);
--   why raw variance fractions are too high for terms with many df (@sec-anova-complexity).
+- that an ANOVA is a test on top of a regression model, how it measures and tests the improvement of model fit, and how to partition the model into custom blocks (@sec-anova-idea, @sec-anova-test, @sec-anova-custom);
+- why the order of the predictors matters for collinear predictors, and how to choose between type I, II and III ANOVA (@sec-anova-collinearity, @sec-anova-choice);
+- why contrast coding and centering change type III results for terms in interactions, and how `emmeans` gives results that do not depend on the coding, including simple effects (@sec-anova-contrast, @nte-anova-emmeans);
+- why raw variance fractions are too high for terms with many df (@sec-anova-complexity).
 
 **Workflow steps** (@sec-summary): step 3 (coding of factors), step 6 (tests on the fitted model).
 
@@ -226,26 +226,33 @@ knitr::include_graphics(c("images/ANOVA.jpg"))
 
 #### General recommendations {#sec-anova-choice}
 
-Which type of ANOVA is most appropriate depends on what you want to know, and part of it is debated. As a decision list:
+Which type of ANOVA is most appropriate depends on what you want to know, and part of it is debated.
 
-1.  **Perfectly balanced factorial design** (the same number of observations in every combination of factor levels): type I, II and III give exactly the same result, type III only with sum-to-zero contrasts (with R's default treatment contrasts, type III main effects in a model with an interaction differ even here, @sec-anova-contrast). The choice of the type then does not matter. Numeric predictors only behave like this if they are uncorrelated with each other and centered, which is rare outside designed experiments. With any imbalance, even a few missing observations, continue with points 2 and 3.
-2.  **No interaction in the model:** use type II (`car::Anova(fit)`); type III is then identical. Test polynomial terms as a whole, e.g. with `poly(x, 2)`. With strongly collinear predictors, see point 5.
-3.  **Interaction in the model:** first describe the interaction directly, i.e. the effect of one predictor at different values of the other (simple effects), and judge it by these estimates with their confidence intervals, not by its p-value (for factors, see @nte-anova-emmeans). A main effect is now only an average over an effect that varies; if the simple effects differ strongly, say so. If you still want main-effect tests, both types are defensible:
-    -   **type II** averages with weights that depend on the cell sizes and has more power if the interaction is weak;
-    -   **type III** averages with equal weights over the levels of the other factors (for numeric predictors: at their mean, if centered), which is often preferred in experiments where cell sizes differ by accident; it needs sum-to-zero contrasts and centered numeric predictors, or `emmeans::joint_tests()`.
+The most basic consideration is the **balance of your design** (aka collinearity of predictors). With a **perfectly balanced factorial design** (the same number of observations in every combination of factor levels): type I, II and III give exactly the same result (for type III, as long as sum-to-zero contrasts are used; see @sec-anova-contrast).
 
-    The test of the highest-order interaction is identical in both. Decide from your question and design, before looking at the results, whether the model contains the interaction and whether you want average or conditional effects, and report the full model either way; do not remove an interaction only because it is not significant (@sec-select-problems).
-4.  **Type I** only if you want the order dependence, e.g. if one predictor takes precedence for biological reasons.
-5.  **Strongly unbalanced or collinear observational data:** with an interaction, type II and III can then differ considerably, and shared fractions make any partitioning fragile. Center the predictors, and put more weight on effect estimates with confidence intervals, marginal means or tests of blocks of predictors by model comparison (@sec-anova-custom) than on the ANOVA table.
+::: {.callout-note collapse="true"}
+#### Collinearity can emerge even in balanced designs
+
+A design can be balanced in the experimental factors, and still produce unbalanced or collinear predictors, if a predictor is not set by the experimenter but depends on how the study objects behave. In the scouting ants study (@sec-cases-ant), treatment and maze orientation are nearly balanced (207 to 266 ants per combination). The main predictor, however, is what an ant did on its first visit, and ants do not behave randomly: 75% went to the pheromone, and this share depends on the maze orientation and on the treatment (within colonies, likelihood ratio test p < 0.001). The predictor is therefore unbalanced and associated with the design variables, although the setup is balanced. In this study, the association is weak (correlations with the design variables of at most 0.06; the estimate of the predictor changes only from 0.06 to 0.13 when the design variables are added, and neither value is significant), but with a stronger association, type I, II and III would differ. Check how your predictors relate to each other and to the design variables (`table()`, plots), and do not rely on the balance of the setup alone.
+:::
+
+However, the more **unbalanced the design or the more collinear the predictors**, the more type I, II and III differ. If so, use **type I** only if you explicitly want the order dependence, which is rarely sensible (a possible reason could be that one predictor must take precedence for biological / causal reasons). The more important decision is usually between type II and III:
+
+1.  **No interaction in the model:** use type II (`car::Anova(fit)`); type III is then identical. Test polynomial terms as a whole, e.g. with `poly(x, 2)`. With strongly collinear predictors, see point 3.
+2.  **Interaction in the model:** first describe the interaction directly, i.e. the effect of one predictor at different values of the other (simple effects), and judge it by these estimates with their confidence intervals, not by its p-value (for factors, see @nte-anova-emmeans). Decide from your question and design, before looking at the results, whether the model contains the interaction and whether you want average or conditional effects, and report the full model either way; do not remove an interaction only because it is not significant (@sec-select-problems). If you still want main-effect tests, both types are defensible:
+    - **type II** averages with weights that depend on the cell sizes and has more power if the interaction is weak;
+    - **type III** averages with equal weights over the levels of the other factors (for numeric predictors: at their mean, if centered), which is often preferred in experiments where cell sizes differ by accident; it needs sum-to-zero contrasts and centered numeric predictors, or `emmeans::joint_tests()`;
+    - **in both:** the test of the highest-order interaction is identical, and a main effect is only an average over an effect that varies, so if the simple effects differ strongly, say so.
+3.  **Extreme unbalance or strong collinearity:** the large shared fractions make any partitioning fragile and hard to interpret. Try to avoid relying on the ANOVA table: (with interactions) center the numeric predictors, and put more weight on effect estimates with confidence intervals, marginal means or tests of blocks of predictors by model comparison (@sec-anova-custom).
 
 ::: {.callout-tip collapse="true"}
 #### Type II or type III? Background
 
-Type II can be read as a (partial) partition of the explained variance, at least in models without interactions, whereas type III sums of squares are better understood as tests of specific hypotheses (main effects at the reference level or at the mean of the other predictors). Type II tests main effects without the interaction, i.e. respecting the hierarchy of the model [marginality principle, @nelder1977reformulation]: variance shared between main effects and interaction stays with the main effects. Type III tests main effects averaged with equal weights over the other predictor, a hypothesis that does not depend on the design and remains meaningful with an interaction; if the interaction is in fact weak, it has somewhat less power than type II.
+Type II can be read as a (partial) partition of the explained variance, at least in models without interactions, whereas type III sums of squares are better understood as tests of specific hypotheses (main effects at the reference level or at the mean of the other predictors). Type II tests main effects without the interaction, i.e. respecting the hierarchy of the model [marginality principle, @nelder1977reformulation]: variance shared between main effects and interaction stays with the main effects. Type III tests main effects averaged with equal weights over the other predictor, a hypothesis that does not depend on the cell sizes and remains meaningful with an interaction; if the interaction is in fact weak, it has somewhat less power than type II.
 
 Which of the two is preferable is debated (e.g. @shaw1993anova favour type III, @langsrud2003anova and @fox2019companion type II; see also @hector2010analysis). For reasonably balanced data, type II and type III with sum-to-zero contrasts usually give nearly identical results. With stronger imbalance or collinearity together with an interaction, differences get larger, even with correct coding and centering (type II then often, but not always, gives the larger F values). Such differences are not a sign of an error, but reflect that the two types test different hypotheses [see the example in @hector2010analysis]. Type II is robust to centering and coding (except for polynomial terms written as `x + I(x^2)`, @cau-anova-typeiii), but a main effect is only interpretable as such if the interaction is weak; type III can differ considerably, in particular when predictors are skewed, correlated and interact.
 
-Collinearity is not restricted to numeric predictors: a factor can also be correlated with a numeric predictor (e.g. if some islands lie at higher elevations than others). To check it, see @sec-lm-collinearity (with interaction terms, `vif()` warns and the values are not meaningful). Don't read a loss of significance as the loss of an effect, or shared fractions as causal importance; hierarchical partitioning is an alternative for describing shared fractions [@lai2022rdacca; @lai2022glmmhp].
+Collinearity is not restricted to numeric predictors (see the box on balanced designs above). To check it, see @sec-lm-collinearity (with interaction terms, `vif()` warns and the values are not meaningful). Don't read a loss of significance as the loss of an effect, or shared fractions as causal importance; hierarchical partitioning is an alternative for describing shared fractions [@lai2022rdacca; @lai2022glmmhp].
 :::
 
 **Reporting:** in the methods, state which ANOVA type you used, how it was computed and how predictors were centered (and, for factors, coded). In the results, report effect sizes, not only p-values. If type II and III disagree (e.g. in strongly unbalanced designs with an interaction), report both and explain why. A common descriptive effect size for a term is the partial $\eta^2 = SS_\text{term} / (SS_\text{term} + SS_\text{residual})$, computed from the sums of squares of the term and of the residuals in the ANOVA table; like the R^2^ fractions, it describes the fitted model (@sec-anova-complexity). Effect estimates with confidence intervals (e.g. from `emmeans`) are usually more informative, and for GLMs and mixed models there is no standard analog of the partial $\eta^2$.
@@ -257,7 +264,7 @@ Collinearity is not restricted to numeric predictors: a factor can also be corre
 ::: {.callout-caution icon="false"}
 #### Exercise
 
-Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of Type III Anova, you need to add an interaction (see @cau-anova-typeiii).
+Try out the difference between type I, II, III ANOVA for the airquality data set, either for the simple Wind + Temp model, or for more complicated models. If you want to see the effects of a type III ANOVA, you need to add an interaction (see @cau-anova-typeiii).
 :::
 
 ::: {.callout-tip collapse="true" appearance="minimal" icon="false"}
@@ -365,21 +372,21 @@ Thus, with treatment contrasts, the "main effect" of grazing in the type III ANO
 
 The following table summarizes which results are affected by the coding:
 
-+-----------------------------------------------------------------------+-----------------------------------+
-| Result                                                                | Depends on coding?                |
-+=======================================================================+===================================+
-| Predictions, residuals, R², AIC, likelihood ratio tests               | no                                |
-+-----------------------------------------------------------------------+-----------------------------------+
-| Type I and type II ANOVA                                              | no                                |
-+-----------------------------------------------------------------------+-----------------------------------+
-| Type III test of the highest-order interaction                        | no                                |
-+-----------------------------------------------------------------------+-----------------------------------+
-| Type III test of terms that are part of an interaction                | **yes**                           |
-+-----------------------------------------------------------------------+-----------------------------------+
-| Individual coefficients and p-values in `summary()`                   | **yes**                           |
-+-----------------------------------------------------------------------+-----------------------------------+
-| Results from `emmeans()` and `joint_tests()` (see @nte-anova-emmeans) | no                                |
-+-----------------------------------------------------------------------+-----------------------------------+
++-----------------------------------------------------------------------+----------------------+
+| Result                                                                | Depends on coding?   |
++=======================================================================+======================+
+| Predictions, residuals, R², AIC, likelihood ratio tests               | no                   |
++-----------------------------------------------------------------------+----------------------+
+| Type I and type II ANOVA                                              | no                   |
++-----------------------------------------------------------------------+----------------------+
+| Type III test of the highest-order interaction                        | no                   |
++-----------------------------------------------------------------------+----------------------+
+| Type III test of terms that are part of an interaction                | **yes**              |
++-----------------------------------------------------------------------+----------------------+
+| Individual coefficients and p-values in `summary()`                   | **yes**              |
++-----------------------------------------------------------------------+----------------------+
+| Results from `emmeans()` and `joint_tests()` (see @nte-anova-emmeans) | no                   |
++-----------------------------------------------------------------------+----------------------+
 
 Thus, if you want type III tests of main effects that are averaged over the levels of the other factors, use sum-to-zero contrasts for all factors, and center all numeric predictors that are part of an interaction (@cau-anova-typeiii). Set the contrasts locally in the model call via `contrasts = list(...)`, as we did for `fitSum` above.
 
@@ -648,7 +655,6 @@ Based on this, one could think it doesn't matter then if we use a regression mod
 ## Take-home messages {#sec-anova-takehome}
 
 ::: callout-tip
-
 1.  An ANOVA is not a model but a test that is run on a fitted model: it asks how much the fit improves when a term is added, and whether this improvement is larger than expected if the term had no effect.
 2.  With collinear or unbalanced data, the type I ANOVA depends on the order of the terms in the formula. Use type II if the model has no interaction; with interactions, think about which hypothesis you want to test. Report which type you used.
 3.  The coding of a factor never changes the fitted model, but it changes type III tests of terms that are part of an interaction. With type III, use sum-to-zero contrasts and center numeric predictors in interactions, or use `emmeans::joint_tests()`, which does not depend on the coding.
