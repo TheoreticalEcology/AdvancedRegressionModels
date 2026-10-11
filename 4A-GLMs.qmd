@@ -754,7 +754,7 @@ confint(contrast(emmT, "revpairwise"))
 # interaction on the count scale (difference of differences) and on the link scale (ratio of ratios)
 contrast(regrid(emmeans(m, ~ tension * wool)), interaction = "pairwise")
 contrast(emmeans(m, ~ tension * wool), interaction = "pairwise", type = "response")
-# simple effects of tension within each wool type, on the count scale
+# conditional effects of tension within each wool type, on the count scale
 contrast(regrid(emmeans(m, ~ tension | wool)), "revpairwise")
 ```
 

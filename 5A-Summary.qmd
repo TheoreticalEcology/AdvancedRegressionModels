@@ -4,7 +4,7 @@ set.seed(42)
 
 # From question to paper: the analysis workflow {#sec-summary}
 
-This chapter brings together what we have learned in this book as a workflow for analyzing your own data, from the scientific question to the methods and results sections of a paper. The seven steps are the same as in the overview in the Preface. Each step links to the sections where the respective topic is explained and to the lookup tables in the quick reference. If you have a concrete problem with your analysis, the table in the quick reference (@sec-cheat-lookup) points you to the relevant section.
+This chapter brings together what we have learned in this book as a workflow for analyzing your own data, from the scientific question to the methods and results sections of a paper. The seven steps are the same as in the overview in the Preface. Each step links to the sections where the respective topic is explained and to the lookup tables in the quick reference. If you have a concrete problem with your analysis, the table in the quick reference (@sec-cheat-lookup) points you to the relevant section. The tables and decision rules in this chapter and in the quick reference (@sec-cheat) guide you, but they do not replace judgment about your data.
 
 ## The workflow at a glance {#sec-summary-overview}
 

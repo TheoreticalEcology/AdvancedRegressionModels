@@ -253,6 +253,15 @@ dat$directionPhero = as.factor(ifelse(dat$Treatment %in% c("LL", "RL"), "left", 
 
 Together with the orientation of the Maze, this makes 3 possible directional confounders, and the main predictor (if the Ant went to the pheromone in the first visit).
 
+The treatments and orientations are nearly balanced by the setup, but the main predictor is a behavior of the ants, and ants do not behave randomly. Its distribution across the design variables is not balanced:
+
+```{r}
+table(dat$Treatment, dat$ant_group_main)
+round(prop.table(table(dat$Treatment, dat$ant_group_main), 1), 2)
+```
+
+Most ants (75%) went to the pheromone on their first visit, but this share differs between treatments (83% in LL, where the pheromone was on the left side in both runs, against 71 to 74% in the others). The main predictor is therefore weakly but visibly associated with the design variables (see @sec-anova-choice for why this matters even in balanced designs).
+
 Adding an RE on colony is logical, and then let's run the model:
 
 ```{r, message=FALSE}
@@ -265,6 +274,15 @@ fit1<-glmer(went.phero ~ ant_group_main
              data=dat)
 summary(fit1)
 ```
+
+The main predictor is only weakly associated with the design variables (see the table above). For comparison, the estimate of the main predictor in a model without the design variables:
+
+```{r}
+fit0 <- glmer(went.phero ~ ant_group_main + (1|Colony), family = "binomial", data = dat)
+rbind(without = coef(summary(fit0))[2, 1:4], with = coef(summary(fit1))[2, 1:4])
+```
+
+The estimate changes only from 0.06 (without the design variables) to 0.13 (with them), and neither value is significant.
 
 Surprisingly, we find large effects of the other variables. Because of these large effects, we also test for interactions with the experimental treatment
 
@@ -284,7 +302,7 @@ We now find that there is an interaction with the main predictor, and there coul
 plot(allEffects(fit2))
 ```
 
-The results are difficult to interpret. I would think that there was some bias in the experiment, which led to an effect of the Maze direction, which then creates a spill-over to the other (and in particular the main) predictors.
+The results are difficult to interpret. The large effects of the design variables suggest that the ants did not behave randomly with respect to the maze (a bias of the setup). The main predictor is a behavior of the same ants and weakly associated with these design variables (see the table above), so its effect is hard to separate from them.
 
 For our education, we can also look at the residual plots. I will use fit1, because there was a misfit:
 

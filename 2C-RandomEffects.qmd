@@ -95,7 +95,7 @@ mod1 = lmer(normexam ~ standLRT + sex +  (1 | school), data = Exam)
 summary(mod1)
 ```
 
-If we look at the outputs, you will probably note that the `summary()` function doesn't return p-values. More on this in @sec-re-df. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools (Random effects block: the school sd of 0.30 compares with the residual sd of 0.75, i.e. school accounts for about 14% of the variance that the fixed effects do not explain, the intraclass correlation). However, you can obtain the individual school effects via
+If we look at the outputs, you will probably note that the `summary()` function doesn't return p-values. More on this in @sec-re-df. Also, we see that the effects of the individual school are not explicitly mentioned. The summary only returns the mean effects over all schools, and the variance between schools (Random effects block: the school sd of 0.30 compares with the residual sd of 0.75). The share of the school variance in the variance that the fixed effects do not explain, 0.30² / (0.30² + 0.75²) = 14%, is called the **intraclass correlation (ICC)**; it is also the correlation between two observations from the same school, after accounting for the fixed effects. However, you can obtain the individual school effects via
 
 ```{r, eval=F}
 ranef(mod1)
@@ -839,7 +839,7 @@ hist(nullDistribution, breaks = 50, main = "Null distribution log(L(M1) / L(M0))
 abline(v = observedLR, col = "red")
 ```
 
-No simulated LR exceeded the observed one, so p < 1/501 (about 0.002); a Monte Carlo p-value is never exactly 0.
+No simulated LR exceeded the observed one, so p \< 1/501 (about 0.002); a Monte Carlo p-value is never exactly 0.
 
 ```{r}
 mean(nullDistribution > observedLR)
@@ -912,6 +912,8 @@ Interpretation
 - **R^2^m**: Marginal R^2^ value associated with fixed effects (the name is historical; in the terminology of @tip-re-predterms, it is based on the unconditional predictions).
 - **R^2^c**: Conditional R^2^ value associated with fixed effects plus the random effects.
 
+The difference R^2^c − R^2^m is the share of the *total* variance that the random effects explain. The intraclass correlation (ICC, @sec-re-intercept) relates the random-effect variance only to the variance that the fixed effects do *not* explain; for a single random intercept, ICC = (R^2^c − R^2^m) / (1 − R^2^m). In the irrigation example, R^2^m = 0.14 and R^2^c = 0.93, so the fields explain about 0.8 of the total variance, but the ICC is 0.92: of the variance that is left after the fixed effects, almost all lies between fields.
+
 It is important to note that this is a description of the fitted model, not necessarily valid inference - the reason is that if you add a lot of REs, you will tend to get a lot of variance explained by the RE structure. If you want to correct for this, one option is to calculate R^2^ values under a cross-validation.
 
 ### Variance partition coefficients (VPCs) {#sec-re-vpc}
@@ -957,12 +959,14 @@ x = VarCorr(fit)
 x
 ```
 
-Which pretty much already looks like an ANOVA table. If you standardize the RE variances to sum of all variance, you obtain the so-called **variance partition coefficients (VPCs).**, which are often seen as an alternative to ANOVA
+Which pretty much already looks like an ANOVA table. If you standardize the RE variances to sum of all variance, you obtain the so-called **variance partition coefficients (VPCs)**, which are often seen as an alternative to ANOVA.
 
 ```{r}
 x = data.frame(x)
 setNames(x$vcov / sum(x$vcov), x$grp)
 ```
+
+With a single random intercept, the VPC of the group is the intraclass correlation (see @sec-re-anova for how it relates to the marginal and conditional R^2^).
 
 ::: callout-important
 Note that the results of a VPC can be very different from an ANOVA. In an ANOVA, you look at the variance explained in the response. In VPCs, you compare the variance between different groups in the data. This will tend to be similar to ANOVA if observations are balanced in groups, but it can be very different if they are not. In this behavior, VPCs resemble standardized effect sizes (which can also differ in ranking variables from ANOVA if the distribution of the predictor is very skewed). I would therefore recommend to interpret VPCs as "effect sizes of categorical predictors", rather than as ANOVA shares.
@@ -1086,7 +1090,7 @@ summary(fit)
 confint(fit)
 ```
 
-The log spore count increases with the degree of infection (about +2.7 per infection degree, 95% CI 1.6 to 3.7, p < 0.001; on the original scale, i.e. after taking exp() of the estimate and the CI, roughly a 14-fold increase of Spobee + 1 per degree, 95% CI roughly 5- to 41-fold); BeesN has no clear effect (p = 0.43). The random intercept has a standard deviation of 2.2 between hives (profile CI 1.6 to 2.8), compared to 0.78 for the residuals within hives, i.e. variances of 4.85 and 0.60. Thus, 4.85 / (4.85 + 0.60) = 89% of the variance that the fixed effects do not explain lies between hives (intraclass correlation, see @sec-re-intercept): samples from the same hive are very similar. The between-hive SD is of the same order as the effect of one infection degree (2.7), so hives with the same infection degree still differ strongly.
+The log spore count increases with the degree of infection (about +2.7 per infection degree, 95% CI 1.6 to 3.7, p \< 0.001; on the original scale, i.e. after taking exp() of the estimate and the CI, roughly a 14-fold increase of Spobee + 1 per degree, 95% CI roughly 5- to 41-fold); BeesN has no clear effect (p = 0.43). The random intercept has a standard deviation of 2.2 between hives (profile CI 1.6 to 2.8), compared to 0.78 for the residuals within hives, i.e. variances of 4.85 and 0.60. Thus, 4.85 / (4.85 + 0.60) = 89% of the variance that the fixed effects do not explain lies between hives (intraclass correlation, see @sec-re-intercept): samples from the same hive are very similar. The between-hive SD is of the same order as the effect of one infection degree (2.7), so hives with the same infection degree still differ strongly.
 
 **Good to know:** Infection and BeesN are constant within each hive, so their effects are estimated only from the comparison of hives (see @tip-re-design): they rest on 24 hives (for Infection, only 4 of them infected), not on 72 samples. If there were only one hive per level of a categorical predictor (e.g. one infected and one uninfected hive), the predictor would be perfectly confounded with the hive, and its effect could not be separated from the hive effect without additional assumptions. A random intercept cannot create replication; only more hives can.
 :::

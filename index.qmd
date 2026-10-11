@@ -4,22 +4,45 @@
 set.seed(123)
 ```
 
-If we have a response variable and want to understand how this response variable is influenced by one or several factors, we will typically use a **regression model**. The aim of this course is to enable you to run such a regression model in the quality expected for a "real" scientific study. To do so, you will have to master a number of skills, in particular:
+Statistics is about extracting the underlying truth from data. In their book, @hilborn1997ecological compare this process to the work of a detective. If you are to become such a detective, you will have to think logically and apply common sense. Every study and dataset is different, and no textbook or flowchart can save you from the infinite number of possible errors or complications that can occur in a real study. However, there are also some general patterns and techniques that will help you with the process of understanding data. One of these is regression models, which is the topic of this book.
 
-- Understanding the fundamental statistical indicators in regression analysis (p-value, estimator) and their quality (power, bias, error, coverage),
-- Understanding what a causal effect means in a regression context, and what this means for experimental design and model selection,
-- Knowing all building blocks of the "advanced GLMM framework" that helps us to correctly model our data, e.g. GLMs, random effects, GAMs, correlation structures, ...
-- Knowledge of standard non-parametric evaluation methods for regression models, such as parametric and non-parametric bootstrap, cross-validation,
-- and the ability to use all of these methods in an applied data analysis.
+::: {#organization-of-this-book}
+:::
 
-This is what we will mainly train in this course. Don't worry if you think that this sounds too simple. We could spend an entire week on understanding the p-value alone, and still only scratch the surface. If you have an overview of what can be done with regression models, and are confident to run a realistic scientific analysis on your own, we have achieved a lot.
+### **Overview and organization of this book**
 
-This book uses frequentist (maximum likelihood) estimation, with only brief Bayesian (brms) examples. My companion course @hartig2024introduction covers the Bayesian approach to these models, as well as hierarchical models that go beyond GLMMs, such as error-in-variable (measurement error), occupancy, state-space and integrated models. Some other response types that are common in ecology, such as ordinal responses and survival (time-to-event) data, are only mentioned briefly in this book.
+Generalized (linear) mixed models are a framework for modeling a wide range of data structures. They can be applied if we have a response variable (also called dependent variable) and want to understand how this response variable is influenced by one or several predictors (also called independent variables or explanatory variables). The aim of this book is to introduce you to this framework, and to give guidance on its use in the quality expected for a "real" scientific study. It is organized in three main parts, followed by a workflow chapter (@sec-summary) and appendices (quick reference, @sec-cheat; case studies, @sec-cases):
 
-This course assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelors Biology Lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. The first chapter of this book (@sec-intro) lists the R knowledge that is assumed (@sec-intro-assumed-knowledge).
+1.  **Modeling the mean:** The first part of this book focuses on how to model the mean response as a function of one or several predictor variables. In this part, we mainly work with normally distributed residuals with constant variance; mixed models additionally relax the independence of the residuals, and nonlinear regression the linear form of the mean. Topics we will cover here are linear regression (@sec-lm), ANOVA (@sec-anova), mixed models (@sec-re) and nonlinear regression (@sec-nls).
+2.  **Model choice:** The second part covers model choice, including how to handle missing data (@sec-miss), causal inference (@sec-causal) and model selection (@sec-select), with cross-validation (@sec-select-cv).
+3.  **Modeling the distribution:** The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (@sec-glm) and modeling variance (@sec-disp) and correlation (@sec-corr) of residuals.
+
+### **The analysis workflow**
+
+In a real scientific project (or, to stay with the analogy of our detective - in a real murder investigation), these techniques will (re)appear in several steps along the way. The usual workflow of a scientific analysis is:
+
+1.  **Question and goal:** causal, predictive or exploratory?
+2.  **Design and data:** experimental unit, grouping, data checks and missing values
+3.  **A-priori model:** distribution, predictors, random effects and correlation structures
+4.  **Fit the model**
+5.  **Check residuals and adjust the model**
+6.  **Inference:** tests, confidence intervals and predictions
+7.  **Report** the analysis
+
+The workflow chapter at the end of the book (@sec-summary) goes through these steps in detail, with pointers to the chapters that are relevant for each step. In the chapters, a line "Workflow steps" at the start tells you which steps the chapter supports.
+
+### Inferential philosophy and scope
+
+This book uses frequentist (maximum likelihood) estimation, with only brief Bayesian (brms) examples. My companion book on Bayesian statistics [@hartig2024introduction] covers the Bayesian approach to these models, as well as hierarchical models that go beyond GLMMs (see @sec-summary-next). Some other response types that are common in ecology, such as ordinal responses and survival (time-to-event) data, are only mentioned briefly in this book.
+
+### Assumed knowledge
+
+This book assumes basic prior knowledge of statistical methods (tests, regressions, p-value, power, CIs, ...) and the ability to apply those in R. At the University of Regensburg, this knowledge would be taught in the Bachelor's biology lecture "Statistik und Bioinformatik" (lecture notes in German [here](https://www.dropbox.com/s/nefr3bteve5lym7/GrundlagenDerStatistik.pdf?dl=0)), and the block course "Introduction to statistics in R". If you didn't take those or comparable courses, you should at least try to get some basic understanding of R before proceeding with this book. This [lecture series](https://www.youtube.com/playlist?list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU) from MarinStatsLectures could be a good start. The first chapter of this book (@sec-intro) lists some of the basic R knowledge that is assumed (@sec-intro-assumed-knowledge), but it doesn't cover the theoretical basics such as p-values, CIs and so on that you should also have.
+
+### Feedback and licencing
 
 If you have comments, questions or suggestions regarding this book, please submit them [here](https://github.com/TheoreticalEcology/AdvancedRegressionModels/issues).
 
-```{=html}
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>. Note that some elements of this work (embedded videos, graphics) may be under a separate licence and are thus not included in this licence.
-```
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/){rel="license"}. Note that some elements of this work (embedded videos, graphics) may be under a separate license and are thus not included in this license.
+
+![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png){alt="Creative Commons License"}

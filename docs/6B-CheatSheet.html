@@ -73,6 +73,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 <meta name="citation_title" content="[Appendix B — Quick reference]{#sec-cheat .quarto-section-identifier}">
@@ -131,6 +160,14 @@ ul.task-list li input[type="checkbox"] {
 <meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
 <meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
 <meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=No unbiased estimator of the variance of k-fold cross-validation;,citation_author=Yoshua Bengio;,citation_author=Yves Grandvalet;,citation_publication_date=2004;,citation_cover_date=2004;,citation_year=2004;,citation_fulltext_html_url=https://www.jmlr.org/papers/v5/grandvalet04a.html;,citation_volume=5;,citation_journal_title=Journal of Machine Learning Research;">
+<meta name="citation_reference" content="citation_title=Cross-validation: What does it estimate and how well does it do it?;,citation_author=Stephen Bates;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=546;,citation_doi=10.1080/01621459.2023.2197686;,citation_volume=119;,citation_journal_title=Journal of the American Statistical Association;">
+<meta name="citation_reference" content="citation_title=The ecological detective: Confronting models with data;,citation_author=Ray Hilborn;,citation_author=Marc Mangel;,citation_publication_date=1997;,citation_cover_date=1997;,citation_year=1997;,citation_doi=10.1515/9781400847310;,citation_isbn=9780691034973;,citation_series_title=Monographs in population biology;">
+<meta name="citation_reference" content="citation_title=Scaling regression inputs by dividing by two standard deviations;,citation_author=Andrew Gelman;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=15;,citation_doi=10.1002/sim.3107;,citation_volume=27;,citation_journal_title=Statistics in Medicine;">
+<meta name="citation_reference" content="citation_title=Evaluating significance in linear mixed-effects models in R;,citation_author=Steven G. Luke;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=4;,citation_doi=10.3758/s13428-016-0809-y;,citation_volume=49;,citation_journal_title=Behavior Research Methods;">
+<meta name="citation_reference" content="citation_title=lmerTest package: Tests in linear mixed effects models;,citation_author=Alexandra Kuznetsova;,citation_author=Per B. Brockhoff;,citation_author=Rune H. B. Christensen;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=13;,citation_doi=10.18637/jss.v082.i13;,citation_volume=82;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=SIMR: An R package for power analysis of generalized linear mixed models by simulation;,citation_author=Peter Green;,citation_author=Catriona J. MacLeod;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_issue=4;,citation_doi=10.1111/2041-210X.12504;,citation_volume=7;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=How to interpret statistical models using marginaleffects for R and Python;,citation_author=Vincent Arel-Bundock;,citation_author=Noah Greifer;,citation_author=Andrew Heiss;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=9;,citation_doi=10.18637/jss.v111.i09;,citation_volume=111;,citation_journal_title=Journal of Statistical Software;">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -358,16 +395,17 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#sec-cheat-formula" id="toc-sec-cheat-formula" class="nav-link" data-scroll-target="#sec-cheat-formula"><span class="header-section-number">B.2</span> Formula syntax</a></li>
   <li><a href="#sec-cheat-predictors" id="toc-sec-cheat-predictors" class="nav-link" data-scroll-target="#sec-cheat-predictors"><span class="header-section-number">B.3</span> Preparing predictors</a></li>
   <li><a href="#sec-cheat-family" id="toc-sec-cheat-family" class="nav-link" data-scroll-target="#sec-cheat-family"><span class="header-section-number">B.4</span> Model families</a></li>
-  <li><a href="#sec-cheat-re" id="toc-sec-cheat-re" class="nav-link" data-scroll-target="#sec-cheat-re"><span class="header-section-number">B.5</span> Random effect syntax</a></li>
-  <li><a href="#sec-cheat-corr" id="toc-sec-cheat-corr" class="nav-link" data-scroll-target="#sec-cheat-corr"><span class="header-section-number">B.6</span> Correlation structures</a>
+  <li><a href="#sec-cheat-design" id="toc-sec-cheat-design" class="nav-link" data-scroll-target="#sec-cheat-design"><span class="header-section-number">B.5</span> From design to model structure</a></li>
+  <li><a href="#sec-cheat-re" id="toc-sec-cheat-re" class="nav-link" data-scroll-target="#sec-cheat-re"><span class="header-section-number">B.6</span> Random effect syntax</a></li>
+  <li><a href="#sec-cheat-corr" id="toc-sec-cheat-corr" class="nav-link" data-scroll-target="#sec-cheat-corr"><span class="header-section-number">B.7</span> Correlation structures</a>
   <ul class="collapse">
-  <li><a href="#sec-cheat-corr-glmmtmb" id="toc-sec-cheat-corr-glmmtmb" class="nav-link" data-scroll-target="#sec-cheat-corr-glmmtmb"><span class="header-section-number">B.6.1</span> glmmTMB</a></li>
-  <li><a href="#sec-cheat-corr-lme4" id="toc-sec-cheat-corr-lme4" class="nav-link" data-scroll-target="#sec-cheat-corr-lme4"><span class="header-section-number">B.6.2</span> lme4</a></li>
-  <li><a href="#sec-cheat-corr-gls" id="toc-sec-cheat-corr-gls" class="nav-link" data-scroll-target="#sec-cheat-corr-gls"><span class="header-section-number">B.6.3</span> nlme::gls</a></li>
+  <li><a href="#sec-cheat-corr-glmmtmb" id="toc-sec-cheat-corr-glmmtmb" class="nav-link" data-scroll-target="#sec-cheat-corr-glmmtmb"><span class="header-section-number">B.7.1</span> glmmTMB</a></li>
+  <li><a href="#sec-cheat-corr-lme4" id="toc-sec-cheat-corr-lme4" class="nav-link" data-scroll-target="#sec-cheat-corr-lme4"><span class="header-section-number">B.7.2</span> lme4</a></li>
+  <li><a href="#sec-cheat-corr-gls" id="toc-sec-cheat-corr-gls" class="nav-link" data-scroll-target="#sec-cheat-corr-gls"><span class="header-section-number">B.7.3</span> nlme::gls</a></li>
   </ul></li>
-  <li><a href="#sec-cheat-dispersion" id="toc-sec-cheat-dispersion" class="nav-link" data-scroll-target="#sec-cheat-dispersion"><span class="header-section-number">B.7</span> Dispersion, zero-inflation and offsets</a></li>
-  <li><a href="#sec-cheat-dharma" id="toc-sec-cheat-dharma" class="nav-link" data-scroll-target="#sec-cheat-dharma"><span class="header-section-number">B.8</span> Residual checks with DHARMa</a></li>
-  <li><a href="#sec-cheat-inference" id="toc-sec-cheat-inference" class="nav-link" data-scroll-target="#sec-cheat-inference"><span class="header-section-number">B.9</span> Tests, effects and predictions</a></li>
+  <li><a href="#sec-cheat-dispersion" id="toc-sec-cheat-dispersion" class="nav-link" data-scroll-target="#sec-cheat-dispersion"><span class="header-section-number">B.8</span> Dispersion, zero-inflation and offsets</a></li>
+  <li><a href="#sec-cheat-dharma" id="toc-sec-cheat-dharma" class="nav-link" data-scroll-target="#sec-cheat-dharma"><span class="header-section-number">B.9</span> Residual checks with DHARMa</a></li>
+  <li><a href="#sec-cheat-inference" id="toc-sec-cheat-inference" class="nav-link" data-scroll-target="#sec-cheat-inference"><span class="header-section-number">B.10</span> Tests, effects and predictions</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/6B-CheatSheet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
@@ -393,7 +431,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This appendix collects lookup tables for your own analysis: first, typical problems and where to find help in this book; then the R syntax for the models, checks and outputs used in the book. Each row links to the section where the topic is explained. For the order in which to do things, see the workflow chapter (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
+<p>This appendix collects lookup tables for your own analysis: first, typical problems and where to find help in this book; then which model, model structure, residual check and test fits which situation, together with the R syntax used in the book. Each row links to the section where the topic is explained. For the order in which to do things, see the workflow chapter (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
 <section id="sec-cheat-lookup" class="level2" data-number="B.1">
 <h2 data-number="B.1" class="anchored" data-anchor-id="sec-cheat-lookup"><span class="header-section-number">B.1</span> Where to find what</h2>
 <div id="tbl-cheat-lookup" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -416,7 +454,7 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 <tbody>
 <tr class="odd">
 <td>Which model fits my type of response?</td>
-<td><a href="5A-Summary.html#tbl-summary-response" class="quarto-xref">Table&nbsp;<span>12.1</span></a></td>
+<td><a href="#tbl-cheat-family" class="quarto-xref">Table&nbsp;<span>B.4</span></a></td>
 </tr>
 <tr class="even">
 <td>How do I interpret the regression table?</td>
@@ -427,20 +465,28 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 <td><a href="2A-LinearRegression.html#sec-lm-residual" class="quarto-xref"><span>Section 2.4</span></a>, <a href="4A-GLMs.html#sec-glm-dharma" class="quarto-xref"><span>Section 9.3.1</span></a></td>
 </tr>
 <tr class="even">
+<td>My residual checks show a problem</td>
+<td><a href="#tbl-cheat-residual" class="quarto-xref">Table&nbsp;<span>B.10</span></a></td>
+</tr>
+<tr class="odd">
 <td>The relationship is not linear</td>
 <td><a href="2A-LinearRegression.html#sec-lm-functional-form" class="quarto-xref"><span>Section 2.5</span></a>, <a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a>, <a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>I have a categorical predictor: how to read the coefficients?</td>
 <td><a href="2A-LinearRegression.html#sec-lm-contrast" class="quarto-xref"><span>Section 2.6.1</span></a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Which groups differ from each other?</td>
 <td><a href="2A-LinearRegression.html#sec-lm-posthoc" class="quarto-xref"><span>Section 2.6.3</span></a>, <a href="2B-ANOVA.html#nte-anova-emmeans" class="quarto-xref">Note&nbsp;<span>3.1</span></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>I have an interaction</td>
 <td><a href="2A-LinearRegression.html#sec-lm-interaction" class="quarto-xref"><span>Section 2.10</span></a>, <a href="4A-GLMs.html#sec-glm-interaction" class="quarto-xref"><span>Section 9.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>How do I report a curved effect or an effect in a GLM (ratio, predictions, data-averaged effect)?</td>
+<td><a href="2A-LinearRegression.html#sec-lm-nonlinear-effect" class="quarto-xref"><span>Section 2.11.2</span></a>, <a href="4A-GLMs.html#sec-glm-effects" class="quarto-xref"><span>Section 9.4.1</span></a></td>
 </tr>
 <tr class="even">
 <td>My predictors are correlated</td>
@@ -448,7 +494,7 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 </tr>
 <tr class="odd">
 <td>Should I center or scale my predictors?</td>
-<td><a href="2A-LinearRegression.html#sec-lm-centering-scaling" class="quarto-xref"><span>Section 2.9</span></a></td>
+<td><a href="2A-LinearRegression.html#sec-lm-scaling" class="quarto-xref"><span>Section 2.9.2</span></a></td>
 </tr>
 <tr class="even">
 <td>A reviewer asks for type I, II or III ANOVA</td>
@@ -456,7 +502,7 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 </tr>
 <tr class="odd">
 <td>My observations are grouped or repeated</td>
-<td><a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="5A-Summary.html#tbl-summary-design" class="quarto-xref">Table&nbsp;<span>12.2</span></a></td>
+<td><a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="#tbl-cheat-design" class="quarto-xref">Table&nbsp;<span>B.5</span></a></td>
 </tr>
 <tr class="even">
 <td>My mixed model does not converge or is singular</td>
@@ -464,7 +510,7 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 </tr>
 <tr class="odd">
 <td>How do I get p-values for a mixed model?</td>
-<td><a href="2C-RandomEffects.html#sec-re-df" class="quarto-xref"><span>Section 4.5.1</span></a>, <a href="2C-RandomEffects.html#sec-re-selection" class="quarto-xref"><span>Section 4.5.3</span></a></td>
+<td><a href="#tbl-cheat-tests" class="quarto-xref">Table&nbsp;<span>B.12</span></a>, <a href="2C-RandomEffects.html#sec-re-df" class="quarto-xref"><span>Section 4.5.1</span></a>, <a href="2C-RandomEffects.html#sec-re-selection" class="quarto-xref"><span>Section 4.5.3</span></a></td>
 </tr>
 <tr class="even">
 <td>Do I need a random slope?</td>
@@ -535,16 +581,20 @@ Table&nbsp;B.1: Typical problems and where to find help in this book.
 <td><a href="2A-LinearRegression.html#sec-lm-prediction" class="quarto-xref"><span>Section 2.11</span></a>, <a href="2C-RandomEffects.html#sec-re-prediction" class="quarto-xref"><span>Section 4.5.2</span></a></td>
 </tr>
 <tr class="odd">
-<td>How large must my study be?</td>
-<td><a href="5A-Summary.html#sec-summary-design" class="quarto-xref"><span>Section 12.7</span></a></td>
+<td>Are the estimates, p-values and CIs of my analysis correct for my design?</td>
+<td><a href="5A-Summary.html#sec-summary-pipeline" class="quarto-xref"><span>Section 12.6</span></a></td>
 </tr>
 <tr class="even">
+<td>How large must my study be?</td>
+<td><a href="5A-Summary.html#sec-summary-design" class="quarto-xref"><span>Section 12.6.1</span></a></td>
+</tr>
+<tr class="odd">
 <td>What should I report?</td>
 <td><a href="5A-Summary.html#sec-summary-report" class="quarto-xref"><span>Section 12.5</span></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Can I use Bayesian methods instead?</td>
-<td><a href="5A-Summary.html#sec-summary-next" class="quarto-xref"><span>Section 12.8</span></a></td>
+<td><a href="5A-Summary.html#sec-summary-next" class="quarto-xref"><span>Section 12.7</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -619,30 +669,35 @@ Table&nbsp;B.2: Formula syntax
 </tr>
 <tr class="odd">
 <td><code>y ~ x + I(x^2)</code></td>
-<td><code>I()</code> forces the mathematical interpretation of whatever is in the parentheses (here a quadratic effect)</td>
-<td><a href="2A-LinearRegression.html#sec-lm-regression-syntax" class="quarto-xref"><span>Section 2.5.2</span></a></td>
+<td><code>I()</code> forces the mathematical interpretation of whatever is in the parentheses (here a quadratic effect, with directly interpretable coefficients; also for other transformations such as <code>I(x^0.5)</code>)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-regression-syntax" class="quarto-xref"><span>Section 2.5.2</span></a>, <a href="2A-LinearRegression.html#cau-lm-poly" class="quarto-xref">Caution&nbsp;<span>2.1</span></a></td>
 </tr>
 <tr class="even">
+<td><code>y ~ poly(x, 2)</code></td>
+<td>quadratic polynomial with uncorrelated (orthogonal) terms: same model as <code>x + I(x^2)</code>, but numerically more stable; coefficients are not directly interpretable (<code>raw = TRUE</code> gives the plain powers)</td>
+<td><a href="2A-LinearRegression.html#cau-lm-poly" class="quarto-xref">Caution&nbsp;<span>2.1</span></a></td>
+</tr>
+<tr class="odd">
 <td><code>y ~ s(x)</code></td>
 <td>spline (mgcv only)</td>
 <td><a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>y ~ te(x1, x2)</code></td>
 <td>tensor spline (mgcv only)</td>
 <td><a href="2A-LinearRegression.html#sec-lm-interaction-gam" class="quarto-xref"><span>Section 2.10.4</span></a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>y ~ .</code></td>
 <td>all variables in the data as main effects</td>
 <td><a href="2A-LinearRegression.html#sec-lm-multiple" class="quarto-xref"><span>Section 2.7</span></a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>y ~ .^2</code></td>
 <td>all variables as main effects and their 2nd order interactions</td>
 <td><a href="2A-LinearRegression.html#sec-lm-interaction-syntax" class="quarto-xref"><span>Section 2.10.1</span></a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>y ~ x + offset(log(effort))</code></td>
 <td>offset, a term with a fixed coefficient of 1 (e.g.&nbsp;for sampling effort or area in log-link GLMs)</td>
 <td><a href="4A-GLMs.html#sec-glm-poisson-note" class="quarto-xref"><span>Section 9.2.1.1</span></a></td>
@@ -678,7 +733,7 @@ Table&nbsp;B.3: Syntax for preparing predictors.
 <tr class="odd">
 <td>Center / scale a predictor (keeps the transformation as attributes)</td>
 <td><code>data$sx = scale(data$x)</code>; center only: <code>scale(data$x, scale = FALSE)</code></td>
-<td><a href="2A-LinearRegression.html#sec-lm-centering-scaling" class="quarto-xref"><span>Section 2.9</span></a></td>
+<td><a href="2A-LinearRegression.html#sec-lm-scaling" class="quarto-xref"><span>Section 2.9.2</span></a></td>
 </tr>
 <tr class="even">
 <td>Set the reference level of a factor</td>
@@ -706,9 +761,127 @@ Table&nbsp;B.3: Syntax for preparing predictors.
 <div id="tbl-cheat-family" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-family-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.4: Model families and the corresponding R code. For which model to choose, see <a href="5A-Summary.html#tbl-summary-response" class="quarto-xref">Table&nbsp;<span>12.1</span></a>.
+Table&nbsp;B.4: Which model for which type of response, and the corresponding R code.
 </figcaption>
 <div aria-describedby="tbl-cheat-family-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Response</th>
+<th>Examples</th>
+<th>Distribution (link)</th>
+<th>R code</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Continuous, roughly symmetric residuals</td>
+<td>height, temperature</td>
+<td>normal (identity)</td>
+<td><code>lm(y ~ x)</code>, <code>lmer(y ~ x + (1|group))</code>, <code>glmmTMB(y ~ x)</code>, <code>gls(y ~ x)</code></td>
+<td><a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>, <a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a></td>
+</tr>
+<tr class="even">
+<td>Continuous, strictly positive, variance increasing with the mean</td>
+<td>biomass, concentration</td>
+<td>log-transformed response with a normal model, or Gamma (log)</td>
+<td><code>lm(log(y) ~ x)</code>, <code>glm(y ~ x, family = Gamma(link = "log"))</code></td>
+<td><a href="4A-GLMs.html#sec-glm-gamma" class="quarto-xref"><span>Section 9.2.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Counts (0, 1, 2, …)</td>
+<td>number of individuals</td>
+<td>Poisson (log)</td>
+<td><code>glm(y ~ x, family = poisson)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-poisson" class="quarto-xref"><span>Section 9.2.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Overdispersed counts</td>
+<td></td>
+<td>negative binomial (log)</td>
+<td><code>MASS::glm.nb(y ~ x)</code>, <code>glmmTMB(y ~ x, family = nbinom2)</code> (or <code>nbinom1</code>)</td>
+<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Counts with more zeros than expected</td>
+<td></td>
+<td>zero-inflated Poisson or negative binomial</td>
+<td><code>glmmTMB(y ~ x, ziformula = ~ 1, family = nbinom2)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-zero-inflation" class="quarto-xref"><span>Section 9.3.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Binary (0/1)</td>
+<td>presence / absence, survived yes / no</td>
+<td>binomial (logit; cloglog with an offset for exposure time)</td>
+<td><code>glm(y ~ x, family = binomial)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>k out of n</td>
+<td>infected out of tested individuals</td>
+<td>binomial; if overdispersed, beta-binomial</td>
+<td><code>glm(cbind(k, n - k) ~ x, family = binomial)</code>, <code>glmmTMB(..., family = betabinomial)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a>, <a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="even">
+<td>Continuous proportions</td>
+<td>cover, fraction of time</td>
+<td>beta (logit), for values strictly between 0 and 1 (exact 0s and 1s: see the section)</td>
+<td><code>glmmTMB(y ~ x, family = beta_family)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-beta" class="quarto-xref"><span>Section 9.2.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>Ordered categories</td>
+<td>damage classes</td>
+<td>cumulative link model (only briefly covered)</td>
+<td><code>ordinal::clm(y ~ x)</code>, with random effects <code>ordinal::clmm()</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Unordered categories</td>
+<td>food type chosen</td>
+<td>multinomial regression (only briefly covered)</td>
+<td><code>nnet::multinom(y ~ x)</code></td>
+<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+</tr>
+<tr class="odd">
+<td>Several responses per unit</td>
+<td>abundances of several species</td>
+<td>multivariate GLM</td>
+<td><code>glmmTMB</code></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-multivar" class="quarto-xref"><span>Section 11.6</span></a></td>
+</tr>
+<tr class="even">
+<td>Mechanistic nonlinear relationship</td>
+<td>enzyme kinetics, growth curves</td>
+<td>nonlinear regression</td>
+<td><code>nls(y ~ a * x / (b + x), start = list(a = 1, b = 1))</code></td>
+<td><a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Start with the basic family for your type of response (e.g.&nbsp;Poisson for counts); change to a family for overdispersed or zero-inflated data only if the residual checks show the problem (<a href="#tbl-cheat-residual" class="quarto-xref">Table&nbsp;<span>B.10</span></a>). All families can be combined with random effects (<code>glmer(..., family = ...)</code>, <code>glmmTMB(..., family = ...)</code>, <a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="4A-GLMs.html#sec-glm-glmm" class="quarto-xref"><span>Section 9.5</span></a>) and with smooth terms (<code>mgcv::gam(y ~ s(x), family = ...)</code>, <a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a>).</p>
+</section>
+<section id="sec-cheat-design" class="level2" data-number="B.5">
+<h2 data-number="B.5" class="anchored" data-anchor-id="sec-cheat-design"><span class="header-section-number">B.5</span> From design to model structure</h2>
+<p>Which random effects and correlation structures a design calls for; for the syntax, see the sections on random effects (<a href="#sec-cheat-re" class="quarto-xref"><span>Section B.6</span></a>) and correlation structures (<a href="#sec-cheat-corr" class="quarto-xref"><span>Section B.7</span></a>). For how to derive the random effects from the study design, see <a href="2C-RandomEffects.html#tip-re-design" class="quarto-xref">Tip&nbsp;<span>4.1</span></a>.</p>
+<div id="tbl-cheat-design" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.5: Which random effects and correlation structures for which design?
+</figcaption>
+<div aria-describedby="tbl-cheat-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -717,71 +890,61 @@ Table&nbsp;B.4: Model families and the corresponding R code. For which model to 
 </colgroup>
 <thead>
 <tr class="header">
-<th>Response</th>
-<th>R code</th>
+<th>Data structure</th>
+<th>Model component</th>
 <th>Section</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Continuous, normal residuals</td>
-<td><code>lm(y ~ x)</code>, <code>lmer(y ~ x + (1|group))</code>, <code>glmmTMB(y ~ x)</code></td>
-<td><a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>, <a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a></td>
+<td>Several observations per site, plot or individual</td>
+<td>random intercept for site</td>
+<td><a href="2C-RandomEffects.html#sec-re-intercept" class="quarto-xref"><span>Section 4.2.1</span></a></td>
 </tr>
 <tr class="even">
-<td>Counts</td>
-<td><code>glm(y ~ x, family = poisson)</code></td>
-<td><a href="4A-GLMs.html#sec-glm-poisson" class="quarto-xref"><span>Section 9.2.1</span></a></td>
+<td>The effect of a predictor varies between groups</td>
+<td>random slope of x for site</td>
+<td><a href="2C-RandomEffects.html#sec-re-slope" class="quarto-xref"><span>Section 4.2.2</span></a></td>
 </tr>
 <tr class="odd">
-<td>Overdispersed counts</td>
-<td><code>MASS::glm.nb(y ~ x)</code>, <code>glmmTMB(y ~ x, family = nbinom2)</code> (or <code>nbinom1</code>)</td>
-<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+<td>Groups within groups (plots within sites)</td>
+<td>nested random effects (plot within site)</td>
+<td><a href="2C-RandomEffects.html#tip-re-nested" class="quarto-xref">Tip&nbsp;<span>4.2</span></a></td>
 </tr>
 <tr class="even">
-<td>Binary (0/1)</td>
-<td><code>glm(y ~ x, family = binomial)</code></td>
-<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a></td>
+<td>Two independent grouping factors (sites and observers)</td>
+<td>crossed random effects (site and observer)</td>
+<td><a href="2C-RandomEffects.html#sec-re-lme4" class="quarto-xref"><span>Section 4.2.3.1</span></a></td>
 </tr>
 <tr class="odd">
-<td>k out of n</td>
-<td><code>glm(cbind(k, n - k) ~ x, family = binomial)</code>; if overdispersed, <code>glmmTMB(..., family = betabinomial)</code></td>
-<td><a href="4A-GLMs.html#sec-glm-logistic" class="quarto-xref"><span>Section 9.2.2</span></a>, <a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+<td>A grouping factor with fewer than about 5-10 levels (e.g.&nbsp;4 years)</td>
+<td>rule of thumb: fixed effect</td>
+<td><a href="2C-RandomEffects.html#tip-re-design" class="quarto-xref">Tip&nbsp;<span>4.1</span></a></td>
 </tr>
 <tr class="even">
-<td>Positive continuous</td>
-<td><code>glm(y ~ x, family = Gamma(link = "log"))</code></td>
-<td><a href="4A-GLMs.html#sec-glm-gamma" class="quarto-xref"><span>Section 9.2.3</span></a></td>
+<td>… and you are interested in the population-level effect of a predictor</td>
+<td>a random effect can also work; after a singular fit, first remove the correlation (<code>||</code>), then switch to a fixed effect</td>
+<td><a href="2C-RandomEffects.html#sec-re-usage" class="quarto-xref"><span>Section 4.3.3</span></a></td>
 </tr>
 <tr class="odd">
-<td>Proportions between 0 and 1</td>
-<td><code>glmmTMB(y ~ x, family = beta_family)</code></td>
-<td><a href="4A-GLMs.html#sec-glm-beta" class="quarto-xref"><span>Section 9.2.4</span></a></td>
+<td>Unequal effort, area or duration (counts)</td>
+<td>offset, <code>offset(log(effort))</code></td>
+<td><a href="4A-GLMs.html#sec-glm-poisson-note" class="quarto-xref"><span>Section 9.2.1.1</span></a></td>
 </tr>
 <tr class="even">
-<td>Ordered categories</td>
-<td><code>ordinal::clm(y ~ x)</code>, with random effects <code>ordinal::clmm()</code></td>
-<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+<td>Repeated measurements over time</td>
+<td>trend in time, then possibly a temporal correlation structure</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
 </tr>
 <tr class="odd">
-<td>Unordered categories</td>
-<td><code>nnet::multinom(y ~ x)</code></td>
-<td><a href="4A-GLMs.html#sec-glm-logistic-note" class="quarto-xref"><span>Section 9.2.2.1</span></a></td>
+<td>Spatial coordinates</td>
+<td>spatial trend, then possibly a spatial correlation structure</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a></td>
 </tr>
 <tr class="even">
-<td>Nonlinear function</td>
-<td><code>nls(y ~ a * x / (b + x), start = list(a = 1, b = 1))</code></td>
-<td><a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a></td>
-</tr>
-<tr class="odd">
-<td>GAM</td>
-<td><code>mgcv::gam(y ~ s(x), family = poisson)</code></td>
-<td><a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a></td>
-</tr>
-<tr class="even">
-<td>Mixed models with any of these families</td>
-<td><code>glmer(..., family = ...)</code>, <code>glmmTMB(..., family = ...)</code></td>
-<td><a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>, <a href="4A-GLMs.html#sec-glm-glmm" class="quarto-xref"><span>Section 9.5</span></a></td>
+<td>Species related by a phylogeny</td>
+<td>phylogenetic correlation structure</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-phylo" class="quarto-xref"><span>Section 11.4</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -789,8 +952,8 @@ Table&nbsp;B.4: Model families and the corresponding R code. For which model to 
 </figure>
 </div>
 </section>
-<section id="sec-cheat-re" class="level2" data-number="B.5">
-<h2 data-number="B.5" class="anchored" data-anchor-id="sec-cheat-re"><span class="header-section-number">B.5</span> Random effect syntax</h2>
+<section id="sec-cheat-re" class="level2" data-number="B.6">
+<h2 data-number="B.6" class="anchored" data-anchor-id="sec-cheat-re"><span class="header-section-number">B.6</span> Random effect syntax</h2>
 <div id="random-effect-syntax">
 
 </div>
@@ -798,7 +961,7 @@ Table&nbsp;B.4: Model families and the corresponding R code. For which model to 
 <div id="tbl-cheat-re" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-re-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.5: Random effect syntax in lme4 and glmmTMB.
+Table&nbsp;B.6: Random effect syntax in lme4 and glmmTMB.
 </figcaption>
 <div aria-describedby="tbl-cheat-re-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -856,16 +1019,16 @@ Table&nbsp;B.5: Random effect syntax in lme4 and glmmTMB.
 </figure>
 </div>
 </section>
-<section id="sec-cheat-corr" class="level2" data-number="B.6">
-<h2 data-number="B.6" class="anchored" data-anchor-id="sec-cheat-corr"><span class="header-section-number">B.6</span> Correlation structures</h2>
+<section id="sec-cheat-corr" class="level2" data-number="B.7">
+<h2 data-number="B.7" class="anchored" data-anchor-id="sec-cheat-corr"><span class="header-section-number">B.7</span> Correlation structures</h2>
 <p>Correlation structures are explained in <a href="4C-CorrelationStructures.html" class="quarto-xref"><span>Chapter 11</span></a> (temporal: <a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a>, spatial: <a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a>, phylogenetic: <a href="4C-CorrelationStructures.html#sec-corr-phylo" class="quarto-xref"><span>Section 11.4</span></a>).</p>
-<section id="sec-cheat-corr-glmmtmb" class="level3" data-number="B.6.1">
-<h3 data-number="B.6.1" class="anchored" data-anchor-id="sec-cheat-corr-glmmtmb"><span class="header-section-number">B.6.1</span> glmmTMB</h3>
+<section id="sec-cheat-corr-glmmtmb" class="level3" data-number="B.7.1">
+<h3 data-number="B.7.1" class="anchored" data-anchor-id="sec-cheat-corr-glmmtmb"><span class="header-section-number">B.7.1</span> glmmTMB</h3>
 <p>glmmTMB supports several correlation structures; the following table shows two common ones. See also the <a href="https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html">glmmTMB vignette</a> about correlation structures.</p>
 <div id="tbl-cheat-corr-glmmtmb" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-corr-glmmtmb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.6: Correlation structures in glmmTMB.
+Table&nbsp;B.7: Correlation structures in glmmTMB.
 </figcaption>
 <div aria-describedby="tbl-cheat-corr-glmmtmb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -886,7 +1049,7 @@ Table&nbsp;B.6: Correlation structures in glmmTMB.
 <tbody>
 <tr class="odd">
 <td>Spatial</td>
-<td><code>data$coords = numFactor(data$x, data$y)</code>; <code>data$group = factor(1)</code>; <code>glmmTMB(y ~ x + exp(0 + coords | group), data = data)</code></td>
+<td><code>data$coords = numFactor(data$lon, data$lat)</code>; <code>data$group = factor(1)</code>; <code>glmmTMB(y ~ x + exp(0 + coords | group), data = data)</code></td>
 <td>random intercepts per location with exponentially decaying covariance (geostatistical); <code>group = factor(1)</code> if there is one spatial field</td>
 <td><a href="4C-CorrelationStructures.html#sec-corr-spatial" class="quarto-xref"><span>Section 11.3</span></a></td>
 </tr>
@@ -902,16 +1065,16 @@ Table&nbsp;B.6: Correlation structures in glmmTMB.
 </figure>
 </div>
 </section>
-<section id="sec-cheat-corr-lme4" class="level3" data-number="B.6.2">
-<h3 data-number="B.6.2" class="anchored" data-anchor-id="sec-cheat-corr-lme4"><span class="header-section-number">B.6.2</span> lme4</h3>
+<section id="sec-cheat-corr-lme4" class="level3" data-number="B.7.2">
+<h3 data-number="B.7.2" class="anchored" data-anchor-id="sec-cheat-corr-lme4"><span class="header-section-number">B.7.2</span> lme4</h3>
 <p>lme4 has no correlation structures for residuals (use glmmTMB, or <code>nlme</code> for linear models).</p>
 </section>
-<section id="sec-cheat-corr-gls" class="level3" data-number="B.6.3">
-<h3 data-number="B.6.3" class="anchored" data-anchor-id="sec-cheat-corr-gls"><span class="header-section-number">B.6.3</span> nlme::gls</h3>
+<section id="sec-cheat-corr-gls" class="level3" data-number="B.7.3">
+<h3 data-number="B.7.3" class="anchored" data-anchor-id="sec-cheat-corr-gls"><span class="header-section-number">B.7.3</span> nlme::gls</h3>
 <div id="tbl-cheat-corr-gls" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-corr-gls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.7: Correlation structures in <code>nlme::gls</code>.
+Table&nbsp;B.8: Correlation structures in <code>nlme::gls</code>.
 </figcaption>
 <div aria-describedby="tbl-cheat-corr-gls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -955,12 +1118,12 @@ Table&nbsp;B.7: Correlation structures in <code>nlme::gls</code>.
 </div>
 </section>
 </section>
-<section id="sec-cheat-dispersion" class="level2" data-number="B.7">
-<h2 data-number="B.7" class="anchored" data-anchor-id="sec-cheat-dispersion"><span class="header-section-number">B.7</span> Dispersion, zero-inflation and offsets</h2>
+<section id="sec-cheat-dispersion" class="level2" data-number="B.8">
+<h2 data-number="B.8" class="anchored" data-anchor-id="sec-cheat-dispersion"><span class="header-section-number">B.8</span> Dispersion, zero-inflation and offsets</h2>
 <div id="tbl-cheat-dispersion" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-dispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.8: Syntax for dispersion, zero-inflation and offsets.
+Table&nbsp;B.9: Syntax for dispersion, zero-inflation and offsets.
 </figcaption>
 <div aria-describedby="tbl-cheat-dispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1013,12 +1176,89 @@ Table&nbsp;B.8: Syntax for dispersion, zero-inflation and offsets.
 </figure>
 </div>
 </section>
-<section id="sec-cheat-dharma" class="level2" data-number="B.8">
-<h2 data-number="B.8" class="anchored" data-anchor-id="sec-cheat-dharma"><span class="header-section-number">B.8</span> Residual checks with DHARMa</h2>
+<section id="sec-cheat-dharma" class="level2" data-number="B.9">
+<h2 data-number="B.9" class="anchored" data-anchor-id="sec-cheat-dharma"><span class="header-section-number">B.9</span> Residual checks with DHARMa</h2>
+<p>If the residual checks show a problem, work through the following table roughly in this order: a wrong functional form or distribution can create apparent dispersion or correlation problems (see <a href="5A-Summary.html#sec-summary-check" class="quarto-xref"><span>Section 12.3</span></a>).</p>
+<div id="tbl-cheat-residual" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.10: Typical problems in residual checks and what to do about them.
+</figcaption>
+<div aria-describedby="tbl-cheat-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>What you see</th>
+<th>Likely cause</th>
+<th>What to do</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Residuals against a predictor show a pattern</td>
+<td>wrong functional form</td>
+<td>quadratic terms, interactions or splines (GAM)</td>
+<td><a href="2A-LinearRegression.html#sec-lm-functional-form" class="quarto-xref"><span>Section 2.5</span></a>, <a href="2A-LinearRegression.html#sec-lm-gam" class="quarto-xref"><span>Section 2.5.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Dispersion test significant, ratio &gt; 1 (counts, k/n data)</td>
+<td>overdispersion</td>
+<td>first check for model misfit and excess zeros; then a negative binomial (counts) or beta-binomial (k/n) family, if needed with a dispersion model; alternative: observation-level random effect; quasi families are discouraged</td>
+<td><a href="4A-GLMs.html#sec-glm-dispersion" class="quarto-xref"><span>Section 9.3.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Spread of residuals changes with a predictor or the fitted values</td>
+<td>heteroskedasticity</td>
+<td>model the variance (<code>gls</code> weights, <code>glmmTMB</code> dispformula)</td>
+<td><a href="4B-Heteroskedasticity.html" class="quarto-xref"><span>Chapter 10</span></a></td>
+</tr>
+<tr class="even">
+<td>More zeros than expected under the fitted model</td>
+<td>zero-inflation</td>
+<td>zero-inflation or hurdle model, compared with the model without via AIC or LRT</td>
+<td><a href="4A-GLMs.html#sec-glm-zero-inflation" class="quarto-xref"><span>Section 9.3.3</span></a></td>
+</tr>
+<tr class="odd">
+<td>Residuals correlated in time, space or phylogeny</td>
+<td>misfit trend or real autocorrelation</td>
+<td>first remove the trend, then add a correlation structure if autocorrelation remains</td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-model" class="quarto-xref"><span>Section 11.1.1</span></a></td>
+</tr>
+<tr class="even">
+<td>Random effect estimates not normal, or correlated with predictors</td>
+<td>misfit at the group level</td>
+<td>check per group, add predictors or random slopes</td>
+<td><a href="2C-RandomEffects.html#sec-re-normality" class="quarto-xref"><span>Section 4.4.3</span></a>, <a href="2C-RandomEffects.html#sec-re-predictor" class="quarto-xref"><span>Section 4.4.4</span></a></td>
+</tr>
+<tr class="odd">
+<td>Single extreme observations</td>
+<td>errors or outliers</td>
+<td>check the data; robust regression</td>
+<td><a href="4B-Heteroskedasticity.html#sec-disp-outlier" class="quarto-xref"><span>Section 10.3</span></a></td>
+</tr>
+<tr class="even">
+<td>Convergence warnings, singular fit</td>
+<td>model too complex for the data</td>
+<td>if the warning mentions scales: center and scale predictors; otherwise change the optimizer or simplify the random effects</td>
+<td><a href="2C-RandomEffects.html#sec-re-convergence" class="quarto-xref"><span>Section 4.4.1</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The DHARMa functions for these checks:</p>
 <div id="tbl-cheat-dharma" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-dharma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.9: Main DHARMa functions.
+Table&nbsp;B.11: Main DHARMa functions.
 </figcaption>
 <div aria-describedby="tbl-cheat-dharma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1058,7 +1298,7 @@ Table&nbsp;B.9: Main DHARMa functions.
 <tr class="odd">
 <td>Residuals aggregated per group (e.g.&nbsp;per year or site)</td>
 <td><code>res2 = recalculateResiduals(res, group = data$year)</code></td>
-<td><a href="4C-CorrelationStructures.html#sec-corr-hurricane" class="quarto-xref"><span>Section 11.2.1</span></a></td>
+<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a>, <a href="4C-CorrelationStructures.html#sec-corr-hurricane" class="quarto-xref"><span>Section 11.2.1</span></a></td>
 </tr>
 <tr class="even">
 <td>Temporal autocorrelation</td>
@@ -1073,7 +1313,7 @@ Table&nbsp;B.9: Main DHARMa functions.
 <tr class="even">
 <td>Re-simulate the random effects (default: conditional on the fitted ones)</td>
 <td><code>simulateResiduals(fit, simulateREs = "unconditional")</code></td>
-<td><a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
+<td><a href="2C-RandomEffects.html#tip-re-predtype" class="quarto-xref">Tip&nbsp;<span>4.4</span></a>, <a href="4C-CorrelationStructures.html#sec-corr-temporal" class="quarto-xref"><span>Section 11.2</span></a></td>
 </tr>
 <tr class="odd">
 <td>Simulated likelihood ratio test</td>
@@ -1086,12 +1326,70 @@ Table&nbsp;B.9: Main DHARMa functions.
 </figure>
 </div>
 </section>
-<section id="sec-cheat-inference" class="level2" data-number="B.9">
-<h2 data-number="B.9" class="anchored" data-anchor-id="sec-cheat-inference"><span class="header-section-number">B.9</span> Tests, effects and predictions</h2>
+<section id="sec-cheat-inference" class="level2" data-number="B.10">
+<h2 data-number="B.10" class="anchored" data-anchor-id="sec-cheat-inference"><span class="header-section-number">B.10</span> Tests, effects and predictions</h2>
+<div id="tbl-cheat-tests" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-tests-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;B.12: Tests and confidence intervals for the main model types. For mixed models in more detail, see <a href="2C-RandomEffects.html#tbl-re-inference" class="quarto-xref">Table&nbsp;<span>4.1</span></a>.
+</figcaption>
+<div aria-describedby="tbl-cheat-tests-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Tests for single terms</th>
+<th>Confidence intervals</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lm</code>, <code>gls</code></td>
+<td>t-tests (<code>summary</code>); <code>lm</code>: F-tests (<code>car::Anova</code>; <code>anova</code> is sequential); <code>gls</code>: Wald <span class="math inline">\(\chi^2\)</span> tests (<code>car::Anova</code>) or sequential F-tests (<code>anova</code>)</td>
+<td><code>confint()</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-interpretation" class="quarto-xref"><span>Section 2.2</span></a>, <a href="2B-ANOVA.html" class="quarto-xref"><span>Chapter 3</span></a></td>
+</tr>
+<tr class="even">
+<td><code>glm</code></td>
+<td>z-tests (<code>summary</code>; t-tests if the dispersion is estimated, e.g.&nbsp;Gamma), likelihood-ratio tests (<code>car::Anova</code>; <code>anova(..., test = "Chisq")</code> is sequential)</td>
+<td><code>confint()</code> (profile)</td>
+<td><a href="4A-GLMs.html#sec-glm-variant" class="quarto-xref"><span>Section 9.2</span></a> (caveats: <a href="4A-GLMs.html#cau-glm-before" class="quarto-xref">Caution&nbsp;<span>9.1</span></a>)</td>
+</tr>
+<tr class="odd">
+<td><code>lmer</code></td>
+<td>t- and F-tests with approximate degrees of freedom (<code>lmerTest</code>), likelihood-ratio tests</td>
+<td><code>confint()</code> (profile), parametric bootstrap (<code>bootMer</code>)</td>
+<td><a href="2C-RandomEffects.html#sec-re-df" class="quarto-xref"><span>Section 4.5.1</span></a>, <a href="2C-RandomEffects.html#sec-re-selection" class="quarto-xref"><span>Section 4.5.3</span></a></td>
+</tr>
+<tr class="even">
+<td><code>glmer</code>, <code>glmmTMB</code></td>
+<td>z-tests, Wald tests (<code>car::Anova</code>), likelihood-ratio tests; for random effects simulated LRTs</td>
+<td><code>confint()</code> (<code>glmer</code>: profile; <code>glmmTMB</code>: Wald by default)</td>
+<td><a href="2C-RandomEffects.html#sec-re-selection" class="quarto-xref"><span>Section 4.5.3</span></a>, <a href="2C-RandomEffects.html#sec-re-simlrt" class="quarto-xref"><span>Section 4.5.3.3</span></a>, <a href="4A-GLMs.html#sec-glm-glmmtest" class="quarto-xref"><span>Section 9.5.2</span></a></td>
+</tr>
+<tr class="odd">
+<td>Comparisons between groups</td>
+<td><code>emmeans</code> with <code>pairs()</code> or <code>contrast()</code> (Tukey or Dunnett adjustment)</td>
+<td><code>emmeans</code></td>
+<td><a href="2A-LinearRegression.html#sec-lm-posthoc" class="quarto-xref"><span>Section 2.6.3</span></a>, <a href="2B-ANOVA.html#nte-anova-emmeans" class="quarto-xref">Note&nbsp;<span>3.1</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Functions for these tests, effects and predictions:</p>
 <div id="tbl-cheat-inference" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-cheat-inference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;B.10: Functions for tests, effects and predictions. For an overview of tests and CIs for mixed models, see <a href="2C-RandomEffects.html#tbl-re-inference" class="quarto-xref">Table&nbsp;<span>4.1</span></a>.
+Table&nbsp;B.13: Functions for tests, effects and predictions. For mixed models, see <a href="2C-RandomEffects.html#tbl-re-inference" class="quarto-xref">Table&nbsp;<span>4.1</span></a> (tests and CIs) and <a href="2C-RandomEffects.html#tbl-re-anova" class="quarto-xref">Table&nbsp;<span>4.2</span></a>, <a href="4A-GLMs.html#tbl-glm-glmmtest" class="quarto-xref">Table&nbsp;<span>9.1</span></a> (ANOVA tables).
 </figcaption>
 <div aria-describedby="tbl-cheat-inference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1126,7 +1424,7 @@ Table&nbsp;B.10: Functions for tests, effects and predictions. For an overview o
 <tr class="even">
 <td>Confidence intervals of parameters</td>
 <td><code>confint(fit)</code></td>
-<td><a href="5A-Summary.html#tbl-summary-inference" class="quarto-xref">Table&nbsp;<span>12.4</span></a></td>
+<td><a href="#tbl-cheat-tests" class="quarto-xref">Table&nbsp;<span>B.12</span></a></td>
 </tr>
 <tr class="odd">
 <td>Group means and comparisons</td>

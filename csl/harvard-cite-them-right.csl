@@ -98,10 +98,7 @@
   <macro name="access">
     <choose>
       <if variable="DOI">
-        <group delimiter=": ">
-          <text term="available at" text-case="capitalize-first"/>
-          <text variable="DOI" prefix="https://doi.org/"/>
-        </group>
+        <!-- DOI is not printed: citeproc turns the title into a link to the DOI (saves space) -->
       </if>
       <else-if variable="URL">
         <text term="available at" suffix=": " text-case="capitalize-first"/>

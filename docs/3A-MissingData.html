@@ -185,6 +185,14 @@ div.csl-indent {
 <meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
 <meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
 <meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=No unbiased estimator of the variance of k-fold cross-validation;,citation_author=Yoshua Bengio;,citation_author=Yves Grandvalet;,citation_publication_date=2004;,citation_cover_date=2004;,citation_year=2004;,citation_fulltext_html_url=https://www.jmlr.org/papers/v5/grandvalet04a.html;,citation_volume=5;,citation_journal_title=Journal of Machine Learning Research;">
+<meta name="citation_reference" content="citation_title=Cross-validation: What does it estimate and how well does it do it?;,citation_author=Stephen Bates;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=546;,citation_doi=10.1080/01621459.2023.2197686;,citation_volume=119;,citation_journal_title=Journal of the American Statistical Association;">
+<meta name="citation_reference" content="citation_title=The ecological detective: Confronting models with data;,citation_author=Ray Hilborn;,citation_author=Marc Mangel;,citation_publication_date=1997;,citation_cover_date=1997;,citation_year=1997;,citation_doi=10.1515/9781400847310;,citation_isbn=9780691034973;,citation_series_title=Monographs in population biology;">
+<meta name="citation_reference" content="citation_title=Scaling regression inputs by dividing by two standard deviations;,citation_author=Andrew Gelman;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=15;,citation_doi=10.1002/sim.3107;,citation_volume=27;,citation_journal_title=Statistics in Medicine;">
+<meta name="citation_reference" content="citation_title=Evaluating significance in linear mixed-effects models in R;,citation_author=Steven G. Luke;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=4;,citation_doi=10.3758/s13428-016-0809-y;,citation_volume=49;,citation_journal_title=Behavior Research Methods;">
+<meta name="citation_reference" content="citation_title=lmerTest package: Tests in linear mixed effects models;,citation_author=Alexandra Kuznetsova;,citation_author=Per B. Brockhoff;,citation_author=Rune H. B. Christensen;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=13;,citation_doi=10.18637/jss.v082.i13;,citation_volume=82;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=SIMR: An R package for power analysis of generalized linear mixed models by simulation;,citation_author=Peter Green;,citation_author=Catriona J. MacLeod;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_issue=4;,citation_doi=10.1111/2041-210X.12504;,citation_volume=7;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=How to interpret statistical models using marginaleffects for R and Python;,citation_author=Vincent Arel-Bundock;,citation_author=Noah Greifer;,citation_author=Andrew Heiss;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=9;,citation_doi=10.18637/jss.v111.i09;,citation_volume=111;,citation_journal_title=Journal of Statistical Software;">
 </head>
 
 <body class="nav-sidebar floating slimcontent quarto-light">
@@ -458,7 +466,7 @@ div.csl-indent {
 <li>what can and cannot be checked about this process, and how to test the sensitivity of the results to MNAR (<a href="#sec-miss-test" class="quarto-xref"><span>Section 6.3.1</span></a>, <a href="#nte-miss-sensitivity" class="quarto-xref">Note&nbsp;<span>6.1</span></a>);</li>
 <li>how to impute missing predictors with single and multiple imputation, and why multiple imputation gives more honest standard errors (<a href="#sec-miss-imputation" class="quarto-xref"><span>Section 6.4</span></a>).</li>
 </ul>
-<p><strong>Workflow steps</strong> (<a href="1A-GettingStarted.html#sec-intro-workflow" class="quarto-xref"><span>Section 1.1.2</span></a>): step 2 (design and data).</p>
+<p><strong>Workflow steps</strong> (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>): step 2 (design and data).</p>
 <p>Prerequisites: the linear model (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>).</p>
 </div>
 </div>
@@ -529,9 +537,9 @@ Note
 </ol>
 <p>For all these reasons, you should get a good overview about your NAs (see <a href="#sec-miss-summary" class="quarto-xref"><span>Section 6.2</span></a>), and consider what to do with them. Silently dropping incomplete rows is common in ecology, although the dangers have been pointed out for a long time <span class="citation" data-cites="nakagawa2008missing dumelle2025missing">(<a href="5B-References.html#ref-nakagawa2008missing" role="doc-biblioref">Nakagawa and Freckleton, 2008</a>; <a href="5B-References.html#ref-dumelle2025missing" role="doc-biblioref">Dumelle <em>et al.</em>, 2025</a>)</span>.</p>
 <div class="no-row-height column-margin column-container"><div id="ref-nakagawa2008missing" class="csl-entry" role="listitem">
-Nakagawa, S. and Freckleton, R.P. (2008) <span>“Missing inaction: The dangers of ignoring missing data,”</span> <em>Trends in Ecology &amp; Evolution</em>, 23(11), pp. 592–596. Available at: <a href="https://doi.org/10.1016/j.tree.2008.06.014">https://doi.org/10.1016/j.tree.2008.06.014</a>.
+Nakagawa, S. and Freckleton, R.P. (2008) <span>“<a href="https://doi.org/10.1016/j.tree.2008.06.014">Missing inaction: The dangers of ignoring missing data</a>,”</span> <em>Trends in Ecology &amp; Evolution</em>, 23(11), pp. 592–596.
 </div><div id="ref-dumelle2025missing" class="csl-entry" role="listitem">
-Dumelle, M. <em>et al.</em> (2025) <span>“Missing data in ecology: Syntheses, clarifications, and considerations,”</span> <em>Ecological Monographs</em>, 95(4), p. e70037. Available at: <a href="https://doi.org/10.1002/ecm.70037">https://doi.org/10.1002/ecm.70037</a>.
+Dumelle, M. <em>et al.</em> (2025) <span>“<a href="https://doi.org/10.1002/ecm.70037">Missing data in ecology: Syntheses, clarifications, and considerations</a>,”</span> <em>Ecological Monographs</em>, 95(4), p. e70037.
 </div></div></section>
 <section id="sec-miss-summary" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-miss-summary"><span class="header-section-number">6.2</span> Summarizing NAs</h2>
@@ -636,7 +644,7 @@ Month       -0.65774099 0.19895206 -3.3060275 0.0009462882</code></pre>
 <p>The main alternative to throwing out observations with NAs is filling them up. This process is known as imputation.</p>
 <p>In the airquality regression above, however, only the response Ozone has missing values; Wind and Temp are complete. Imputing the response is of little use: if only the response is missing (and the missingness is MAR given the predictors), the imputed values are just predictions from the same predictors, so they add no information about the effects. <span class="citation" data-cites="vonhippel2007regression">Hippel (<a href="5B-References.html#ref-vonhippel2007regression" role="doc-biblioref">2007</a>)</span> therefore recommends to remove observations with imputed responses before fitting the model. The response should, however, be used in the imputation model, to impute missing predictors.</p>
 <div class="no-row-height column-margin column-container"><div id="ref-vonhippel2007regression" class="csl-entry" role="listitem">
-Hippel, P.T. von (2007) <span>“Regression with missing <span>Y</span>s: An improved strategy for analyzing multiply imputed data,”</span> <em>Sociological Methodology</em>, 37(1), pp. 83–117. Available at: <a href="https://doi.org/10.1111/j.1467-9531.2007.00180.x">https://doi.org/10.1111/j.1467-9531.2007.00180.x</a>.
+Hippel, P.T. von (2007) <span>“<a href="https://doi.org/10.1111/j.1467-9531.2007.00180.x">Regression with missing <span>Y</span>s: An improved strategy for analyzing multiply imputed data</a>,”</span> <em>Sociological Methodology</em>, 37(1), pp. 83–117.
 </div></div><p>Imputation pays off when predictors are missing. Let’s create such a situation, in which we also know the correct result: we take the 111 complete observations of airquality and delete values of Temp, more often on days with high ozone. This is MAR, because the missingness depends on the observed Ozone values:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>aq <span class="ot">=</span> airquality[<span class="fu">complete.cases</span>(airquality), <span class="fu">c</span>(<span class="st">"Ozone"</span>, <span class="st">"Solar.R"</span>, <span class="st">"Wind"</span>, <span class="st">"Temp"</span>)]</span>
@@ -770,23 +778,6 @@ Temp       1.82      2.05      2.03</code></pre>
 </div>
 </div>
 <p>More on missing data and imputation methods in Stef van Buuren’s book <a href="https://stefvanbuuren.name/fimd/">“Flexible Imputation of Missing Data”</a></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mitools)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(smi)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>models<span class="ot">&lt;-</span><span class="fu">with</span>(smi, <span class="fu">glm</span>(drinkreg<span class="sc">~</span>wave<span class="sc">*</span>sex,<span class="at">family=</span><span class="fu">binomial</span>()))</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">MIcombine</span>(models))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Multiple imputation results:
-      with(smi, glm(drinkreg ~ wave * sex, family = binomial()))
-      MIcombine.default(models)
-                results         se      (lower     upper) missInfo
-(Intercept) -2.25974358 0.26830731 -2.78584855 -1.7336386      4 %
-wave         0.24055250 0.06587423  0.11092461  0.3701804     12 %
-sex          0.64905222 0.34919264 -0.03537187  1.3334763      1 %
-wave:sex    -0.03725422 0.08609199 -0.20623121  0.1317228      7 %</code></pre>
-</div>
-</div>
 </section>
 <section id="sec-miss-takehome" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="sec-miss-takehome"><span class="header-section-number">6.5</span> Take-home messages</h2>

@@ -166,6 +166,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="citation_reference" content="citation_title=A brief introduction to mixed effects modelling and multi-model inference in ecology;,citation_author=Xavier A. Harrison;,citation_author=Lynda Donaldson;,citation_author=Maria Eugenia Correa-Cano;,citation_author=Julian Evans;,citation_author=David N. Fisher;,citation_author=Cecily E. D. Goodwin;,citation_author=Beth S. Robinson;,citation_author=David J. Hodgson;,citation_author=Richard Inger;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_doi=10.7717/peerj.4794;,citation_volume=6;,citation_journal_title=PeerJ;">
 <meta name="citation_reference" content="citation_title=Missing inaction: The dangers of ignoring missing data;,citation_author=Shinichi Nakagawa;,citation_author=Robert P. Freckleton;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=11;,citation_doi=10.1016/j.tree.2008.06.014;,citation_volume=23;,citation_journal_title=Trends in Ecology &amp;amp;amp; Evolution;">
 <meta name="citation_reference" content="citation_title=Missing data in ecology: Syntheses, clarifications, and considerations;,citation_author=Michael Dumelle;,citation_author=Rob Trangucci;,citation_author=Amanda M. Nahlik;,citation_author=Anthony R. Olsen;,citation_author=Kathryn M. Irvine;,citation_author=Karen Blocksom;,citation_author=Jay M. Ver Hoef;,citation_author=Claudio Fuentes;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_issue=4;,citation_doi=10.1002/ecm.70037;,citation_volume=95;,citation_journal_title=Ecological Monographs;">
+<meta name="citation_reference" content="citation_title=No unbiased estimator of the variance of k-fold cross-validation;,citation_author=Yoshua Bengio;,citation_author=Yves Grandvalet;,citation_publication_date=2004;,citation_cover_date=2004;,citation_year=2004;,citation_fulltext_html_url=https://www.jmlr.org/papers/v5/grandvalet04a.html;,citation_volume=5;,citation_journal_title=Journal of Machine Learning Research;">
+<meta name="citation_reference" content="citation_title=Cross-validation: What does it estimate and how well does it do it?;,citation_author=Stephen Bates;,citation_author=Trevor Hastie;,citation_author=Robert Tibshirani;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=546;,citation_doi=10.1080/01621459.2023.2197686;,citation_volume=119;,citation_journal_title=Journal of the American Statistical Association;">
+<meta name="citation_reference" content="citation_title=The ecological detective: Confronting models with data;,citation_author=Ray Hilborn;,citation_author=Marc Mangel;,citation_publication_date=1997;,citation_cover_date=1997;,citation_year=1997;,citation_doi=10.1515/9781400847310;,citation_isbn=9780691034973;,citation_series_title=Monographs in population biology;">
+<meta name="citation_reference" content="citation_title=Scaling regression inputs by dividing by two standard deviations;,citation_author=Andrew Gelman;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=15;,citation_doi=10.1002/sim.3107;,citation_volume=27;,citation_journal_title=Statistics in Medicine;">
+<meta name="citation_reference" content="citation_title=Evaluating significance in linear mixed-effects models in R;,citation_author=Steven G. Luke;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=4;,citation_doi=10.3758/s13428-016-0809-y;,citation_volume=49;,citation_journal_title=Behavior Research Methods;">
+<meta name="citation_reference" content="citation_title=lmerTest package: Tests in linear mixed effects models;,citation_author=Alexandra Kuznetsova;,citation_author=Per B. Brockhoff;,citation_author=Rune H. B. Christensen;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;,citation_issue=13;,citation_doi=10.18637/jss.v082.i13;,citation_volume=82;,citation_journal_title=Journal of Statistical Software;">
+<meta name="citation_reference" content="citation_title=SIMR: An R package for power analysis of generalized linear mixed models by simulation;,citation_author=Peter Green;,citation_author=Catriona J. MacLeod;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_issue=4;,citation_doi=10.1111/2041-210X.12504;,citation_volume=7;,citation_journal_title=Methods in Ecology and Evolution;">
+<meta name="citation_reference" content="citation_title=How to interpret statistical models using marginaleffects for R and Python;,citation_author=Vincent Arel-Bundock;,citation_author=Noah Greifer;,citation_author=Andrew Heiss;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_issue=9;,citation_doi=10.18637/jss.v111.i09;,citation_volume=111;,citation_journal_title=Journal of Statistical Software;">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -389,23 +397,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-intro-organization" id="toc-sec-intro-organization" class="nav-link active" data-scroll-target="#sec-intro-organization"><span class="header-section-number">1.1</span> Overview and organization of this book</a>
+  <li><a href="#sec-intro-r-system" id="toc-sec-intro-r-system" class="nav-link active" data-scroll-target="#sec-intro-r-system"><span class="header-section-number">1.1</span> Your R system</a>
   <ul class="collapse">
-  <li><a href="#sec-intro-model" id="toc-sec-intro-model" class="nav-link" data-scroll-target="#sec-intro-model"><span class="header-section-number">1.1.1</span> Learning goals</a></li>
-  <li><a href="#sec-intro-workflow" id="toc-sec-intro-workflow" class="nav-link" data-scroll-target="#sec-intro-workflow"><span class="header-section-number">1.1.2</span> Implementing this into a data analysis workflow</a></li>
+  <li><a href="#sec-intro-library" id="toc-sec-intro-library" class="nav-link" data-scroll-target="#sec-intro-library"><span class="header-section-number">1.1.1</span> Libraries that you will need</a></li>
   </ul></li>
-  <li><a href="#sec-intro-r-system" id="toc-sec-intro-r-system" class="nav-link" data-scroll-target="#sec-intro-r-system"><span class="header-section-number">1.2</span> Your R system</a>
+  <li><a href="#sec-intro-assumed-knowledge" id="toc-sec-intro-assumed-knowledge" class="nav-link" data-scroll-target="#sec-intro-assumed-knowledge"><span class="header-section-number">1.2</span> Assumed R knowledge</a>
   <ul class="collapse">
-  <li><a href="#sec-intro-library" id="toc-sec-intro-library" class="nav-link" data-scroll-target="#sec-intro-library"><span class="header-section-number">1.2.1</span> Libraries that you will need</a></li>
-  </ul></li>
-  <li><a href="#sec-intro-assumed-knowledge" id="toc-sec-intro-assumed-knowledge" class="nav-link" data-scroll-target="#sec-intro-assumed-knowledge"><span class="header-section-number">1.3</span> Assumed R knowledge</a>
-  <ul class="collapse">
-  <li><a href="#sec-intro-representation" id="toc-sec-intro-representation" class="nav-link" data-scroll-target="#sec-intro-representation"><span class="header-section-number">1.3.1</span> Representing data in R</a></li>
-  <li><a href="#sec-intro-selection" id="toc-sec-intro-selection" class="nav-link" data-scroll-target="#sec-intro-selection"><span class="header-section-number">1.3.2</span> Data selection, slicing and subsetting</a></li>
-  <li><a href="#sec-intro-apply-aggregate" id="toc-sec-intro-apply-aggregate" class="nav-link" data-scroll-target="#sec-intro-apply-aggregate"><span class="header-section-number">1.3.3</span> Applying functions and aggregates across a data set</a></li>
-  <li><a href="#sec-intro-plotting" id="toc-sec-intro-plotting" class="nav-link" data-scroll-target="#sec-intro-plotting"><span class="header-section-number">1.3.4</span> Plotting</a></li>
-  <li><a href="#sec-intro-explore" id="toc-sec-intro-explore" class="nav-link" data-scroll-target="#sec-intro-explore"><span class="header-section-number">1.3.5</span> Preparing and exploring your data</a></li>
-  <li><a href="#sec-intro-final-exercise" id="toc-sec-intro-final-exercise" class="nav-link" data-scroll-target="#sec-intro-final-exercise"><span class="header-section-number">1.3.6</span> Final exercise</a></li>
+  <li><a href="#sec-intro-representation" id="toc-sec-intro-representation" class="nav-link" data-scroll-target="#sec-intro-representation"><span class="header-section-number">1.2.1</span> Representing data in R</a></li>
+  <li><a href="#sec-intro-selection" id="toc-sec-intro-selection" class="nav-link" data-scroll-target="#sec-intro-selection"><span class="header-section-number">1.2.2</span> Data selection, slicing and subsetting</a></li>
+  <li><a href="#sec-intro-apply-aggregate" id="toc-sec-intro-apply-aggregate" class="nav-link" data-scroll-target="#sec-intro-apply-aggregate"><span class="header-section-number">1.2.3</span> Applying functions and aggregates across a data set</a></li>
+  <li><a href="#sec-intro-plotting" id="toc-sec-intro-plotting" class="nav-link" data-scroll-target="#sec-intro-plotting"><span class="header-section-number">1.2.4</span> Plotting</a></li>
+  <li><a href="#sec-intro-explore" id="toc-sec-intro-explore" class="nav-link" data-scroll-target="#sec-intro-explore"><span class="header-section-number">1.2.5</span> Preparing and exploring your data</a></li>
+  <li><a href="#sec-intro-final-exercise" id="toc-sec-intro-final-exercise" class="nav-link" data-scroll-target="#sec-intro-final-exercise"><span class="header-section-number">1.2.6</span> Final exercise</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/TheoreticalEcology/AdvancedRegressionModels/edit/main/1A-GettingStarted.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -432,36 +435,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="sec-intro-organization" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="sec-intro-organization"><span class="header-section-number">1.1</span> Overview and organization of this book</h2>
-<div id="organization-of-this-book">
-
-</div>
-<section id="sec-intro-model" class="level3" data-number="1.1.1">
-<h3 data-number="1.1.1" class="anchored" data-anchor-id="sec-intro-model"><span class="header-section-number">1.1.1</span> Learning goals</h3>
-<p>Generalized (linear) mixed models are a framework for modeling a wide range of data structures. The aim of this book is to introduce you to this framework, and apply guidance on its use. It is organized in three main parts, followed by a workflow chapter (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>) and appendices (quick reference, <a href="6B-CheatSheet.html" class="quarto-xref"><span>Appendix B</span></a>; case studies, <a href="6C-CaseStudies.html" class="quarto-xref"><span>Appendix C</span></a>):</p>
-<ol type="1">
-<li><strong>Modeling the mean:</strong> The first part of this book is focusing on how to model the mean response as a function of the one or several predictor variables. In this part, we will mainly stick to the assumptions of the linear regression, which is that residuals are i.i.d. normally distributed. Topics we will cover here are linear regression (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>), ANOVA (<a href="2B-ANOVA.html" class="quarto-xref"><span>Chapter 3</span></a>), mixed models (<a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>) and nonlinear regression (<a href="2D-NonlinearRegression.html" class="quarto-xref"><span>Chapter 5</span></a>).</li>
-<li><strong>Model choice:</strong> The second part covers model choice, including how to handle missing data (<a href="3A-MissingData.html" class="quarto-xref"><span>Chapter 6</span></a>), causal inference (<a href="3B-CausalInference.html" class="quarto-xref"><span>Chapter 7</span></a>) and model selection (<a href="3C-ModelSelection.html" class="quarto-xref"><span>Chapter 8</span></a>), with cross-validation (<a href="3C-ModelSelection.html#sec-select-cv" class="quarto-xref"><span>Section 8.4</span></a>).</li>
-<li><strong>Modeling the distribution:</strong> The third part of the book is about modeling different residual distributions. We will relax the iid normal assumptions of the LM, and move to GLMs (<a href="4A-GLMs.html" class="quarto-xref"><span>Chapter 9</span></a>) and modeling variance (<a href="4B-Heteroskedasticity.html" class="quarto-xref"><span>Chapter 10</span></a>) and correlation (<a href="4C-CorrelationStructures.html" class="quarto-xref"><span>Chapter 11</span></a>) of residuals.</li>
-</ol>
-</section>
-<section id="sec-intro-workflow" class="level3" data-number="1.1.2">
-<h3 data-number="1.1.2" class="anchored" data-anchor-id="sec-intro-workflow"><span class="header-section-number">1.1.2</span> Implementing this into a data analysis workflow</h3>
-<p>In a real scientific project, these techniques will (re)appear in several steps along the way. The usual workflow of a scientific analysis is given below, with pointers to which chapter is relevant for the respective step:</p>
-<ol type="1">
-<li><strong>Question and goal:</strong> causal, predictive or exploratory? (<a href="3B-CausalInference.html" class="quarto-xref"><span>Chapter 7</span></a>, <a href="3C-ModelSelection.html" class="quarto-xref"><span>Chapter 8</span></a>)</li>
-<li><strong>Design and data:</strong> experimental unit, grouping, data checks and missing values (<a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.3.5</span></a>, <a href="2C-RandomEffects.html#tip-re-design" class="quarto-xref">Tip&nbsp;<span>4.1</span></a>)</li>
-<li><strong>A-priori model:</strong> distribution, predictors, random effects and correlation structures (<a href="4A-GLMs.html" class="quarto-xref"><span>Chapter 9</span></a>, <a href="2C-RandomEffects.html" class="quarto-xref"><span>Chapter 4</span></a>)</li>
-<li><strong>Fit the model</strong> with the R packages introduced throughout the book (see the quick reference, <a href="6B-CheatSheet.html" class="quarto-xref"><span>Appendix B</span></a>)</li>
-<li><strong>Check residuals and adjust the model</strong> (<a href="2A-LinearRegression.html#sec-lm-residual" class="quarto-xref"><span>Section 2.4</span></a>, <a href="4A-GLMs.html#sec-glm-residual" class="quarto-xref"><span>Section 9.3</span></a>)</li>
-<li><strong>Inference:</strong> tests, confidence intervals and predictions (<a href="2A-LinearRegression.html#sec-lm-interpretation" class="quarto-xref"><span>Section 2.2</span></a>, <a href="2B-ANOVA.html" class="quarto-xref"><span>Chapter 3</span></a>)</li>
-<li><strong>Report</strong> the analysis (<a href="5A-Summary.html#sec-summary-report" class="quarto-xref"><span>Section 12.5</span></a>)</li>
-</ol>
-</section>
-</section>
-<section id="sec-intro-r-system" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="sec-intro-r-system"><span class="header-section-number">1.2</span> Your R system</h2>
+<p>This chapter sets up R and RStudio and lists the R knowledge that is assumed in the rest of the book.</p>
+<section id="sec-intro-r-system" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-intro-r-system"><span class="header-section-number">1.1</span> Your R system</h2>
 <div id="your-r-system">
 
 </div>
@@ -471,8 +447,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>RStudio is the editor that helps you send inputs to R and collect outputs.</li>
 </ul>
 <p>Make sure you have a recent version of R + RStudio installed on your computer. If you have never used RStudio, <a href="https://videocampus.sachsen.de/video/First-steps-with-R-and-RStudio/528e5d164219f2d07e32a51736c3f7d1">here</a> is a good video introducing the basic system and how R and RStudio interact.</p>
-<section id="sec-intro-library" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="sec-intro-library"><span class="header-section-number">1.2.1</span> Libraries that you will need</h3>
+<section id="sec-intro-library" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="sec-intro-library"><span class="header-section-number">1.1.1</span> Libraries that you will need</h3>
 <div id="libraries-that-you-will-need">
 
 </div>
@@ -507,7 +483,7 @@ cmake</code></pre>
 <p>In this book, we will often use data sets from the <code class="sourceCode r">EcoData</code> package, which is not on CRAN, but on a GitHub page. To install the package, run</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"remotes"</span>) <span class="co"># only needed if remotes is not yet installed</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"TheoreticalEcology/EcoData"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"TheoreticalEcology/EcoData"</span>, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>For your convenience, the EcoData installation also forces the installation of most of the packages needed in this book, so this may take a while. If you want to load only the EcoData package without its dependencies, run <code>remotes::install_github("TheoreticalEcology/EcoData", dependencies = FALSE)</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -552,8 +528,8 @@ cmake</code></pre>
 </div>
 </section>
 </section>
-<section id="sec-intro-assumed-knowledge" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="sec-intro-assumed-knowledge"><span class="header-section-number">1.3</span> Assumed R knowledge</h2>
+<section id="sec-intro-assumed-knowledge" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="sec-intro-assumed-knowledge"><span class="header-section-number">1.2</span> Assumed R knowledge</h2>
 <div id="assumed-r-knowledge">
 
 </div>
@@ -579,11 +555,11 @@ Note
 <div id="reminder-basic-r-programming">
 
 </div>
-<p>In this section, I will first summarize basic plots and data manipulation skills in R, as they would be taught in an introductory R course (for example <a href="https://theoreticalecology.github.io/DataScienceInR/">here</a>). Please read through them and make sure you know these commands in advance of the course. If you are confident with them, you can skip this reminder; the subsection on preparing and exploring your data (<a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.3.5</span></a>) summarizes the checks to do before fitting a model, and the final exercise (<a href="#sec-intro-final-exercise" class="quarto-xref"><span>Section 1.3.6</span></a>) practices both.</p>
-<section id="sec-intro-representation" class="level3" data-number="1.3.1">
-<h3 data-number="1.3.1" class="anchored" data-anchor-id="sec-intro-representation"><span class="header-section-number">1.3.1</span> Representing data in R</h3>
-<section id="sec-intro-data-structure" class="level4" data-number="1.3.1.1">
-<h4 data-number="1.3.1.1" class="anchored" data-anchor-id="sec-intro-data-structure"><span class="header-section-number">1.3.1.1</span> Exploring Data Structures</h4>
+<p>In this section, I will first summarize basic plots and data manipulation skills in R, as they would be taught in an introductory R course (for example <a href="https://theoreticalecology.github.io/DataScienceInR/">here</a>). Please read through them and make sure you know these commands in advance of the course. If you are confident with them, you can skip this reminder; the subsection on preparing and exploring your data (<a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.2.5</span></a>) summarizes the checks to do before fitting a model, and the final exercise (<a href="#sec-intro-final-exercise" class="quarto-xref"><span>Section 1.2.6</span></a>) practices both.</p>
+<section id="sec-intro-representation" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="sec-intro-representation"><span class="header-section-number">1.2.1</span> Representing data in R</h3>
+<section id="sec-intro-data-structure" class="level4" data-number="1.2.1.1">
+<h4 data-number="1.2.1.1" class="anchored" data-anchor-id="sec-intro-data-structure"><span class="header-section-number">1.2.1.1</span> Exploring Data Structures</h4>
 <p>A fundamental requirement for working with data is representing it in a computer. In R, we can either read in data (e.g.&nbsp;with functions such as read.table()), or we can assign variables certain values. For example, if I type</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -670,8 +646,8 @@ Note
 </div>
 </div>
 </section>
-<section id="sec-intro-dynamic-typing" class="level4" data-number="1.3.1.2">
-<h4 data-number="1.3.1.2" class="anchored" data-anchor-id="sec-intro-dynamic-typing"><span class="header-section-number">1.3.1.2</span> Dynamic Typing</h4>
+<section id="sec-intro-dynamic-typing" class="level4" data-number="1.2.1.2">
+<h4 data-number="1.2.1.2" class="anchored" data-anchor-id="sec-intro-dynamic-typing"><span class="header-section-number">1.2.1.2</span> Dynamic Typing</h4>
 <p>R is a dynamically typed language, which means that the type of variables is determined automatically depending on what values you supply. Try this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">1</span></span>
@@ -693,10 +669,10 @@ Note
 <p>Note: The actions above operate on a copy (<code>irisNA</code>) of the iris data set, the original <code>iris</code> is not changed.</p>
 </section>
 </section>
-<section id="sec-intro-selection" class="level3" data-number="1.3.2">
-<h3 data-number="1.3.2" class="anchored" data-anchor-id="sec-intro-selection"><span class="header-section-number">1.3.2</span> Data selection, slicing and subsetting</h3>
-<section id="sec-intro-subsetting" class="level4" data-number="1.3.2.1">
-<h4 data-number="1.3.2.1" class="anchored" data-anchor-id="sec-intro-subsetting"><span class="header-section-number">1.3.2.1</span> Subsetting and Slicing for Single Data Types</h4>
+<section id="sec-intro-selection" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="sec-intro-selection"><span class="header-section-number">1.2.2</span> Data selection, slicing and subsetting</h3>
+<section id="sec-intro-subsetting" class="level4" data-number="1.2.2.1">
+<h4 data-number="1.2.2.1" class="anchored" data-anchor-id="sec-intro-subsetting"><span class="header-section-number">1.2.2.1</span> Subsetting and Slicing for Single Data Types</h4>
 <p>We often want to select only a subset of our data. You can generally subset from data structures using indices and TRUE/FALSE (or T/F). Here for a vector:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span></span>
@@ -740,8 +716,8 @@ Note
 <p>The syntax <code class="sourceCode r">m[<span class="dv">1</span>,]</code> is also called <em>slicing</em>, for obvious reasons.</p>
 <p>Data.frames are the same as matrices, except that, like with lists of vectors, you can also access columns via names as in <code class="sourceCode r">data.frame<span class="sc">$</span>column</code>. This is because a data.frame is a list of vectors.</p>
 </section>
-<section id="sec-intro-logic-slicing" class="level4" data-number="1.3.2.2">
-<h4 data-number="1.3.2.2" class="anchored" data-anchor-id="sec-intro-logic-slicing"><span class="header-section-number">1.3.2.2</span> Logic and Slicing</h4>
+<section id="sec-intro-logic-slicing" class="level4" data-number="1.2.2.2">
+<h4 data-number="1.2.2.2" class="anchored" data-anchor-id="sec-intro-logic-slicing"><span class="header-section-number">1.2.2.2</span> Logic and Slicing</h4>
 <p>Slicing is very powerful if you combine it with logical operators, such as “&amp;” (logical and), “|” (logical or), “==” (equal), “!=” (not equal), “&lt;=”, “&gt;”, etc. Here are a few examples:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(iris[iris<span class="sc">$</span>Species <span class="sc">==</span> <span class="st">"virginica"</span>, ])  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -789,17 +765,17 @@ Note
 </div>
 </section>
 </section>
-<section id="sec-intro-apply-aggregate" class="level3" data-number="1.3.3">
-<h3 data-number="1.3.3" class="anchored" data-anchor-id="sec-intro-apply-aggregate"><span class="header-section-number">1.3.3</span> Applying functions and aggregates across a data set</h3>
+<section id="sec-intro-apply-aggregate" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="sec-intro-apply-aggregate"><span class="header-section-number">1.2.3</span> Applying functions and aggregates across a data set</h3>
 <p>Apart from selecting data, you will often combine or calculate statistics on data.</p>
-<section id="sec-intro-function" class="level4" data-number="1.3.3.1">
-<h4 data-number="1.3.3.1" class="anchored" data-anchor-id="sec-intro-function"><span class="header-section-number">1.3.3.1</span> Functions</h4>
+<section id="sec-intro-function" class="level4" data-number="1.2.3.1">
+<h4 data-number="1.2.3.1" class="anchored" data-anchor-id="sec-intro-function"><span class="header-section-number">1.2.3.1</span> Functions</h4>
 <p>Maybe this is a good time to remind you about functions. The two basic options we use in R are:</p>
 <ul>
 <li>Variables / data structures.</li>
 <li>Functions.</li>
 </ul>
-<p>We have already used variables / data structures (see <a href="#sec-intro-representation" class="quarto-xref"><span>Section 1.3.1</span></a>). Variables have a name and if you type this name in R, you get the values that are inside the respective data structure.</p>
+<p>We have already used variables / data structures (see <a href="#sec-intro-representation" class="quarto-xref"><span>Section 1.2.1</span></a>). Variables have a name and if you type this name in R, you get the values that are inside the respective data structure.</p>
 <p>Functions are algorithms that are called like:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">function</span>(variable)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -909,8 +885,8 @@ Note
 </div>
 </div>
 </section>
-<section id="sec-intro-apply" class="level4" data-number="1.3.3.2">
-<h4 data-number="1.3.3.2" class="anchored" data-anchor-id="sec-intro-apply"><span class="header-section-number">1.3.3.2</span> The apply() Function</h4>
+<section id="sec-intro-apply" class="level4" data-number="1.2.3.2">
+<h4 data-number="1.2.3.2" class="anchored" data-anchor-id="sec-intro-apply"><span class="header-section-number">1.2.3.2</span> The apply() Function</h4>
 <p>Now that we know functions, we can introduce functions that use functions. One of the most important is the apply function. The apply function applies a function to a data structure, typically a matrix or data.frame.</p>
 <p>Try the following:</p>
 <div class="cell">
@@ -928,7 +904,7 @@ Note
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Check the help of <code class="sourceCode r">apply</code> to understand what this does.</li>
-<li>Why is the first result of <code class="sourceCode r"><span class="fu">apply</span>(irisNA[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">2</span>, mean)</code> NA? (<code>irisNA</code> is the copy of iris with the “dog” from <a href="#sec-intro-dynamic-typing" class="quarto-xref"><span>Section 1.3.1.2</span></a>.) Check the help of mean to understand this.</li>
+<li>Why is the first result of <code class="sourceCode r"><span class="fu">apply</span>(irisNA[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">2</span>, mean)</code> NA? (<code>irisNA</code> is the copy of iris with the “dog” from <a href="#sec-intro-dynamic-typing" class="quarto-xref"><span>Section 1.2.1.2</span></a>.) Check the help of mean to understand this.</li>
 <li>Try <code class="sourceCode r"><span class="fu">apply</span>(iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">1</span>, mean)</code>. Think about what has changed here.</li>
 <li>What would happen if you use <code class="sourceCode r">iris</code> instead of <code class="sourceCode r">iris[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</code>?</li>
 </ol>
@@ -951,7 +927,7 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>?apply</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong><em>2</em></strong></p>
-<p>Remember, what we have done in <a href="#sec-intro-dynamic-typing" class="quarto-xref"><span>Section 1.3.1.2</span></a> (if you run this part separately, execute the following lines again):</p>
+<p>Remember, what we have done in <a href="#sec-intro-dynamic-typing" class="quarto-xref"><span>Section 1.2.1.2</span></a> (if you run this part separately, execute the following lines again):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>irisNA <span class="ot">=</span> iris</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>irisNA<span class="sc">$</span>Sepal.Length[<span class="dv">2</span>] <span class="ot">=</span> <span class="st">"dog"</span></span>
@@ -1051,8 +1027,8 @@ returning NA</code></pre>
 </div>
 </div>
 </section>
-<section id="sec-intro-aggregate" class="level4" data-number="1.3.3.3">
-<h4 data-number="1.3.3.3" class="anchored" data-anchor-id="sec-intro-aggregate"><span class="header-section-number">1.3.3.3</span> The aggregate() Function</h4>
+<section id="sec-intro-aggregate" class="level4" data-number="1.2.3.3">
+<h4 data-number="1.2.3.3" class="anchored" data-anchor-id="sec-intro-aggregate"><span class="header-section-number">1.2.3.3</span> The aggregate() Function</h4>
 <p><code class="sourceCode r"><span class="fu">aggregate</span>()</code> calculates a function per grouping variable. Try out this example:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(. <span class="sc">~</span> Species, <span class="at">data =</span> iris, <span class="at">FUN =</span> max)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1066,8 +1042,8 @@ returning NA</code></pre>
 <p>Note that <code>max</code> is the function to get the maximum value.</p>
 <p>The dot is general R syntax and usually refers to “use all columns in the data set”.</p>
 </section>
-<section id="sec-intro-for-loop" class="level4" data-number="1.3.3.4">
-<h4 data-number="1.3.3.4" class="anchored" data-anchor-id="sec-intro-for-loop"><span class="header-section-number">1.3.3.4</span> For loops</h4>
+<section id="sec-intro-for-loop" class="level4" data-number="1.2.3.4">
+<h4 data-number="1.2.3.4" class="anchored" data-anchor-id="sec-intro-for-loop"><span class="header-section-number">1.2.3.4</span> For loops</h4>
 <p>Apply and aggregate are convenience functions for a far more general concept that exists in all programming language, which is the for loop. In R, a for loop looks like this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
@@ -1103,8 +1079,8 @@ returning NA</code></pre>
 </div>
 </section>
 </section>
-<section id="sec-intro-plotting" class="level3" data-number="1.3.4">
-<h3 data-number="1.3.4" class="anchored" data-anchor-id="sec-intro-plotting"><span class="header-section-number">1.3.4</span> Plotting</h3>
+<section id="sec-intro-plotting" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="sec-intro-plotting"><span class="header-section-number">1.2.4</span> Plotting</h3>
 <p>I assume that you have already made plots with R. Else <a href="https://www.youtube.com/embed/UXeJ1bNYCos">here</a> is a super-quick 5-min introduction video. In this course, we will not be using a lot of graphics, but it will be useful for you to know the basic plot commands. Note in particular that the following two commands produce the same plot (apart from the axis labels):</p>
 <ul>
 <li><code class="sourceCode r"><span class="fu">plot</span>(iris<span class="sc">$</span>Sepal.Length, iris<span class="sc">$</span>Sepal.Width)</code></li>
@@ -1150,9 +1126,9 @@ returning NA</code></pre>
 <li><a href="https://www.data-to-viz.com">Data to Viz</a> provides a decision tree for visualizations and links to the <a href="https://r-graph-gallery.com/index.html">R graph gallery</a></li>
 </ul>
 </section>
-<section id="sec-intro-explore" class="level3" data-number="1.3.5">
-<h3 data-number="1.3.5" class="anchored" data-anchor-id="sec-intro-explore"><span class="header-section-number">1.3.5</span> Preparing and exploring your data</h3>
-<p>Before you fit a model to your own data, check the data. These checks correspond to step 2 of the workflow (<a href="#sec-intro-workflow" class="quarto-xref"><span>Section 1.1.2</span></a>): if a check reveals a problem (e.g.&nbsp;many NAs, or factor levels with only one or two observations), decide how to deal with it now, before you fit the model. The following table lists the main checks and where this book discusses their consequences:</p>
+<section id="sec-intro-explore" class="level3" data-number="1.2.5">
+<h3 data-number="1.2.5" class="anchored" data-anchor-id="sec-intro-explore"><span class="header-section-number">1.2.5</span> Preparing and exploring your data</h3>
+<p>Before you fit a model to your own data, check the data. These checks correspond to step 2 of the workflow (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>): if a check reveals a problem (e.g.&nbsp;many NAs, or factor levels with only one or two observations), decide how to deal with it now, before you fit the model. The following table lists the main checks and where this book discusses their consequences:</p>
 <table class="caption-top table">
 <caption>Checks before fitting a model.</caption>
 <colgroup>
@@ -1176,7 +1152,7 @@ returning NA</code></pre>
 <tr class="even">
 <td>Distribution and range of the response</td>
 <td><code>hist()</code>, <code>table()</code></td>
-<td>Determines the model family (<a href="5A-Summary.html#tbl-summary-response" class="quarto-xref">Table&nbsp;<span>12.1</span></a>)</td>
+<td>Determines the model family (<a href="6B-CheatSheet.html#tbl-cheat-family" class="quarto-xref">Table&nbsp;<span>B.4</span></a>)</td>
 </tr>
 <tr class="odd">
 <td>Errors and outliers</td>
@@ -1205,10 +1181,10 @@ returning NA</code></pre>
 </tr>
 </tbody>
 </table>
-<p>In the final exercise (<a href="#sec-intro-final-exercise" class="quarto-xref"><span>Section 1.3.6</span></a>), you apply these checks to the airquality data, which we will use again in the chapter on linear regression (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>). The links in the table above lead to the sections where these points are discussed. Looking at the predictors alone (their ranges, correlations and the number of observations) is safe. Plotting the response against the predictors in order to decide which predictors or functional forms to include, however, is already a form of model selection, with consequences for the p-values (<a href="3C-ModelSelection.html#sec-select-phacking" class="quarto-xref"><span>Section 8.2.4</span></a>). Decide the model from your question and design first (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>), and use such plots only to check it.</p>
+<p>In the final exercise (<a href="#sec-intro-final-exercise" class="quarto-xref"><span>Section 1.2.6</span></a>), you apply these checks to the airquality data, which we will use again in the chapter on linear regression (<a href="2A-LinearRegression.html" class="quarto-xref"><span>Chapter 2</span></a>). The links in the table above lead to the sections where these points are discussed. Looking at the predictors alone (their ranges, correlations and the number of observations) is safe. Plotting the response against the predictors in order to decide which predictors or functional forms to include, however, is already a form of model selection, with consequences for the p-values (<a href="3C-ModelSelection.html#sec-select-phacking" class="quarto-xref"><span>Section 8.2.4</span></a>). Decide the model from your question and design first (<a href="5A-Summary.html" class="quarto-xref"><span>Chapter 12</span></a>), and use such plots only to check it.</p>
 </section>
-<section id="sec-intro-final-exercise" class="level3" data-number="1.3.6">
-<h3 data-number="1.3.6" class="anchored" data-anchor-id="sec-intro-final-exercise"><span class="header-section-number">1.3.6</span> Final exercise</h3>
+<section id="sec-intro-final-exercise" class="level3" data-number="1.2.6">
+<h3 data-number="1.2.6" class="anchored" data-anchor-id="sec-intro-final-exercise"><span class="header-section-number">1.2.6</span> Final exercise</h3>
 <div class="callout callout-style-default callout-caution no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1224,7 +1200,7 @@ returning NA</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">=</span> airquality</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol type="1">
-<li>Before working with a dataset, you should always get an overview of it. Helpful functions for this are <code>str()</code>, <code>View()</code>, <code>summary()</code>, <code>head()</code>, and <code>tail()</code>. Apply them to <code>dat</code> and make sure to understand what they do. Then go through the checks in <a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.3.5</span></a>, taking Ozone as the response: missing values, distribution of the response, correlations between the predictors, number of observations per month.</li>
+<li>Before working with a dataset, you should always get an overview of it. Helpful functions for this are <code>str()</code>, <code>View()</code>, <code>summary()</code>, <code>head()</code>, and <code>tail()</code>. Apply them to <code>dat</code> and make sure to understand what they do. Then go through the checks in <a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.2.5</span></a>, taking Ozone as the response: missing values, distribution of the response, correlations between the predictors, number of observations per month.</li>
 <li>What is the data type of the variable ‘Month’? Transform it to a factor</li>
 <li>Scale the variable Wind and save it as a new variable in <code>dat</code></li>
 <li>Transform the variable ‘Temp’ (log-transform) and save it as a new variable in <code>dat</code></li>
@@ -1279,7 +1255,7 @@ returning NA</code></pre>
 </code></pre>
 </div>
 </div>
-<p>There are NAs in Ozone and Solar.R! Also, Month is not a factor! The checks from <a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.3.5</span></a>:</p>
+<p>There are NAs in Ozone and Solar.R! Also, Month is not a factor! The checks from <a href="#sec-intro-explore" class="quarto-xref"><span>Section 1.2.5</span></a>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(dat))       <span class="co"># missing values per variable</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1347,6 +1323,7 @@ returning NA</code></pre>
 </code></pre>
 </div>
 </div>
+<p><code>scale(x, scale = FALSE)</code> only centers; whether to center or scale is discussed in <a href="2A-LinearRegression.html#sec-lm-scaling" class="quarto-xref"><span>Section 2.9.2</span></a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
